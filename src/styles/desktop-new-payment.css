@@ -1,0 +1,855 @@
+/* ── Desktop New Payment Modal Styles ── */
+
+/* Hide on mobile devices (< 700px) */
+@media (max-width: 700px) {
+  .desktop-np-modal-overlay {
+    display: none !important;
+  }
+}
+
+/* ── Fixed Backdrop in Middle of Screen ── */
+.desktop-np-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: npModalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes npModalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ── Centered Modal Card ── */
+.desktop-np-modal-container {
+  position: relative;
+  width: min(580px, calc(100vw - 32px));
+  max-height: min(90vh, 840px);
+  background: var(--page);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.32), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: npModalPopIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  color: var(--ink);
+  font-family: 'Inter', sans-serif;
+  box-sizing: border-box;
+}
+
+@keyframes npModalPopIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+[data-appearance="dark"] .desktop-np-modal-container,
+.app[data-appearance="dark"] .desktop-np-modal-container {
+  background: #141518;
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+/* ── Modal Header Row ── */
+.desktop-np-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 28px 10px;
+  border-bottom: none;
+  background: var(--page);
+  flex-shrink: 0;
+}
+
+[data-appearance="dark"] .desktop-np-modal-header,
+.app[data-appearance="dark"] .desktop-np-modal-header {
+  background: #141518;
+}
+
+.desktop-np-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.desktop-np-back-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.desktop-np-back-btn:hover {
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+}
+
+.desktop-np-title {
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.6px;
+  color: var(--ink);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.desktop-np-subtitle {
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 500;
+  margin: 2px 0 0 0;
+  line-height: 1;
+}
+
+.desktop-np-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.desktop-np-close-icon-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.desktop-np-close-icon-btn:hover {
+  color: var(--ink);
+  border-color: var(--ink);
+}
+
+.desktop-np-cancel-btn {
+  background: #000000;
+  color: #ffffff;
+  border: 1px solid #000000;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 7px 16px;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.desktop-np-cancel-btn:hover {
+  opacity: 0.85;
+}
+
+[data-appearance="dark"] .desktop-np-cancel-btn,
+.app[data-appearance="dark"] .desktop-np-cancel-btn {
+  background: #ffffff;
+  color: #000000;
+  border-color: #ffffff;
+}
+
+/* ── Scrollable Modal Body ── */
+.desktop-np-modal-body {
+  padding: 6px 28px 28px;
+  overflow-y: auto;
+  flex: 1;
+  box-sizing: border-box;
+}
+
+.desktop-np-modal-body.has-floating-btn {
+  padding-bottom: 96px;
+}
+
+/* ── Floating CTA Dock at Bottom of Modal ── */
+.desktop-np-floating-dock {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px 28px 22px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.88) 32%,
+    rgba(255, 255, 255, 1) 100%
+  );
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  box-sizing: border-box;
+  pointer-events: auto;
+}
+
+[data-appearance="dark"] .desktop-np-floating-dock,
+.app[data-appearance="dark"] .desktop-np-floating-dock {
+  background: linear-gradient(
+    180deg,
+    rgba(20, 21, 24, 0) 0%,
+    rgba(20, 21, 24, 0.88) 32%,
+    rgba(20, 21, 24, 1) 100%
+  );
+}
+
+.desktop-np-floating-dock .desktop-np-primary-btn {
+  width: 100%;
+  margin: 0;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.16);
+}
+
+/* ── Desktop Form Grid Inside Modal ── */
+.desktop-np-grid {
+  display: block;
+  width: 100%;
+}
+
+/* Left Column: Form Details */
+.desktop-np-form-col {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.desktop-np-card {
+  background: color-mix(in srgb, var(--panel) 60%, transparent);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+[data-appearance="dark"] .desktop-np-card,
+.app[data-appearance="dark"] .desktop-np-card {
+  background: #1a1c22;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.desktop-np-field-group {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.desktop-np-field-header {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.desktop-np-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.1px;
+  display: flex;
+  align-items: center;
+}
+
+.desktop-np-star {
+  color: #ef4444;
+  font-weight: 800;
+  margin-left: 3px;
+}
+
+/* Input Box Style matching search bar */
+.desktop-np-input-box {
+  display: flex;
+  align-items: center;
+  height: 46px;
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--page);
+  padding: 0 6px 0 14px;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+[data-appearance="dark"] .desktop-np-input-box,
+.app[data-appearance="dark"] .desktop-np-input-box {
+  background: #141518;
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.desktop-np-input-box:focus-within {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 1px var(--ink);
+}
+
+[data-appearance="dark"] .desktop-np-input-box:focus-within,
+.app[data-appearance="dark"] .desktop-np-input-box:focus-within {
+  border-color: #ffffff;
+  box-shadow: 0 0 0 1px #ffffff;
+}
+
+.desktop-np-input-box.error {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 1px #ef4444;
+}
+
+.desktop-np-input-box input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--ink);
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  text-transform: capitalize !important;
+}
+
+.desktop-np-input-box input::placeholder {
+  color: var(--muted);
+  opacity: 0.8;
+  font-size: 13.5px;
+  font-weight: 500;
+}
+
+.desktop-np-search-icon {
+  color: var(--muted);
+  flex-shrink: 0;
+  margin-right: 8px;
+}
+
+.desktop-np-scanner-btn {
+  background: transparent;
+  border: none;
+  padding: 0 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink);
+  transition: opacity 0.15s ease;
+  height: 100%;
+}
+
+.desktop-np-scanner-btn:hover {
+  opacity: 0.7;
+}
+
+/* Verification Status (bottom-left outside field) */
+.desktop-np-verification {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 0 0 2px;
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.desktop-np-verification.verifying {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.desktop-np-verification.verifying .animate-spin {
+  animation: spin 0.9s linear infinite;
+}
+
+.desktop-np-verification.verified {
+  font-weight: 600;
+}
+
+.desktop-np-check-circle {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #16a34a;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+[data-appearance="dark"] .desktop-np-check-circle,
+.app[data-appearance="dark"] .desktop-np-check-circle {
+  background: #22c55e;
+}
+
+.desktop-np-verified-name {
+  color: #16a34a;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+[data-appearance="dark"] .desktop-np-verified-name,
+.app[data-appearance="dark"] .desktop-np-verified-name {
+  color: #22c55e;
+}
+
+.desktop-np-field-error {
+  margin: 4px 0 0 2px;
+  font-size: 11.5px;
+  color: #ef4444;
+  font-weight: 600;
+}
+
+/* Role Toggle Buttons ("I am Selling" / "I am Buying") */
+.desktop-np-role-btn-red,
+.desktop-np-role-btn-green {
+  font-size: 12.5px;
+  font-weight: 700;
+  font-family: 'Hanken Grotesk', sans-serif;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0 10px;
+  user-select: none;
+  transition: opacity 0.15s ease;
+  white-space: nowrap;
+}
+
+.desktop-np-role-btn-red {
+  color: #dc2626;
+}
+
+[data-appearance="dark"] .desktop-np-role-btn-red,
+.app[data-appearance="dark"] .desktop-np-role-btn-red {
+  color: #f87171;
+}
+
+.desktop-np-role-btn-green {
+  color: #16a34a;
+}
+
+[data-appearance="dark"] .desktop-np-role-btn-green,
+.app[data-appearance="dark"] .desktop-np-role-btn-green {
+  color: #4ade80;
+}
+
+/* ── Specifications Box ── */
+.desktop-np-specs-box {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--page);
+  padding: 14px 16px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+[data-appearance="dark"] .desktop-np-specs-box,
+.app[data-appearance="dark"] .desktop-np-specs-box {
+  background: #141518;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.desktop-np-specs-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.desktop-np-spec-chip {
+  height: 38px;
+  border-radius: 6px;
+  border: 1.5px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  font-size: 12.5px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.desktop-np-spec-chip:hover {
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
+}
+
+.desktop-np-spec-chip.active {
+  background: #161618 !important;
+  color: #ffffff !important;
+  border-color: #161618 !important;
+}
+
+[data-appearance="dark"] .desktop-np-spec-chip.active,
+.app[data-appearance="dark"] .desktop-np-spec-chip.active {
+  background: #ffffff !important;
+  color: #111215 !important;
+  border-color: #ffffff !important;
+}
+
+.desktop-np-custom-btn {
+  align-self: flex-start;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 6px;
+  border: 1.5px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  font-size: 12.5px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.desktop-np-custom-btn.active {
+  background: #161618;
+  color: #ffffff;
+}
+
+[data-appearance="dark"] .desktop-np-custom-btn.active,
+.app[data-appearance="dark"] .desktop-np-custom-btn.active {
+  background: #ffffff;
+  color: #111215;
+}
+
+/* Active Specs Panel */
+.desktop-np-active-specs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: color-mix(in srgb, var(--ink) 3%, transparent);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-top: 4px;
+}
+
+.desktop-np-spec-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--page);
+  padding: 4px 8px 4px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+}
+
+[data-appearance="dark"] .desktop-np-spec-row,
+.app[data-appearance="dark"] .desktop-np-spec-row {
+  background: #1a1c22;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.desktop-np-spec-tag {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+  min-width: 65px;
+}
+
+.desktop-np-spec-input {
+  flex: 1;
+  height: 30px;
+  border: none;
+  background: transparent;
+  color: var(--ink);
+  font-size: 12.5px;
+  outline: none;
+  text-transform: capitalize !important;
+}
+
+.desktop-np-spec-remove {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.desktop-np-spec-remove:hover {
+  color: #ef4444;
+}
+
+/* ── Right Column: Sticky Summary & Action Card ── */
+.desktop-np-summary-col {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.desktop-np-summary-card {
+  background: color-mix(in srgb, var(--panel) 70%, transparent);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 22px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+[data-appearance="dark"] .desktop-np-summary-card,
+.app[data-appearance="dark"] .desktop-np-summary-card {
+  background: #1a1c22;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.desktop-np-summary-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.desktop-np-summary-title {
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--ink);
+  margin: 0;
+}
+
+.desktop-np-status-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 20px;
+  background: color-mix(in srgb, #16a34a 14%, transparent);
+  color: #16a34a;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.desktop-np-summary-items {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.desktop-np-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.desktop-np-summary-label {
+  color: var(--muted);
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.desktop-np-summary-val {
+  color: var(--ink);
+  font-weight: 600;
+  text-align: right;
+  word-break: break-word;
+}
+
+/* Escrow Shield Card */
+.desktop-np-escrow-badge {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: color-mix(in srgb, #26a66f 8%, transparent);
+  border: 1px solid color-mix(in srgb, #26a66f 25%, transparent);
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+
+.desktop-np-escrow-icon {
+  color: #26a66f;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.desktop-np-escrow-text h4 {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0 0 2px 0;
+}
+
+.desktop-np-escrow-text p {
+  font-size: 11.5px;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.35;
+}
+
+/* Summary Actions */
+.desktop-np-summary-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.desktop-np-primary-btn {
+  width: 100%;
+  height: 46px;
+  border-radius: 9px;
+  font-size: 14.5px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  background: #171717 !important;
+  color: #ffffff !important;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.desktop-np-primary-btn:hover {
+  opacity: 0.9;
+}
+
+.desktop-np-primary-btn:active {
+  transform: scale(0.98);
+}
+
+[data-appearance="dark"] .desktop-np-primary-btn,
+.app[data-appearance="dark"] .desktop-np-primary-btn {
+  background: #ffffff !important;
+  color: #111215 !important;
+}
+
+.desktop-np-secondary-btn {
+  width: 100%;
+  height: 40px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  transition: all 0.15s ease;
+}
+
+.desktop-np-secondary-btn:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+/* ── Step 2 Confirmation Card ── */
+.desktop-np-step-card {
+  background: color-mix(in srgb, var(--panel) 50%, transparent);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 28px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+[data-appearance="dark"] .desktop-np-step-card,
+.app[data-appearance="dark"] .desktop-np-step-card {
+  background: #1a1c22;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.desktop-np-amount-box {
+  display: flex;
+  align-items: center;
+  height: 52px;
+  border-radius: 10px;
+  border: 1.5px solid var(--line);
+  background: var(--page);
+  padding: 0 16px;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ink);
+  transition: border-color 0.15s ease;
+}
+
+[data-appearance="dark"] .desktop-np-amount-box,
+.app[data-appearance="dark"] .desktop-np-amount-box {
+  background: #141518;
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.desktop-np-amount-box:focus-within {
+  border-color: var(--ink);
+}
+
+.desktop-np-amount-box input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ink);
+  outline: none;
+  padding-left: 8px;
+}
+
+/* Success Card */
+.desktop-np-success-card {
+  background: color-mix(in srgb, var(--panel) 50%, transparent);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 36px 30px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  max-width: 540px;
+  margin: 0 auto;
+}
+
+[data-appearance="dark"] .desktop-np-success-card,
+.app[data-appearance="dark"] .desktop-np-success-card {
+  background: #1a1c22;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.desktop-np-success-icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: #26a66f;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(38, 166, 111, 0.3);
+}

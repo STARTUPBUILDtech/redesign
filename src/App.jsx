@@ -1,0 +1,519 @@
+import { useState } from "react";
+import paykudiLogo from "../paykudi-logo.png";
+import logoDarkMode from "../logodarkmode.png";
+import DesktopActivity from "./components/DesktopActivity.jsx";
+import DesktopNewPayment from "./components/DesktopNewPayment.jsx";
+import MobileActivity from "./components/Mobile/MobileActivity.jsx";
+import MobileNewPayment from "./components/Mobile/MobileNewPayment.jsx";
+
+function BrandLogo({ dark, className }) {
+  return (
+    <a className={className} href="#home" aria-label="PayKudi home">
+      <img
+        src={dark ? logoDarkMode : paykudiLogo}
+        alt="PayKudi"
+        className={`brand-logo-img ${dark ? "logo-dark" : "logo-light"}`}
+        style={{ height: "22px", maxHeight: "22px", width: "auto" }}
+      />
+    </a>
+  );
+}
+
+// Header Actions matching C:\Users\abc\OneDrive\Videos\dashboard.html
+function HeaderActions({ dark, onThemeToggle, role, onSwitchRole }) {
+  return (
+    <div className="header-actions">
+      {onSwitchRole && (
+        <button
+          type="button"
+          onClick={onSwitchRole}
+          className="switch-role-btn"
+          title="Switch between Buyer and Seller views"
+        >
+          Switch role
+        </button>
+      )}
+      {/* Profile Avatar (matching #m-profile-sticky-avatar from dashboard.html) */}
+      <div
+        className="header-avatar-circle"
+        aria-label="Open profile"
+        title="Profile"
+      >
+        <span className="material-symbols-outlined avatar-icon">account_circle</span>
+      </div>
+
+      {/* Theme Toggle Button (matching dashboard.html) */}
+      <button
+        type="button"
+        onClick={onThemeToggle}
+        className="header-theme-btn"
+        title={dark ? "Switch to light mode" : "Switch to dark mode"}
+        aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+      >
+        <span
+          className={`material-symbols-outlined theme-icon ${dark ? "dark-icon" : "light-icon"}`}
+        >
+          {dark ? "dark_mode" : "light_mode"}
+        </span>
+      </button>
+    </div>
+  );
+}
+
+// Navbar Icons matching C:\Users\abc\OneDrive\Videos\dashboard.html
+const HomeIcon = ({ active }) => (
+  <span
+    className="material-symbols-outlined nav-symbol"
+    style={{ fontVariationSettings: active ? "'FILL' 1" : "'FILL' 0" }}
+  >
+    dashboard
+  </span>
+);
+const ActivityIcon = ({ active }) => (
+  <span
+    className="material-symbols-outlined nav-symbol"
+    style={{ fontVariationSettings: active ? "'FILL' 1" : "'FILL' 0" }}
+  >
+    analytics
+  </span>
+);
+const PaymentRoomIcon = ({ active }) => (
+  <span className="nav-pr-wrap">
+    <span
+      className="material-symbols-outlined nav-symbol"
+      style={{ fontVariationSettings: active ? "'FILL' 1" : "'FILL' 0" }}
+    >
+      payments
+    </span>
+    <span id="m-pr-nav-badge" className="nav-pr-badge">2</span>
+  </span>
+);
+const HelpIcon = ({ active }) => (
+  <span
+    className="material-symbols-outlined nav-symbol"
+    style={{ fontVariationSettings: active ? "'FILL' 1" : "'FILL' 0" }}
+  >
+    contact_support
+  </span>
+);
+const ProfileIcon = ({ active }) => (
+  <span className="nav-profile-wrap">
+    <span
+      className="material-symbols-outlined nav-symbol"
+      style={{ fontVariationSettings: active ? "'FILL' 1" : "'FILL' 0" }}
+    >
+      person
+    </span>
+    <i className="fa-brands fa-whatsapp nav-whatsapp-icon"></i>
+  </span>
+);
+
+const transactions = [
+  { id: "tx-1", title: "Payment received", time: "Today, 10:42 AM", amount: "+₦145,000.00", type: "received" },
+  { id: "tx-2", title: "Payment sent", time: "Yesterday, 4:18 PM", amount: "−₦85,000.00", type: "sent" },
+  { id: "tx-3", title: "Payout sent", time: "Mon, 9:24 AM", amount: "₦24,000.00", type: "payout" },
+  { id: "tx-4", title: "Refund sent", time: "Sun, 2:15 PM", amount: "−₦12,500.00", type: "refund" },
+];
+
+function getActivityConfig(item) {
+  const t = (item.type || item.title || "").toLowerCase();
+  if (t.includes("refund")) {
+    return {
+      iconClass: "act-icon-refund",
+      amountClass: "act-val-refund",
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M9 14L4 9l5-5"></path>
+          <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"></path>
+        </svg>
+      ),
+    };
+  }
+  if (t.includes("payout") || t.includes("withdrawn") || t.includes("withdraw")) {
+    return {
+      iconClass: "act-icon-payout",
+      amountClass: "act-val-payout",
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M22 2L11 13M22 2L15 22L11 13L2 9L22 2Z"></path>
+        </svg>
+      ),
+    };
+  }
+  if (t.includes("received")) {
+    return {
+      iconClass: "act-icon-received",
+      amountClass: "act-val-received",
+      icon: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 4v16m0 0l-6-6m6 6l6-6"></path>
+        </svg>
+      ),
+    };
+  }
+  return {
+    iconClass: "act-icon-sent",
+    amountClass: "act-val-sent",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M22 2L11 13M22 2L15 22L11 13L2 9L22 2Z"></path>
+      </svg>
+    ),
+  };
+}
+
+function ActivityRow({ item, isLast }) {
+  const cfg = getActivityConfig(item);
+  return (
+    <div className="activity-item-row" role="button" tabIndex={0}>
+      <div className={`activity-item-icon ${cfg.iconClass}`}>
+        {cfg.icon}
+      </div>
+      <div className={`activity-item-inner ${isLast ? "no-border" : ""}`}>
+        <div className="activity-item-info">
+          <h4 className="activity-item-title">{item.title}</h4>
+          <p className="activity-item-time">{item.time}</p>
+        </div>
+        <div className="activity-item-amount">
+          <p className={`activity-item-value ${cfg.amountClass}`}>{item.amount}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Cardless & Centered Balance matching user screenshot
+function PayKudiBalance({ visible, onToggleVisibility }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    try {
+      navigator.clipboard?.writeText("2032614152");
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
+  return (
+    <div className="cardless-balance">
+      {/* Top Meta: Bank icon · Nigerian Naira · Account Number · Copy Icon */}
+      <div className="balance-account-bar">
+        <span className="material-symbols-outlined balance-bank-icon">account_balance</span>
+        <span className="balance-account-text">Nigerian Naira · 2032614152</span>
+        <button
+          type="button"
+          onClick={handleCopy}
+          className="balance-copy-btn"
+          title={copied ? "Copied!" : "Copy account number"}
+          aria-label="Copy account number"
+        >
+          <span className="material-symbols-outlined balance-copy-icon">
+            {copied ? "check" : "content_copy"}
+          </span>
+        </button>
+      </div>
+
+      {/* Main Balance Row: Centered Amount + Action Toggle Button */}
+      <div className="balance-main-row">
+        <div className="balance-amount-wrapper">
+          <h2 className="balance-amount-text">
+            {visible ? "₦182,000.00" : "••••••••"}
+          </h2>
+          <button
+            type="button"
+            onClick={onToggleVisibility}
+            className="balance-eye-btn"
+            aria-label={visible ? "Hide balance" : "Show balance"}
+            title={visible ? "Hide balance" : "Show balance"}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 19 }}>
+              {visible ? "visibility" : "visibility_off"}
+            </span>
+          </button>
+        </div>
+      </div>
+
+      {/* Timestamp */}
+      <p className="balance-timestamp">Last updated 28 sec. ago</p>
+    </div>
+  );
+}
+
+function MobileDashboard({
+  dark,
+  onThemeToggle,
+  active,
+  setActive,
+  visible,
+  setVisible,
+  role,
+  setRole,
+}) {
+
+  return (
+    <div className={`mobile-dashboard${active === "New Payment" ? " no-nav-mode" : ""}`} data-appearance={dark ? "dark" : "light"}>
+      <header className="mobile-header">
+        <BrandLogo dark={dark} className="mobile-brand" />
+        <HeaderActions
+          dark={dark}
+          onThemeToggle={onThemeToggle}
+          role={role}
+          onSwitchRole={() => setRole(role === "Buyer" ? "Seller" : "Buyer")}
+        />
+      </header>
+
+      {active === "Activity" ? (
+        <MobileActivity />
+      ) : active === "New Payment" ? (
+        <MobileNewPayment onCancel={() => setActive("Home")} />
+      ) : (
+        <>
+          <div className="mobile-main mobile-main-top">
+            <section className="mobile-intro">
+              <h1>Good morning, Amaka</h1>
+              <p>What will you like to do?</p>
+            </section>
+            <section className="mobile-cta">
+              <button
+                type="button"
+                className="mobile-primary"
+                onClick={() => setActive("New Payment")}
+              >
+                <b className="btn-plus">＋</b> New Payment
+              </button>
+              <button type="button" className="mobile-secondary">Withdraw</button>
+            </section>
+          </div>
+
+          {/* Balance Tile with no padding, spanning left to right, no corner radius */}
+          <div className="balance-tile">
+            <PayKudiBalance
+              visible={visible}
+              onToggleVisibility={() => setVisible(!visible)}
+            />
+          </div>
+
+          <main className="mobile-main mobile-main-bottom">
+            <section className="mobile-activity" id="activity">
+              <div className="mobile-activity-head">
+                <h2>Recent activity</h2>
+                <a
+                  href="#activity"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setActive("Activity");
+                    window.scrollTo({ top: 0, behavior: "instant" });
+                  }}
+                >
+                  View all
+                </a>
+              </div>
+              <div className="boxless-activity-list">
+                {transactions.map((tx, idx) => (
+                  <ActivityRow
+                    key={tx.id || tx.title}
+                    item={tx}
+                    isLast={idx === transactions.length - 1}
+                  />
+                ))}
+              </div>
+            </section>
+          </main>
+        </>
+      )}
+
+      {/* Mobile Expanding Pill Bottom Nav (matching dashboard.html #m-bottom-nav) */}
+      {active !== "New Payment" && <nav id="m-bottom-nav" className="mobile-nav" aria-label="Primary navigation">
+        <button
+          type="button"
+          id="m-nav-home"
+          className={`nav-bottom-link ${active === "Home" ? "active" : ""}`}
+          onClick={() => {
+            setActive("Home");
+            window.scrollTo({ top: 0, behavior: "instant" });
+          }}
+        >
+          <HomeIcon active={active === "Home"} />
+          <span className="nav-link-label">Home</span>
+        </button>
+        <button
+          type="button"
+          id="m-nav-activity"
+          className={`nav-bottom-link ${active === "Activity" ? "active" : ""}`}
+          onClick={() => {
+            setActive("Activity");
+            window.scrollTo({ top: 0, behavior: "instant" });
+          }}
+        >
+          <ActivityIcon active={active === "Activity"} />
+          <span className="nav-link-label">Activity</span>
+        </button>
+        <button
+          type="button"
+          id="m-nav-notifications"
+          className={`nav-bottom-link ${active === "Payment room" ? "active" : ""}`}
+          onClick={() => {
+            setActive("Payment room");
+            window.scrollTo({ top: 0, behavior: "instant" });
+          }}
+        >
+          <PaymentRoomIcon active={active === "Payment room"} />
+          <span className="nav-link-label">Payment Room</span>
+        </button>
+        <button
+          type="button"
+          id="m-nav-help"
+          className={`nav-bottom-link ${active === "Help" ? "active" : ""}`}
+          onClick={() => setActive("Help")}
+        >
+          <HelpIcon active={active === "Help"} />
+          <span className="nav-link-label">Help</span>
+        </button>
+        <button
+          type="button"
+          id="m-nav-profile"
+          className={`nav-bottom-link ${active === "Profile" ? "active" : ""}`}
+          onClick={() => setActive("Profile")}
+        >
+          <ProfileIcon active={active === "Profile"} />
+          <span className="nav-link-label">Profile</span>
+        </button>
+      </nav>}
+    </div>
+  );
+}
+
+export default function App() {
+  const [dark, setDark] = useState(false);
+  const [visible, setVisible] = useState(true);
+  const [active, setActive] = useState("Activity");
+  const [role, setRole] = useState("Buyer");
+
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+
+  const nav = [
+    ["Home", HomeIcon],
+    ["Activity", ActivityIcon],
+    ["Payment room", PaymentRoomIcon],
+    ["Help & support", HelpIcon],
+    ["Profile", ProfileIcon],
+  ];
+
+  return (
+    <div className="app" data-appearance={dark ? "dark" : "light"}>
+      <header className="topbar">
+        <BrandLogo dark={dark} className="brand" />
+        <nav aria-label="Primary navigation">
+          {nav.map(([name, NavIcon]) => (
+            <button
+              key={name}
+              onClick={() => {
+                setActive(name);
+                setIsPaymentModalOpen(false);
+                window.scrollTo({ top: 0, behavior: "instant" });
+              }}
+              className={active === name ? "active" : ""}
+            >
+              <NavIcon active={active === name} />
+              <span>{name}</span>
+            </button>
+          ))}
+        </nav>
+        <div className="top-actions">
+          <HeaderActions
+            dark={dark}
+            onThemeToggle={() => setDark(!dark)}
+            role={role}
+            onSwitchRole={() => setRole(role === "Buyer" ? "Seller" : "Buyer")}
+          />
+        </div>
+      </header>
+
+      {/* Desktop Views */}
+      {active === "Activity" ? (
+        <DesktopActivity />
+      ) : (
+        <main id="home" className="desktop-container">
+          <div className="desktop-content-wrap desktop-intro-wrap">
+            <section className="intro">
+              <div>
+                <h1>Good morning, Amaka</h1>
+                <p>What will you like to do?</p>
+              </div>
+              <div className="intro-actions">
+                <button
+                  className="primary-button"
+                  onClick={() => setIsPaymentModalOpen(true)}
+                >
+                  <b className="btn-plus">＋</b> New Payment
+                </button>
+                <button className="secondary-button">Withdraw</button>
+              </div>
+            </section>
+          </div>
+          <section className="summary desktop-balance-banner" aria-label="Dashboard summary">
+            <div className="desktop-cardless-balance-wrap">
+              <div className="balance-tile">
+                <PayKudiBalance
+                  visible={visible}
+                  onToggleVisibility={() => setVisible(!visible)}
+                />
+              </div>
+            </div>
+          </section>
+          <div className="desktop-content-wrap desktop-activity-wrap">
+            <section className="activity-card boxless-activity-card" aria-label="Recent activity">
+              <div className="activity-heading">
+                <h2>Recent activity</h2>
+                <a
+                  href="#activity"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setActive("Activity");
+                  }}
+                >
+                  View all
+                </a>
+              </div>
+              <div className="boxless-activity-list">
+                {transactions.map((tx, idx) => (
+                  <ActivityRow
+                    key={tx.id || tx.title}
+                    item={tx}
+                    isLast={idx === transactions.length - 1}
+                  />
+                ))}
+              </div>
+            </section>
+          </div>
+        </main>
+      )}
+
+      {/* Desktop New Payment Modal (pops up in the middle of home screen) */}
+      {(isPaymentModalOpen || active === "New Payment") && (
+        <DesktopNewPayment
+          onCancel={() => {
+            setIsPaymentModalOpen(false);
+            if (active === "New Payment") setActive("Home");
+          }}
+        />
+      )}
+
+      {/* Mobile Screen Dashboard (preserved for mobile screen) */}
+      <MobileDashboard
+        dark={dark}
+        onThemeToggle={() => setDark(!dark)}
+        active={active}
+        setActive={setActive}
+        visible={visible}
+        setVisible={setVisible}
+        role={role}
+        setRole={setRole}
+      />
+    </div>
+  );
+}
+

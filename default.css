@@ -1,0 +1,785 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+:root { font-family: Inter, system-ui, sans-serif; color: #161618; background: #fff; font-synthesis: none; }
+* { box-sizing: border-box; }
+
+/* Hide scrollbar completely across all browsers while preserving scrollability */
+html, body, * {
+  -ms-overflow-style: none !important; /* IE and Edge */
+  scrollbar-width: none !important; /* Firefox */
+}
+
+/* Hide scrollbar for Chrome, Safari, Opera, Edge */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
+
+html, body, #root { min-width: 100%; min-height: 100%; margin: 0; }
+button, a { font: inherit; -webkit-tap-highlight-color: transparent; }
+button { border: 0; cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+button:focus-visible, a:focus-visible { outline: 3px solid #26a66f; outline-offset: 3px; }
+
+/* Default capital letter for input fields across the app */
+input:not([type="password"]):not([type="email"]):not([type="number"]):not([type="tel"]),
+textarea,
+.ui-input {
+  text-transform: capitalize;
+}
+
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+/* ── Header Actions (Matching dashboard.html) ── */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Plain text "Switch role" button matching dashboard.html */
+.switch-role-btn {
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #737373;
+  background: transparent;
+  cursor: pointer;
+  padding: 2px 4px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.15s ease;
+  user-select: none;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.switch-role-btn:hover {
+  color: var(--ink);
+}
+
+.app[data-appearance="dark"] .switch-role-btn {
+  color: #a3a3a3;
+}
+
+.app[data-appearance="dark"] .switch-role-btn:hover {
+  color: #ffffff;
+}
+
+/* Profile avatar circle matching #m-profile-sticky-avatar from dashboard.html */
+.header-avatar-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  overflow: hidden;
+  border: 2px solid rgba(46, 160, 67, 0.4);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  flex-shrink: 0;
+  background-color: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+  user-select: none;
+  box-sizing: border-box;
+}
+
+.header-avatar-circle:hover {
+  transform: scale(1.05);
+}
+
+.header-avatar-circle:active {
+  transform: scale(0.95);
+}
+
+.header-avatar-circle .avatar-icon {
+  font-size: 18px;
+  color: #9ca3af;
+  user-select: none;
+  line-height: 1;
+}
+
+.app[data-appearance="dark"] .header-avatar-circle {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(46, 160, 67, 0.5);
+}
+
+.app[data-appearance="dark"] .header-avatar-circle .avatar-icon {
+  color: #6b7280;
+}
+
+/* Theme Toggle Button matching dashboard.html */
+.header-theme-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+  user-select: none;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.header-theme-btn:hover {
+  transform: scale(1.05);
+}
+
+.header-theme-btn:active {
+  transform: scale(0.95);
+}
+
+.header-theme-btn .theme-icon {
+  font-size: 17px;
+  line-height: 1;
+}
+
+.header-theme-btn .light-icon {
+  color: #f59e0b; /* text-amber-500 */
+}
+
+.header-theme-btn .dark-icon {
+  color: #60a5fa; /* text-blue-400 */
+}
+
+.app[data-appearance="dark"] .header-theme-btn {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #e5e7eb;
+}
+
+/* Nav badge and icon helpers */
+.nav-pr-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-pr-badge,
+#m-pr-nav-badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background-color: #0E5296 !important;
+  color: #FFFFFF !important;
+  border-radius: 9999px;
+  font-size: 9px;
+  font-weight: 800;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #FFFFFF !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  line-height: 1;
+}
+
+.nav-profile-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.nav-whatsapp-icon {
+  color: #10b981 !important;
+  font-size: 11px !important;
+  margin-left: 2px;
+}
+
+/* ── Brand Logo Styling (Identical visual size and baseline in both themes) ── */
+.brand,
+.mobile-brand {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  text-decoration: none;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.brand-logo-img {
+  height: 22px;
+  max-height: 22px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+}
+
+/* Light logo */
+.brand-logo-img.logo-light {
+  height: 22px;
+  max-height: 22px;
+}
+
+/* Dark logo */
+.brand-logo-img.logo-dark {
+  height: 22px;
+  max-height: 22px;
+  transform: none;
+}
+
+@media (max-width: 700px) {
+  .brand-logo-img,
+  .brand-logo-img.logo-light,
+  .brand-logo-img.logo-dark {
+    height: 22px;
+    max-height: 22px;
+    transform: none;
+  }
+}
+
+/* ── Balance Tile (Tile with no padding, spanning left to right, no corner radius, sleek black) ── */
+.balance-tile {
+  background: #000000 !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: none !important;
+  border-right: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  margin: clamp(16px, 4.5vw, 22px) 0;
+  overflow: hidden;
+  box-shadow: none;
+  width: 100%;
+  min-height: clamp(150px, 35vw, 190px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.balance-tile .balance-account-bar {
+  color: #9ca3af !important;
+}
+
+.balance-tile .balance-bank-icon {
+  color: #9ca3af !important;
+}
+
+.balance-tile .balance-copy-btn {
+  color: #c084fc !important;
+}
+
+.balance-tile .balance-copy-btn:hover {
+  color: #d8b4fe !important;
+}
+
+.balance-tile .balance-amount-text {
+  color: #ffffff !important;
+}
+
+.balance-tile .balance-eye-btn {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.balance-tile .balance-eye-btn:hover {
+  background: rgba(255, 255, 255, 0.22) !important;
+  color: #ffffff !important;
+}
+
+.balance-tile .balance-timestamp {
+  color: #6b7280 !important;
+}
+
+/* ── Balance Tile: White in Dark Mode ── */
+[data-appearance="dark"] .balance-tile,
+.app[data-appearance="dark"] .balance-tile {
+  background: #ffffff !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-appearance="dark"] .balance-tile .balance-account-bar,
+.app[data-appearance="dark"] .balance-tile .balance-account-bar {
+  color: #52525b !important;
+}
+
+[data-appearance="dark"] .balance-tile .balance-bank-icon,
+.app[data-appearance="dark"] .balance-tile .balance-bank-icon {
+  color: #52525b !important;
+}
+
+[data-appearance="dark"] .balance-tile .balance-copy-btn,
+.app[data-appearance="dark"] .balance-tile .balance-copy-btn {
+  color: #7c3aed !important;
+}
+
+[data-appearance="dark"] .balance-tile .balance-copy-btn:hover,
+.app[data-appearance="dark"] .balance-tile .balance-copy-btn:hover {
+  color: #6d28d9 !important;
+}
+
+[data-appearance="dark"] .balance-tile .balance-amount-text,
+.app[data-appearance="dark"] .balance-tile .balance-amount-text {
+  color: #0f172a !important;
+}
+
+[data-appearance="dark"] .balance-tile .balance-eye-btn,
+.app[data-appearance="dark"] .balance-tile .balance-eye-btn {
+  background: rgba(0, 0, 0, 0.06) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  color: #1e293b !important;
+}
+
+[data-appearance="dark"] .balance-tile .balance-eye-btn:hover,
+.app[data-appearance="dark"] .balance-tile .balance-eye-btn:hover {
+  background: rgba(0, 0, 0, 0.12) !important;
+  color: #000000 !important;
+}
+
+[data-appearance="dark"] .balance-tile .balance-timestamp,
+.app[data-appearance="dark"] .balance-tile .balance-timestamp {
+  color: #64748b !important;
+}
+
+/* ── Cardless & Centered Balance (Matching Kuda style) ── */
+.cardless-balance {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: clamp(10px, 2.5vw, 14px);
+  padding: clamp(30px, 6.5vw, 42px) 0 clamp(24px, 5.5vw, 34px);
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.balance-account-bar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+  user-select: none;
+  margin: 0;
+}
+
+.balance-bank-icon {
+  font-size: 17px !important;
+  color: var(--muted);
+}
+
+.balance-account-text {
+  letter-spacing: -0.2px;
+}
+
+.balance-copy-btn {
+  background: transparent;
+  border: none;
+  padding: 2px 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #8e5dd5;
+  border-radius: 4px;
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.balance-copy-btn:hover {
+  transform: scale(1.1);
+  color: #7b4ec3;
+}
+
+.balance-copy-icon {
+  font-size: 14px !important;
+}
+
+.balance-main-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  position: relative;
+}
+
+.balance-amount-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.balance-amount-text {
+  font-family: 'Hanken Grotesk', sans-serif;
+  font-size: clamp(34px, 8.5vw, 44px);
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  color: var(--ink);
+  margin: 0;
+  line-height: 1;
+}
+
+.balance-eye-btn {
+  position: absolute;
+  left: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
+  border: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.balance-eye-btn:hover {
+  color: var(--ink);
+  background: color-mix(in srgb, var(--ink) 10%, transparent);
+}
+
+.balance-overdraft-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 14px;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--ink) 5%, transparent);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.balance-overdraft-pill:hover {
+  background: color-mix(in srgb, var(--ink) 9%, transparent);
+}
+
+.balance-timestamp {
+  font-size: 11px;
+  color: var(--muted);
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+}
+
+/* ── Desktop Full-Bleed Balance Banner & Sizing ── */
+main.desktop-container {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.desktop-content-wrap {
+  width: min(calc(100% - clamp(40px, 3.5vw, 80px)), 1440px);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (min-width: 1500px) {
+  .desktop-content-wrap {
+    width: min(calc(100% - clamp(48px, 4.3vw, 98px)), 1718px);
+  }
+}
+
+.desktop-intro-wrap {
+  margin-top: clamp(28px, 1.75vw, 40px);
+}
+
+/* ── Desktop Action Buttons (Make Withdraw button exact same size as New Payment) ── */
+.intro-actions {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: clamp(8px, 0.6vw, 12px) !important;
+  align-items: center !important;
+}
+
+.primary-button,
+.secondary-button {
+  width: 100% !important;
+  min-width: clamp(118px, 7.2vw, 142px) !important;
+  height: clamp(38px, 2.3vw, 42px) !important;
+  box-sizing: border-box !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  padding: 0 clamp(12px, 0.85vw, 18px) !important;
+  font-size: clamp(13px, 0.75vw, 14.5px) !important;
+  border-radius: 8px !important;
+}
+
+.primary-button b,
+.primary-button .btn-plus {
+  font-size: 18px !important;
+  line-height: 0 !important;
+  vertical-align: -1px !important;
+  margin-right: 3px !important;
+  font-weight: 700 !important;
+}
+
+.desktop-balance-banner {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: flex !important;
+  justify-content: center !important;
+}
+
+.desktop-balance-banner .desktop-cardless-balance-wrap {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.desktop-balance-banner .balance-tile {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: clamp(16px, 2vw, 24px) 0 0 0 !important;
+  padding: 0 !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-radius: 0 !important;
+}
+
+.desktop-activity-wrap {
+  margin-bottom: clamp(56px, 4.39vw, 100px);
+}
+
+/* ── Activity Heading 'View all' matching mobile ── */
+.activity-heading a {
+  color: #078c5c !important;
+  font-size: clamp(12.5px, 1vw, 13.5px) !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+  margin: 0 !important;
+  margin-bottom: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  transition: opacity 0.15s ease;
+}
+
+.activity-heading a:hover {
+  opacity: 0.8;
+  text-decoration: underline !important;
+}
+
+.app[data-appearance="dark"] .activity-heading a,
+[data-appearance="dark"] .activity-heading a {
+  color: #10b981 !important;
+}
+
+/* ── Boxless Recent Activity (Matching dashboard.html) ── */
+.activity-card.boxless-activity-card {
+  margin-top: clamp(16px, 1.8vw, 24px) !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.boxless-activity-list {
+  display: flex;
+  flex-direction: column;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 0;
+  margin: 0;
+}
+
+.activity-item-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 0 4px;
+  background: transparent;
+  transition: background 0.15s ease;
+  cursor: pointer;
+  text-align: left;
+  border: none;
+  width: 100%;
+  border-radius: 8px;
+}
+
+.activity-item-row:hover {
+  background: color-mix(in srgb, var(--ink) 4%, transparent);
+}
+
+.activity-item-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: #f3f4f6 !important;
+  border: 1px solid rgba(0, 0, 0, 0.09) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+  transition: all 0.15s ease;
+}
+
+[data-appearance="dark"] .activity-item-icon,
+.app[data-appearance="dark"] .activity-item-icon {
+  background: #1e2026 !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25) !important;
+}
+
+.activity-item-row:hover .activity-item-icon {
+  background: #eaebee !important;
+  border-color: rgba(0, 0, 0, 0.14) !important;
+}
+
+[data-appearance="dark"] .activity-item-row:hover .activity-item-icon,
+.app[data-appearance="dark"] .activity-item-row:hover .activity-item-icon {
+  background: #252830 !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+}
+
+.activity-item-icon svg {
+  width: 19px;
+  height: 19px;
+}
+
+.activity-item-inner {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.activity-item-row:first-child .activity-item-inner {
+  padding-top: 6px;
+}
+
+.activity-item-inner.no-border {
+  border-bottom: none !important;
+}
+
+.activity-item-info {
+  min-width: 0;
+}
+
+.activity-item-title {
+  font-size: clamp(13.5px, 3.8vw, 14.5px);
+  font-weight: 800;
+  color: var(--ink);
+  margin: 0;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: 'Inter', sans-serif;
+}
+
+.activity-item-time {
+  font-size: clamp(11px, 3.2vw, 12px);
+  color: var(--muted);
+  margin: 3px 0 0;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+}
+
+.activity-item-amount {
+  text-align: right;
+  flex-shrink: 0;
+  padding-left: 12px;
+}
+
+.activity-item-value {
+  font-size: clamp(13.5px, 3.8vw, 15px);
+  font-weight: 800;
+  margin: 0;
+  line-height: 1.25;
+  font-family: 'Hanken Grotesk', sans-serif;
+}
+
+/* Activity row category styling matching dashboard.html - neutral bubble with icon colors */
+.act-icon-received {
+  color: #10b981;
+}
+.app[data-appearance="dark"] .act-icon-received {
+  color: #34d399;
+}
+.act-val-received {
+  color: #10b981;
+}
+.app[data-appearance="dark"] .act-val-received {
+  color: #34d399;
+}
+
+.act-icon-sent,
+.act-icon-refund {
+  color: #ef4444;
+}
+.app[data-appearance="dark"] .act-icon-sent,
+.app[data-appearance="dark"] .act-icon-refund {
+  color: #f87171;
+}
+.act-val-sent,
+.act-val-refund {
+  color: #ef4444;
+}
+.app[data-appearance="dark"] .act-val-sent,
+.app[data-appearance="dark"] .act-val-refund {
+  color: #f87171;
+}
+
+.act-icon-payout {
+  color: #2563eb;
+}
+.app[data-appearance="dark"] .act-icon-payout {
+  color: #60a5fa;
+}
+.act-val-payout {
+  color: #2563eb;
+}
+.app[data-appearance="dark"] .act-val-payout {
+  color: #60a5fa;
+}
