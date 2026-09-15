@@ -1,6 +1,6 @@
 import { useState } from "react";
-import paykudiLogo from "../paykudi-logo.png";
-import logoDarkMode from "../logodarkmode.png";
+import paykudiLogo from "./assets/paykudi-logo.png";
+import logoDarkMode from "./assets/logodarkmode.png";
 import DesktopActivity from "./components/DesktopActivity.jsx";
 import DesktopNewPayment from "./components/DesktopNewPayment.jsx";
 import MobileActivity from "./components/Mobile/MobileActivity.jsx";
