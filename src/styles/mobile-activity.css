@@ -697,14 +697,17 @@
   color: #111215;
 }
 
-/* Precise viewport min-height: fills the screen below the sticky toolbar so it stays docked,
-   without any excess height that would allow scrolling down past the bottom of the list */
-.mobile-activity-view .boxless-activity-list,
+/* Natural list height so content that fits screen never forces overscroll */
+.mobile-activity-view .boxless-activity-list {
+  box-sizing: border-box;
+  min-height: auto;
+  padding-bottom: 0;
+}
+
 .mobile-activity-view .mobile-empty-state {
   box-sizing: border-box;
-  min-height: calc(100vh - 44px - 76px);
-  min-height: calc(100dvh - 44px - 76px);
-  padding-bottom: 0;
+  min-height: 180px;
+  padding: 32px 16px;
 }
 
 .mobile-activity-view .boxless-activity-list.overflowing {

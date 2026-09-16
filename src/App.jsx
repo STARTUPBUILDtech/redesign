@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import paykudiLogo from "./assets/paykudi-logo.png";
 import logoDarkMode from "./assets/logodarkmode.png";
 import DesktopActivity from "./components/DesktopActivity.jsx";
@@ -252,6 +252,14 @@ function MobileDashboard({
   role,
   setRole,
 }) {
+  const contentScrollRef = useRef(null);
+
+  const handleNavClick = (view) => {
+    setActive(view);
+    if (contentScrollRef.current) {
+      contentScrollRef.current.scrollTo({ top: 0, behavior: "instant" });
+    }
+  };
 
   return (
     <div className={`mobile-dashboard${active === "New Payment" ? " no-nav-mode" : ""}`} data-appearance={dark ? "dark" : "light"}>
@@ -265,65 +273,66 @@ function MobileDashboard({
         />
       </header>
 
-      {active === "Activity" ? (
-        <MobileActivity />
-      ) : active === "New Payment" ? (
-        <MobileNewPayment onCancel={() => setActive("Home")} />
-      ) : (
-        <>
-          <div className="mobile-main mobile-main-top">
-            <section className="mobile-intro">
-              <h1>Good morning, Amaka</h1>
-              <p>What will you like to do?</p>
-            </section>
-            <section className="mobile-cta">
-              <button
-                type="button"
-                className="mobile-primary"
-                onClick={() => setActive("New Payment")}
-              >
-                <b className="btn-plus">＋</b> New Payment
-              </button>
-              <button type="button" className="mobile-secondary">Withdraw</button>
-            </section>
-          </div>
-
-          {/* Balance Tile with no padding, spanning left to right, no corner radius */}
-          <div className="balance-tile">
-            <PayKudiBalance
-              visible={visible}
-              onToggleVisibility={() => setVisible(!visible)}
-            />
-          </div>
-
-          <main className="mobile-main mobile-main-bottom">
-            <section className="mobile-activity" id="activity">
-              <div className="mobile-activity-head">
-                <h2>Recent activity</h2>
-                <a
-                  href="#activity"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setActive("Activity");
-                    window.scrollTo({ top: 0, behavior: "instant" });
-                  }}
+      <div className="mobile-content-scroll" ref={contentScrollRef}>
+        {active === "Activity" ? (
+          <MobileActivity />
+        ) : active === "New Payment" ? (
+          <MobileNewPayment onCancel={() => handleNavClick("Home")} />
+        ) : (
+          <div className="mobile-home-content">
+            <div className="mobile-main mobile-main-top">
+              <section className="mobile-intro">
+                <h1>Good morning, Amaka</h1>
+                <p>What will you like to do?</p>
+              </section>
+              <section className="mobile-cta">
+                <button
+                  type="button"
+                  className="mobile-primary"
+                  onClick={() => handleNavClick("New Payment")}
                 >
-                  View all
-                </a>
-              </div>
-              <div className="boxless-activity-list">
-                {transactions.map((tx, idx) => (
-                  <ActivityRow
-                    key={tx.id || tx.title}
-                    item={tx}
-                    isLast={idx === transactions.length - 1}
-                  />
-                ))}
-              </div>
-            </section>
-          </main>
-        </>
-      )}
+                  <b className="btn-plus">＋</b> New Payment
+                </button>
+                <button type="button" className="mobile-secondary">Withdraw</button>
+              </section>
+            </div>
+
+            {/* Balance Tile with no padding, spanning left to right, no corner radius */}
+            <div className="balance-tile">
+              <PayKudiBalance
+                visible={visible}
+                onToggleVisibility={() => setVisible(!visible)}
+              />
+            </div>
+
+            <main className="mobile-main mobile-main-bottom">
+              <section className="mobile-activity" id="activity">
+                <div className="mobile-activity-head">
+                  <h2>Recent activity</h2>
+                  <a
+                    href="#activity"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleNavClick("Activity");
+                    }}
+                  >
+                    View all
+                  </a>
+                </div>
+                <div className="boxless-activity-list">
+                  {transactions.map((tx, idx) => (
+                    <ActivityRow
+                      key={tx.id || tx.title}
+                      item={tx}
+                      isLast={idx === transactions.length - 1}
+                    />
+                  ))}
+                </div>
+              </section>
+            </main>
+          </div>
+        )}
+      </div>
 
       {/* Mobile Expanding Pill Bottom Nav (matching dashboard.html #m-bottom-nav) */}
       {active !== "New Payment" && <nav id="m-bottom-nav" className="mobile-nav" aria-label="Primary navigation">
@@ -331,10 +340,7 @@ function MobileDashboard({
           type="button"
           id="m-nav-home"
           className={`nav-bottom-link ${active === "Home" ? "active" : ""}`}
-          onClick={() => {
-            setActive("Home");
-            window.scrollTo({ top: 0, behavior: "instant" });
-          }}
+          onClick={() => handleNavClick("Home")}
         >
           <HomeIcon active={active === "Home"} />
           <span className="nav-link-label">Home</span>
@@ -343,10 +349,7 @@ function MobileDashboard({
           type="button"
           id="m-nav-activity"
           className={`nav-bottom-link ${active === "Activity" ? "active" : ""}`}
-          onClick={() => {
-            setActive("Activity");
-            window.scrollTo({ top: 0, behavior: "instant" });
-          }}
+          onClick={() => handleNavClick("Activity")}
         >
           <ActivityIcon active={active === "Activity"} />
           <span className="nav-link-label">Activity</span>
@@ -354,20 +357,17 @@ function MobileDashboard({
         <button
           type="button"
           id="m-nav-notifications"
-          className={`nav-bottom-link ${active === "Payment room" ? "active" : ""}`}
-          onClick={() => {
-            setActive("Payment room");
-            window.scrollTo({ top: 0, behavior: "instant" });
-          }}
+          className={`nav-bottom-link ${active === "Payment room" || active === "Payment Room" ? "active" : ""}`}
+          onClick={() => handleNavClick("Payment room")}
         >
-          <PaymentRoomIcon active={active === "Payment room"} />
+          <PaymentRoomIcon active={active === "Payment room" || active === "Payment Room"} />
           <span className="nav-link-label">Payment Room</span>
         </button>
         <button
           type="button"
           id="m-nav-help"
           className={`nav-bottom-link ${active === "Help" ? "active" : ""}`}
-          onClick={() => setActive("Help")}
+          onClick={() => handleNavClick("Help")}
         >
           <HelpIcon active={active === "Help"} />
           <span className="nav-link-label">Help</span>
@@ -376,7 +376,7 @@ function MobileDashboard({
           type="button"
           id="m-nav-profile"
           className={`nav-bottom-link ${active === "Profile" ? "active" : ""}`}
-          onClick={() => setActive("Profile")}
+          onClick={() => handleNavClick("Profile")}
         >
           <ProfileIcon active={active === "Profile"} />
           <span className="nav-link-label">Profile</span>
