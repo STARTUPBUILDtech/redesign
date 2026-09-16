@@ -98,7 +98,7 @@ export default function MobileNewPayment({ onCancel, onSuccess }) {
       if (availableSpecs.length === 0) {
         setIsSpecsLoading(true);
         specsTimerRef.current = setTimeout(() => {
-          setAvailableSpecs(["Color", "RAM", "Storage size"]);
+          setAvailableSpecs(["Color", "RAM", "Storage"]);
           setIsSpecsLoading(false);
         }, 5000);
       }

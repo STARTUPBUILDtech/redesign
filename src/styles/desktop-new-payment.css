@@ -1,4 +1,12 @@
 /* ── Desktop New Payment Modal Styles ── */
+@import "./mobile-new-payment.css";
+
+/* Desktop Timeline Form Adaptations */
+.desktop-np-timeline-form {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding-top: 14px;
+}
 
 /* Hide on mobile devices (< 700px) */
 @media (max-width: 700px) {
