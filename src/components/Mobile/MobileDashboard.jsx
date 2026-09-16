@@ -5,6 +5,7 @@ import ActivityRow from "../Activity/ActivityRow";
 import MobileBottomNav from "./MobileBottomNav";
 import MobileActivity from "./MobileActivity";
 import MobileNewPayment from "./MobileNewPayment";
+import MobilePaymentInvitation from "./MobilePaymentInvitation";
 import { useDashboard } from "../../context/DashboardContext";
 
 export default function MobileDashboard() {
@@ -26,9 +27,17 @@ export default function MobileDashboard() {
       ) : isNewPayment ? (
         <MobileNewPayment onCancel={() => setActive("Home")} />
       ) : isPaymentRoom ? (
-        <div style={{ padding: "24px 20px", color: "var(--ink)", opacity: 0.5, textAlign: "center", marginTop: 60 }}>
-          Payment Room coming soon…
-        </div>
+        <MobilePaymentInvitation
+          room={{
+            id: "PK-482910",
+            counterparty: "Alex Morgan",
+            item: "Wireless headphones",
+            amount: "₦89,000",
+            role: "Buyer",
+          }}
+          onCancel={() => setActive("Home")}
+          onShare={() => {}}
+        />
       ) : (
         <>
           <div className="mobile-main mobile-main-top">

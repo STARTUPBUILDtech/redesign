@@ -5,6 +5,7 @@ import DesktopActivity from "./components/DesktopActivity.jsx";
 import DesktopNewPayment from "./components/DesktopNewPayment.jsx";
 import MobileActivity from "./components/Mobile/MobileActivity.jsx";
 import MobileNewPayment from "./components/Mobile/MobileNewPayment.jsx";
+import MobilePaymentInvitation from "./components/Mobile/MobilePaymentInvitation.jsx";
 
 function BrandLogo({ dark, className }) {
   return (
@@ -261,8 +262,10 @@ function MobileDashboard({
     }
   };
 
+  const isNoNav = active === "New Payment" || active === "Payment room" || active === "Payment Room";
+
   return (
-    <div className={`mobile-dashboard${active === "New Payment" ? " no-nav-mode" : ""}`} data-appearance={dark ? "dark" : "light"}>
+    <div className={`mobile-dashboard${isNoNav ? " no-nav-mode" : ""}`} data-appearance={dark ? "dark" : "light"}>
       <header className="mobile-header">
         <BrandLogo dark={dark} className="mobile-brand" />
         <HeaderActions
@@ -279,6 +282,18 @@ function MobileDashboard({
         <div className="mobile-content-scroll" ref={contentScrollRef}>
           {active === "Activity" ? (
             <MobileActivity />
+          ) : active === "Payment room" || active === "Payment Room" ? (
+            <MobilePaymentInvitation
+              room={{
+                id: "PK-482910",
+                counterparty: "Alex Morgan",
+                item: "Wireless headphones",
+                amount: "₦89,000",
+                role: role === "Buyer" ? "Seller" : "Buyer",
+              }}
+              onCancel={() => handleNavClick("Home")}
+              onShare={() => {}}
+            />
           ) : (
             <div className="mobile-home-content">
               <div className="mobile-main mobile-main-top">
@@ -337,7 +352,7 @@ function MobileDashboard({
       )}
 
       {/* Mobile Expanding Pill Bottom Nav (matching dashboard.html #m-bottom-nav) */}
-      {active !== "New Payment" && (
+      {!isNoNav && (
         <>
           <div className="mobile-bottom-blur-curtain" aria-hidden="true" />
           <nav id="m-bottom-nav" className="mobile-nav" aria-label="Primary navigation">
@@ -442,6 +457,22 @@ export default function App() {
       {/* Desktop Views */}
       {active === "Activity" ? (
         <DesktopActivity />
+      ) : active === "Payment room" || active === "Payment Room" ? (
+        <main id="payment-room" className="desktop-container desktop-payment-room">
+          <div className="desktop-payment-room-inner">
+            <MobilePaymentInvitation
+              room={{
+                id: "PK-482910",
+                counterparty: "Alex Morgan",
+                item: "Wireless headphones",
+                amount: "₦89,000",
+                role: role === "Buyer" ? "Seller" : "Buyer",
+              }}
+              onCancel={() => setActive("Home")}
+              onShare={() => {}}
+            />
+          </div>
+        </main>
       ) : (
         <main id="home" className="desktop-container">
           <div className="desktop-content-wrap desktop-intro-wrap">

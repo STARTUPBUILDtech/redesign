@@ -1,0 +1,262 @@
+/* ── Mobile Payment Invitation (Exact Design Matching Screen5 + Floating Actions) ── */
+
+.m-invite-wrapper {
+  box-sizing: border-box;
+  max-width: 520px;
+  margin: 0 auto;
+  color: var(--ink);
+  background: var(--page);
+  font-family: 'Inter', sans-serif;
+  padding-bottom: calc(136px + env(safe-area-inset-bottom, 16px)) !important;
+}
+
+@media (min-width: 701px) {
+  .m-invite-wrapper {
+    padding-bottom: 32px !important;
+  }
+}
+
+/* ── Utility Classes matching Tailwind ── */
+.flex { display: flex !important; }
+.flex-col { flex-direction: column !important; }
+.flex-1 { flex: 1 1 0% !important; }
+.w-full { width: 100% !important; }
+
+.justify-between { justify-content: space-between !important; }
+.justify-center { justify-content: center !important; }
+.items-start { align-items: flex-start !important; }
+.items-center { align-items: center !important; }
+
+.gap-6 { gap: 24px !important; }
+.gap-4 { gap: 16px !important; }
+.gap-3 { gap: 12px !important; }
+.gap-2 { gap: 8px !important; }
+.gap-1 { gap: 4px !important; }
+
+/* ── Padding & Sizing (20px left & right padding) ── */
+.pt-8 { padding-top: 14px !important; }
+.pr-5 { padding-right: 20px !important; }
+.pb-8 { padding-bottom: 32px !important; }
+.pl-5 { padding-left: 20px !important; }
+.pt-5 { padding-top: 20px !important; }
+
+.size-14 {
+  width: 56px !important;
+  height: 56px !important;
+  min-width: 56px !important;
+  min-height: 56px !important;
+}
+
+.size-7 {
+  width: 28px !important;
+  height: 28px !important;
+}
+
+/* ── Typography (Adapted from New Payment Screen) ── */
+.m-invite-title-wrap {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 3px !important;
+}
+
+.text-2xl {
+  margin: 0 !important;
+  font-size: 23px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.5px !important;
+  line-height: 28px !important;
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif !important;
+  color: var(--ink) !important;
+}
+
+.text-sm {
+  margin: 0 !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  line-height: 16px !important;
+}
+
+.m-invite-red-timer {
+  color: #ef4444 !important;
+  font-weight: 700 !important;
+  font-variant-numeric: tabular-nums;
+  display: inline-block;
+}
+
+.text-lg {
+  margin: 0 !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  line-height: 24px !important;
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif !important;
+  color: var(--ink) !important;
+}
+
+.font-semibold { font-weight: 700 !important; }
+.font-medium { font-weight: 500 !important; }
+
+.tracking-tight {
+  letter-spacing: -0.5px !important;
+}
+
+.text-muted-foreground {
+  margin: 0 !important;
+  color: var(--muted, #71717a) !important;
+}
+
+/* ── Black Box Spanning the Same Position ── */
+.m-invite-black-box {
+  width: 100%;
+  min-height: 240px;
+  background: #000000 !important;
+  border-radius: 12px;
+  border: 1px solid #1f1f23;
+  box-sizing: border-box;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+[data-appearance="dark"] .m-invite-black-box,
+.app[data-appearance="dark"] .m-invite-black-box,
+.mobile-dashboard[data-appearance="dark"] .m-invite-black-box {
+  background: #ffffff !important;
+  border-color: #ffffff !important;
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.12) !important;
+}
+
+/* ── Backgrounds ── */
+.bg-card {
+  background-color: var(--card, #ffffff) !important;
+}
+
+.bg-muted {
+  background-color: color-mix(in srgb, var(--ink) 6%, transparent) !important;
+}
+
+/* ── Floating Action Buttons (No box, floating above bottom nav) ── */
+.m-invite-floating-actions {
+  position: fixed;
+  bottom: calc(16px + env(safe-area-inset-bottom, 12px));
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(100% - 40px, 520px);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 100;
+  pointer-events: auto;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+@media (min-width: 701px) {
+  .m-invite-floating-actions {
+    position: static;
+    transform: none;
+    width: 100%;
+    margin-top: 24px !important;
+    gap: 12px;
+  }
+}
+
+/* Share invite Link button */
+.m-invite-btn-share {
+  width: 100%;
+  height: 50px !important;
+  border-radius: 8px !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif !important;
+  letter-spacing: -0.2px !important;
+  background-color: var(--page, #ffffff) !important;
+  color: var(--ink, #18181b) !important;
+  border: 1px solid #9ca3af !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+  transition: background-color 0.15s ease, opacity 0.15s ease, transform 0.1s ease !important;
+}
+
+.m-invite-btn-share:hover {
+  background-color: color-mix(in srgb, var(--ink) 4%, transparent) !important;
+}
+
+.m-invite-btn-share:active {
+  transform: scale(0.99) !important;
+}
+
+/* Cancel invite button */
+.m-invite-btn-cancel {
+  width: 100%;
+  height: 50px !important;
+  border-radius: 8px !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif !important;
+  letter-spacing: -0.2px !important;
+  background-color: #171717 !important;
+  color: #ffffff !important;
+  border: none !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14) !important;
+  transition: opacity 0.15s ease, transform 0.1s ease !important;
+}
+
+.m-invite-btn-cancel:hover {
+  opacity: 0.88 !important;
+}
+
+.m-invite-btn-cancel:active {
+  transform: scale(0.99) !important;
+}
+
+/* ── Dark Mode Overrides ── */
+[data-appearance="dark"] .bg-card,
+.app[data-appearance="dark"] .bg-card,
+.mobile-dashboard[data-appearance="dark"] .bg-card {
+  background-color: #17181c !important;
+  border-color: var(--line) !important;
+}
+
+[data-appearance="dark"] .bg-muted,
+.app[data-appearance="dark"] .bg-muted,
+.mobile-dashboard[data-appearance="dark"] .bg-muted {
+  background-color: #26282e !important;
+  color: #a1a1aa !important;
+}
+
+[data-appearance="dark"] .text-muted-foreground,
+.app[data-appearance="dark"] .text-muted-foreground,
+.mobile-dashboard[data-appearance="dark"] .text-muted-foreground {
+  color: #a1a1aa !important;
+}
+
+[data-appearance="dark"] .m-invite-btn-share,
+.app[data-appearance="dark"] .m-invite-btn-share,
+.mobile-dashboard[data-appearance="dark"] .m-invite-btn-share {
+  background-color: #141518 !important;
+  color: #f4f4f6 !important;
+  border: 1px solid #3f424b !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
+}
+
+[data-appearance="dark"] .m-invite-btn-share:hover,
+.app[data-appearance="dark"] .m-invite-btn-share:hover,
+.mobile-dashboard[data-appearance="dark"] .m-invite-btn-share:hover {
+  background-color: #1d1e22 !important;
+}
+
+[data-appearance="dark"] .m-invite-btn-cancel,
+.app[data-appearance="dark"] .m-invite-btn-cancel,
+.mobile-dashboard[data-appearance="dark"] .m-invite-btn-cancel {
+  background-color: #ffffff !important;
+  color: #111215 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45) !important;
+}

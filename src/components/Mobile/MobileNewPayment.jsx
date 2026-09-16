@@ -1,17 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import {
   Check,
-  CheckCircle2,
-  Plus,
-  X,
   LoaderCircle,
-  ChevronLeft,
-  Search,
   Copy,
 } from "lucide-react";
 import "../../styles/mobile-new-payment.css";
-
-const PRESET_SPECS = ["Quantity", "Condition", "Color", "Size"];
 
 export default function MobileNewPayment({ onCancel, onSuccess }) {
   const [step, setStep] = useState("form"); // "form" | "confirm" | "success"
@@ -66,19 +59,15 @@ export default function MobileNewPayment({ onCancel, onSuccess }) {
   const [itemPurpose, setItemPurpose] = useState("");
   const [isSelling, setIsSelling] = useState(false); // false: buying (default), true: selling
 
-  // 3. Add Specifications (Empty by default, loaded dynamically on keyword like iPhone)
-  const [availableSpecs, setAvailableSpecs] = useState([]);
-  const [isSpecsLoading, setIsSpecsLoading] = useState(false);
-  const specsTimerRef = useRef(null);
-  const [activeSpecs, setActiveSpecs] = useState({});
-  const [customSpecKey, setCustomSpecKey] = useState("");
-  const [customSpecValue, setCustomSpecValue] = useState("");
-  const [showCustomInput, setShowCustomInput] = useState(false);
+  // 3. Amount Field
+  const [amount, setAmount] = useState("");
+  const [errors, setErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
+  const [roomId, setRoomId] = useState("");
 
   useEffect(() => {
     return () => {
       if (verificationTimerRef.current) clearTimeout(verificationTimerRef.current);
-      if (specsTimerRef.current) clearTimeout(specsTimerRef.current);
     };
   }, []);
 
@@ -88,68 +77,31 @@ export default function MobileNewPayment({ onCancel, onSuccess }) {
     if (errors.itemPurpose) {
       setErrors((prev) => ({ ...prev, itemPurpose: false }));
     }
+  };
 
-    if (specsTimerRef.current) {
-      clearTimeout(specsTimerRef.current);
+  const handleAmountChange = (e) => {
+    // Strip everything except digits and one decimal point
+    let raw = e.target.value.replace(/,/g, "").replace(/[^0-9.]/g, "");
+    const parts = raw.split(".");
+    if (parts.length > 2) {
+      raw = parts[0] + "." + parts.slice(1).join("");
     }
-
-    const lower = val.toLowerCase().trim();
-    if (lower.includes("iphone") || lower.includes("i phone")) {
-      if (availableSpecs.length === 0) {
-        setIsSpecsLoading(true);
-        specsTimerRef.current = setTimeout(() => {
-          setAvailableSpecs(["Color", "RAM", "Storage"]);
-          setIsSpecsLoading(false);
-        }, 5000);
+    // Format integer part with commas
+    const intPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    const formatted = parts.length === 2 ? intPart + "." + parts[1] : intPart;
+    setAmount(formatted);
+    if (errors.amount) {
+      const num = parseFloat(raw);
+      if (!isNaN(num) && num > 0) {
+        setErrors((prev) => ({ ...prev, amount: false }));
       }
-    } else {
-      if (availableSpecs.length > 0) {
-        setAvailableSpecs([]);
-        setActiveSpecs({});
-      }
-      setIsSpecsLoading(false);
     }
   };
 
-  // 4. Amount & Confirmation Step
-  const [amount, setAmount] = useState("");
-  const [errors, setErrors] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
-  const [roomId, setRoomId] = useState("");
-  
   const isStep1Done = verificationStatus === "verified";
   const isStep2Done = isStep1Done && itemPurpose.trim().length > 0;
-
-  const handleToggleSpec = (spec) => {
-    setActiveSpecs((prev) => {
-      const next = { ...prev };
-      if (next[spec] !== undefined) {
-        delete next[spec];
-      } else {
-        next[spec] = "";
-      }
-      return next;
-    });
-  };
-
-  const handleSpecValueChange = (spec, value) => {
-    setActiveSpecs((prev) => ({
-      ...prev,
-      [spec]: value,
-    }));
-  };
-
-  const handleAddCustomSpec = () => {
-    if (customSpecKey.trim()) {
-      setActiveSpecs((prev) => ({
-        ...prev,
-        [customSpecKey.trim()]: customSpecValue.trim(),
-      }));
-      setCustomSpecKey("");
-      setCustomSpecValue("");
-      setShowCustomInput(false);
-    }
-  };
+  const numAmount = parseFloat((amount || "").replace(/,/g, ""));
+  const isStep3Done = isStep2Done && !isNaN(numAmount) && numAmount > 0;
 
   const handleProceed = () => {
     const errs = {};
@@ -159,20 +111,15 @@ export default function MobileNewPayment({ onCancel, onSuccess }) {
     if (!itemPurpose.trim()) {
       errs.itemPurpose = true;
     }
+    const parsedAmount = parseFloat((amount || "").replace(/,/g, ""));
+    if (!amount.trim() || isNaN(parsedAmount) || parsedAmount <= 0) {
+      errs.amount = true;
+    }
 
     setErrors(errs);
-    if (Object.keys(errs).length === 0) {
-      setStep("confirm");
-    }
-  };
+    if (Object.keys(errs).length > 0) return;
 
-  const handleCreateRoom = () => {
-    const numAmount = parseFloat(amount);
-    if (!amount || isNaN(numAmount) || numAmount <= 0) {
-      setErrors({ amount: true });
-      return;
-    }
-
+    // Skip confirm — go straight to creating the room
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
@@ -187,9 +134,6 @@ export default function MobileNewPayment({ onCancel, onSuccess }) {
     setVerificationStatus("idle");
     setItemPurpose("");
     setIsSelling(false);
-    setActiveSpecs({});
-    setAvailableSpecs([]);
-    setIsSpecsLoading(false);
     setAmount("");
     setErrors({});
     setStep("form");
@@ -333,213 +277,41 @@ export default function MobileNewPayment({ onCancel, onSuccess }) {
             </div>
           </div>
 
-          {/* ── 3. Add Specifications Boxed Field ── */}
+          {/* ── 3. Amount Field (Replaced Add Specifications) ── */}
           <div className={`new-payment-timeline-step is-last ${!isStep2Done ? "is-disabled" : ""}`}>
             <div className="new-payment-timeline-rail">
               <div className={`new-payment-timeline-diamond ${isStep2Done ? "is-filled" : ""}`} aria-hidden="true">
                 <span>3</span>
               </div>
-              <div className={`new-payment-timeline-line is-last ${!isStep2Done ? "is-dimmed" : ""}`} aria-hidden="true" />
+              <div className={`new-payment-timeline-line is-last ${!isStep3Done ? "is-dimmed" : ""}`} aria-hidden="true" />
             </div>
             <div className="new-payment-timeline-content">
-              <div className="new-payment-field-group">
-                <div className="new-payment-specs-label-row">
-                  <label className="new-payment-label">
-                    Add Specifications
-                  </label>
-                  {isSpecsLoading && (
-                    <div className="new-payment-specs-loading" title="Loading...">
-                      <LoaderCircle className="animate-spin" size={13} />
-                    </div>
-                  )}
+              <div className="flex flex-col gap-2 new-payment-field-group">
+                <label htmlFor="amount" className="font-medium text-sm new-payment-label">
+                  Amount<span className="text-destructive new-payment-star">*</span>
+                </label>
+                <div className={`rounded-md bg-background border-t border-t-input border-r border-r-input border-b border-b-input border-l border-l-input flex items-center h-11 new-payment-field-box new-payment-amount-box ${errors.amount ? "error" : ""}`}>
+                  <span className="text-muted-foreground text-sm pr-3 pl-3 new-payment-currency-prefix">NGN</span>
+                  <input
+                    id="amount"
+                    placeholder="0.00"
+                    inputMode="decimal"
+                    className="bg-transparent text-sm border-t-0 border-r-0 border-b-0 border-l-0 outline-none pr-3 flex-1 h-full min-w-0"
+                    value={amount}
+                    onChange={handleAmountChange}
+                    disabled={!isStep2Done}
+                    autoComplete="off"
+                  />
                 </div>
-
-                {/* By default no component, loads on keyword (e.g. iPhone) */}
-                {availableSpecs.length > 0 && (
-                  <div className="new-payment-specs-box">
-                    <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 10 }}>
-                      {/* Dynamic preset boxes: Color, RAM, Storage size */}
-                      <div className="new-payment-specs-grid">
-                        {availableSpecs.map((spec) => {
-                          const isSelected = activeSpecs[spec] !== undefined;
-                          return (
-                            <button
-                              key={spec}
-                              type="button"
-                              onClick={() => handleToggleSpec(spec)}
-                              className={`new-payment-spec-box ${isSelected ? "active" : ""}`}
-                            >
-                              <span>{spec}</span>
-                            </button>
-                          );
-                        })}
-                      </div>
-
-                      {/* "Custom" box button below */}
-                      <button
-                        type="button"
-                        onClick={() => setShowCustomInput(!showCustomInput)}
-                        className={`new-payment-custom-btn ${showCustomInput ? "active" : ""}`}
-                      >
-                        <Plus size={12} />
-                        <span>Custom</span>
-                      </button>
-
-                      {/* Inline Custom spec creator */}
-                      {showCustomInput && (
-                        <div className="new-payment-active-specs-panel new-payment-custom-creator-panel">
-                          <div className="new-payment-custom-inputs-grid">
-                            <input
-                              value={customSpecKey}
-                              onChange={(e) => setCustomSpecKey(e.target.value)}
-                              placeholder="Spec name (e.g. Model)"
-                              className="new-payment-spec-input"
-                              autoCapitalize="words"
-                            />
-                            <input
-                              value={customSpecValue}
-                              onChange={(e) => setCustomSpecValue(e.target.value)}
-                              placeholder="Value (e.g. Pro Max)"
-                              className="new-payment-spec-input"
-                              autoCapitalize="words"
-                            />
-                          </div>
-                          <button
-                            type="button"
-                            onClick={handleAddCustomSpec}
-                            className="new-payment-custom-btn active new-payment-custom-submit-btn"
-                          >
-                            Add Specification
-                          </button>
-                        </div>
-                      )}
-
-                      {/* Active specification input fields */}
-                      {Object.keys(activeSpecs).length > 0 && (
-                        <div className="new-payment-active-specs-panel">
-                          {Object.entries(activeSpecs).map(([key, val]) => (
-                            <div key={key} className="new-payment-spec-row">
-                              <span className="new-payment-spec-tag">{key}</span>
-                              <input
-                                value={val}
-                                onChange={(e) => handleSpecValueChange(key, e.target.value)}
-                                placeholder={`Enter ${key.toLowerCase()}`}
-                                className="new-payment-spec-input"
-                                autoCapitalize="words"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => handleToggleSpec(key)}
-                                className="new-payment-spec-remove"
-                                aria-label={`Remove ${key}`}
-                              >
-                                <X size={16} />
-                              </button>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
+                <p className={`text-destructive text-xs ${errors.amount ? "" : "hidden"} new-payment-field-error`}>
+                  Enter an amount greater than ₦0.00
+                </p>
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* ── STEP 2: ENTER AMOUNT & REVIEW ── */}
-      {step === "confirm" && (
-        <div className="new-payment-step-card">
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <button
-              type="button"
-              onClick={() => setStep("form")}
-              className="new-payment-spec-remove"
-              title="Back"
-            >
-              <ChevronLeft size={20} />
-            </button>
-            <h2 className="new-payment-step-title">Payment & Room Details</h2>
-          </div>
-
-          {/* Amount input */}
-          <div>
-            <label className="new-payment-step-label">
-              Transaction Amount *
-            </label>
-            <div className={`new-payment-amount-input-row ${errors.amount ? "error" : ""}`} style={{ marginTop: 6 }}>
-              <span className="new-payment-amount-currency">NGN (₦)</span>
-              <input
-                type="number"
-                inputMode="decimal"
-                value={amount}
-                onChange={(e) => {
-                  setAmount(e.target.value);
-                  if (errors.amount) {
-                    setErrors((prev) => ({ ...prev, amount: false }));
-                  }
-                }}
-                placeholder="0.00"
-                className="new-payment-amount-field"
-              />
-            </div>
-            {errors.amount && (
-              <p className="new-payment-field-error">Please enter a valid payment amount</p>
-            )}
-          </div>
-
-          {/* Summary */}
-          <div className="new-payment-details-list">
-            <span className="new-payment-details-label">Counterparty</span>
-            <span className="new-payment-details-value">{counterparty}</span>
-
-            <span className="new-payment-details-label">Item / Deal</span>
-            <span className="new-payment-details-value">{itemPurpose}</span>
-
-            <span className="new-payment-details-label">Role</span>
-            <span className="new-payment-details-value">
-              {isSelling ? "Seller (I am Selling)" : "Buyer (I am Buying)"}
-            </span>
-
-            {Object.keys(activeSpecs).length > 0 && (
-              <>
-                <span className="new-payment-details-label">Specifications</span>
-                <span className="new-payment-details-value">
-                  {Object.entries(activeSpecs)
-                    .map(([k, v]) => `${k}: ${v || "—"}`)
-                    .join(", ")}
-                </span>
-              </>
-            )}
-          </div>
-
-          <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 10 }}>
-            <button
-              type="button"
-              onClick={handleCreateRoom}
-              disabled={isLoading}
-              className="new-payment-proceed-btn"
-            >
-              {isLoading ? (
-                <>
-                  <LoaderCircle className="animate-spin" size={18} />
-                  <span>Creating Payment Room...</span>
-                </>
-              ) : (
-                <span>Create Payment Room</span>
-              )}
-            </button>
-            <button
-              type="button"
-              onClick={() => setStep("form")}
-              className="new-payment-back-btn"
-            >
-              Back to edit
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* ── STEP 3: PAYMENT ROOM CREATED (SUCCESS) ── */}
       {step === "success" && (
@@ -587,9 +359,17 @@ export default function MobileNewPayment({ onCancel, onSuccess }) {
               type="button"
               id="new-payment-proceed-btn"
               onClick={handleProceed}
+              disabled={isLoading}
               className="new-payment-proceed-btn"
             >
-              <span>Proceed to Payment</span>
+              {isLoading ? (
+                <>
+                  <LoaderCircle className="animate-spin" size={18} />
+                  <span>Creating Payment Room...</span>
+                </>
+              ) : (
+                <span>Proceed to Payment</span>
+              )}
             </button>
           </div>
         </div>

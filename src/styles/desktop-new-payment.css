@@ -861,3 +861,109 @@
   justify-content: center;
   box-shadow: 0 8px 24px rgba(38, 166, 111, 0.3);
 }
+
+/* ── Step 3: Amount Field & Utility Classes ── */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.gap-2 { gap: 8px; }
+.font-medium { font-weight: 500; }
+.text-sm { font-size: 14px; }
+.text-xs { font-size: 12px; }
+.text-destructive { color: #ef4444 !important; }
+.text-muted-foreground { color: var(--muted, #64748b) !important; }
+.pr-3 { padding-right: 12px !important; }
+.pl-3 { padding-left: 12px !important; }
+.h-11 { height: 44px !important; }
+.h-full { height: 100% !important; }
+.min-w-0 { min-width: 0 !important; }
+.flex-1 { flex: 1 1 0% !important; }
+.bg-transparent { background: transparent !important; }
+.outline-none { outline: none !important; }
+.rounded-md { border-radius: 6px !important; }
+.bg-background { background-color: var(--page, #ffffff) !important; }
+.border-t, .border-r, .border-b, .border-l { border-style: solid !important; }
+.border-t-input, .border-r-input, .border-b-input, .border-l-input { border-color: var(--line, #e2e8f0) !important; }
+.border-t-0 { border-top-width: 0px !important; }
+.border-r-0 { border-right-width: 0px !important; }
+.border-b-0 { border-bottom-width: 0px !important; }
+.border-l-0 { border-left-width: 0px !important; }
+.hidden { display: none !important; }
+
+[data-appearance="dark"] .bg-background,
+.app[data-appearance="dark"] .bg-background,
+.mobile-dashboard[data-appearance="dark"] .bg-background {
+  background-color: #141518 !important;
+  border-color: var(--line) !important;
+}
+
+.new-payment-amount-box {
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  height: 44px !important;
+  border-radius: 6px !important;
+  border: 1px solid var(--line) !important;
+  background: var(--page, #ffffff) !important;
+  box-sizing: border-box !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+[data-appearance="dark"] .new-payment-amount-box,
+.app[data-appearance="dark"] .new-payment-amount-box,
+.mobile-dashboard[data-appearance="dark"] .new-payment-amount-box {
+  background: #141518 !important;
+  border-color: var(--line) !important;
+}
+
+.new-payment-amount-box:focus-within {
+  border-color: var(--ink) !important;
+  box-shadow: 0 0 0 1px var(--ink) !important;
+}
+
+[data-appearance="dark"] .new-payment-amount-box:focus-within,
+.app[data-appearance="dark"] .new-payment-amount-box:focus-within,
+.mobile-dashboard[data-appearance="dark"] .new-payment-amount-box:focus-within {
+  border-color: #ffffff !important;
+  box-shadow: 0 0 0 1px #ffffff !important;
+}
+
+.new-payment-amount-box.error {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 1px #ef4444 !important;
+}
+
+.new-payment-currency-prefix {
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
+  color: var(--muted) !important;
+  padding: 0 12px !important;
+  user-select: none !important;
+  flex-shrink: 0 !important;
+  letter-spacing: 0.2px;
+  font-family: 'Inter', sans-serif !important;
+}
+
+.new-payment-amount-box input {
+  flex: 1 !important;
+  min-width: 0 !important;
+  height: 100% !important;
+  border: none !important;
+  outline: none !important;
+  background: transparent !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: var(--ink) !important;
+  padding: 0 12px 0 0 !important;
+  font-family: 'Inter', sans-serif !important;
+}
+
+.new-payment-amount-box input::placeholder {
+  color: var(--muted) !important;
+  opacity: 0.75 !important;
+  font-size: 13.5px !important;
+}
+
+.new-payment-timeline-step.is-disabled .new-payment-amount-box {
+  background: color-mix(in srgb, var(--page) 96%, var(--line)) !important;
+  border-color: color-mix(in srgb, var(--line) 65%, transparent) !important;
+}
