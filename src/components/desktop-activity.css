@@ -2,7 +2,7 @@
 
 .desktop-activity-wrapper {
   width: 100%;
-  min-height: calc(100vh - 96px);
+  min-height: auto;
   background: var(--page);
   color: var(--ink);
   display: block;
@@ -18,8 +18,8 @@
 .desktop-activity-main {
   width: min(calc(100% - clamp(48px, 4.3vw, 98px)), 1718px);
   margin: 0 auto;
-  padding-top: clamp(32px, 2.8vw, 48px);
-  padding-bottom: 80px;
+  padding-top: clamp(28px, 2.4vw, 40px);
+  padding-bottom: clamp(24px, 2.5vw, 36px);
 }
 
 /* Body Content Flow */
@@ -883,11 +883,11 @@
   margin: 0;
   width: 100%;
   box-sizing: border-box;
-  min-height: calc(100vh - clamp(64px, 4vw, 80px) - 80px);
+  min-height: auto;
 }
 
 .desktop-boxless-activity-list.overflowing {
-  padding-bottom: 60px;
+  padding-bottom: 0;
 }
 
 @media (min-width: 701px) {

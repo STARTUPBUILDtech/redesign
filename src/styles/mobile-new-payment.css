@@ -1,24 +1,59 @@
 /* ── Mobile New Payment Screen Styles (White & Black Theme) ── */
 .mobile-new-payment-container {
-  width: min(100% - clamp(24px, 6vw, 36px), 520px);
+  width: 100%;
   max-width: 100%;
   margin: 0 auto;
-  padding-top: clamp(16px, 4vw, 24px);
-  padding-bottom: 84px;
+  padding: 0;
   display: flex;
   flex-direction: column;
   color: var(--ink);
   box-sizing: border-box;
-  overflow-x: hidden;
+  overflow: hidden; /* Top header & floating dock stay fixed, middle body scrolls if needed */
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
 }
 
-/* 1. Header Row (New Payment / Create Payment Room / Cancel) */
+/* 1. Header Row (New Payment / A few steps to create payment room. / Cancel) — Fixed at top, no scroll */
 .new-payment-top-row {
+  flex-shrink: 0;
+  position: relative;
+  z-index: 30;
+  width: 100%;
+  background: var(--page);
+  padding-top: clamp(20px, 5vw, 28px);
+  padding-bottom: 14px;
+  display: flex;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.new-payment-top-row-inner {
+  width: min(100% - clamp(32px, 8vw, 44px), 520px);
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   gap: 16px;
-  margin-bottom: 36px;
+}
+
+/* 2. Middle Scrollable Body — Only scrolls IF needed */
+.new-payment-scroll-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  overscroll-behavior-y: contain;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 24px;
+  padding-bottom: calc(84px + env(safe-area-inset-bottom, 16px));
+  box-sizing: border-box;
 }
 
 .new-payment-title-wrap {
@@ -29,10 +64,13 @@
 
 .new-payment-title {
   margin: 0;
-  font-size: 20px;
+  font-size: 23px;
   font-weight: 700;
   letter-spacing: -0.5px;
-  line-height: 1.2;
+  line-height: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
   color: var(--ink);
   font-family: 'Hanken Grotesk', 'Inter', sans-serif;
 }
@@ -45,25 +83,6 @@
   line-height: 1.2;
 }
 
-/* Floating Cancel Button Wrapper */
-.new-payment-cancel-float-wrap {
-  position: fixed;
-  top: calc(44px + clamp(16px, 4vw, 24px));
-  left: 0;
-  right: 0;
-  pointer-events: none;
-  z-index: 45;
-}
-
-.new-payment-cancel-float-inner {
-  width: min(100% - clamp(24px, 6vw, 36px), 520px);
-  margin: 0 auto;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  height: 43px;
-}
-
 .new-payment-cancel-btn {
   pointer-events: auto;
   background: #000000;
@@ -73,12 +92,17 @@
   font-size: 12.5px;
   font-weight: 600;
   cursor: pointer;
-  padding: 6px 14px;
+  height: 30px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   transition: opacity 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
   flex-shrink: 0;
-  line-height: 1.2;
+  line-height: 1;
   user-select: none;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  margin: 0;
 }
 
 .new-payment-cancel-btn:hover {
@@ -97,62 +121,249 @@
   border-color: #ffffff;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
 }
+/* ── Vertical Timeline with Diamond Badges (Steps 1, 2, 3) ── */
+.new-payment-timeline-form {
+  display: flex;
+  flex-direction: column;
+  width: min(100% - clamp(32px, 8vw, 44px), 520px);
+  position: relative;
+}
 
-/* ── Input Box Reference from Search Bar (44px, 10px rounded, 1px border) ── */
+.new-payment-timeline-step {
+  display: flex;
+  align-items: stretch;
+  gap: 16px;
+  position: relative;
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), filter 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Step Progression (Greyed out / Disabled States) ── */
+.new-payment-timeline-step.is-disabled {
+  pointer-events: none;
+}
+
+/* Disabled input field subtle state */
+.new-payment-timeline-step.is-disabled input {
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+.new-payment-timeline-step.is-disabled .new-payment-field-box,
+.new-payment-timeline-step.is-disabled .new-payment-specs-box {
+  background: color-mix(in srgb, var(--page) 96%, var(--line)) !important;
+  border-color: color-mix(in srgb, var(--line) 65%, transparent) !important;
+}
+
+.new-payment-timeline-step.is-disabled .new-payment-label {
+  color: var(--muted) !important;
+}
+
+/* Rails, diamonds, numbers, and ALL action buttons are NEVER blurred or low-opacity */
+.new-payment-timeline-step.is-disabled .new-payment-timeline-rail,
+.new-payment-timeline-step.is-disabled .new-payment-timeline-diamond,
+.new-payment-timeline-step.is-disabled .new-payment-timeline-diamond span,
+.new-payment-timeline-step.is-disabled button,
+.new-payment-timeline-step.is-disabled .field-action-btn,
+.new-payment-timeline-step.is-disabled .new-payment-role-btn-red,
+.new-payment-timeline-step.is-disabled .new-payment-role-btn-green,
+.new-payment-timeline-step.is-disabled .new-payment-spec-pill {
+  opacity: 1 !important;
+  filter: none !important;
+  -webkit-filter: none !important;
+  visibility: visible !important;
+}
+
+.new-payment-timeline-rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 22px;
+  flex-shrink: 0;
+  position: relative;
+}
+
+/* Diamond Badge - Default / Light Mode: White background with crisp border and clear number */
+.new-payment-timeline-diamond {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  transform: rotate(45deg);
+  background: #ffffff;
+  border: 1.5px solid #161618;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  z-index: 2;
+  margin-top: 0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  transition: all 0.2s ease;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.new-payment-timeline-diamond span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: rotate(-45deg);
+  font-size: 9.5px;
+  font-weight: 800;
+  line-height: 1;
+  color: #161618;
+  font-family: 'Inter', -apple-system, sans-serif;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
+}
+
+/* Diamond Badge - Filled State in Light Mode: Filled Black with White text */
+.new-payment-timeline-diamond.is-filled {
+  background: #000000 !important;
+  border-color: #000000 !important;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.25) !important;
+}
+
+.new-payment-timeline-diamond.is-filled span {
+  color: #ffffff !important;
+}
+
+/* Diamond Badge - Default in Dark Mode: Dark subtle background with crisp outline and number */
+[data-appearance="dark"] .new-payment-timeline-diamond,
+.app[data-appearance="dark"] .new-payment-timeline-diamond,
+.mobile-dashboard[data-appearance="dark"] .new-payment-timeline-diamond {
+  background: #18191e;
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow: none;
+}
+
+[data-appearance="dark"] .new-payment-timeline-diamond span,
+.app[data-appearance="dark"] .new-payment-timeline-diamond span,
+.mobile-dashboard[data-appearance="dark"] .new-payment-timeline-diamond span {
+  color: #ffffff;
+}
+
+/* Diamond Badge - Filled State in Dark Mode: Filled White with Black text & glow */
+[data-appearance="dark"] .new-payment-timeline-diamond.is-filled,
+.app[data-appearance="dark"] .new-payment-timeline-diamond.is-filled,
+.mobile-dashboard[data-appearance="dark"] .new-payment-timeline-diamond.is-filled {
+  background: #ffffff !important;
+  border-color: #ffffff !important;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.45), 0 2px 6px rgba(0, 0, 0, 0.4) !important;
+}
+
+[data-appearance="dark"] .new-payment-timeline-diamond.is-filled span,
+.app[data-appearance="dark"] .new-payment-timeline-diamond.is-filled span,
+.mobile-dashboard[data-appearance="dark"] .new-payment-timeline-diamond.is-filled span {
+  color: #000000 !important;
+  font-weight: 800 !important;
+}
+
+/* Connecting Line - Default / Light Mode: Crisp dark line */
+.new-payment-timeline-line {
+  width: 2px;
+  flex: 1 1 auto;
+  background: #161618;
+  margin-top: -2px;
+  margin-bottom: 0;
+  min-height: 20px;
+  z-index: 1;
+}
+
+.new-payment-timeline-line.is-last {
+  margin-bottom: 0;
+  min-height: 40px;
+  background: linear-gradient(to bottom, #161618 0%, rgba(22, 22, 24, 0.65) 70%, transparent 100%);
+}
+
+/* Connecting Line - Dark Mode: Solid White line with subtle glow */
+[data-appearance="dark"] .new-payment-timeline-line,
+.app[data-appearance="dark"] .new-payment-timeline-line,
+.mobile-dashboard[data-appearance="dark"] .new-payment-timeline-line {
+  background: #ffffff !important;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.3) !important;
+}
+
+[data-appearance="dark"] .new-payment-timeline-line.is-last,
+.app[data-appearance="dark"] .new-payment-timeline-line.is-last,
+.mobile-dashboard[data-appearance="dark"] .new-payment-timeline-line.is-last {
+  background: linear-gradient(to bottom, #ffffff 0%, rgba(255, 255, 255, 0.65) 70%, transparent 100%) !important;
+}
+
+/* Connecting Line - Dimmed / Disabled progression */
+.new-payment-timeline-line.is-dimmed {
+  opacity: 0.22 !important;
+  background: var(--line) !important;
+  box-shadow: none !important;
+}
+
+.new-payment-timeline-content {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding-bottom: 22px;
+}
+
+.new-payment-timeline-step.is-last .new-payment-timeline-content {
+  padding-bottom: 8px;
+}
+/* ── Field Group: flex flex-col gap-1.5 ── */
 .new-payment-field-group {
   display: flex;
   flex-direction: column;
+  gap: 6px;
   width: 100%;
 }
 
-/* Outer Top-Left Header for Counterparty with Red * */
-.new-payment-field-header {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  margin-bottom: 6px;
-  padding-left: 2px;
-}
-
+/* Label: font-medium text-sm (14px, medium weight) */
+.new-payment-label,
 .new-payment-counterparty-label {
-  font-size: 13px;
-  font-weight: 700;
-  color: #000000;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--ink);
   font-family: 'Inter', sans-serif;
   letter-spacing: -0.1px;
+  display: flex;
+  align-items: center;
+  user-select: none;
 }
 
+[data-appearance="dark"] .new-payment-label,
 [data-appearance="dark"] .new-payment-counterparty-label,
+.app[data-appearance="dark"] .new-payment-label,
 .app[data-appearance="dark"] .new-payment-counterparty-label,
+.mobile-dashboard[data-appearance="dark"] .new-payment-label,
 .mobile-dashboard[data-appearance="dark"] .new-payment-counterparty-label {
-  color: #ffffff;
+  color: #f4f4f6;
 }
 
 .new-payment-star {
   color: #ef4444 !important;
-  font-weight: 800;
+  font-weight: 500;
   margin-left: 2px;
 }
 
+/* Input Box: relative rounded-md h-11 border outline-none text-sm */
 .new-payment-field-box {
   display: flex !important;
   align-items: center !important;
   height: 44px !important;
   min-height: 44px !important;
   width: 100% !important;
-  border-radius: 10px !important;
+  border-radius: 6px !important;
   border: 1px solid var(--line) !important;
-  background: #ffffff !important;
+  background: var(--page, #ffffff) !important;
   position: relative !important;
   box-sizing: border-box !important;
-  padding: 0 4px 0 14px !important;
+  padding: 0 12px !important;
   transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
 }
 
 [data-appearance="dark"] .new-payment-field-box,
 .app[data-appearance="dark"] .new-payment-field-box,
 .mobile-dashboard[data-appearance="dark"] .new-payment-field-box {
-  background: #1a1c22 !important;
+  background: #141518 !important;
   border-color: var(--line) !important;
 }
 
@@ -177,9 +388,9 @@
   color: var(--muted);
   flex-shrink: 0;
   pointer-events: none;
-  margin-right: 8px;
-  width: 17px;
-  height: 17px;
+  margin-right: 10px;
+  width: 16px;
+  height: 16px;
 }
 
 .new-payment-field-box input {
@@ -190,21 +401,21 @@
   outline: none !important;
   background: transparent !important;
   font-size: 13.5px !important;
-  font-weight: 500 !important;
+  font-weight: 400 !important;
   color: var(--ink) !important;
   padding: 0 !important;
   margin: 0 !important;
   box-shadow: none !important;
   font-family: 'Inter', sans-serif !important;
-  text-transform: capitalize !important;
 }
 
 .new-payment-field-box input::placeholder {
   color: var(--muted) !important;
-  opacity: 0.85 !important;
-  font-size: 13.5px !important;
-  font-weight: 500 !important;
+  opacity: 0.75 !important;
+  font-size: 12.5px !important;
+  font-weight: 400 !important;
   font-family: 'Inter', sans-serif !important;
+  letter-spacing: -0.15px !important;
 }
 
 /* Vertical divider inside box between input and action button (like in search bar) */
@@ -214,6 +425,82 @@
   background: var(--line) !important;
   flex-shrink: 0 !important;
   margin: 0 8px !important;
+}
+
+/* ── Counterparty Input Row (Box A: Input with PASTE + Box B: Separate Scanner Box) ── */
+.new-payment-counterparty-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  width: 100% !important;
+}
+
+.new-payment-counterparty-box {
+  flex: 1 !important;
+  min-width: 0 !important;
+  padding: 0 8px 0 14px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+/* PASTE button inside Box A (icon-only: black in light mode, white in dark mode) */
+.new-payment-paste-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  padding: 0 4px !important;
+  color: #161618 !important;
+  transition: opacity 0.15s ease, transform 0.1s ease !important;
+  flex-shrink: 0 !important;
+  user-select: none !important;
+}
+
+.new-payment-paste-btn:hover {
+  opacity: 0.8 !important;
+}
+
+.new-payment-paste-btn:active {
+  transform: scale(0.92) !important;
+}
+
+[data-appearance="dark"] .new-payment-paste-btn,
+.app[data-appearance="dark"] .new-payment-paste-btn,
+.mobile-dashboard[data-appearance="dark"] .new-payment-paste-btn {
+  color: #ffffff !important;
+}
+
+/* Separate Scanner Box Button (Box B) */
+.new-payment-scanner-box-btn {
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: var(--page, #ffffff) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 6px !important;
+  color: var(--ink) !important;
+  cursor: pointer !important;
+  flex-shrink: 0 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+  padding: 0 !important;
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease !important;
+}
+
+.new-payment-scanner-box-btn:active {
+  transform: scale(0.95) !important;
+}
+
+[data-appearance="dark"] .new-payment-scanner-box-btn,
+.app[data-appearance="dark"] .new-payment-scanner-box-btn,
+.mobile-dashboard[data-appearance="dark"] .new-payment-scanner-box-btn {
+  background: #141518 !important;
+  border-color: var(--line) !important;
+  color: #ffffff !important;
 }
 
 /* Field right action buttons (scanner icon, I am selling button) */
@@ -292,23 +579,23 @@
   transform: scale(0.95) !important;
 }
 
-/* Specifications Container (matching search bar roundness & border) */
+/* Specifications Container (compact, refined padding) */
 .new-payment-specs-box {
   width: 100% !important;
-  border-radius: 10px !important;
+  border-radius: 6px !important;
   border: 1px solid var(--line) !important;
-  background: #ffffff !important;
-  padding: 12px 14px !important;
+  background: var(--page, #ffffff) !important;
+  padding: 8px 10px !important;
   box-sizing: border-box !important;
   display: flex !important;
   flex-direction: column !important;
-  gap: 10px !important;
+  gap: 7px !important;
 }
 
 [data-appearance="dark"] .new-payment-specs-box,
 .app[data-appearance="dark"] .new-payment-specs-box,
 .mobile-dashboard[data-appearance="dark"] .new-payment-specs-box {
-  background: #1a1c22 !important;
+  background: #141518 !important;
   border-color: var(--line) !important;
 }
 
@@ -320,12 +607,12 @@
   letter-spacing: 0.1px;
 }
 
-/* Error helper */
+/* Error helper: text-destructive text-xs (12px, #ef4444) */
 .new-payment-field-error {
-  margin: 4px 0 0 2px;
-  font-size: 11.5px;
+  margin: 4px 0 0 0;
+  font-size: 12px;
   color: #ef4444;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 /* Counterparty Verification Status (Left Bottom Outside Field) */
@@ -351,13 +638,14 @@
   font-weight: 500;
 }
 
-.new-payment-verification-status.verifying .animate-spin {
-  animation: spin 0.9s linear infinite;
+.animate-spin {
+  animation: spin 0.85s linear infinite !important;
+  transform-origin: center center !important;
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 .new-payment-verification-status.verified {
@@ -396,20 +684,48 @@
   color: #22c55e;
 }
 
-/* 4. Specifications Section inside Boxed Field */
+/* Specifications Header & Loading State */
+.new-payment-specs-label-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.new-payment-specs-loading {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  animation: fadeIn 0.2s ease;
+}
+
+.new-payment-specs-loading svg,
+.new-payment-specs-loading .animate-spin {
+  display: block !important;
+  animation: spin 0.85s linear infinite !important;
+  transform-origin: center center !important;
+}
+
+[data-appearance="dark"] .new-payment-specs-loading,
+.app[data-appearance="dark"] .new-payment-specs-loading,
+.mobile-dashboard[data-appearance="dark"] .new-payment-specs-loading {
+  color: #a1a1aa;
+}
+
+/* 4. Specifications Section inside Boxed Field (Compact & Refined) */
 .new-payment-specs-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
 }
 
 .new-payment-spec-box {
-  height: 38px;
+  height: 27px;
   border-radius: 4px;
-  border: 1.5px solid var(--ink);
+  border: 1px solid #d1d5db;
   background: transparent;
-  color: var(--ink);
-  font-size: 12.5px;
+  color: #1f2937;
+  font-size: 11px;
   font-weight: 600;
   display: flex;
   align-items: center;
@@ -419,20 +735,18 @@
   user-select: none;
   padding: 0 4px;
   text-align: center;
+  white-space: nowrap;
 }
 
-[data-appearance="light"] .new-payment-spec-box {
-  border-color: #161618;
-  color: #161618;
-}
-
-[data-appearance="dark"] .new-payment-spec-box {
-  border-color: rgba(255, 255, 255, 0.4);
-  color: #ffffff;
+[data-appearance="dark"] .new-payment-spec-box,
+.app[data-appearance="dark"] .new-payment-spec-box,
+.mobile-dashboard[data-appearance="dark"] .new-payment-spec-box {
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #f4f4f5;
 }
 
 .new-payment-spec-box:hover {
-  background: color-mix(in srgb, var(--ink) 6%, transparent);
+  background: color-mix(in srgb, var(--ink) 5%, transparent);
 }
 
 .new-payment-spec-box.active {
@@ -441,7 +755,9 @@
   border-color: #161618 !important;
 }
 
-[data-appearance="dark"] .new-payment-spec-box.active {
+[data-appearance="dark"] .new-payment-spec-box.active,
+.app[data-appearance="dark"] .new-payment-spec-box.active,
+.mobile-dashboard[data-appearance="dark"] .new-payment-spec-box.active {
   background: #ffffff !important;
   color: #111215 !important;
   border-color: #ffffff !important;
@@ -449,33 +765,30 @@
 
 .new-payment-custom-btn {
   align-self: flex-start;
-  height: 34px;
-  padding: 0 14px;
+  height: 27px;
+  padding: 0 9px;
   border-radius: 4px;
-  border: 1.5px solid var(--ink);
+  border: 1px solid #d1d5db;
   background: transparent;
-  color: var(--ink);
-  font-size: 12.5px;
+  color: #1f2937;
+  font-size: 11px;
   font-weight: 600;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
-[data-appearance="light"] .new-payment-custom-btn {
-  border-color: #161618;
-  color: #161618;
-}
-
-[data-appearance="dark"] .new-payment-custom-btn {
-  border-color: rgba(255, 255, 255, 0.4);
-  color: #ffffff;
+[data-appearance="dark"] .new-payment-custom-btn,
+.app[data-appearance="dark"] .new-payment-custom-btn,
+.mobile-dashboard[data-appearance="dark"] .new-payment-custom-btn {
+  border-color: rgba(255, 255, 255, 0.25);
+  color: #f4f4f5;
 }
 
 .new-payment-custom-btn:hover {
-  background: color-mix(in srgb, var(--ink) 6%, transparent);
+  background: color-mix(in srgb, var(--ink) 5%, transparent);
 }
 
 .new-payment-custom-btn.active {
@@ -484,7 +797,9 @@
   border-color: #161618 !important;
 }
 
-[data-appearance="dark"] .new-payment-custom-btn.active {
+[data-appearance="dark"] .new-payment-custom-btn.active,
+.app[data-appearance="dark"] .new-payment-custom-btn.active,
+.mobile-dashboard[data-appearance="dark"] .new-payment-custom-btn.active {
   background: #ffffff !important;
   color: #111215 !important;
   border-color: #ffffff !important;
@@ -591,25 +906,33 @@
   color: #ef4444;
 }
 
-/* 5. Floating Footer Dock & Proceed to Payment CTA Button */
+/* 5. Floating Bottom Dock & Proceed to Payment CTA Button */
 .new-payment-floating-dock {
-  position: fixed;
+  position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
   z-index: 40;
   background: color-mix(in srgb, var(--page) 92%, transparent);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
   border-top: 1px solid color-mix(in srgb, var(--line) 60%, transparent);
-  padding: 12px 0 max(16px, env(safe-area-inset-bottom, 16px));
+  padding-top: 10px;
+  padding-bottom: max(14px, env(safe-area-inset-bottom, 14px));
   display: flex;
   justify-content: center;
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+  pointer-events: auto;
+}
+
+[data-appearance="dark"] .new-payment-floating-dock,
+.app[data-appearance="dark"] .new-payment-floating-dock,
+.mobile-dashboard[data-appearance="dark"] .new-payment-floating-dock {
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .new-payment-floating-inner {
-  width: min(100% - clamp(24px, 6vw, 36px), 520px);
+  width: min(100% - clamp(32px, 8vw, 44px), 520px);
 }
 
 .new-payment-proceed-btn {
@@ -626,9 +949,13 @@
   border: none;
   background: #171717 !important;
   color: #ffffff !important;
+  opacity: 1 !important;
+  filter: none !important;
+  -webkit-filter: none !important;
   transition: transform 0.1s ease, background-color 0.15s ease;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
   font-family: 'Hanken Grotesk', 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
 .new-payment-proceed-btn:hover {
@@ -644,6 +971,9 @@
 .mobile-dashboard[data-appearance="dark"] .new-payment-proceed-btn {
   background: #ffffff !important;
   color: #111215 !important;
+  opacity: 1 !important;
+  filter: none !important;
+  -webkit-filter: none !important;
 }
 
 [data-appearance="dark"] .new-payment-proceed-btn:hover,
@@ -652,8 +982,34 @@
   background: #f0f1f4 !important;
 }
 
+.new-payment-proceed-btn:disabled,
+.new-payment-proceed-btn.is-disabled {
+  opacity: 1 !important;
+  filter: none !important;
+  -webkit-filter: none !important;
+  background: #171717 !important;
+  color: #ffffff !important;
+  cursor: pointer !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12) !important;
+}
+
+[data-appearance="dark"] .new-payment-proceed-btn:disabled,
+[data-appearance="dark"] .new-payment-proceed-btn.is-disabled,
+.app[data-appearance="dark"] .new-payment-proceed-btn:disabled,
+.app[data-appearance="dark"] .new-payment-proceed-btn.is-disabled,
+.mobile-dashboard[data-appearance="dark"] .new-payment-proceed-btn:disabled,
+.mobile-dashboard[data-appearance="dark"] .new-payment-proceed-btn.is-disabled {
+  opacity: 1 !important;
+  filter: none !important;
+  -webkit-filter: none !important;
+  background: #ffffff !important;
+  color: #111215 !important;
+}
+
 /* Step 2 & 3 Confirmation / Success */
 .new-payment-step-card {
+  width: min(100% - clamp(32px, 8vw, 44px), 520px);
+  box-sizing: border-box;
   background: #ffffff;
   border: 1px solid var(--line);
   border-radius: 12px;

@@ -608,7 +608,7 @@ main.desktop-container {
 }
 
 .desktop-activity-wrap {
-  margin-bottom: clamp(56px, 4.39vw, 100px);
+  margin-bottom: clamp(24px, 2.5vw, 36px);
 }
 
 /* ── Activity Heading 'View all' matching mobile ── */

@@ -205,10 +205,10 @@
 /* Sticky Controls & Activities Heading Toolbar */
 .mobile-activity-sticky-toolbar {
   position: sticky;
-  top: 44px;
+  top: 0;
   z-index: 35;
   background: var(--page);
-  padding: 6px 0;
+  padding: 8px 0;
   margin-top: -2px;
   display: flex;
   flex-direction: column;
@@ -711,5 +711,5 @@
 }
 
 .mobile-activity-view .boxless-activity-list.overflowing {
-  padding-bottom: 84px;
+  padding-bottom: 0;
 }

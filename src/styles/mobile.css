@@ -31,12 +31,16 @@
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
     overscroll-behavior-y: contain;
-    padding-bottom: calc(85px + env(safe-area-inset-bottom, 16px));
+    padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px));
     box-sizing: border-box;
   }
 
   .mobile-dashboard.no-nav-mode .mobile-content-scroll {
-    padding-bottom: calc(24px + env(safe-area-inset-bottom, 16px)) !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
   }
 
   .mobile-home-content {
@@ -266,6 +270,27 @@
   .mobile-transaction small { margin-top: 3px; color: var(--muted); font-size: clamp(10px, 2.9vw, 12px); }
   .mobile-transaction em { font-size: clamp(11px, 3.1vw, 13px); font-style: normal; white-space: nowrap; }
 
+  /* ── Bottom Blur Curtain (Frosted gradient glass below the floating dock) ── */
+  .mobile-bottom-blur-curtain {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: calc(92px + env(safe-area-inset-bottom, 0px));
+    pointer-events: none;
+    z-index: 9990;
+    background: linear-gradient(
+      to top,
+      var(--page) 0%,
+      color-mix(in srgb, var(--page) 88%, transparent) 50%,
+      transparent 100%
+    );
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    mask-image: linear-gradient(to top, black 50%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to top, black 50%, transparent 100%);
+  }
+
   /* ── Floating Pill Bottom Navigation Dock (White in light mode, Black in dark mode, no clamp) ── */
   #m-bottom-nav,
   .mobile-nav {
@@ -283,7 +308,9 @@
     padding: 4px 6px;
     border-radius: 9999px !important;
     border: 1px solid rgba(0, 0, 0, 0.08) !important;
-    background: #ffffff !important;
+    background: rgba(255, 255, 255, 0.88) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
     box-shadow: 0 12px 32px rgba(0, 0, 0, 0.09), 0 2px 6px rgba(0, 0, 0, 0.03) !important;
     z-index: 9999;
     user-select: none;
@@ -291,12 +318,14 @@
     transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
   }
 
-  /* Dark mode: Fill navbar with Black (not too black) */
+  /* Dark mode: Fill navbar with Black with glass blur */
   .app[data-appearance="dark"] #m-bottom-nav,
   [data-appearance="dark"] #m-bottom-nav,
   .app[data-appearance="dark"] .mobile-nav,
   [data-appearance="dark"] .mobile-nav {
-    background: #18191d !important;
+    background: rgba(24, 25, 29, 0.88) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
     border: 1px solid rgba(255, 255, 255, 0.12) !important;
     box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3) !important;
   }

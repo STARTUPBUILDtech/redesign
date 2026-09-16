@@ -192,7 +192,7 @@ export default function DesktopNewPayment({ onCancel, onSuccess }) {
             )}
             <div>
               <h2 id="desktop-modal-title" className="desktop-np-title">New Payment</h2>
-              <p className="desktop-np-subtitle">Create Payment Room</p>
+              <p className="desktop-np-subtitle">A few steps to create payment room.</p>
             </div>
           </div>
           <div className="desktop-np-header-right">
