@@ -1,3 +1,4 @@
+import { useState } from "react";
 import BrandLogo from "../Header/BrandLogo";
 import HeaderActions from "../Header/HeaderActions";
 import PayKudiBalance from "../Balance/PayKudiBalance";
@@ -10,9 +11,16 @@ import { useDashboard } from "../../context/DashboardContext";
 
 export default function MobileDashboard() {
   const { dark, active, setActive, transactions } = useDashboard();
+  const [room, setRoom] = useState({
+    id: "PK-482910",
+    counterparty: "Alex Morgan",
+    item: "iPhone 18 Pro Max",
+    amount: "₦89,000",
+    role: "Buyer",
+  });
 
   const isNewPayment = active === "New Payment";
-  const isPaymentRoom = active === "Payment room";
+  const isPaymentInvitation = active === "Payment Invitation";
   const isActivity = active === "Activity";
 
   return (
@@ -25,17 +33,18 @@ export default function MobileDashboard() {
       {isActivity ? (
         <MobileActivity />
       ) : isNewPayment ? (
-        <MobileNewPayment onCancel={() => setActive("Home")} />
-      ) : isPaymentRoom ? (
-        <MobilePaymentInvitation
-          room={{
-            id: "PK-482910",
-            counterparty: "Alex Morgan",
-            item: "Wireless headphones",
-            amount: "₦89,000",
-            role: "Buyer",
-          }}
+        <MobileNewPayment
           onCancel={() => setActive("Home")}
+          onSuccess={(newRoom) => {
+            if (newRoom) setRoom(newRoom);
+            setActive("Payment Invitation");
+          }}
+        />
+      ) : isPaymentInvitation ? (
+        <MobilePaymentInvitation
+          room={room}
+          onCancel={() => setActive("Home")}
+          onProceed={() => setActive("Home")}
           onShare={() => {}}
         />
       ) : (

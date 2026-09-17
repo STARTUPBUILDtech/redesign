@@ -104,7 +104,1084 @@
   color: var(--muted, #71717a) !important;
 }
 
-/* ── Black Box Spanning the Same Position ── */
+/* ── Full Width Item Reference Card (Edge-to-edge, No border radius) ── */
+.m-invite-card-container {
+  width: calc(100% + 40px) !important;
+  margin-left: -20px !important;
+  margin-right: -20px !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  box-sizing: border-box;
+}
+
+.m-invite-item-card {
+  width: 100% !important;
+  height: 172px !important;
+  min-height: 172px !important;
+  max-width: none !important;
+  background-color: #000000 !important;
+  border-top: 1px solid #1f1f23 !important;
+  border-bottom: 1px solid #1f1f23 !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-radius: 0 !important;
+  box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.16) !important;
+  display: flex !important;
+  position: relative !important;
+  padding: 14px 20px 14px 18px !important;
+  align-items: center !important;
+  gap: 16px !important;
+  box-sizing: border-box !important;
+  overflow: hidden;
+  color: #ffffff !important;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+}
+
+/* Upload column: takes ~40% of the tile width */
+.m-invite-item-card .m-invite-ref-col {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  flex: 0 0 38% !important;
+  width: 38% !important;
+  max-width: 155px !important;
+  min-width: 115px !important;
+  gap: 6px !important;
+  margin-top: 10px !important;
+  margin-left: -2px !important;
+}
+
+/* Share button in top right (extra compact) */
+.m-invite-item-card .m-invite-item-share-btn,
+.m-invite-item-card button[aria-label="Share"] {
+  position: absolute !important;
+  top: 13px !important;
+  right: 15px !important;
+  width: 25px !important;
+  height: 25px !important;
+  border-radius: 9999px !important;
+  background: transparent !important;
+  border: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #ffffff !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  transition: background-color 0.15s ease, opacity 0.15s ease, transform 0.1s ease !important;
+}
+
+.m-invite-item-card .m-invite-item-share-btn:hover,
+.m-invite-item-card button[aria-label="Share"]:hover {
+  background-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.m-invite-item-card .m-invite-item-share-btn:active,
+.m-invite-item-card button[aria-label="Share"]:active {
+  transform: scale(0.95);
+}
+
+/* Upload Reference Box: White in light mode */
+.m-invite-item-card .m-invite-ref-box {
+  width: 100% !important;
+  height: 114px !important;
+  min-height: 114px !important;
+  border-radius: 12px !important;
+  background-color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  box-sizing: border-box !important;
+  color: #111215 !important;
+}
+
+.m-invite-item-card .m-invite-upload-icon {
+  color: #111215 !important;
+}
+
+/* Item Reference text */
+.m-invite-item-card .m-invite-ref-text {
+  text-align: center !important;
+  color: #a1a1aa !important;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+  font-size: 12px !important;
+  line-height: 16px !important;
+  font-weight: 500 !important;
+  margin: 0 !important;
+  white-space: nowrap;
+  letter-spacing: -0.1px !important;
+}
+
+/* Item Title & Price details */
+.m-invite-item-card .m-invite-item-info {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-self: flex-start !important;
+  flex-grow: 1 !important;
+  flex-shrink: 1 !important;
+  min-width: 0 !important;
+  gap: 4px !important;
+  margin-top: 16px !important; /* moved down by another 3 steps */
+  padding-right: 32px; /* avoid overlapping with share button */
+}
+
+.m-invite-item-card .m-invite-item-title {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+  font-weight: 600 !important;
+  font-size: 16.5px !important;
+  line-height: 22px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  color: #ffffff !important;
+  margin: 0 !important;
+  letter-spacing: -0.3px !important;
+}
+
+.m-invite-item-card .m-invite-item-price {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 18px !important;
+  line-height: 22px !important;
+  color: #ffffff !important;
+  margin: 0 !important;
+  letter-spacing: -0.3px !important;
+}
+
+/* Bottom Right Icons Group */
+.m-invite-item-card .m-invite-bottom-actions {
+  display: flex !important;
+  position: absolute !important;
+  right: 14px !important;
+  bottom: 14px !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+
+/* Profile Picture Circle matching header avatar (enlarged) */
+.m-invite-item-card .m-invite-profile-avatar {
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
+  border-radius: 9999px !important;
+  border: 2px solid rgba(46, 160, 67, 0.6) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+  background-color: #27272a !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  cursor: default !important;
+  user-select: none !important;
+}
+
+.m-invite-item-card .m-invite-profile-avatar .avatar-icon {
+  font-size: 24px !important;
+  color: #d1d5db !important;
+  line-height: 1 !important;
+  user-select: none !important;
+}
+
+/* More Options / Loading Dots Container */
+.m-invite-loading-dots {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 4.5px !important;
+  height: 28px !important;
+  padding: 0 4px !important;
+}
+
+.m-invite-dot {
+  width: 5px !important;
+  height: 5px !important;
+  border-radius: 9999px !important;
+  background-color: #ffffff !important;
+  display: inline-block !important;
+  animation: mInviteDotsBounce 1.35s infinite ease-in-out both;
+}
+
+.m-invite-dot-1 {
+  animation-delay: -0.32s;
+}
+
+.m-invite-dot-2 {
+  animation-delay: -0.16s;
+}
+
+.m-invite-dot-3 {
+  animation-delay: 0s;
+}
+
+@keyframes mInviteDotsBounce {
+  0%, 80%, 100% {
+    transform: translateY(0) scale(0.85);
+    opacity: 0.4;
+  }
+  40% {
+    transform: translateY(-5px) scale(1.15);
+    opacity: 1;
+  }
+}
+
+.m-invite-item-card .m-invite-more-btn,
+.m-invite-item-card button[aria-label="More options"] {
+  color: #51468a !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 28px !important;
+  height: 28px !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  cursor: pointer !important;
+  border-radius: 6px !important;
+  transition: background-color 0.15s ease, opacity 0.15s ease !important;
+}
+
+.m-invite-item-card .m-invite-more-btn:hover,
+.m-invite-item-card button[aria-label="More options"]:hover {
+  background-color: rgba(81, 70, 138, 0.08) !important;
+}
+
+/* Dark mode: Tile is White (#ffffff) */
+[data-appearance="dark"] .m-invite-item-card,
+.app[data-appearance="dark"] .m-invite-item-card,
+.mobile-dashboard[data-appearance="dark"] .m-invite-item-card {
+  background-color: #ffffff !important;
+  border-top: 1px solid #ffffff !important;
+  border-bottom: 1px solid #ffffff !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-radius: 0 !important;
+  box-shadow: 0px 4px 20px rgba(255, 255, 255, 0.08) !important;
+  color: #111215 !important;
+}
+
+[data-appearance="dark"] .m-invite-item-card .m-invite-item-share-btn,
+[data-appearance="dark"] .m-invite-item-card button[aria-label="Share"],
+.app[data-appearance="dark"] .m-invite-item-card button[aria-label="Share"],
+.mobile-dashboard[data-appearance="dark"] .m-invite-item-card button[aria-label="Share"] {
+  color: #18181b !important;
+}
+
+[data-appearance="dark"] .m-invite-item-card .m-invite-item-share-btn:hover,
+.app[data-appearance="dark"] .m-invite-item-card .m-invite-item-share-btn:hover,
+.mobile-dashboard[data-appearance="dark"] .m-invite-item-card button[aria-label="Share"]:hover {
+  background-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-appearance="dark"] .m-invite-item-card .m-invite-ref-box,
+.app[data-appearance="dark"] .m-invite-item-card .m-invite-ref-box,
+.mobile-dashboard[data-appearance="dark"] .m-invite-item-card .m-invite-ref-box {
+  background-color: #18181b !important;
+  border-color: #27272a !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+  color: #ffffff !important;
+}
+
+[data-appearance="dark"] .m-invite-item-card .m-invite-upload-icon,
+.app[data-appearance="dark"] .m-invite-item-card .m-invite-upload-icon,
+.mobile-dashboard[data-appearance="dark"] .m-invite-item-card .m-invite-upload-icon {
+  color: #ffffff !important;
+}
+
+[data-appearance="dark"] .m-invite-item-card .m-invite-ref-text,
+.app[data-appearance="dark"] .m-invite-item-card .m-invite-ref-text,
+.mobile-dashboard[data-appearance="dark"] .m-invite-item-card .m-invite-ref-text {
+  color: #71717a !important;
+}
+
+[data-appearance="dark"] .m-invite-item-card .m-invite-item-title,
+.app[data-appearance="dark"] .m-invite-item-card .m-invite-item-title,
+.mobile-dashboard[data-appearance="dark"] .m-invite-item-card .m-invite-item-title {
+  color: #111215 !important;
+}
+
+[data-appearance="dark"] .m-invite-item-card .m-invite-item-price,
+.app[data-appearance="dark"] .m-invite-item-card .m-invite-item-price,
+.mobile-dashboard[data-appearance="dark"] .m-invite-item-card .m-invite-item-price {
+  color: #111215 !important;
+}
+
+[data-appearance="dark"] .m-invite-item-card .m-invite-profile-avatar,
+.app[data-appearance="dark"] .m-invite-item-card .m-invite-profile-avatar,
+.mobile-dashboard[data-appearance="dark"] .m-invite-item-card .m-invite-profile-avatar {
+  background-color: #e5e7eb !important;
+  border-color: rgba(46, 160, 67, 0.45) !important;
+}
+
+[data-appearance="dark"] .m-invite-item-card .m-invite-profile-avatar .avatar-icon,
+.app[data-appearance="dark"] .m-invite-item-card .m-invite-profile-avatar .avatar-icon,
+.mobile-dashboard[data-appearance="dark"] .m-invite-item-card .m-invite-profile-avatar .avatar-icon {
+  color: #9ca3af !important;
+}
+
+[data-appearance="dark"] .m-invite-item-card .m-invite-more-btn,
+[data-appearance="dark"] .m-invite-item-card button[aria-label="More options"],
+.app[data-appearance="dark"] .m-invite-item-card button[aria-label="More options"],
+.mobile-dashboard[data-appearance="dark"] .m-invite-item-card button[aria-label="More options"] {
+  color: #18181b !important;
+}
+
+[data-appearance="dark"] .m-invite-dot,
+.app[data-appearance="dark"] .m-invite-dot,
+.mobile-dashboard[data-appearance="dark"] .m-invite-dot {
+  background-color: #18181b !important;
+}
+
+/* ── Item Specifications Section (Underneath Item Card) ── */
+.m-invite-specs-section {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  background: var(--card, #ffffff) !important;
+  border: 1px solid var(--line, #e4e4e7) !important;
+  border-radius: 10px !important;
+  padding: 14px 16px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03) !important;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+  transition: background-color 0.2s ease, border-color 0.2s ease !important;
+}
+
+.m-invite-specs-header {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+  width: 100% !important;
+}
+
+.m-invite-specs-title-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.m-invite-specs-title {
+  margin: 0 !important;
+  font-size: 13.5px !important;
+  font-weight: 600 !important;
+  color: var(--ink, #18181b) !important;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+  letter-spacing: -0.2px !important;
+}
+
+.m-invite-specs-count {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 18px !important;
+  height: 18px !important;
+  padding: 0 6px !important;
+  border-radius: 9999px !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  background: color-mix(in srgb, var(--ink) 6%, transparent) !important;
+  color: var(--muted, #71717a) !important;
+  font-variant-numeric: tabular-nums !important;
+}
+
+.m-invite-add-spec-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  padding: 5px 10px !important;
+  border-radius: 6px !important;
+  border: 1px solid var(--line, #e4e4e7) !important;
+  background: color-mix(in srgb, var(--ink) 4%, transparent) !important;
+  color: var(--ink, #18181b) !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+
+.m-invite-add-spec-btn:hover {
+  background: color-mix(in srgb, var(--ink) 8%, transparent) !important;
+  border-color: color-mix(in srgb, var(--ink) 18%, transparent) !important;
+}
+
+.m-invite-add-spec-btn:active {
+  transform: scale(0.97) !important;
+}
+
+/* Specifications List */
+.m-invite-specs-list {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 7px !important;
+  width: 100% !important;
+}
+
+.m-invite-spec-item {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+  background: color-mix(in srgb, var(--ink) 2.5%, transparent) !important;
+  border: 1px solid color-mix(in srgb, var(--line) 80%, transparent) !important;
+  border-radius: 8px !important;
+  padding: 6px 8px 6px 12px !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  transition: background-color 0.15s ease, border-color 0.15s ease !important;
+}
+
+.m-invite-spec-item:hover {
+  background: color-mix(in srgb, var(--ink) 4.5%, transparent) !important;
+}
+
+.m-invite-spec-label {
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: var(--muted, #71717a) !important;
+  text-transform: capitalize !important;
+  flex-shrink: 0 !important;
+  min-width: 65px !important;
+  letter-spacing: -0.1px !important;
+}
+
+.m-invite-spec-row-input {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  height: 32px !important;
+  border-radius: 6px !important;
+  border: 1px solid var(--line, #d1d5db) !important;
+  background: var(--page, #ffffff) !important;
+  color: var(--ink, #18181b) !important;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  padding: 0 10px !important;
+  outline: none !important;
+  box-sizing: border-box !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+.m-invite-spec-row-input:focus {
+  border-color: var(--ink, #18181b) !important;
+  box-shadow: 0 0 0 1px var(--ink, #18181b) !important;
+}
+
+.m-invite-spec-delete-btn {
+  width: 24px !important;
+  height: 24px !important;
+  min-width: 24px !important;
+  border-radius: 4px !important;
+  border: none !important;
+  background: transparent !important;
+  color: var(--muted, #a1a1aa) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  transition: color 0.15s ease, background-color 0.15s ease !important;
+}
+
+.m-invite-spec-delete-btn:hover {
+  color: #ef4444 !important;
+  background-color: rgba(239, 68, 68, 0.1) !important;
+}
+
+/* Inline Add Specification Card */
+.m-invite-add-spec-card {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  background: color-mix(in srgb, var(--ink) 2%, transparent) !important;
+  border: 1px dashed var(--line, #d4d4d8) !important;
+  border-radius: 8px !important;
+  padding: 12px !important;
+  box-sizing: border-box !important;
+  animation: mInviteFadeIn 0.18s ease forwards !important;
+}
+
+@keyframes mInviteFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.m-invite-spec-inputs-row {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.m-invite-spec-input {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  height: 38px !important;
+  border-radius: 6px !important;
+  border: 1px solid var(--line, #d1d5db) !important;
+  background: var(--page, #ffffff) !important;
+  color: var(--ink, #18181b) !important;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+  font-size: 13px !important;
+  padding: 0 12px !important;
+  outline: none !important;
+  box-sizing: border-box !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+.m-invite-spec-input:focus {
+  border-color: var(--ink, #18181b) !important;
+  box-shadow: 0 0 0 1px var(--ink, #18181b) !important;
+}
+
+.m-invite-spec-input::placeholder {
+  color: var(--muted, #a1a1aa) !important;
+}
+
+/* Quick Presets row */
+.m-invite-quick-presets {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+}
+
+.m-invite-quick-preset-title {
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  color: var(--muted, #71717a) !important;
+  letter-spacing: 0.1px !important;
+}
+
+.m-invite-quick-preset-chips {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+}
+
+.m-invite-quick-chip {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 3px !important;
+  height: 25px !important;
+  padding: 0 9px !important;
+  border-radius: 9999px !important;
+  border: 1px dashed var(--line, #d1d5db) !important;
+  background: transparent !important;
+  color: var(--ink, #52525b) !important;
+  font-size: 11.5px !important;
+  font-weight: 500 !important;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+
+.m-invite-quick-chip:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--ink) 5%, transparent) !important;
+  border-color: var(--ink, #18181b) !important;
+}
+
+.m-invite-quick-chip.is-added,
+.m-invite-quick-chip:disabled {
+  opacity: 0.5 !important;
+  cursor: default !important;
+  border-style: solid !important;
+}
+
+/* Form Footer Actions */
+.m-invite-spec-form-footer {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 8px !important;
+  margin-top: 2px !important;
+}
+
+.m-invite-spec-btn-cancel {
+  height: 32px !important;
+  padding: 0 12px !important;
+  border-radius: 6px !important;
+  border: none !important;
+  background: transparent !important;
+  color: var(--muted, #71717a) !important;
+  font-size: 12.5px !important;
+  font-weight: 500 !important;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+  cursor: pointer !important;
+  transition: color 0.15s ease !important;
+}
+
+.m-invite-spec-btn-cancel:hover {
+  color: var(--ink, #18181b) !important;
+}
+
+.m-invite-spec-btn-submit {
+  height: 32px !important;
+  padding: 0 16px !important;
+  border-radius: 6px !important;
+  border: none !important;
+  background: #18181b !important;
+  color: #ffffff !important;
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+  cursor: pointer !important;
+  transition: opacity 0.15s ease, transform 0.1s ease !important;
+}
+
+.m-invite-spec-btn-submit:hover:not(:disabled) {
+  opacity: 0.88 !important;
+}
+
+.m-invite-spec-btn-submit:disabled {
+  opacity: 0.4 !important;
+  cursor: not-allowed !important;
+}
+
+/* Empty State */
+.m-invite-spec-empty-state {
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 3px !important;
+  padding: 12px 14px !important;
+  border-radius: 8px !important;
+  border: 1px dashed var(--line, #d4d4d8) !important;
+  background: color-mix(in srgb, var(--ink) 1.5%, transparent) !important;
+  text-align: left !important;
+  box-sizing: border-box !important;
+}
+
+.m-invite-spec-empty-title {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: var(--ink, #18181b) !important;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+}
+
+.m-invite-spec-empty-desc {
+  font-size: 11.5px !important;
+  color: var(--muted, #71717a) !important;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+}
+
+/* ── Dark Mode for Item Specifications ── */
+[data-appearance="dark"] .m-invite-specs-section,
+.app[data-appearance="dark"] .m-invite-specs-section,
+.mobile-dashboard[data-appearance="dark"] .m-invite-specs-section {
+  background: #18181b !important;
+  border-color: #27272a !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25) !important;
+}
+
+[data-appearance="dark"] .m-invite-specs-title,
+.app[data-appearance="dark"] .m-invite-specs-title,
+.mobile-dashboard[data-appearance="dark"] .m-invite-specs-title {
+  color: #f4f4f5 !important;
+}
+
+[data-appearance="dark"] .m-invite-specs-count,
+.app[data-appearance="dark"] .m-invite-specs-count,
+.mobile-dashboard[data-appearance="dark"] .m-invite-specs-count {
+  background: #27272a !important;
+  color: #a1a1aa !important;
+}
+
+[data-appearance="dark"] .m-invite-add-spec-btn,
+.app[data-appearance="dark"] .m-invite-add-spec-btn,
+.mobile-dashboard[data-appearance="dark"] .m-invite-add-spec-btn {
+  background: #27272a !important;
+  border-color: #3f3f46 !important;
+  color: #f4f4f5 !important;
+}
+
+[data-appearance="dark"] .m-invite-add-spec-btn:hover,
+.app[data-appearance="dark"] .m-invite-add-spec-btn:hover,
+.mobile-dashboard[data-appearance="dark"] .m-invite-add-spec-btn:hover {
+  background: #323238 !important;
+}
+
+[data-appearance="dark"] .m-invite-spec-item,
+.app[data-appearance="dark"] .m-invite-spec-item,
+.mobile-dashboard[data-appearance="dark"] .m-invite-spec-item {
+  background: #222226 !important;
+  border-color: #2e2e33 !important;
+}
+
+[data-appearance="dark"] .m-invite-spec-label,
+.app[data-appearance="dark"] .m-invite-spec-label,
+.mobile-dashboard[data-appearance="dark"] .m-invite-spec-label {
+  color: #a1a1aa !important;
+}
+
+[data-appearance="dark"] .m-invite-spec-row-input,
+.app[data-appearance="dark"] .m-invite-spec-row-input,
+.mobile-dashboard[data-appearance="dark"] .m-invite-spec-row-input {
+  background: #1e1e22 !important;
+  border-color: #3f3f46 !important;
+  color: #ffffff !important;
+}
+
+[data-appearance="dark"] .m-invite-spec-row-input:focus,
+.app[data-appearance="dark"] .m-invite-spec-row-input:focus,
+.mobile-dashboard[data-appearance="dark"] .m-invite-spec-row-input:focus {
+  border-color: #ffffff !important;
+  box-shadow: 0 0 0 1px #ffffff !important;
+}
+
+[data-appearance="dark"] .m-invite-spec-delete-btn,
+.app[data-appearance="dark"] .m-invite-spec-delete-btn,
+.mobile-dashboard[data-appearance="dark"] .m-invite-spec-delete-btn {
+  color: #71717a !important;
+}
+
+[data-appearance="dark"] .m-invite-spec-delete-btn:hover,
+.app[data-appearance="dark"] .m-invite-spec-delete-btn:hover,
+.mobile-dashboard[data-appearance="dark"] .m-invite-spec-delete-btn:hover {
+  color: #f87171 !important;
+  background-color: rgba(239, 68, 68, 0.15) !important;
+}
+
+[data-appearance="dark"] .m-invite-add-spec-card,
+.app[data-appearance="dark"] .m-invite-add-spec-card,
+.mobile-dashboard[data-appearance="dark"] .m-invite-add-spec-card {
+  background: #141416 !important;
+  border-color: #333338 !important;
+}
+
+[data-appearance="dark"] .m-invite-spec-input,
+.app[data-appearance="dark"] .m-invite-spec-input,
+.mobile-dashboard[data-appearance="dark"] .m-invite-spec-input {
+  background: #1e1e22 !important;
+  border-color: #3f3f46 !important;
+  color: #ffffff !important;
+}
+
+[data-appearance="dark"] .m-invite-spec-input:focus,
+.app[data-appearance="dark"] .m-invite-spec-input:focus,
+.mobile-dashboard[data-appearance="dark"] .m-invite-spec-input:focus {
+  border-color: #ffffff !important;
+  box-shadow: 0 0 0 1px #ffffff !important;
+}
+
+[data-appearance="dark"] .m-invite-quick-preset-title,
+.app[data-appearance="dark"] .m-invite-quick-preset-title,
+.mobile-dashboard[data-appearance="dark"] .m-invite-quick-preset-title {
+  color: #a1a1aa !important;
+}
+
+[data-appearance="dark"] .m-invite-quick-chip,
+.app[data-appearance="dark"] .m-invite-quick-chip,
+.mobile-dashboard[data-appearance="dark"] .m-invite-quick-chip {
+  border-color: #3f3f46 !important;
+  color: #d4d4d8 !important;
+}
+
+[data-appearance="dark"] .m-invite-quick-chip:hover:not(:disabled),
+.app[data-appearance="dark"] .m-invite-quick-chip:hover:not(:disabled),
+.mobile-dashboard[data-appearance="dark"] .m-invite-quick-chip:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: #ffffff !important;
+}
+
+[data-appearance="dark"] .m-invite-spec-btn-cancel,
+.app[data-appearance="dark"] .m-invite-spec-btn-cancel,
+.mobile-dashboard[data-appearance="dark"] .m-invite-spec-btn-cancel {
+  color: #a1a1aa !important;
+}
+
+[data-appearance="dark"] .m-invite-spec-btn-cancel:hover,
+.app[data-appearance="dark"] .m-invite-spec-btn-cancel:hover,
+.mobile-dashboard[data-appearance="dark"] .m-invite-spec-btn-cancel:hover {
+  color: #ffffff !important;
+}
+
+[data-appearance="dark"] .m-invite-spec-btn-submit,
+.app[data-appearance="dark"] .m-invite-spec-btn-submit,
+.mobile-dashboard[data-appearance="dark"] .m-invite-spec-btn-submit {
+  background: #ffffff !important;
+  color: #111215 !important;
+}
+
+[data-appearance="dark"] .m-invite-spec-empty-state,
+.app[data-appearance="dark"] .m-invite-spec-empty-state,
+.mobile-dashboard[data-appearance="dark"] .m-invite-spec-empty-state {
+  border-color: #333338 !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+}
+
+[data-appearance="dark"] .m-invite-spec-empty-title,
+.app[data-appearance="dark"] .m-invite-spec-empty-title,
+.mobile-dashboard[data-appearance="dark"] .m-invite-spec-empty-title {
+  color: #f4f4f5 !important;
+}
+
+[data-appearance="dark"] .m-invite-spec-empty-desc,
+.app[data-appearance="dark"] .m-invite-spec-empty-desc,
+.mobile-dashboard[data-appearance="dark"] .m-invite-spec-empty-desc {
+  color: #a1a1aa !important;
+}
+
+/* ── Fallback Full Width Rectangle Card Box (Legacy) ── */
+.m-invite-cards-group {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  width: calc(100% + 40px) !important;
+  margin-left: -20px !important;
+  margin-right: -20px !important;
+}
+
+.m-invite-card-box {
+  width: 100%;
+  height: 72px;
+  min-height: 72px;
+  background: #000000 !important;
+  border-radius: 0 !important;
+  border-top: 1px solid #1f1f23;
+  border-bottom: 1px solid #1f1f23;
+  border-left: none !important;
+  border-right: none !important;
+  box-sizing: border-box;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 24px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  color: #ffffff !important;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.m-invite-wifi-wrap {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #2EA043;
+}
+
+.m-invite-wifi-svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* Neumorphic Profile Circles */
+.m-invite-header-avatar {
+  width: 48px !important;
+  height: 48px !important;
+  cursor: default !important;
+  border-radius: 9999px !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  background: linear-gradient(145deg, #22242a, #141519) !important;
+  box-shadow: 
+    4px 4px 10px rgba(0, 0, 0, 0.8),
+    -3px -3px 8px rgba(255, 255, 255, 0.1),
+    inset 1px 1px 2px rgba(255, 255, 255, 0.15) !important;
+}
+
+.m-invite-header-avatar .avatar-icon {
+  font-size: 26px !important;
+  color: #a1a1aa !important;
+}
+
+.m-invite-avatar-has-img {
+  background: #ffffff !important;
+  padding: 0 !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 
+    4px 4px 12px rgba(0, 0, 0, 0.85),
+    -3px -3px 8px rgba(255, 255, 255, 0.15),
+    inset 0 0 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+.m-invite-avatar-img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  border-radius: 9999px !important;
+  display: block !important;
+}
+
+.m-invite-card-user {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+.m-invite-avatar {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  min-height: 36px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.m-invite-avatar-svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* My Avatar: PayKudi Green Accent Ring */
+.m-invite-avatar-me {
+  background: rgba(46, 160, 67, 0.16);
+  border: 2px solid #2EA043;
+  color: #2EA043;
+}
+
+/* Counterparty Avatar: Neutral/Muted Ring */
+.m-invite-avatar-counterparty {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  color: #a1a1aa;
+}
+
+.m-invite-user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.m-invite-username {
+  font-size: 14px;
+  font-weight: 700;
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif;
+  color: #ffffff !important;
+  letter-spacing: -0.2px;
+  line-height: 18px;
+}
+
+.m-invite-user-number {
+  font-size: 11px;
+  font-weight: 500;
+  color: #a1a1aa !important;
+  font-variant-numeric: tabular-nums;
+  line-height: 14px;
+  letter-spacing: 0.2px;
+}
+
+/* You Plain Text (No pill/background) */
+.m-invite-you-text {
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif;
+  color: #2EA043;
+  letter-spacing: -0.2px;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+}
+
+[data-appearance="dark"] .m-invite-you-text,
+.app[data-appearance="dark"] .m-invite-you-text,
+.mobile-dashboard[data-appearance="dark"] .m-invite-you-text {
+  color: #16a34a;
+}
+
+/* Pending Plain Text (No pill/background) */
+.m-invite-pending-text {
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif;
+  color: #f59e0b;
+  letter-spacing: -0.2px;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+}
+
+[data-appearance="dark"] .m-invite-pending-text,
+.app[data-appearance="dark"] .m-invite-pending-text,
+.mobile-dashboard[data-appearance="dark"] .m-invite-pending-text {
+  color: #d97706;
+}
+
+[data-appearance="dark"] .m-invite-card-box,
+.app[data-appearance="dark"] .m-invite-card-box,
+.mobile-dashboard[data-appearance="dark"] .m-invite-card-box {
+  background: #ffffff !important;
+  border-color: #ffffff !important;
+  box-shadow: 0 4px 16px rgba(255, 255, 255, 0.1) !important;
+  color: #111215 !important;
+}
+
+[data-appearance="dark"] .m-invite-card-box .m-invite-username,
+.app[data-appearance="dark"] .m-invite-card-box .m-invite-username,
+.mobile-dashboard[data-appearance="dark"] .m-invite-card-box .m-invite-username {
+  color: #111215 !important;
+}
+
+[data-appearance="dark"] .m-invite-card-box .m-invite-user-number,
+.app[data-appearance="dark"] .m-invite-card-box .m-invite-user-number,
+.mobile-dashboard[data-appearance="dark"] .m-invite-card-box .m-invite-user-number {
+  color: #71717a !important;
+}
+
+[data-appearance="dark"] .m-invite-avatar-counterparty,
+.app[data-appearance="dark"] .m-invite-avatar-counterparty,
+.mobile-dashboard[data-appearance="dark"] .m-invite-avatar-counterparty {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.15);
+  color: #52525b;
+}
+
+[data-appearance="dark"] .m-invite-header-avatar,
+.app[data-appearance="dark"] .m-invite-header-avatar,
+.mobile-dashboard[data-appearance="dark"] .m-invite-header-avatar {
+  background: linear-gradient(145deg, #ffffff, #e6e9ee) !important;
+  border: 1px solid rgba(255, 255, 255, 0.9) !important;
+  box-shadow: 
+    4px 4px 10px rgba(166, 178, 196, 0.5),
+    -4px -4px 10px #ffffff,
+    inset 1px 1px 2px rgba(255, 255, 255, 0.9) !important;
+}
+
+[data-appearance="dark"] .m-invite-header-avatar .avatar-icon,
+.app[data-appearance="dark"] .m-invite-header-avatar .avatar-icon,
+.mobile-dashboard[data-appearance="dark"] .m-invite-header-avatar .avatar-icon {
+  color: #71717a !important;
+}
+
+[data-appearance="dark"] .m-invite-avatar-has-img,
+.app[data-appearance="dark"] .m-invite-avatar-has-img,
+.mobile-dashboard[data-appearance="dark"] .m-invite-avatar-has-img {
+  background: #ffffff !important;
+  border: 1.5px solid #ffffff !important;
+  box-shadow: 
+    4px 4px 10px rgba(166, 178, 196, 0.5),
+    -4px -4px 10px #ffffff !important;
+}
+
+
+/* ── Black Box (Legacy) ── */
 .m-invite-black-box {
   width: 100%;
   min-height: 240px;
@@ -135,7 +1212,7 @@
 /* ── Floating Action Buttons (No box, floating above bottom nav) ── */
 .m-invite-floating-actions {
   position: fixed;
-  bottom: calc(16px + env(safe-area-inset-bottom, 12px));
+  bottom: calc(32px + env(safe-area-inset-bottom, 14px));
   left: 50%;
   transform: translateX(-50%);
   width: min(100% - 40px, 520px);
@@ -189,7 +1266,8 @@
   transform: scale(0.99) !important;
 }
 
-/* Cancel invite button */
+/* Proceed to payment / Cancel invite button */
+.m-invite-btn-proceed,
 .m-invite-btn-cancel {
   width: 100%;
   height: 50px !important;
@@ -209,10 +1287,12 @@
   transition: opacity 0.15s ease, transform 0.1s ease !important;
 }
 
+.m-invite-btn-proceed:hover,
 .m-invite-btn-cancel:hover {
   opacity: 0.88 !important;
 }
 
+.m-invite-btn-proceed:active,
 .m-invite-btn-cancel:active {
   transform: scale(0.99) !important;
 }
@@ -253,6 +1333,9 @@
   background-color: #1d1e22 !important;
 }
 
+[data-appearance="dark"] .m-invite-btn-proceed,
+.app[data-appearance="dark"] .m-invite-btn-proceed,
+.mobile-dashboard[data-appearance="dark"] .m-invite-btn-proceed,
 [data-appearance="dark"] .m-invite-btn-cancel,
 .app[data-appearance="dark"] .m-invite-btn-cancel,
 .mobile-dashboard[data-appearance="dark"] .m-invite-btn-cancel {

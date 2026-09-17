@@ -4,10 +4,12 @@ import {
   LoaderCircle,
   Copy,
 } from "lucide-react";
+import MobilePaymentInvitation from "./MobilePaymentInvitation";
 import "../../styles/mobile-new-payment.css";
 
 export default function MobileNewPayment({ onCancel, onSuccess }) {
-  const [step, setStep] = useState("form"); // "form" | "confirm" | "success"
+  const [step, setStep] = useState("form"); // "form" | "confirm" | "success" | "invitation"
+  const [createdRoom, setCreatedRoom] = useState(null);
 
   // 1. WhatsApp Number or User Name & 11-digit verification state
   const [counterparty, setCounterparty] = useState("");
@@ -119,14 +121,29 @@ export default function MobileNewPayment({ onCancel, onSuccess }) {
     setErrors(errs);
     if (Object.keys(errs).length > 0) return;
 
-    // Skip confirm — go straight to creating the room
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      setRoomId("PR-" + Math.floor(100000 + Math.random() * 900000));
-      setStep("success");
-      if (onSuccess) onSuccess();
-    }, 850);
+      const cleanAmt = amount.trim();
+      const formattedAmount = cleanAmt.startsWith("₦") ? cleanAmt : `₦${cleanAmt}`;
+      const newRoom = {
+        id: "PK-" + Math.floor(100000 + Math.random() * 900000),
+        counterparty:
+          verificationStatus === "verified"
+            ? "Howard Ukah"
+            : (counterparty.trim() || "Alex Morgan"),
+        item: itemPurpose.trim() || "iPhone 18 Pro Max",
+        amount: formattedAmount || "₦89,000",
+        role: isSelling ? "Seller" : "Buyer",
+      };
+
+      setCreatedRoom(newRoom);
+      if (onSuccess) {
+        onSuccess(newRoom);
+      } else {
+        setStep("invitation");
+      }
+    }, 450);
   };
 
   const handleReset = () => {
@@ -137,7 +154,18 @@ export default function MobileNewPayment({ onCancel, onSuccess }) {
     setAmount("");
     setErrors({});
     setStep("form");
+    setCreatedRoom(null);
   };
+
+  if (step === "invitation" && createdRoom) {
+    return (
+      <MobilePaymentInvitation
+        room={createdRoom}
+        onCancel={onCancel || handleReset}
+        onProceed={onCancel || handleReset}
+      />
+    );
+  }
 
   return (
     <main className="mobile-new-payment-container">
@@ -363,10 +391,7 @@ export default function MobileNewPayment({ onCancel, onSuccess }) {
               className="new-payment-proceed-btn"
             >
               {isLoading ? (
-                <>
-                  <LoaderCircle className="animate-spin" size={18} />
-                  <span>Creating Payment Room...</span>
-                </>
+                <LoaderCircle className="animate-spin" size={20} />
               ) : (
                 <span>Proceed to Payment</span>
               )}

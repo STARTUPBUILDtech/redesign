@@ -444,10 +444,7 @@ export default function DesktopNewPayment({ onCancel, onSuccess }) {
               className="desktop-np-primary-btn"
             >
               {isLoading ? (
-                <>
-                  <LoaderCircle className="animate-spin" size={18} />
-                  <span>Creating Payment Room...</span>
-                </>
+                <LoaderCircle className="animate-spin" size={20} />
               ) : (
                 <span>Proceed to Payment</span>
               )}

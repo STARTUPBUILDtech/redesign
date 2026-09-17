@@ -262,7 +262,15 @@ function MobileDashboard({
     }
   };
 
-  const isNoNav = active === "New Payment" || active === "Payment room" || active === "Payment Room";
+  const [activeRoom, setActiveRoom] = useState({
+    id: "PK-482910",
+    counterparty: "Alex Morgan",
+    item: "iPhone 18 Pro Max",
+    amount: "₦89,000",
+    role: "Buyer",
+  });
+
+  const isNoNav = active === "New Payment" || active === "Payment Invitation";
 
   return (
     <div className={`mobile-dashboard${isNoNav ? " no-nav-mode" : ""}`} data-appearance={dark ? "dark" : "light"}>
@@ -277,23 +285,63 @@ function MobileDashboard({
       </header>
 
       {active === "New Payment" ? (
-        <MobileNewPayment onCancel={() => handleNavClick("Home")} />
+        <MobileNewPayment
+          onCancel={() => handleNavClick("Home")}
+          onSuccess={(newRoom) => {
+            if (newRoom) setActiveRoom(newRoom);
+            setActive("Payment Invitation");
+          }}
+        />
+      ) : active === "Payment Invitation" ? (
+        <MobilePaymentInvitation
+          room={activeRoom}
+          onCancel={() => handleNavClick("Home")}
+          onProceed={() => handleNavClick("Home")}
+          onShare={() => {}}
+        />
       ) : (
         <div className="mobile-content-scroll" ref={contentScrollRef}>
           {active === "Activity" ? (
             <MobileActivity />
           ) : active === "Payment room" || active === "Payment Room" ? (
-            <MobilePaymentInvitation
-              room={{
-                id: "PK-482910",
-                counterparty: "Alex Morgan",
-                item: "Wireless headphones",
-                amount: "₦89,000",
-                role: role === "Buyer" ? "Seller" : "Buyer",
-              }}
-              onCancel={() => handleNavClick("Home")}
-              onShare={() => {}}
-            />
+            <div className="mobile-home-content">
+              <div className="mobile-main mobile-main-top">
+                <section className="mobile-intro">
+                  <div>
+                    <h1>Payment Room</h1>
+                    <p>View your active escrow and payment sessions.</p>
+                  </div>
+                </section>
+              </div>
+              <main className="mobile-main mobile-main-bottom">
+                <section className="mobile-activity">
+                  <div className="mobile-activity-head">
+                    <h2>Active Room</h2>
+                  </div>
+                  <div className="boxless-activity-list">
+                    <div
+                      className="activity-row"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => setActive("Payment Invitation")}
+                    >
+                      <div className="activity-icon-wrap bg-primary/10 text-primary">
+                        <span className="material-symbols-outlined">meeting_room</span>
+                      </div>
+                      <div className="activity-details">
+                        <div className="activity-title-row">
+                          <span className="activity-title">{activeRoom.item}</span>
+                          <span className="activity-amount">{activeRoom.amount}</span>
+                        </div>
+                        <div className="activity-sub-row">
+                          <span className="activity-subtext">With {activeRoom.counterparty} &bull; Room {activeRoom.id}</span>
+                          <span className="activity-badge badge-pending">Pending</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              </main>
+            </div>
           ) : (
             <div className="mobile-home-content">
               <div className="mobile-main mobile-main-top">
@@ -457,18 +505,19 @@ export default function App() {
       {/* Desktop Views */}
       {active === "Activity" ? (
         <DesktopActivity />
-      ) : active === "Payment room" || active === "Payment Room" ? (
+      ) : active === "Payment Invitation" ? (
         <main id="payment-room" className="desktop-container desktop-payment-room">
           <div className="desktop-payment-room-inner">
             <MobilePaymentInvitation
               room={{
                 id: "PK-482910",
                 counterparty: "Alex Morgan",
-                item: "Wireless headphones",
+                item: "iPhone 18 Pro Max",
                 amount: "₦89,000",
                 role: role === "Buyer" ? "Seller" : "Buyer",
               }}
               onCancel={() => setActive("Home")}
+              onProceed={() => setActive("Home")}
               onShare={() => {}}
             />
           </div>
