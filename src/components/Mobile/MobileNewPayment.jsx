@@ -3,6 +3,8 @@ import {
   Check,
   LoaderCircle,
   Copy,
+  Upload,
+  SlidersHorizontal,
 } from "lucide-react";
 import MobilePaymentInvitation from "./MobilePaymentInvitation";
 import "../../styles/mobile-new-payment.css";
@@ -10,6 +12,8 @@ import "../../styles/mobile-new-payment.css";
 export default function MobileNewPayment({ onCancel, onSuccess }) {
   const [step, setStep] = useState("form"); // "form" | "confirm" | "success" | "invitation"
   const [createdRoom, setCreatedRoom] = useState(null);
+  const [pendingRoom, setPendingRoom] = useState(null);
+  const [showInfoModal, setShowInfoModal] = useState(false);
 
   // 1. WhatsApp Number or User Name & 11-digit verification state
   const [counterparty, setCounterparty] = useState("");
@@ -132,18 +136,29 @@ export default function MobileNewPayment({ onCancel, onSuccess }) {
           verificationStatus === "verified"
             ? "Howard Ukah"
             : (counterparty.trim() || "Alex Morgan"),
-        item: itemPurpose.trim() || "iPhone 18 Pro Max",
+        item: (() => {
+          const trimmed = itemPurpose.trim();
+          if (!trimmed || trimmed.toLowerCase() === "iphone 18 pro max") return "Iphone 18 Pro Max";
+          return trimmed.replace(/\b[a-z]/g, (c) => c.toUpperCase());
+        })(),
         amount: formattedAmount || "₦89,000",
         role: isSelling ? "Seller" : "Buyer",
       };
 
+      setPendingRoom(newRoom);
       setCreatedRoom(newRoom);
-      if (onSuccess) {
-        onSuccess(newRoom);
-      } else {
-        setStep("invitation");
-      }
+      setShowInfoModal(true);
     }, 450);
+  };
+
+  const handleConfirmProceed = () => {
+    setShowInfoModal(false);
+    const targetRoom = pendingRoom || createdRoom;
+    if (onSuccess) {
+      onSuccess(targetRoom);
+    } else {
+      setStep("invitation");
+    }
   };
 
   const handleReset = () => {
@@ -155,6 +170,8 @@ export default function MobileNewPayment({ onCancel, onSuccess }) {
     setErrors({});
     setStep("form");
     setCreatedRoom(null);
+    setPendingRoom(null);
+    setShowInfoModal(false);
   };
 
   if (step === "invitation" && createdRoom) {
@@ -396,6 +413,66 @@ export default function MobileNewPayment({ onCancel, onSuccess }) {
                 <span>Proceed to Payment</span>
               )}
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── Middle Modal: Inform users to upload reference image & add specifications ── */}
+      {showInfoModal && (
+        <div
+          className="new-payment-modal-backdrop"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="new-payment-info-modal">
+            <div className="np-modal-header">
+              <div className="np-modal-icon-badge">
+                <span className="material-symbols-outlined">info</span>
+              </div>
+            </div>
+
+            <div className="np-modal-text-wrap">
+              <h2 className="np-modal-title">Important Step Ahead</h2>
+              <p className="np-modal-subtitle">
+                Before proceeding to payment, you will need to provide these details on the next page:
+              </p>
+            </div>
+
+            <div className="np-modal-cards-list">
+              <div className="np-modal-step-card">
+                <div className="np-modal-step-icon">
+                  <Upload size={17} strokeWidth={2.2} />
+                </div>
+                <div className="np-modal-step-content">
+                  <h3 className="np-modal-step-title">Upload Reference Image</h3>
+                  <p className="np-modal-step-desc">
+                    Add a clear photo of the item for counterparty verification.
+                  </p>
+                </div>
+              </div>
+
+              <div className="np-modal-step-card">
+                <div className="np-modal-step-icon">
+                  <SlidersHorizontal size={17} strokeWidth={2.2} />
+                </div>
+                <div className="np-modal-step-content">
+                  <h3 className="np-modal-step-title">Add Item Specifications</h3>
+                  <p className="np-modal-step-desc">
+                    Fill in specifications such as Color, Storage, and RAM.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="np-modal-footer">
+              <button
+                type="button"
+                className="np-modal-btn-proceed"
+                onClick={handleConfirmProceed}
+              >
+                <span>I understand</span>
+              </button>
+            </div>
           </div>
         </div>
       )}

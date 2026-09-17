@@ -265,7 +265,7 @@ function MobileDashboard({
   const [activeRoom, setActiveRoom] = useState({
     id: "PK-482910",
     counterparty: "Alex Morgan",
-    item: "iPhone 18 Pro Max",
+    item: "Iphone 18 Pro Max",
     amount: "₦89,000",
     role: "Buyer",
   });
@@ -512,7 +512,7 @@ export default function App() {
               room={{
                 id: "PK-482910",
                 counterparty: "Alex Morgan",
-                item: "iPhone 18 Pro Max",
+                item: "Iphone 18 Pro Max",
                 amount: "₦89,000",
                 role: role === "Buyer" ? "Seller" : "Buyer",
               }}
