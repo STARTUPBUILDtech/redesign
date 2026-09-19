@@ -484,7 +484,7 @@
   .mobile-dashboard[data-appearance="light"] .nav-bottom-link.active .nav-pr-badge {
     background-color: #ffffff !important;
     color: #111215 !important;
-    border-color: #17181a !important;
+    border: none !important;
   }
 
   /* Active Bubble: Glossy White in Dark Mode */
@@ -523,7 +523,7 @@
   .mobile-dashboard[data-appearance="dark"] .nav-bottom-link.active #m-pr-nav-badge {
     background-color: #111215 !important;
     color: #ffffff !important;
-    border-color: #ffffff !important;
+    border: none !important;
   }
 
   .nav-bottom-link.active .nav-whatsapp-icon {
@@ -535,3 +535,46 @@
     padding: 2px 6px 4px !important;
   }
 }
+
+/* Add specification button in dark mode: pure white background with dark text */
+[data-appearance="dark"] .m-invite-add-spec-btn,
+.app[data-appearance="dark"] .m-invite-add-spec-btn,
+.mobile-dashboard[data-appearance="dark"] .m-invite-add-spec-btn,
+html[data-appearance="dark"] .m-invite-add-spec-btn,
+body[data-appearance="dark"] .m-invite-add-spec-btn,
+.dark .m-invite-add-spec-btn {
+  background: #ffffff !important;
+  border: none !important;
+  color: #111215 !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35) !important;
+}
+
+[data-appearance="dark"] .m-invite-add-spec-btn svg,
+.app[data-appearance="dark"] .m-invite-add-spec-btn svg,
+.mobile-dashboard[data-appearance="dark"] .m-invite-add-spec-btn svg,
+html[data-appearance="dark"] .m-invite-add-spec-btn svg,
+body[data-appearance="dark"] .m-invite-add-spec-btn svg,
+.dark .m-invite-add-spec-btn svg {
+  color: #111215 !important;
+  stroke: #111215 !important;
+}
+
+[data-appearance="dark"] .m-invite-add-spec-btn span,
+.app[data-appearance="dark"] .m-invite-add-spec-btn span,
+.mobile-dashboard[data-appearance="dark"] .m-invite-add-spec-btn span,
+html[data-appearance="dark"] .m-invite-add-spec-btn span,
+body[data-appearance="dark"] .m-invite-add-spec-btn span,
+.dark .m-invite-add-spec-btn span {
+  color: #111215 !important;
+}
+
+[data-appearance="dark"] .m-invite-add-spec-btn:hover,
+.app[data-appearance="dark"] .m-invite-add-spec-btn:hover,
+.mobile-dashboard[data-appearance="dark"] .m-invite-add-spec-btn:hover,
+html[data-appearance="dark"] .m-invite-add-spec-btn:hover,
+body[data-appearance="dark"] .m-invite-add-spec-btn:hover,
+.dark .m-invite-add-spec-btn:hover {
+  background: #f4f5f8 !important;
+  color: #111215 !important;
+}
+

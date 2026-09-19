@@ -1,11 +1,13 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import paykudiLogo from "./assets/paykudi-logo.png";
 import logoDarkMode from "./assets/logodarkmode.png";
 import DesktopActivity from "./components/DesktopActivity.jsx";
 import DesktopNewPayment from "./components/DesktopNewPayment.jsx";
+import DesktopPaymentRoom from "./components/DesktopPaymentRoom.jsx";
 import MobileActivity from "./components/Mobile/MobileActivity.jsx";
 import MobileNewPayment from "./components/Mobile/MobileNewPayment.jsx";
 import MobilePaymentInvitation from "./components/Mobile/MobilePaymentInvitation.jsx";
+import MobilePaymentRoom from "./components/Mobile/MobilePaymentRoom.jsx";
 
 function BrandLogo({ dark, className }) {
   return (
@@ -295,6 +297,7 @@ function MobileDashboard({
       ) : active === "Payment Invitation" ? (
         <MobilePaymentInvitation
           room={activeRoom}
+          onBack={() => handleNavClick("Payment room")}
           onCancel={() => handleNavClick("Home")}
           onProceed={() => handleNavClick("Home")}
           onShare={() => {}}
@@ -304,44 +307,12 @@ function MobileDashboard({
           {active === "Activity" ? (
             <MobileActivity />
           ) : active === "Payment room" || active === "Payment Room" ? (
-            <div className="mobile-home-content">
-              <div className="mobile-main mobile-main-top">
-                <section className="mobile-intro">
-                  <div>
-                    <h1>Payment Room</h1>
-                    <p>View your active escrow and payment sessions.</p>
-                  </div>
-                </section>
-              </div>
-              <main className="mobile-main mobile-main-bottom">
-                <section className="mobile-activity">
-                  <div className="mobile-activity-head">
-                    <h2>Active Room</h2>
-                  </div>
-                  <div className="boxless-activity-list">
-                    <div
-                      className="activity-row"
-                      style={{ cursor: "pointer" }}
-                      onClick={() => setActive("Payment Invitation")}
-                    >
-                      <div className="activity-icon-wrap bg-primary/10 text-primary">
-                        <span className="material-symbols-outlined">meeting_room</span>
-                      </div>
-                      <div className="activity-details">
-                        <div className="activity-title-row">
-                          <span className="activity-title">{activeRoom.item}</span>
-                          <span className="activity-amount">{activeRoom.amount}</span>
-                        </div>
-                        <div className="activity-sub-row">
-                          <span className="activity-subtext">With {activeRoom.counterparty} &bull; Room {activeRoom.id}</span>
-                          <span className="activity-badge badge-pending">Pending</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </section>
-              </main>
-            </div>
+            <MobilePaymentRoom
+              onSelectRoom={(r) => {
+                if (r) setActiveRoom(r);
+                setActive("Payment Invitation");
+              }}
+            />
           ) : (
             <div className="mobile-home-content">
               <div className="mobile-main mobile-main-top">
@@ -462,6 +433,18 @@ export default function App() {
   const [active, setActive] = useState("Activity");
   const [role, setRole] = useState("Buyer");
 
+  useEffect(() => {
+    document.documentElement.setAttribute("data-appearance", dark ? "dark" : "light");
+    document.body.setAttribute("data-appearance", dark ? "dark" : "light");
+    if (dark) {
+      document.documentElement.classList.add("dark");
+      document.body.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      document.body.classList.remove("dark");
+    }
+  }, [dark]);
+
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
   const nav = [
@@ -505,6 +488,11 @@ export default function App() {
       {/* Desktop Views */}
       {active === "Activity" ? (
         <DesktopActivity />
+      ) : active === "Payment room" || active === "Payment Room" ? (
+        <DesktopPaymentRoom
+          role={role}
+          onBackToHome={() => setActive("Home")}
+        />
       ) : active === "Payment Invitation" ? (
         <main id="payment-room" className="desktop-container desktop-payment-room">
           <div className="desktop-payment-room-inner">

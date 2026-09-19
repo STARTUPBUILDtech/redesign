@@ -179,6 +179,7 @@ textarea,
   justify-content: center;
 }
 
+/* Light mode unhighlighted: black circle with white text, no border */
 .nav-pr-badge,
 #m-pr-nav-badge {
   position: absolute;
@@ -194,13 +195,24 @@ textarea,
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #ffffff !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+  border: none !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
   line-height: 1;
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* Dark mode inactive badge: white circle with dark number and dark border */
+/* Light mode highlighted: white circle with dark text, no border */
+nav button.active .nav-pr-badge,
+nav button.active #m-pr-nav-badge,
+.nav-bottom-link.active .nav-pr-badge,
+.nav-bottom-link.active #m-pr-nav-badge {
+  background-color: #ffffff !important;
+  color: #111215 !important;
+  border: none !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+}
+
+/* Dark mode unhighlighted: white circle with dark text, no border */
 [data-appearance="dark"] .nav-pr-badge,
 .app[data-appearance="dark"] .nav-pr-badge,
 [data-appearance="dark"] #m-pr-nav-badge,
@@ -209,23 +221,25 @@ textarea,
 .mobile-dashboard[data-appearance="dark"] #m-pr-nav-badge {
   background-color: #ffffff !important;
   color: #111215 !important;
-  border: 2px solid #18191d !important;
+  border: none !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
-/* Desktop active topbar button */
-/* Light Mode: active button has dark background -> badge is white */
-nav button.active .nav-pr-badge {
-  background-color: #ffffff !important;
-  color: #111215 !important;
-  border: 2px solid #17181a !important;
-}
-
-/* Dark Mode: active button has white background -> badge is black */
+/* Dark mode highlighted: black circle with white text, no border */
 [data-appearance="dark"] nav button.active .nav-pr-badge,
-.app[data-appearance="dark"] nav button.active .nav-pr-badge {
+.app[data-appearance="dark"] nav button.active .nav-pr-badge,
+[data-appearance="dark"] nav button.active #m-pr-nav-badge,
+.app[data-appearance="dark"] nav button.active #m-pr-nav-badge,
+[data-appearance="dark"] .nav-bottom-link.active .nav-pr-badge,
+.app[data-appearance="dark"] .nav-bottom-link.active .nav-pr-badge,
+.mobile-dashboard[data-appearance="dark"] .nav-bottom-link.active .nav-pr-badge,
+[data-appearance="dark"] .nav-bottom-link.active #m-pr-nav-badge,
+.app[data-appearance="dark"] .nav-bottom-link.active #m-pr-nav-badge,
+.mobile-dashboard[data-appearance="dark"] .nav-bottom-link.active #m-pr-nav-badge {
   background-color: #111215 !important;
   color: #ffffff !important;
-  border: 2px solid #ffffff !important;
+  border: none !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .nav-profile-wrap {
@@ -811,3 +825,46 @@ main.desktop-container {
 .app[data-appearance="dark"] .act-val-payout {
   color: #60a5fa;
 }
+
+/* Add specification button in dark mode: pure white background with dark text */
+[data-appearance="dark"] .m-invite-add-spec-btn,
+.app[data-appearance="dark"] .m-invite-add-spec-btn,
+.mobile-dashboard[data-appearance="dark"] .m-invite-add-spec-btn,
+html[data-appearance="dark"] .m-invite-add-spec-btn,
+body[data-appearance="dark"] .m-invite-add-spec-btn,
+.dark .m-invite-add-spec-btn {
+  background: #ffffff !important;
+  border: none !important;
+  color: #111215 !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35) !important;
+}
+
+[data-appearance="dark"] .m-invite-add-spec-btn svg,
+.app[data-appearance="dark"] .m-invite-add-spec-btn svg,
+.mobile-dashboard[data-appearance="dark"] .m-invite-add-spec-btn svg,
+html[data-appearance="dark"] .m-invite-add-spec-btn svg,
+body[data-appearance="dark"] .m-invite-add-spec-btn svg,
+.dark .m-invite-add-spec-btn svg {
+  color: #111215 !important;
+  stroke: #111215 !important;
+}
+
+[data-appearance="dark"] .m-invite-add-spec-btn span,
+.app[data-appearance="dark"] .m-invite-add-spec-btn span,
+.mobile-dashboard[data-appearance="dark"] .m-invite-add-spec-btn span,
+html[data-appearance="dark"] .m-invite-add-spec-btn span,
+body[data-appearance="dark"] .m-invite-add-spec-btn span,
+.dark .m-invite-add-spec-btn span {
+  color: #111215 !important;
+}
+
+[data-appearance="dark"] .m-invite-add-spec-btn:hover,
+.app[data-appearance="dark"] .m-invite-add-spec-btn:hover,
+.mobile-dashboard[data-appearance="dark"] .m-invite-add-spec-btn:hover,
+html[data-appearance="dark"] .m-invite-add-spec-btn:hover,
+body[data-appearance="dark"] .m-invite-add-spec-btn:hover,
+.dark .m-invite-add-spec-btn:hover {
+  background: #f4f5f8 !important;
+  color: #111215 !important;
+}
+

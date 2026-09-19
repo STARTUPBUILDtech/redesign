@@ -429,13 +429,9 @@ export default function MobileNewPayment({ onCancel, onSuccess }) {
               <div className="np-modal-icon-badge">
                 <span className="material-symbols-outlined">info</span>
               </div>
-            </div>
-
-            <div className="np-modal-text-wrap">
-              <h2 className="np-modal-title">Important Step Ahead</h2>
-              <p className="np-modal-subtitle">
-                Before proceeding to payment, you will need to provide these details on the next page:
-              </p>
+              <div className="np-modal-text-wrap">
+                <h2 className="np-modal-title">Important Step Ahead</h2>
+              </div>
             </div>
 
             <div className="np-modal-cards-list">

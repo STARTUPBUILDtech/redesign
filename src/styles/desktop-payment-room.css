@@ -1,0 +1,535 @@
+/* ── Desktop Payment Room Screen Styles ── */
+
+.desktop-payment-room-wrapper {
+  width: 100%;
+  min-height: auto;
+  background: var(--page);
+  color: var(--ink);
+  display: block;
+}
+
+@media (max-width: 700px) {
+  .desktop-payment-room-wrapper {
+    display: none !important;
+  }
+}
+
+/* Matching exact width and padding from Desktop Activity (.desktop-activity-main) */
+.desktop-payment-room-main {
+  width: min(calc(100% - clamp(48px, 4.3vw, 98px)), 1718px);
+  margin: 0 auto;
+  padding-top: clamp(28px, 2.4vw, 40px);
+  padding-bottom: clamp(24px, 2.5vw, 36px);
+  box-sizing: border-box;
+}
+
+/* Matching exact gap and flow from Desktop Activity (.desktop-activity-content) */
+.desktop-payment-room-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-top: 0;
+  padding-bottom: 24px;
+}
+
+/* Toolbar with Tabs on Left & Unified Search Bar on Right */
+.desktop-pr-toolbar {
+  position: sticky;
+  top: clamp(64px, 3.5vw, 80px);
+  z-index: 20;
+  background: var(--page);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  min-height: 64px;
+  padding: 12px 0;
+  box-sizing: border-box;
+  transition: background-color 0.2s ease;
+}
+
+/* Left: Tabs Bar */
+.desktop-pr-tabs {
+  display: inline-flex;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 3px;
+  gap: 4px;
+}
+
+.app[data-appearance="dark"] .desktop-pr-tabs {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.desktop-pr-tab-btn {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  background: transparent;
+  border: none;
+  border-radius: 7px;
+  padding: 7px 18px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.15s ease;
+}
+
+.desktop-pr-tab-btn:hover {
+  color: var(--ink);
+}
+
+.desktop-pr-tab-btn.active {
+  background: var(--page);
+  color: var(--ink);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.app[data-appearance="dark"] .desktop-pr-tab-btn.active {
+  background: var(--panel);
+  color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.desktop-pr-tab-badge {
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+}
+
+.desktop-pr-tab-btn.active .desktop-pr-tab-badge {
+  background: color-mix(in srgb, var(--ink) 12%, transparent);
+}
+
+/* Right Controls: Unified Search Bar (copied from DesktopActivity) */
+.desktop-pr-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.desktop-pr-search-container {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  width: clamp(340px, 28vw, 460px);
+  min-width: 280px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: #ffffff;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.app[data-appearance="dark"] .desktop-pr-search-container {
+  background: #1a1c22;
+  border-color: var(--line);
+}
+
+.desktop-pr-search-container:hover {
+  border-color: var(--ink);
+}
+
+.app[data-appearance="dark"] .desktop-pr-search-container:hover {
+  border-color: #ffffff;
+}
+
+.desktop-pr-search-container:focus-within {
+  border-color: #000000;
+  box-shadow: 0 0 0 1px #000000;
+}
+
+.app[data-appearance="dark"] .desktop-pr-search-container:focus-within {
+  border-color: #ffffff;
+  box-shadow: 0 0 0 1px #ffffff;
+}
+
+.desktop-pr-search-icon {
+  margin-left: 12px;
+  color: var(--muted);
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.desktop-pr-search-input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: none !important;
+  outline: none !important;
+  background: transparent !important;
+  color: var(--ink);
+  font-family: 'Inter', sans-serif;
+  font-size: 13.5px;
+  padding: 0 12px 0 8px;
+  box-shadow: none !important;
+}
+
+.desktop-pr-search-input::placeholder {
+  color: var(--muted);
+  opacity: 0.85;
+}
+
+.desktop-pr-clear-btn {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.desktop-pr-clear-btn:hover {
+  color: var(--ink);
+}
+
+.desktop-pr-search-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--line);
+  flex-shrink: 0;
+}
+
+.desktop-pr-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 100%;
+  padding: 0 14px;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  border-radius: 0 7px 7px 0;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.desktop-pr-filter-btn:hover {
+  color: var(--ink);
+  background: color-mix(in srgb, var(--ink) 4%, transparent);
+}
+
+.desktop-pr-filter-btn.active {
+  background: #000000;
+  color: #ffffff;
+}
+
+.app[data-appearance="dark"] .desktop-pr-filter-btn.active {
+  background: #ffffff;
+  color: #000000;
+}
+
+.desktop-pr-filter-badge {
+  background: #10b981;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* Filter Popover */
+.desktop-pr-filter-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 260px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  z-index: 50;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.app[data-appearance="dark"] .desktop-pr-filter-popover {
+  background: #1c1e24;
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.desktop-pr-popover-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 8px;
+}
+
+.desktop-pr-popover-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.desktop-pr-popover-reset {
+  background: transparent;
+  border: none;
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.desktop-pr-popover-reset:hover {
+  text-decoration: underline;
+}
+
+.desktop-pr-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.desktop-pr-filter-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+}
+
+.desktop-pr-role-options {
+  display: flex;
+  gap: 6px;
+}
+
+.desktop-pr-role-btn {
+  flex: 1;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: transparent;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.desktop-pr-role-btn.active {
+  background: var(--ink);
+  color: #ffffff;
+  border-color: var(--ink);
+}
+
+.app[data-appearance="dark"] .desktop-pr-role-btn.active {
+  background: #ffffff;
+  color: #000000;
+  border-color: #ffffff;
+}
+
+/* Grid of Payment Room Cards */
+.desktop-pr-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 16px;
+}
+
+.desktop-pr-card {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  cursor: pointer;
+  text-align: left;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.app[data-appearance="dark"] .desktop-pr-card {
+  background: #15171c;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.desktop-pr-card:hover {
+  border-color: var(--ink);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.desktop-pr-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.desktop-pr-role-tag {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.desktop-pr-role-tag.buying {
+  color: #059669;
+}
+
+.desktop-pr-role-tag.selling {
+  color: #dc2626;
+}
+
+.desktop-pr-room-id {
+  font-family: 'Inter', monospace;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.desktop-pr-card-main {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.desktop-pr-card-title {
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.desktop-pr-card-price {
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.desktop-pr-card-counterparty {
+  font-size: 12.5px;
+  color: var(--muted);
+  margin: 0;
+}
+
+.desktop-pr-card-counterparty strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.desktop-pr-card-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 8px;
+  border-top: 1px dashed var(--line);
+  margin-top: 2px;
+}
+
+.desktop-pr-card-date {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.desktop-pr-status-badge {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.desktop-pr-status-badge.status-awaiting_payment {
+  color: #d97706;
+}
+
+.desktop-pr-status-badge.status-payment_received {
+  color: #2563eb;
+}
+
+.desktop-pr-status-badge.status-in_transit {
+  color: #9333ea;
+}
+
+.desktop-pr-status-badge.status-delivered {
+  color: #059669;
+}
+
+.desktop-pr-status-badge.status-completed {
+  color: #10b981;
+}
+
+.desktop-pr-status-badge.status-dispute_ongoing {
+  color: #dc2626;
+}
+
+/* Empty State */
+.desktop-pr-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 24px;
+  text-align: center;
+  gap: 12px;
+  color: var(--muted);
+  grid-column: 1 / -1;
+}
+
+.desktop-pr-empty-icon {
+  font-size: 48px;
+  color: var(--muted);
+  opacity: 0.5;
+}
+
+.desktop-pr-empty-text {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0;
+}
+
+/* Detail view inner header */
+.desktop-pr-back-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.desktop-pr-back-btn {
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.desktop-pr-back-btn:hover {
+  background: color-mix(in srgb, var(--ink) 5%, transparent);
+}

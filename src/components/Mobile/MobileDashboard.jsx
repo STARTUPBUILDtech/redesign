@@ -7,6 +7,7 @@ import MobileBottomNav from "./MobileBottomNav";
 import MobileActivity from "./MobileActivity";
 import MobileNewPayment from "./MobileNewPayment";
 import MobilePaymentInvitation from "./MobilePaymentInvitation";
+import MobilePaymentRoom from "./MobilePaymentRoom";
 import { useDashboard } from "../../context/DashboardContext";
 
 export default function MobileDashboard() {
@@ -32,6 +33,13 @@ export default function MobileDashboard() {
 
       {isActivity ? (
         <MobileActivity />
+      ) : active === "Payment room" || active === "Payment Room" ? (
+        <MobilePaymentRoom
+          onSelectRoom={(newRoom) => {
+            if (newRoom) setRoom(newRoom);
+            if (setActive) setActive("Payment Invitation");
+          }}
+        />
       ) : isNewPayment ? (
         <MobileNewPayment
           onCancel={() => setActive("Home")}

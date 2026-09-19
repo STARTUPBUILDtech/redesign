@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Share2, Upload, Plus, X } from "lucide-react";
+import { Share2, Upload, Plus, X, ArrowLeft } from "lucide-react";
 import avatarPhoto from "../../assets/avatar-photo.png";
 import avatarIllustration from "../../assets/avatar-illustration.png";
 import "../../styles/mobile-payment-invitation.css";
@@ -9,6 +9,7 @@ export default function MobilePaymentInvitation({
   onCancel,
   onShare,
   onProceed,
+  onBack,
 }) {
   const [secondsLeft, setSecondsLeft] = useState(120); // 2:00
   const [counterpartyJoined, setCounterpartyJoined] = useState(false);
@@ -101,20 +102,6 @@ export default function MobilePaymentInvitation({
     specifications.length > 0 &&
     specifications.every((s) => Boolean(s.key?.trim() && s.val?.trim()));
 
-  const quickPresets = [
-    { key: "Color", val: "Space Black" },
-    { key: "Color", val: "Silver" },
-    { key: "Color", val: "Natural Titanium" },
-    { key: "Storage", val: "128GB" },
-    { key: "Storage", val: "256GB" },
-    { key: "Storage", val: "512GB" },
-    { key: "RAM", val: "8GB" },
-    { key: "RAM", val: "12GB" },
-    { key: "Condition", val: "Brand New" },
-    { key: "Box", val: "Original Box" },
-    { key: "Warranty", val: "1 Year Official" },
-  ];
-
   const handleAddSpec = () => {
     const k = specKey.trim();
     const v = specVal.trim();
@@ -141,28 +128,6 @@ export default function MobilePaymentInvitation({
 
   const handleRemoveSpec = (id) => {
     setSpecifications((prev) => prev.filter((item) => item.id !== id));
-  };
-
-  const handleQuickAdd = (preset) => {
-    setSpecifications((prev) => {
-      const existingIndex = prev.findIndex(
-        (s) => s.key.toLowerCase() === preset.key.toLowerCase()
-      );
-      if (existingIndex >= 0) {
-        // If field exists (e.g. Color, Storage, RAM), fill in the preset value
-        const updated = [...prev];
-        updated[existingIndex] = {
-          ...updated[existingIndex],
-          val: preset.val,
-        };
-        return updated;
-      }
-      return [
-        ...prev,
-        { id: Date.now(), key: preset.key, val: preset.val },
-      ];
-    });
-    setShowSpecError(false);
   };
 
   const handleProceedClick = () => {
@@ -203,6 +168,18 @@ export default function MobilePaymentInvitation({
             <X size={14} strokeWidth={2.2} />
           </button>
         </div>
+      )}
+
+      {onBack && (
+        <button
+          type="button"
+          onClick={onBack}
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground self-start mb-1 cursor-pointer transition-colors"
+          aria-label="Back to Payment Rooms"
+        >
+          <ArrowLeft size={14} />
+          <span>Back to Payment Rooms</span>
+        </button>
       )}
 
       <div className="m-invite-title-wrap">
@@ -423,33 +400,6 @@ export default function MobilePaymentInvitation({
                   if (e.key === "Enter") handleAddSpec();
                 }}
               />
-            </div>
-
-            {/* Quick Presets */}
-            <div className="m-invite-quick-presets">
-              <span className="m-invite-quick-preset-title">Quick add:</span>
-              <div className="m-invite-quick-preset-chips">
-                {quickPresets.map((preset) => {
-                  const isSelected = specifications.some(
-                    (s) =>
-                      s.key.toLowerCase() === preset.key.toLowerCase() &&
-                      s.val.toLowerCase() === preset.val.toLowerCase()
-                  );
-                  return (
-                    <button
-                      key={`form-${preset.key}-${preset.val}`}
-                      type="button"
-                      className={`m-invite-quick-chip ${isSelected ? "is-added" : ""}`}
-                      onClick={() => handleQuickAdd(preset)}
-                    >
-                      <Plus size={11} strokeWidth={2.5} />
-                      <span>
-                        {preset.key}: {preset.val}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
             </div>
 
             <div className="m-invite-spec-form-footer">
