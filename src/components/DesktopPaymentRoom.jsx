@@ -1,5 +1,6 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { Search, SlidersHorizontal, ArrowLeft, X } from "lucide-react";
+import { Select, SelectContent, SelectItem } from "./ui/select";
 import { ALL_PAYMENT_ROOMS } from "../data/paymentRooms.js";
 import MobilePaymentInvitation from "./Mobile/MobilePaymentInvitation.jsx";
 import "../styles/desktop-payment-room.css";
@@ -8,6 +9,7 @@ export default function DesktopPaymentRoom({ role = "Buyer", onBackToHome }) {
   const [activeTab, setActiveTab] = useState("ongoing");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRole, setSelectedRole] = useState("all");
+  const [selectedState, setSelectedState] = useState("all");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [selectedRoom, setSelectedRoom] = useState(null);
 
@@ -18,8 +20,9 @@ export default function DesktopPaymentRoom({ role = "Buyer", onBackToHome }) {
     window.scrollTo({ top: 0, behavior: "instant" });
   }, []);
 
-  // Filter count
-  const activeFilterCount = selectedRole !== "all" ? 1 : 0;
+  // Filter count (Role + State)
+  const activeFilterCount =
+    (selectedRole !== "all" ? 1 : 0) + (selectedState !== "all" ? 1 : 0);
 
   // Click outside to close filter popover
   useEffect(() => {
@@ -60,6 +63,11 @@ export default function DesktopPaymentRoom({ role = "Buyer", onBackToHome }) {
       // Role filter
       if (selectedRole !== "all") {
         if (room.role.toLowerCase() !== selectedRole.toLowerCase()) return false;
+      }
+
+      // State / Status filter
+      if (selectedState !== "all") {
+        if (room.status !== selectedState) return false;
       }
 
       // Search query filter
@@ -198,16 +206,40 @@ export default function DesktopPaymentRoom({ role = "Buyer", onBackToHome }) {
                   aria-label="Filter options"
                 >
                   <div className="desktop-pr-popover-header">
-                    <span className="desktop-pr-popover-title">Filter by Role</span>
+                    <span className="desktop-pr-popover-title">Filters</span>
                     {activeFilterCount > 0 && (
                       <button
                         type="button"
                         className="desktop-pr-popover-reset"
-                        onClick={() => setSelectedRole("all")}
+                        onClick={() => {
+                          setSelectedRole("all");
+                          setSelectedState("all");
+                        }}
                       >
                         Reset
                       </button>
                     )}
+                  </div>
+
+                  <div className="desktop-pr-filter-group">
+                    <span className="desktop-pr-filter-label">State / Status</span>
+                    <Select
+                      defaultValue="all"
+                      value={selectedState}
+                      onValueChange={setSelectedState}
+                      className="filter-popover-select"
+                      placeholder="All States"
+                    >
+                      <SelectContent className="ui-select">
+                        <SelectItem value="all">All States</SelectItem>
+                        <SelectItem value="awaiting_payment">Awaiting Payment</SelectItem>
+                        <SelectItem value="payment_received">Payment Received</SelectItem>
+                        <SelectItem value="in_transit">In Transit</SelectItem>
+                        <SelectItem value="delivered">Confirm delivery</SelectItem>
+                        <SelectItem value="dispute_ongoing">Dispute Ongoing</SelectItem>
+                        <SelectItem value="completed">Completed</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   <div className="desktop-pr-filter-group">

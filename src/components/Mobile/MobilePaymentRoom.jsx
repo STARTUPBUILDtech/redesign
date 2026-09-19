@@ -1,5 +1,6 @@
 import { useState, useMemo, useRef, useEffect } from "react";
 import { Search, SlidersHorizontal, X } from "lucide-react";
+import { Select, SelectContent, SelectItem } from "../ui/select";
 import { ALL_PAYMENT_ROOMS } from "../../data/paymentRooms.js";
 import "../../styles/mobile-payment-room.css";
 
@@ -7,6 +8,7 @@ export default function MobilePaymentRoom({ onSelectRoom }) {
   const [activeTab, setActiveTab] = useState("ongoing");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRole, setSelectedRole] = useState("all");
+  const [selectedState, setSelectedState] = useState("all");
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
@@ -18,8 +20,9 @@ export default function MobilePaymentRoom({ onSelectRoom }) {
     window.scrollTo({ top: 0, behavior: "instant" });
   }, []);
 
-  // Filter count for active filter badge
-  const activeFilterCount = selectedRole !== "all" ? 1 : 0;
+  // Filter count for active filter badge (Role + State)
+  const activeFilterCount =
+    (selectedRole !== "all" ? 1 : 0) + (selectedState !== "all" ? 1 : 0);
 
   // Auto-collapse search on click outside if input is empty
   useEffect(() => {
@@ -45,13 +48,18 @@ export default function MobilePaymentRoom({ onSelectRoom }) {
     []
   );
 
-  // Filtered rooms based on active tab, search term, and role
+  // Filtered rooms based on active tab, search term, role, and state
   const filteredRooms = useMemo(() => {
     const list = activeTab === "fulfilled" ? fulfilledRooms : ongoingRooms;
     return list.filter((room) => {
       // Role filter
       if (selectedRole !== "all") {
         if (room.role.toLowerCase() !== selectedRole.toLowerCase()) return false;
+      }
+
+      // State / Status filter
+      if (selectedState !== "all") {
+        if (room.status !== selectedState) return false;
       }
 
       // Search term filter
@@ -75,7 +83,7 @@ export default function MobilePaymentRoom({ onSelectRoom }) {
 
       return true;
     });
-  }, [activeTab, searchTerm, selectedRole, ongoingRooms, fulfilledRooms]);
+  }, [activeTab, searchTerm, selectedRole, selectedState, ongoingRooms, fulfilledRooms]);
 
   const handleClearSearch = () => {
     setSearchTerm("");
@@ -191,16 +199,40 @@ export default function MobilePaymentRoom({ onSelectRoom }) {
                   aria-label="Filter options"
                 >
                   <div className="mobile-pr-popover-header">
-                    <span className="mobile-pr-popover-title">Filter by Role</span>
+                    <span className="mobile-pr-popover-title">Filters</span>
                     {activeFilterCount > 0 && (
                       <button
                         type="button"
                         className="mobile-pr-popover-reset"
-                        onClick={() => setSelectedRole("all")}
+                        onClick={() => {
+                          setSelectedRole("all");
+                          setSelectedState("all");
+                        }}
                       >
                         Reset
                       </button>
                     )}
+                  </div>
+
+                  <div className="mobile-pr-filter-group">
+                    <span className="mobile-pr-filter-label">State / Status</span>
+                    <Select
+                      defaultValue="all"
+                      value={selectedState}
+                      onValueChange={setSelectedState}
+                      className="filter-popover-select"
+                      placeholder="All States"
+                    >
+                      <SelectContent className="ui-select">
+                        <SelectItem value="all">All States</SelectItem>
+                        <SelectItem value="awaiting_payment">Awaiting Payment</SelectItem>
+                        <SelectItem value="payment_received">Payment Received</SelectItem>
+                        <SelectItem value="in_transit">In Transit</SelectItem>
+                        <SelectItem value="delivered">Confirm delivery</SelectItem>
+                        <SelectItem value="dispute_ongoing">Dispute Ongoing</SelectItem>
+                        <SelectItem value="completed">Completed</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   <div className="mobile-pr-filter-group">
