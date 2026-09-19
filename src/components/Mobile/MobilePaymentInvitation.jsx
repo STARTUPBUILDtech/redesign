@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Share2, Upload, Plus, X, ArrowLeft } from "lucide-react";
+import { Share2, Upload, Plus, X } from "lucide-react";
 import avatarPhoto from "../../assets/avatar-photo.png";
 import avatarIllustration from "../../assets/avatar-illustration.png";
 import "../../styles/mobile-payment-invitation.css";
@@ -9,7 +9,6 @@ export default function MobilePaymentInvitation({
   onCancel,
   onShare,
   onProceed,
-  onBack,
 }) {
   const [secondsLeft, setSecondsLeft] = useState(120); // 2:00
   const [counterpartyJoined, setCounterpartyJoined] = useState(false);
@@ -168,18 +167,6 @@ export default function MobilePaymentInvitation({
             <X size={14} strokeWidth={2.2} />
           </button>
         </div>
-      )}
-
-      {onBack && (
-        <button
-          type="button"
-          onClick={onBack}
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground self-start mb-1 cursor-pointer transition-colors"
-          aria-label="Back to Payment Rooms"
-        >
-          <ArrowLeft size={14} />
-          <span>Back to Payment Rooms</span>
-        </button>
       )}
 
       <div className="m-invite-title-wrap">

@@ -297,7 +297,6 @@ function MobileDashboard({
       ) : active === "Payment Invitation" ? (
         <MobilePaymentInvitation
           room={activeRoom}
-          onBack={() => handleNavClick("Payment room")}
           onCancel={() => handleNavClick("Home")}
           onProceed={() => handleNavClick("Home")}
           onShare={() => {}}
