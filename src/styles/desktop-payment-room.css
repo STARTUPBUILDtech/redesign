@@ -343,36 +343,51 @@
   border-color: #ffffff;
 }
 
-/* Grid of Payment Room Cards */
+/* Joined Payment Room Cards (no space separating cards) */
 .desktop-pr-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  gap: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--page);
+}
+
+.app[data-appearance="dark"] .desktop-pr-grid {
+  background: var(--page);
+  border-color: var(--line);
 }
 
 .desktop-pr-card {
-  background: #ffffff;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 16px 18px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  padding: 16px 20px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 6px;
   cursor: pointer;
   text-align: left;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  transition: background-color 0.15s ease;
+  box-shadow: none;
+  transform: none;
 }
 
-.app[data-appearance="dark"] .desktop-pr-card {
-  background: #15171c;
-  border-color: rgba(255, 255, 255, 0.08);
+.desktop-pr-card:last-child {
+  border-bottom: none;
 }
 
 .desktop-pr-card:hover {
-  border-color: var(--ink);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-  transform: translateY(-2px);
+  background: color-mix(in srgb, var(--ink) 4%, transparent);
+  border-color: var(--line);
+  box-shadow: none;
+  transform: none;
+}
+
+.app[data-appearance="dark"] .desktop-pr-card:hover {
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .desktop-pr-card-top {
@@ -441,9 +456,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: 8px;
-  border-top: 1px dashed var(--line);
-  margin-top: 2px;
+  padding-top: 2px;
+  border-top: none;
+  margin-top: 0;
 }
 
 .desktop-pr-card-date {
