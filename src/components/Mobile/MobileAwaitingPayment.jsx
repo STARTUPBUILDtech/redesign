@@ -316,12 +316,12 @@ export default function MobileAwaitingPayment({
         <div className="ap-accordion-wrap">
           <button
             type="button"
-            className="ap-order-details-trigger"
-            onClick={() => setIsDetailsOpen(true)}
+            className={`ap-order-details-trigger ${isDetailsOpen ? "active" : ""}`}
+            onClick={() => setIsDetailsOpen((prev) => !prev)}
             aria-expanded={isDetailsOpen}
           >
             <span>Order details</span>
-            <span className="material-symbols-outlined ap-details-chevron">
+            <span className={`material-symbols-outlined ap-details-chevron ${isDetailsOpen ? "expanded" : ""}`}>
               expand_more
             </span>
           </button>

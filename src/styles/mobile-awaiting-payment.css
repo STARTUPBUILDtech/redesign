@@ -474,10 +474,15 @@
 .ap-details-chevron {
   font-size: 20px !important;
   line-height: 1;
-  transition: transform 0.25s ease-out;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: center center;
 }
 
-.ap-details-chevron.expanded {
+.ap-details-chevron.expanded,
+.ap-order-details-trigger[aria-expanded="true"] .ap-details-chevron {
   transform: rotate(180deg);
 }
 
