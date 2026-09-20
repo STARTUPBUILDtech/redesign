@@ -34,13 +34,22 @@ export default function MobileAwaitingPayment({
     },
   ]);
   const [chatInput, setChatInput] = useState("");
-  const chatEndRef = useRef(null);
+  const chatMessagesRef = useRef(null);
   const screenRef = useRef(null);
+
+  const scrollToChatBottom = () => {
+    if (chatMessagesRef.current) {
+      chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
+    }
+  };
 
   useEffect(() => {
     if (isChatOpen) {
-      screenRef.current?.scrollTo({ top: 0, behavior: "instant" });
-      chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      if (screenRef.current) {
+        screenRef.current.scrollTop = 0;
+      }
+      window.scrollTo(0, 0);
+      scrollToChatBottom();
     }
   }, [isChatOpen, chatMessages]);
 
@@ -539,7 +548,7 @@ export default function MobileAwaitingPayment({
             </div>
 
             {/* Messages Container */}
-            <div className="ap-chat-messages-container">
+            <div ref={chatMessagesRef} className="ap-chat-messages-container">
               {chatMessages.map((msg) => (
                 <div key={msg.id} className={`ap-chat-message-row ${msg.sender}`}>
                   {msg.sender === "seller" && (
@@ -553,7 +562,6 @@ export default function MobileAwaitingPayment({
                   </span>
                 </div>
               ))}
-              <div ref={chatEndRef} />
             </div>
 
             {/* Bottom Input Bar */}
@@ -566,9 +574,7 @@ export default function MobileAwaitingPayment({
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
                 onFocus={() => {
-                  setTimeout(() => {
-                    chatEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-                  }, 150);
+                  setTimeout(scrollToChatBottom, 120);
                 }}
                 placeholder="Type a message..."
                 className="ap-chat-text-input"
