@@ -19,6 +19,7 @@ export const ALL_PAYMENT_ROOMS = [
     bank: "Guaranteed Trust Bank (GTBank)",
     accountName: "PayKudi(08032001585)",
     accountNumber: "903370574",
+    variant: "Color, RAM size, Storage",
   },
   {
     id: "ORD-302914",

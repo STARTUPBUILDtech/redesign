@@ -43,14 +43,15 @@ export default function MobileAwaitingPayment({
   }, [seconds]);
 
   // Order data matching reference image
-  const orderNumber = "ORD-603607";
-  const orderAmount = "₦1,000,000";
+  const orderNumber = room.id || room.orderNumber || "ORD-603607";
+  const orderAmount = room.amount || room.price || "₦1,000,000";
   const youPayAmount = "₦10,15,300";
-  const bankName = "Guaranteed Trust Bank (GTBank)";
-  const accountName = "PayKudi(08032001585)";
-  const accountNumber = "903370574";
-  const sellerName = "08032001585";
+  const bankName = room.bank || "Guaranteed Trust Bank (GTBank)";
+  const accountName = room.accountName || "PayKudi(08032001585)";
+  const accountNumber = room.accountNumber || "903370574";
+  const sellerName = room.sellerName || "08032001585";
   const itemName = room.item || room.title || "Iphone 18 Pro Max";
+  const variantText = room.variant || "Color, Ram size, Storage";
 
   const handleCopy = (text, label) => {
     try {
@@ -382,7 +383,7 @@ export default function MobileAwaitingPayment({
               <div className="ap-sheet-item-info">
                 <div className="ap-sheet-item-name">{itemName.toUpperCase()}</div>
                 <div className="ap-sheet-item-sub">
-                  Recipient: {sellerName} · Buying · Color, Ram size, S...
+                  {variantText}
                 </div>
                 <div className="ap-sheet-item-price">{orderAmount}</div>
               </div>
