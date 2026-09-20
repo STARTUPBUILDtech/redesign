@@ -343,7 +343,7 @@
   letter-spacing: 0.05em;
   text-transform: uppercase;
   color: #c45900;
-  margin: 0;
+  margin: 2px 0 2px 0;
   flex-shrink: 0;
 }
 
@@ -355,7 +355,7 @@
 .ap-details-list {
   display: flex;
   flex-direction: column;
-  gap: clamp(7px, 1.4vh, 11px);
+  gap: clamp(9px, 1.6vh, 13px);
   width: 100%;
   flex-shrink: 0;
 }
@@ -365,7 +365,7 @@
   align-items: flex-end;
   justify-content: space-between;
   width: 100%;
-  padding-bottom: 0;
+  padding-bottom: 2px;
 }
 
 .ap-field-left {
