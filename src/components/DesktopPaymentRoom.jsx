@@ -3,6 +3,7 @@ import { Search, SlidersHorizontal, ArrowLeft, X } from "lucide-react";
 import { Select, SelectContent, SelectItem } from "./ui/select";
 import { ALL_PAYMENT_ROOMS } from "../data/paymentRooms.js";
 import MobilePaymentInvitation from "./Mobile/MobilePaymentInvitation.jsx";
+import MobileAwaitingPayment from "./Mobile/MobileAwaitingPayment.jsx";
 import "../styles/desktop-payment-room.css";
 
 export default function DesktopPaymentRoom({ role = "Buyer", onBackToHome }) {
@@ -95,6 +96,10 @@ export default function DesktopPaymentRoom({ role = "Buyer", onBackToHome }) {
 
   // If a room is selected, render the room invitation / details view with back button
   if (selectedRoom) {
+    const isAwaitingPayment =
+      selectedRoom.status === "awaiting_payment" ||
+      selectedRoom.statusText === "Awaiting Payment";
+
     return (
       <div className="desktop-payment-room-wrapper desktop-activity-wrapper">
         <main id="payment-room" className="desktop-payment-room-main desktop-activity-main">
@@ -110,21 +115,28 @@ export default function DesktopPaymentRoom({ role = "Buyer", onBackToHome }) {
               </button>
             </div>
             <div className="desktop-payment-room-inner">
-              <MobilePaymentInvitation
-                room={{
-                  id: selectedRoom.id,
-                  counterparty: selectedRoom.counterparty || selectedRoom.sellerName,
-                  item: selectedRoom.item || selectedRoom.title,
-                  amount: selectedRoom.amount || selectedRoom.price,
-                  role: role,
-                }}
-                onCancel={() => setSelectedRoom(null)}
-                onProceed={() => {
-                  if (onBackToHome) onBackToHome();
-                  else setSelectedRoom(null);
-                }}
-                onShare={() => {}}
-              />
+              {isAwaitingPayment ? (
+                <MobileAwaitingPayment
+                  room={selectedRoom}
+                  onBack={() => setSelectedRoom(null)}
+                />
+              ) : (
+                <MobilePaymentInvitation
+                  room={{
+                    id: selectedRoom.id,
+                    counterparty: selectedRoom.counterparty || selectedRoom.sellerName,
+                    item: selectedRoom.item || selectedRoom.title,
+                    amount: selectedRoom.amount || selectedRoom.price,
+                    role: role,
+                  }}
+                  onCancel={() => setSelectedRoom(null)}
+                  onProceed={() => {
+                    if (onBackToHome) onBackToHome();
+                    else setSelectedRoom(null);
+                  }}
+                  onShare={() => {}}
+                />
+              )}
             </div>
           </div>
         </main>

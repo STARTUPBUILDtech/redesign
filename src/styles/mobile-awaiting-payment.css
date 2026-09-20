@@ -1,0 +1,769 @@
+/* ==========================================================================
+   PAYKUDI - AWAITING PAYMENT (EXACT REFERENCE DESIGN)
+   ========================================================================== */
+
+.mobile-awaiting-payment-screen {
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+  flex: 1 1 auto;
+  min-height: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--page, #ffffff);
+  color: var(--ink, #161618);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  box-sizing: border-box;
+}
+
+.mobile-awaiting-payment-screen::-webkit-scrollbar {
+  display: none;
+}
+
+[data-appearance="dark"] .mobile-awaiting-payment-screen {
+  background-color: #121316;
+  color: #f4f4f6;
+}
+
+/* ── Top Header ── */
+.ap-top-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px clamp(12px, 4vw, 16px) 4px clamp(12px, 4vw, 16px);
+  background-color: var(--page, #ffffff);
+  border-bottom: none !important;
+  flex-shrink: 0;
+}
+
+[data-appearance="dark"] .ap-top-header {
+  background-color: #121316;
+  border-bottom: none !important;
+}
+
+.ap-header-left {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 2.5vw, 12px);
+  min-width: 0;
+}
+
+.ap-back-btn {
+  width: clamp(38px, 10vw, 42px);
+  height: clamp(38px, 10vw, 42px);
+  border-radius: 50%;
+  background-color: #000000 !important;
+  border: 1px solid #000000 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff !important;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+  padding: 0;
+}
+
+.ap-back-btn:hover {
+  background-color: #1f2937 !important;
+  border-color: #1f2937 !important;
+}
+
+.ap-back-btn:active {
+  transform: scale(0.95);
+}
+
+[data-appearance="dark"] .ap-back-btn {
+  background-color: #ffffff !important;
+  border-color: #ffffff !important;
+  color: #111827 !important;
+}
+
+[data-appearance="dark"] .ap-back-btn:hover {
+  background-color: #e5e7eb !important;
+  border-color: #e5e7eb !important;
+}
+
+[data-appearance="dark"] .ap-back-btn .material-symbols-outlined {
+  color: #111827 !important;
+}
+
+.ap-header-title {
+  font-size: clamp(14px, 4vw, 15.5px);
+  font-weight: 700;
+  color: var(--ink, #161618);
+  margin: 0;
+  white-space: nowrap;
+  letter-spacing: -0.2px;
+  line-height: 1.2;
+}
+
+[data-appearance="dark"] .ap-header-title {
+  color: #f4f4f6;
+}
+
+.ap-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.ap-help-btn {
+  width: clamp(38px, 10vw, 42px);
+  height: clamp(38px, 10vw, 42px);
+  border-radius: 50%;
+  background-color: #000000 !important;
+  border: 1px solid #000000 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff !important;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+  padding: 0;
+}
+
+.ap-help-btn:hover {
+  background-color: #1f2937 !important;
+  border-color: #1f2937 !important;
+  color: #ffffff !important;
+}
+
+.ap-help-btn:active {
+  transform: scale(0.95);
+}
+
+[data-appearance="dark"] .ap-help-btn {
+  background-color: #ffffff !important;
+  border-color: #ffffff !important;
+  color: #111827 !important;
+}
+
+[data-appearance="dark"] .ap-help-btn:hover {
+  background-color: #e5e7eb !important;
+  border-color: #e5e7eb !important;
+}
+
+[data-appearance="dark"] .ap-help-btn .material-symbols-outlined {
+  color: #111827 !important;
+}
+
+.ap-chat-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: clamp(7px, 2vw, 8px) clamp(11px, 3.5vw, 15px);
+  border-radius: 12px;
+  background-color: #22a659;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: clamp(13px, 3.8vw, 14.5px);
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.ap-chat-btn:hover {
+  background-color: #1d914d;
+}
+
+.ap-chat-btn:active {
+  transform: scale(0.96);
+}
+
+.ap-chat-btn .material-symbols-outlined {
+  font-size: 18px !important;
+  line-height: 1;
+}
+
+/* ── Content Scroll Area ── */
+.ap-content-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 6px clamp(14px, 4vw, 18px) 14px clamp(14px, 4vw, 18px);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 1.8vh, 12px);
+  box-sizing: border-box;
+}
+
+/* ── ORDER AMOUNT & STATUS BANNER CARD ── */
+.ap-banner-card {
+  background: linear-gradient(135deg, #c45900 0%, #b24d00 100%);
+  color: #ffffff;
+  border-radius: 6px;
+  padding: clamp(12px, 2vh, 15px) 14px clamp(10px, 1.8vh, 13px) 14px;
+  box-shadow: 0 4px 14px rgba(196, 89, 0, 0.22);
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+[data-appearance="dark"] .ap-banner-card {
+  background: linear-gradient(135deg, #964200 0%, #7d3700 100%);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.ap-banner-top-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.ap-amount-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.ap-sublabel {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.85);
+  text-transform: uppercase;
+  margin: 0 0 2px;
+  line-height: 1;
+}
+
+.ap-amount-value {
+  font-size: clamp(24px, 6vw, 27px);
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.5px;
+  line-height: 1.15;
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.ap-timer-badge {
+  background-color: rgba(255, 255, 255, 0.25);
+  border-radius: 9999px;
+  padding: 3px 12px;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 13.5px;
+  font-variant-numeric: tabular-nums;
+  backdrop-filter: blur(4px);
+  line-height: 1.2;
+}
+
+.ap-banner-divider {
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.22);
+  margin: clamp(8px, 1.4vh, 11px) 0 clamp(6px, 1.2vh, 9px);
+  width: 100%;
+}
+
+.ap-stepper-wrap {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* 5 Steps Horizontally Aligned */
+.ap-stepper-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.ap-step-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  text-align: center;
+  gap: 4px;
+}
+
+/* Active circle: white solid circle with dark text */
+.ap-step-circle-active {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  color: #111827;
+  font-weight: 800;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
+  line-height: 1;
+}
+
+/* Inactive circles: translucent */
+.ap-step-circle-inactive {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 10.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.ap-step-name {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+/* ── Section Title: PROCEED TO MAKE PAYMENT ── */
+.ap-section-title {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #c45900;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+[data-appearance="dark"] .ap-section-title {
+  color: #f59e0b;
+}
+
+/* ── Details Fields List ── */
+.ap-details-list {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(7px, 1.4vh, 11px);
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.ap-field-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  width: 100%;
+  padding-bottom: 0;
+}
+
+.ap-field-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.ap-field-label {
+  font-size: 11.5px;
+  color: #9ca3af;
+  font-weight: 500;
+  line-height: 1;
+}
+
+[data-appearance="dark"] .ap-field-label {
+  color: #9ca3af;
+}
+
+.ap-field-val {
+  font-size: clamp(14px, 3.8vw, 15px);
+  font-weight: 800;
+  color: var(--ink, #161618);
+  line-height: 1.2;
+  letter-spacing: -0.2px;
+}
+
+[data-appearance="dark"] .ap-field-val {
+  color: #f4f4f6;
+}
+
+.ap-you-pay-val {
+  color: #19a66c;
+  font-weight: 800;
+  font-size: 15px;
+}
+
+.ap-charges-note {
+  font-size: 12px;
+  font-weight: 500;
+  color: #9ca3af;
+  margin-left: 4px;
+}
+
+.ap-copy-btn {
+  background: transparent;
+  border: none;
+  color: #a1a1aa;
+  cursor: pointer;
+  padding: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.ap-copy-btn:hover {
+  color: #111827;
+}
+
+[data-appearance="dark"] .ap-copy-btn:hover {
+  color: #ffffff;
+}
+
+.ap-copy-btn.copied {
+  color: #19a66c !important;
+}
+
+.ap-copy-btn .material-symbols-outlined {
+  font-size: 18px !important;
+  line-height: 1;
+}
+
+/* ── Order Details Accordion ── */
+.ap-accordion-wrap {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.ap-order-details-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #19a66c;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px 0;
+  text-align: left;
+  user-select: none;
+  width: fit-content;
+}
+
+.ap-order-details-trigger:hover {
+  color: #158b5a;
+}
+
+.ap-details-chevron {
+  font-size: 20px !important;
+  line-height: 1;
+  transition: transform 0.25s ease-out;
+}
+
+.ap-details-chevron.expanded {
+  transform: rotate(180deg);
+}
+
+.ap-accordion-dropdown {
+  background: color-mix(in srgb, var(--ink, #161618) 3%, transparent);
+  border: 1px solid var(--line, #ebe8e2);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+  animation: apFadeIn 0.2s ease-out;
+}
+
+[data-appearance="dark"] .ap-accordion-dropdown {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+@keyframes apFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.ap-acc-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ap-acc-key {
+  color: #6b7280;
+}
+
+[data-appearance="dark"] .ap-acc-key {
+  color: #9ca3af;
+}
+
+.ap-acc-val {
+  font-weight: 700;
+  color: var(--ink, #161618);
+}
+
+[data-appearance="dark"] .ap-acc-val {
+  color: #f4f4f6;
+}
+
+/* ── Primary Button: I HAVE MADE PAYMENT ── */
+.ap-cta-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: auto;
+  padding-top: 6px;
+  flex-shrink: 0;
+}
+
+.ap-primary-payment-btn {
+  width: 100%;
+  min-height: 48px;
+  padding: 13px 20px;
+  border-radius: 12px;
+  background-color: #22a659;
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 15px;
+  font-family: inherit;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(34, 166, 89, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.ap-primary-payment-btn:hover:not(:disabled) {
+  background-color: #1d914d;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(34, 166, 89, 0.38);
+}
+
+.ap-primary-payment-btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.ap-primary-payment-btn.confirmed {
+  background-color: #158b5a;
+  box-shadow: none;
+  cursor: default;
+}
+
+/* ── Footer: Protected by PayKudi ── */
+.ap-footer-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 11px;
+  color: #9ca3af;
+  margin-top: 6px;
+  padding-bottom: 2px;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.ap-footer-note strong {
+  color: var(--ink, #161618);
+  font-weight: 700;
+}
+
+[data-appearance="dark"] .ap-footer-note strong {
+  color: #f4f4f6;
+}
+
+.ap-footer-info-icon {
+  font-size: 14px !important;
+  color: #9ca3af;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.ap-footer-info-icon:hover {
+  color: var(--ink, #161618);
+}
+
+/* ── Interactive Modals ── */
+.ap-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: apFadeIn 0.2s ease;
+}
+
+.ap-modal-card {
+  width: 100%;
+  max-width: 480px;
+  background-color: var(--page, #ffffff);
+  color: var(--ink, #161618);
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  padding: 18px 18px calc(24px + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.25);
+  animation: apSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+[data-appearance="dark"] .ap-modal-card {
+  background-color: #1a1b1f;
+  color: #f4f4f6;
+}
+
+@keyframes apSlideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.ap-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line, #e5e7eb);
+  margin-bottom: 12px;
+}
+
+[data-appearance="dark"] .ap-modal-header {
+  border-bottom-color: rgba(255, 255, 255, 0.12);
+}
+
+.ap-modal-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.ap-modal-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.06);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+}
+
+[data-appearance="dark"] .ap-modal-close {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.ap-chat-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 260px;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+
+.ap-chat-msg {
+  max-width: 80%;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.ap-chat-msg.buyer {
+  align-self: flex-end;
+  background-color: #22a659;
+  color: #ffffff;
+  border-bottom-right-radius: 3px;
+}
+
+.ap-chat-msg.seller {
+  align-self: flex-start;
+  background-color: #f1ede5;
+  color: #111827;
+  border-bottom-left-radius: 3px;
+}
+
+[data-appearance="dark"] .ap-chat-msg.seller {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #f4f4f6;
+}
+
+.ap-chat-form {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.ap-chat-input {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: 9999px;
+  border: 1px solid var(--line, #d1d5db);
+  background: var(--page, #ffffff);
+  color: var(--ink, #161618);
+  font-size: 13.5px;
+  outline: none;
+}
+
+[data-appearance="dark"] .ap-chat-input {
+  background: #121316;
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #f4f4f6;
+}
+
+.ap-chat-send {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #22a659;
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ap-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #161618;
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  font-size: 12.5px;
+  font-weight: 600;
+  z-index: 150;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  animation: apFadeIn 0.2s ease-out;
+}
+
+[data-appearance="dark"] .ap-toast {
+  background-color: #ffffff;
+  color: #161618;
+}

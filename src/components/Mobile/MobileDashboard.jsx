@@ -8,24 +8,35 @@ import MobileActivity from "./MobileActivity";
 import MobileNewPayment from "./MobileNewPayment";
 import MobilePaymentInvitation from "./MobilePaymentInvitation";
 import MobilePaymentRoom from "./MobilePaymentRoom";
+import MobileAwaitingPayment from "./MobileAwaitingPayment";
 import { useDashboard } from "../../context/DashboardContext";
 
 export default function MobileDashboard() {
   const { dark, active, setActive, transactions } = useDashboard();
   const [room, setRoom] = useState({
-    id: "PK-482910",
-    counterparty: "Alex Morgan",
+    id: "ORD-603607",
+    orderNumber: "ORD-603607",
+    counterparty: "08032001585",
+    sellerName: "08032001585",
     item: "Iphone 18 Pro Max",
-    amount: "₦89,000",
-    role: "Buyer",
+    amount: "₦1,000,000",
+    price: "₦1,000,000",
+    priceNumeric: 1000000,
+    role: "Buying",
+    status: "awaiting_payment",
+    statusText: "Awaiting Payment",
+    bank: "Guaranteed Trust Bank (GTBank)",
+    accountName: "PayKudi(08032001585)",
+    accountNumber: "903370574",
   });
 
   const isNewPayment = active === "New Payment";
   const isPaymentInvitation = active === "Payment Invitation";
+  const isAwaitingPayment = active === "Awaiting Payment";
   const isActivity = active === "Activity";
 
   return (
-    <div className={`mobile-dashboard ${isActivity ? "activity-mode" : ""}`} data-appearance={dark ? "dark" : "light"}>
+    <div className={`mobile-dashboard ${isActivity ? "activity-mode" : ""} ${isAwaitingPayment ? "no-nav-mode" : ""}`} data-appearance={dark ? "dark" : "light"}>
       <header className="mobile-header">
         <BrandLogo className="mobile-brand" />
         <HeaderActions />
@@ -37,8 +48,22 @@ export default function MobileDashboard() {
         <MobilePaymentRoom
           onSelectRoom={(newRoom) => {
             if (newRoom) setRoom(newRoom);
-            if (setActive) setActive("Payment Invitation");
+            if (
+              newRoom &&
+              (newRoom.status === "awaiting_payment" ||
+                newRoom.statusText === "Awaiting Payment")
+            ) {
+              if (setActive) setActive("Awaiting Payment");
+            } else {
+              if (setActive) setActive("Payment Invitation");
+            }
           }}
+        />
+      ) : isAwaitingPayment ? (
+        <MobileAwaitingPayment
+          room={room}
+          onBack={() => setActive("Payment room")}
+          onPaymentConfirmed={() => {}}
         />
       ) : isNewPayment ? (
         <MobileNewPayment
@@ -107,8 +132,8 @@ export default function MobileDashboard() {
         </>
       )}
 
-      {/* Hide navbar only on New Payment screen */}
-      {!isNewPayment && <MobileBottomNav />}
+      {/* Hide navbar on New Payment, Payment Invitation, and Awaiting Payment screens */}
+      {!isNewPayment && !isPaymentInvitation && !isAwaitingPayment && <MobileBottomNav />}
     </div>
   );
 }

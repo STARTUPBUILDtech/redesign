@@ -8,6 +8,7 @@ import MobileActivity from "./components/Mobile/MobileActivity.jsx";
 import MobileNewPayment from "./components/Mobile/MobileNewPayment.jsx";
 import MobilePaymentInvitation from "./components/Mobile/MobilePaymentInvitation.jsx";
 import MobilePaymentRoom from "./components/Mobile/MobilePaymentRoom.jsx";
+import MobileAwaitingPayment from "./components/Mobile/MobileAwaitingPayment.jsx";
 
 function BrandLogo({ dark, className }) {
   return (
@@ -254,6 +255,8 @@ function MobileDashboard({
   setVisible,
   role,
   setRole,
+  activeRoom,
+  setActiveRoom,
 }) {
   const contentScrollRef = useRef(null);
 
@@ -264,15 +267,10 @@ function MobileDashboard({
     }
   };
 
-  const [activeRoom, setActiveRoom] = useState({
-    id: "PK-482910",
-    counterparty: "Alex Morgan",
-    item: "Iphone 18 Pro Max",
-    amount: "₦89,000",
-    role: "Buyer",
-  });
-
-  const isNoNav = active === "New Payment" || active === "Payment Invitation";
+  const isNoNav =
+    active === "New Payment" ||
+    active === "Payment Invitation" ||
+    active === "Awaiting Payment";
 
   return (
     <div className={`mobile-dashboard${isNoNav ? " no-nav-mode" : ""}`} data-appearance={dark ? "dark" : "light"}>
@@ -301,6 +299,12 @@ function MobileDashboard({
           onProceed={() => handleNavClick("Home")}
           onShare={() => {}}
         />
+      ) : active === "Awaiting Payment" ? (
+        <MobileAwaitingPayment
+          room={activeRoom}
+          onBack={() => handleNavClick("Payment room")}
+          onPaymentConfirmed={() => {}}
+        />
       ) : (
         <div className="mobile-content-scroll" ref={contentScrollRef}>
           {active === "Activity" ? (
@@ -309,7 +313,15 @@ function MobileDashboard({
             <MobilePaymentRoom
               onSelectRoom={(r) => {
                 if (r) setActiveRoom(r);
-                setActive("Payment Invitation");
+                if (
+                  r &&
+                  (r.status === "awaiting_payment" ||
+                    r.statusText === "Awaiting Payment")
+                ) {
+                  setActive("Awaiting Payment");
+                } else {
+                  setActive("Payment Invitation");
+                }
               }}
             />
           ) : (
@@ -431,6 +443,22 @@ export default function App() {
   const [visible, setVisible] = useState(true);
   const [active, setActive] = useState("Activity");
   const [role, setRole] = useState("Buyer");
+  const [activeRoom, setActiveRoom] = useState({
+    id: "ORD-603607",
+    orderNumber: "ORD-603607",
+    counterparty: "08032001585",
+    sellerName: "08032001585",
+    item: "Iphone 18 Pro Max",
+    amount: "₦1,000,000",
+    price: "₦1,000,000",
+    priceNumeric: 1000000,
+    role: "Buying",
+    status: "awaiting_payment",
+    statusText: "Awaiting Payment",
+    bank: "Guaranteed Trust Bank (GTBank)",
+    accountName: "PayKudi(08032001585)",
+    accountNumber: "903370574",
+  });
 
   useEffect(() => {
     document.documentElement.setAttribute("data-appearance", dark ? "dark" : "light");
@@ -506,6 +534,16 @@ export default function App() {
               onCancel={() => setActive("Home")}
               onProceed={() => setActive("Home")}
               onShare={() => {}}
+            />
+          </div>
+        </main>
+      ) : active === "Awaiting Payment" ? (
+        <main id="payment-room" className="desktop-container desktop-payment-room">
+          <div className="desktop-payment-room-inner">
+            <MobileAwaitingPayment
+              room={activeRoom}
+              onBack={() => setActive("Payment room")}
+              onPaymentConfirmed={() => {}}
             />
           </div>
         </main>
@@ -586,6 +624,8 @@ export default function App() {
         setVisible={setVisible}
         role={role}
         setRole={setRole}
+        activeRoom={activeRoom}
+        setActiveRoom={setActiveRoom}
       />
     </div>
   );
