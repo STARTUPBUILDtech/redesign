@@ -194,7 +194,7 @@
   flex: 1 1 auto;
   min-height: 0;
   margin: 0 !important;
-  padding: 7px clamp(14px, 4vw, 18px) 14px clamp(14px, 4vw, 18px) !important;
+  padding: 12px clamp(14px, 4vw, 18px) 14px clamp(14px, 4vw, 18px) !important;
   display: flex;
   flex-direction: column;
   gap: clamp(8px, 1.8vh, 12px);
