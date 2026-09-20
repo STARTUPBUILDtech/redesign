@@ -13,6 +13,9 @@ html, body, #root { min-width: 100%; min-height: 100%; margin: 0; }
     overscroll-behavior-y: none !important;
     -webkit-overflow-scrolling: touch;
   }
+  input, textarea, select {
+    font-size: 16px !important;
+  }
 }
 button, a { font: inherit; -webkit-tap-highlight-color: transparent; }
 button { border: 0; cursor: pointer; }

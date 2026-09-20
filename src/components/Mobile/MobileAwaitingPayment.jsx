@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import "../../styles/mobile-awaiting-payment.css";
 
 export default function MobileAwaitingPayment({
@@ -10,6 +10,7 @@ export default function MobileAwaitingPayment({
   const [seconds, setSeconds] = useState(117);
   const [copiedKey, setCopiedKey] = useState(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [isArrowUp, setIsArrowUp] = useState(false);
   const [isLifting, setIsLifting] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -17,22 +18,31 @@ export default function MobileAwaitingPayment({
   const [isPaymentConfirmed, setIsPaymentConfirmed] = useState(false);
   const [toastText, setToastText] = useState(null);
 
-  // Chat message state
+  // Chat message state matching reference design
   const [chatMessages, setChatMessages] = useState([
     {
       id: 1,
       sender: "seller",
-      text: "Hello Amaka! Your order is packaged and ready for dispatch as soon as payment is confirmed.",
-      time: "10:41 AM",
+      text: "Hello! I have packaged the Nike Air Max 2025 and dropped it at GIG Logistics. Tracking number is GIG2208471.",
+      time: "Mon 2:18 PM",
     },
     {
       id: 2,
       sender: "buyer",
-      text: "Making payment to GTBank escrow account right now!",
-      time: "10:42 AM",
+      text: "Thanks! I will inspect the shoes as soon as the rider arrives.",
+      time: "Mon 2:25 PM",
     },
   ]);
   const [chatInput, setChatInput] = useState("");
+  const chatEndRef = useRef(null);
+  const screenRef = useRef(null);
+
+  useEffect(() => {
+    if (isChatOpen) {
+      screenRef.current?.scrollTo({ top: 0, behavior: "instant" });
+      chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [isChatOpen, chatMessages]);
 
   // Countdown timer effect
   useEffect(() => {
@@ -46,7 +56,7 @@ export default function MobileAwaitingPayment({
   // Order data matching reference image
   const orderNumber = room.id || room.orderNumber || "ORD-603607";
   const orderAmount = room.amount || room.price || "₦1,000,000";
-  const youPayAmount = "₦10,15,300";
+  const youPayAmount = room.totalAmount || "₦1,015,300";
   const bankName = room.bank || "Guaranteed Trust Bank (GTBank)";
   const accountName = room.accountName || "PayKudi(08032001585)";
   const accountNumber = room.accountNumber || "903370574";
@@ -76,18 +86,23 @@ export default function MobileAwaitingPayment({
     if (isLifting) return;
     if (!isDetailsOpen) {
       setIsLifting(true);
-      setIsDetailsOpen(true);
+      setIsArrowUp(true);
+      setTimeout(() => {
+        setIsDetailsOpen(true);
+      }, 300);
       setTimeout(() => {
         setIsLifting(false);
-      }, 700);
+      }, 950);
     } else {
       setIsDetailsOpen(false);
+      setIsArrowUp(false);
     }
   };
 
   const handleCloseDetails = () => {
     if (isLifting) return;
     setIsDetailsOpen(false);
+    setIsArrowUp(false);
   };
 
   const handlePaymentClick = () => {
@@ -112,47 +127,52 @@ export default function MobileAwaitingPayment({
   };
 
   return (
-    <div className="mobile-awaiting-payment-screen">
-      {/* ── Top Header ── */}
-      <header className="ap-top-header">
-        <div className="ap-header-left">
-          <button
-            type="button"
-            className="ap-back-btn"
-            onClick={onBack}
-            aria-label="Back to Payment Rooms"
-            title="Back"
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: 24 }}>
-              chevron_left
-            </span>
-          </button>
-          <h1 className="ap-header-title">Awaiting Payment</h1>
-        </div>
+    <div
+      ref={screenRef}
+      className={`mobile-awaiting-payment-screen ${isChatOpen ? "chat-open" : ""}`}
+    >
+      {/* ── Top Header (Hidden when chat is up) ── */}
+      {!isChatOpen && (
+        <header className="ap-top-header">
+          <div className="ap-header-left">
+            <button
+              type="button"
+              className="ap-back-btn"
+              onClick={onBack}
+              aria-label="Back to Payment Rooms"
+              title="Back"
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 24 }}>
+                chevron_left
+              </span>
+            </button>
+            <h1 className="ap-header-title">Awaiting Payment</h1>
+          </div>
 
-        <div className="ap-header-actions">
-          <button
-            type="button"
-            className="ap-help-btn"
-            onClick={() => setIsHelpOpen(true)}
-            aria-label="Help"
-            title="Help"
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
-              help_outline
-            </span>
-          </button>
-          <button
-            type="button"
-            className="ap-chat-btn"
-            onClick={() => setIsChatOpen(true)}
-            aria-label="Chat"
-          >
-            <span className="material-symbols-outlined">chat</span>
-            <span>Chat</span>
-          </button>
-        </div>
-      </header>
+          <div className="ap-header-actions">
+            <button
+              type="button"
+              className="ap-help-btn"
+              onClick={() => setIsHelpOpen(true)}
+              aria-label="Help"
+              title="Help"
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
+                help_outline
+              </span>
+            </button>
+            <button
+              type="button"
+              className="ap-chat-btn"
+              onClick={() => setIsChatOpen(true)}
+              aria-label="Chat"
+            >
+              <span className="material-symbols-outlined">chat</span>
+              <span>Chat</span>
+            </button>
+          </div>
+        </header>
+      )}
 
       {/* ── Content Body ── */}
       <div className="ap-content-body">
@@ -335,14 +355,14 @@ export default function MobileAwaitingPayment({
         <div className="ap-accordion-wrap">
           <button
             type="button"
-            className={`ap-order-details-trigger ${isDetailsOpen ? "active" : ""}`}
+            className={`ap-order-details-trigger ${isArrowUp ? "active" : ""}`}
             onClick={handleToggleDetails}
-            aria-expanded={isDetailsOpen}
+            aria-expanded={isArrowUp}
             disabled={isLifting}
             style={{ cursor: isLifting ? "default" : "pointer" }}
           >
             <span>Order details</span>
-            <span className={`material-symbols-outlined ap-details-chevron ${isDetailsOpen ? "expanded" : ""}`}>
+            <span className={`material-symbols-outlined ap-details-chevron ${isArrowUp ? "expanded" : ""}`}>
               expand_more
             </span>
           </button>
@@ -407,7 +427,11 @@ export default function MobileAwaitingPayment({
             {/* Item Info Box */}
             <div className="ap-sheet-item-card">
               <div className="ap-sheet-item-avatar">
-                <span>IPHONE</span>
+                {room.image ? (
+                  <img src={room.image} alt={itemName} className="ap-sheet-item-img" />
+                ) : (
+                  <span>{itemName.split(" ")[0]?.toUpperCase() || "IPHONE"}</span>
+                )}
               </div>
               <div className="ap-sheet-item-info">
                 <div className="ap-sheet-item-name">{itemName.toUpperCase()}</div>
@@ -488,41 +512,74 @@ export default function MobileAwaitingPayment({
         </div>
       )}
 
-      {/* Chat Modal */}
+      {/* ── Chat Slide-In Modal (Stops right under PayKudi header) ── */}
       {isChatOpen && (
-        <div className="ap-modal-backdrop" onClick={() => setIsChatOpen(false)}>
-          <div className="ap-modal-card" onClick={(e) => e.stopPropagation()}>
-            <div className="ap-modal-header">
-              <h3>Chat with Seller ({sellerName})</h3>
+        <div className="ap-chat-backdrop" onClick={() => setIsChatOpen(false)}>
+          <div className="ap-chat-slide-modal" onClick={(e) => e.stopPropagation()}>
+            {/* Green Header */}
+            <div className="ap-chat-green-header">
+              <div className="ap-chat-header-info">
+                <span className="ap-chat-header-user">{sellerName}</span>
+                <span className="ap-chat-header-order">{orderNumber}</span>
+              </div>
               <button
                 type="button"
-                className="ap-modal-close"
+                className="ap-chat-close-btn"
                 onClick={() => setIsChatOpen(false)}
-                aria-label="Close"
+                aria-label="Close Chat"
               >
-                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>close</span>
+                <span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span>
               </button>
             </div>
-            <div className="ap-chat-list">
+
+            {/* Security Notice */}
+            <div className="ap-chat-security-banner">
+              <span className="material-symbols-outlined">verified_user</span>
+              <span>This chat is protected by <strong>PayKudi security</strong></span>
+            </div>
+
+            {/* Messages Container */}
+            <div className="ap-chat-messages-container">
               {chatMessages.map((msg) => (
-                <div key={msg.id} className={`ap-chat-msg ${msg.sender}`}>
-                  <p style={{ margin: 0 }}>{msg.text}</p>
-                  <span style={{ fontSize: 10, opacity: 0.7, display: "block", textAlign: "right", marginTop: 2 }}>
-                    {msg.time}
+                <div key={msg.id} className={`ap-chat-message-row ${msg.sender}`}>
+                  {msg.sender === "seller" && (
+                    <span className="ap-chat-sender-name">{sellerName}</span>
+                  )}
+                  <div className={`ap-chat-bubble ${msg.sender}`}>
+                    <p>{msg.text}</p>
+                  </div>
+                  <span className="ap-chat-timestamp">
+                    {msg.time} {msg.sender === "buyer" ? "• Sent" : ""}
                   </span>
                 </div>
               ))}
+              <div ref={chatEndRef} />
             </div>
-            <form onSubmit={handleSendChat} className="ap-chat-form">
+
+            {/* Bottom Input Bar */}
+            <form onSubmit={handleSendChat} className="ap-chat-input-bar">
+              <button type="button" className="ap-chat-attach-btn" aria-label="Add attachment">
+                <span className="material-symbols-outlined">add_circle</span>
+              </button>
               <input
                 type="text"
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
+                onFocus={() => {
+                  setTimeout(() => {
+                    chatEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+                  }, 150);
+                }}
                 placeholder="Type a message..."
-                className="ap-chat-input"
+                className="ap-chat-text-input"
               />
-              <button type="submit" className="ap-chat-send" disabled={!chatInput.trim()}>
-                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>send</span>
+              <button
+                type="submit"
+                className="ap-chat-send-btn"
+                disabled={!chatInput.trim()}
+                aria-label="Send message"
+              >
+                <span className="material-symbols-outlined">send</span>
               </button>
             </form>
           </div>
