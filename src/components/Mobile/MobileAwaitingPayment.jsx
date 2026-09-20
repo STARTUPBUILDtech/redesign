@@ -135,7 +135,7 @@ export default function MobileAwaitingPayment({
       </header>
 
       {/* ── Content Body ── */}
-      <main className="ap-content-body">
+      <div className="ap-content-body">
         {/* ── ORDER AMOUNT & STATUS BANNER CARD ── */}
         <section className="ap-banner-card" aria-label="Order summary">
           {/* Top Row: ORDER AMOUNT + TIMER */}
@@ -377,7 +377,7 @@ export default function MobileAwaitingPayment({
             info
           </span>
         </footer>
-      </main>
+      </div>
 
       {/* ── Modals ── */}
       {/* Chat Modal */}

@@ -38,7 +38,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px clamp(12px, 4vw, 16px) 4px clamp(12px, 4vw, 16px);
+  padding: 5px clamp(12px, 4vw, 16px) 2px clamp(12px, 4vw, 16px) !important;
+  margin: 0 !important;
   background-color: var(--page, #ffffff);
   border-bottom: none !important;
   flex-shrink: 0;
@@ -192,7 +193,8 @@
 .ap-content-body {
   flex: 1 1 auto;
   min-height: 0;
-  padding: 6px clamp(14px, 4vw, 18px) 14px clamp(14px, 4vw, 18px);
+  margin: 0 !important;
+  padding: 2px clamp(14px, 4vw, 18px) 14px clamp(14px, 4vw, 18px) !important;
   display: flex;
   flex-direction: column;
   gap: clamp(8px, 1.8vh, 12px);
@@ -201,6 +203,7 @@
 
 /* ── ORDER AMOUNT & STATUS BANNER CARD ── */
 .ap-banner-card {
+  margin-top: 0 !important;
   background: linear-gradient(135deg, #c45900 0%, #b24d00 100%);
   color: #ffffff;
   border-radius: 6px;
