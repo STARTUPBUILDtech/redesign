@@ -359,7 +359,7 @@
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: #c45900;
-  margin: 1px 0 2px 0;
+  margin: 3px 0 4px 0;
   flex-shrink: 0;
 }
 
@@ -371,7 +371,7 @@
 .ap-details-list {
   display: flex;
   flex-direction: column;
-  gap: clamp(6px, 1.2vh, 9px);
+  gap: clamp(10px, 1.6vh, 13px);
   width: 100%;
   flex-shrink: 0;
 }
@@ -381,13 +381,13 @@
   align-items: flex-end;
   justify-content: space-between;
   width: 100%;
-  padding-bottom: 1px;
+  padding-bottom: 2px;
 }
 
 .ap-field-left {
   display: flex;
   flex-direction: column;
-  gap: 1.5px;
+  gap: 2.5px;
   min-width: 0;
   flex: 1;
 }
@@ -464,7 +464,7 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  margin-top: 2px;
+  margin-top: 6px;
 }
 
 .ap-order-details-trigger {
