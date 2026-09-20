@@ -10,6 +10,7 @@ export default function MobileAwaitingPayment({
   const [seconds, setSeconds] = useState(117);
   const [copiedKey, setCopiedKey] = useState(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [isLifting, setIsLifting] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
@@ -69,6 +70,24 @@ export default function MobileAwaitingPayment({
   const showToast = (msg) => {
     setToastText(msg);
     setTimeout(() => setToastText(null), 2000);
+  };
+
+  const handleToggleDetails = () => {
+    if (isLifting) return;
+    if (!isDetailsOpen) {
+      setIsLifting(true);
+      setIsDetailsOpen(true);
+      setTimeout(() => {
+        setIsLifting(false);
+      }, 700);
+    } else {
+      setIsDetailsOpen(false);
+    }
+  };
+
+  const handleCloseDetails = () => {
+    if (isLifting) return;
+    setIsDetailsOpen(false);
   };
 
   const handlePaymentClick = () => {
@@ -317,8 +336,10 @@ export default function MobileAwaitingPayment({
           <button
             type="button"
             className={`ap-order-details-trigger ${isDetailsOpen ? "active" : ""}`}
-            onClick={() => setIsDetailsOpen((prev) => !prev)}
+            onClick={handleToggleDetails}
             aria-expanded={isDetailsOpen}
+            disabled={isLifting}
+            style={{ cursor: isLifting ? "default" : "pointer" }}
           >
             <span>Order details</span>
             <span className={`material-symbols-outlined ap-details-chevron ${isDetailsOpen ? "expanded" : ""}`}>
@@ -354,8 +375,15 @@ export default function MobileAwaitingPayment({
       {/* ── Modals ── */}
       {/* Order Details Slide-Up Modal */}
       {isDetailsOpen && (
-        <div className="ap-bottom-sheet-backdrop" onClick={() => setIsDetailsOpen(false)}>
-          <div className="ap-bottom-sheet" onClick={(e) => e.stopPropagation()}>
+        <div
+          className={`ap-bottom-sheet-backdrop ${isLifting ? "lifting" : ""}`}
+          onClick={handleCloseDetails}
+        >
+          <div
+            className="ap-bottom-sheet"
+            onClick={(e) => e.stopPropagation()}
+            onAnimationEnd={() => setIsLifting(false)}
+          >
             {/* Drag Handle */}
             <div className="ap-sheet-handle" />
 
@@ -368,7 +396,8 @@ export default function MobileAwaitingPayment({
               <button
                 type="button"
                 className="ap-sheet-close-btn"
-                onClick={() => setIsDetailsOpen(false)}
+                onClick={handleCloseDetails}
+                disabled={isLifting}
                 aria-label="Close"
               >
                 <span className="material-symbols-outlined" style={{ fontSize: 18 }}>close</span>

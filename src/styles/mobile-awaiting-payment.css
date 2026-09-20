@@ -477,13 +477,17 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   transform-origin: center center;
 }
 
 .ap-details-chevron.expanded,
 .ap-order-details-trigger[aria-expanded="true"] .ap-details-chevron {
   transform: rotate(180deg);
+}
+
+.ap-order-details-trigger:disabled {
+  pointer-events: none;
 }
 
 /* ── Order Details Slide-Up Bottom Sheet Modal ── */
@@ -496,7 +500,11 @@
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  animation: apFadeIn 0.2s ease-out;
+  animation: apFadeIn 0.35s ease-out;
+}
+
+.ap-bottom-sheet-backdrop.lifting {
+  pointer-events: none;
 }
 
 .ap-bottom-sheet {
@@ -507,7 +515,7 @@
   border-radius: 24px 24px 0 0;
   padding: 10px 18px 28px 18px;
   box-sizing: border-box;
-  animation: apSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: apSlideUp 0.62s cubic-bezier(0.22, 1, 0.36, 1);
   max-height: 88vh;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
@@ -525,7 +533,7 @@
 @keyframes apSlideUp {
   from {
     transform: translateY(100%);
-    opacity: 0.5;
+    opacity: 0.8;
   }
   to {
     transform: translateY(0);
