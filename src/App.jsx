@@ -525,7 +525,7 @@ export default function App() {
           <div className="desktop-payment-room-inner">
             <MobilePaymentInvitation
               room={{
-                id: "PK-482910",
+                id: "ORD-482910",
                 counterparty: "Alex Morgan",
                 item: "Iphone 18 Pro Max",
                 amount: "₦89,000",

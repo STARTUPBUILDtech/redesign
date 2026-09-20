@@ -325,7 +325,7 @@ export default function DesktopPaymentRoom({ role = "Buyer", onBackToHome }) {
                     >
                       {room.role}
                     </span>
-                    <span className="desktop-pr-room-id">#{room.id}</span>
+                    <span className="desktop-pr-room-id">{room.id}</span>
                   </div>
 
                   {/* Main Row: Title & Price */}

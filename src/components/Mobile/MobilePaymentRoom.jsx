@@ -305,7 +305,7 @@ export default function MobilePaymentRoom({ onSelectRoom }) {
                   >
                     {room.role}
                   </span>
-                  <span className="mobile-pr-room-id">#{room.id}</span>
+                  <span className="mobile-pr-room-id">{room.id}</span>
                 </div>
 
                 {/* Main Row: Title & Price */}

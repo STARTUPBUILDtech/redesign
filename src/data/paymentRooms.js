@@ -21,7 +21,8 @@ export const ALL_PAYMENT_ROOMS = [
     accountNumber: "903370574",
   },
   {
-    id: "PK-302914",
+    id: "ORD-302914",
+    orderNumber: "ORD-302914",
     title: "MacBook Pro M3 Max 16\"",
     price: "₦2,450,000",
     priceNumeric: 2450000,
@@ -38,7 +39,8 @@ export const ALL_PAYMENT_ROOMS = [
     amount: "₦2,450,000",
   },
   {
-    id: "PK-774120",
+    id: "ORD-774120",
+    orderNumber: "ORD-774120",
     title: "Sony WH-1000XM5 Headphones",
     price: "₦385,000",
     priceNumeric: 385000,
@@ -55,7 +57,8 @@ export const ALL_PAYMENT_ROOMS = [
     amount: "₦385,000",
   },
   {
-    id: "PK-551928",
+    id: "ORD-551928",
+    orderNumber: "ORD-551928",
     title: "Samsung Galaxy S24 Ultra",
     price: "₦1,250,000",
     priceNumeric: 1250000,
@@ -72,7 +75,8 @@ export const ALL_PAYMENT_ROOMS = [
     amount: "₦1,250,000",
   },
   {
-    id: "PK-884102",
+    id: "ORD-884102",
+    orderNumber: "ORD-884102",
     title: "PlayStation 5 Pro Console",
     price: "₦920,000",
     priceNumeric: 920000,
@@ -89,7 +93,8 @@ export const ALL_PAYMENT_ROOMS = [
     amount: "₦920,000",
   },
   {
-    id: "PK-192834",
+    id: "ORD-192834",
+    orderNumber: "ORD-192834",
     title: "Nike Air Jordan 4 Retro",
     price: "₦145,000",
     priceNumeric: 145000,
@@ -106,7 +111,8 @@ export const ALL_PAYMENT_ROOMS = [
     amount: "₦145,000",
   },
   {
-    id: "PK-991823",
+    id: "ORD-991823",
+    orderNumber: "ORD-991823",
     title: "Apple Watch Ultra 2",
     price: "₦780,000",
     priceNumeric: 780000,

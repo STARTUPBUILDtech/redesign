@@ -131,7 +131,7 @@ export default function MobileNewPayment({ onCancel, onSuccess }) {
       const cleanAmt = amount.trim();
       const formattedAmount = cleanAmt.startsWith("₦") ? cleanAmt : `₦${cleanAmt}`;
       const newRoom = {
-        id: "PK-" + Math.floor(100000 + Math.random() * 900000),
+        id: "ORD-" + Math.floor(100000 + Math.random() * 900000),
         counterparty:
           verificationStatus === "verified"
             ? "Howard Ukah"

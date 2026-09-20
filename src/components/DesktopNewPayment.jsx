@@ -135,7 +135,7 @@ export default function DesktopNewPayment({ onCancel, onSuccess }) {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      const generatedRoomId = "PK-" + Math.floor(100000 + Math.random() * 900000);
+      const generatedRoomId = "ORD-" + Math.floor(100000 + Math.random() * 900000);
       setRoomId(generatedRoomId);
       setStep("success");
       if (onSuccess) onSuccess();
