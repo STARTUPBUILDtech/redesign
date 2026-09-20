@@ -311,48 +311,19 @@ export default function MobileAwaitingPayment({
           </div>
         </div>
 
-        {/* ── Order details dropdown ── */}
+        {/* ── Order details trigger ── */}
         <div className="ap-accordion-wrap">
           <button
             type="button"
             className="ap-order-details-trigger"
-            onClick={() => setIsDetailsOpen((prev) => !prev)}
+            onClick={() => setIsDetailsOpen(true)}
             aria-expanded={isDetailsOpen}
           >
             <span>Order details</span>
-            <span
-              className={`material-symbols-outlined ap-details-chevron ${
-                isDetailsOpen ? "expanded" : ""
-              }`}
-            >
+            <span className="material-symbols-outlined ap-details-chevron">
               expand_more
             </span>
           </button>
-
-          {isDetailsOpen && (
-            <div className="ap-accordion-dropdown">
-              <div className="ap-acc-row">
-                <span className="ap-acc-key">Item:</span>
-                <span className="ap-acc-val">{itemName}</span>
-              </div>
-              <div className="ap-acc-row">
-                <span className="ap-acc-key">Base Amount:</span>
-                <span className="ap-acc-val">{orderAmount}</span>
-              </div>
-              <div className="ap-acc-row">
-                <span className="ap-acc-key">Escrow Fee (Charges):</span>
-                <span className="ap-acc-val">₦15,300</span>
-              </div>
-              <div className="ap-acc-row" style={{ paddingTop: 6, borderTop: "1px solid var(--line, #e5e7eb)" }}>
-                <span className="ap-acc-key" style={{ fontWeight: 700, color: "var(--ink, #161618)" }}>
-                  Total:
-                </span>
-                <span className="ap-acc-val" style={{ color: "#19a66c" }}>
-                  {youPayAmount}
-                </span>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* ── Primary Action Button: I Have Made Payment ── */}
@@ -380,6 +351,113 @@ export default function MobileAwaitingPayment({
       </div>
 
       {/* ── Modals ── */}
+      {/* Order Details Slide-Up Modal */}
+      {isDetailsOpen && (
+        <div className="ap-bottom-sheet-backdrop" onClick={() => setIsDetailsOpen(false)}>
+          <div className="ap-bottom-sheet" onClick={(e) => e.stopPropagation()}>
+            {/* Drag Handle */}
+            <div className="ap-sheet-handle" />
+
+            {/* Header: Title + Order ID Pill + Close */}
+            <div className="ap-sheet-header">
+              <div className="ap-sheet-title-group">
+                <h3 className="ap-sheet-title">Order Details</h3>
+                <span className="ap-sheet-ord-pill">{orderNumber}</span>
+              </div>
+              <button
+                type="button"
+                className="ap-sheet-close-btn"
+                onClick={() => setIsDetailsOpen(false)}
+                aria-label="Close"
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>close</span>
+              </button>
+            </div>
+
+            {/* Item Info Box */}
+            <div className="ap-sheet-item-card">
+              <div className="ap-sheet-item-avatar">
+                <span>IPHONE</span>
+              </div>
+              <div className="ap-sheet-item-info">
+                <div className="ap-sheet-item-name">{itemName.toUpperCase()}</div>
+                <div className="ap-sheet-item-sub">
+                  Recipient: {sellerName} · Buying · Color, Ram size, S...
+                </div>
+                <div className="ap-sheet-item-price">{orderAmount}</div>
+              </div>
+            </div>
+
+            {/* Payment Breakdown Section */}
+            <div className="ap-sheet-section">
+              <div className="ap-sheet-section-title">PAYMENT BREAKDOWN</div>
+              <div className="ap-sheet-breakdown-list">
+                <div className="ap-sheet-row">
+                  <span className="ap-sheet-row-label">Item Amount</span>
+                  <span className="ap-sheet-row-val">{orderAmount}</span>
+                </div>
+                <div className="ap-sheet-row fee-row">
+                  <span className="ap-sheet-row-label">Transaction fee (1.5%)</span>
+                  <span className="ap-sheet-row-val">₦15,000</span>
+                </div>
+                <div className="ap-sheet-row fee-row">
+                  <span className="ap-sheet-row-label">Convenience fee</span>
+                  <span className="ap-sheet-row-val">₦300</span>
+                </div>
+                <div className="ap-sheet-divider" />
+                <div className="ap-sheet-row total-row">
+                  <span className="ap-sheet-row-label">Total</span>
+                  <span className="ap-sheet-row-val">{youPayAmount}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Terms Agreed Section */}
+            <div className="ap-sheet-section">
+              <div className="ap-sheet-section-title">TERMS AGREED</div>
+              <div className="ap-sheet-terms-list">
+                {/* Term 1: Delivery Terms */}
+                <div className="ap-sheet-term-item">
+                  <div className="ap-sheet-term-icon delivery">
+                    <span className="material-symbols-outlined">local_shipping</span>
+                  </div>
+                  <div className="ap-sheet-term-content">
+                    <div className="ap-sheet-term-label">Delivery Terms</div>
+                    <div className="ap-sheet-term-val">
+                      Direct WhatsApp Delivery <span className="ap-sheet-term-sub">(2–3 business days)</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Term 2: Inspection Window */}
+                <div className="ap-sheet-term-item">
+                  <div className="ap-sheet-term-icon inspection">
+                    <span className="material-symbols-outlined">timer</span>
+                  </div>
+                  <div className="ap-sheet-term-content">
+                    <div className="ap-sheet-term-label">Inspection Window</div>
+                    <div className="ap-sheet-term-val">
+                      2 Hours post-delivery <span className="ap-sheet-term-sub">(To confirm or dispute)</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Term 3: Seller's Name */}
+                <div className="ap-sheet-term-item">
+                  <div className="ap-sheet-term-icon seller">
+                    <span className="material-symbols-outlined">person</span>
+                  </div>
+                  <div className="ap-sheet-term-content">
+                    <div className="ap-sheet-term-label">Seller's Name</div>
+                    <div className="ap-sheet-term-val">{sellerName}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Chat Modal */}
       {isChatOpen && (
         <div className="ap-modal-backdrop" onClick={() => setIsChatOpen(false)}>
