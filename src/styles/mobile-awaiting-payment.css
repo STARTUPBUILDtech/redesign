@@ -497,7 +497,7 @@
 .ap-bottom-sheet {
   width: 100%;
   max-width: 440px;
-  background-color: #f7f5ef;
+  background-color: var(--page, #ffffff);
   color: var(--ink, #161618);
   border-radius: 24px 24px 0 0;
   padding: 10px 18px 28px 18px;
@@ -510,7 +510,7 @@
 }
 
 [data-appearance="dark"] .ap-bottom-sheet {
-  background-color: #17181c;
+  background-color: #121316;
   color: #f4f4f6;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-bottom: none;
@@ -585,7 +585,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background-color: #e7e4dc;
+  background-color: rgba(0, 0, 0, 0.06);
   border: none;
   display: flex;
   align-items: center;
@@ -597,7 +597,7 @@
 }
 
 .ap-sheet-close-btn:hover {
-  background-color: #dcd7cd;
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
 [data-appearance="dark"] .ap-sheet-close-btn {
@@ -968,7 +968,7 @@
 }
 
 [data-appearance="dark"] .ap-modal-card {
-  background-color: #1a1b1f;
+  background-color: #121316;
   color: #f4f4f6;
 }
 
