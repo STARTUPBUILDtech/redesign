@@ -42,30 +42,7 @@ export default function MobileDashboard() {
         <HeaderActions />
       </header>
 
-      {isActivity ? (
-        <MobileActivity />
-      ) : active === "Payment room" || active === "Payment Room" ? (
-        <MobilePaymentRoom
-          onSelectRoom={(newRoom) => {
-            if (newRoom) setRoom(newRoom);
-            if (
-              newRoom &&
-              (newRoom.status === "awaiting_payment" ||
-                newRoom.statusText === "Awaiting Payment")
-            ) {
-              if (setActive) setActive("Awaiting Payment");
-            } else {
-              if (setActive) setActive("Payment Invitation");
-            }
-          }}
-        />
-      ) : isAwaitingPayment ? (
-        <MobileAwaitingPayment
-          room={room}
-          onBack={() => setActive("Payment room")}
-          onPaymentConfirmed={() => {}}
-        />
-      ) : isNewPayment ? (
+      {isNewPayment ? (
         <MobileNewPayment
           onCancel={() => setActive("Home")}
           onSuccess={(newRoom) => {
@@ -80,8 +57,33 @@ export default function MobileDashboard() {
           onProceed={() => setActive("Home")}
           onShare={() => {}}
         />
+      ) : isAwaitingPayment ? (
+        <MobileAwaitingPayment
+          room={room}
+          onBack={() => setActive("Payment room")}
+          onPaymentConfirmed={() => {}}
+        />
       ) : (
-        <>
+        <div className="mobile-content-scroll">
+          {isActivity ? (
+            <MobileActivity />
+          ) : active === "Payment room" || active === "Payment Room" ? (
+            <MobilePaymentRoom
+              onSelectRoom={(newRoom) => {
+                if (newRoom) setRoom(newRoom);
+                if (
+                  newRoom &&
+                  (newRoom.status === "awaiting_payment" ||
+                    newRoom.statusText === "Awaiting Payment")
+                ) {
+                  if (setActive) setActive("Awaiting Payment");
+                } else {
+                  if (setActive) setActive("Payment Invitation");
+                }
+              }}
+            />
+          ) : (
+            <div className="mobile-home-content">
           <div className="mobile-main mobile-main-top">
             <section className="mobile-intro">
               <h1>Good morning, Amaka</h1>
@@ -129,7 +131,9 @@ export default function MobileDashboard() {
               </div>
             </section>
           </main>
-        </>
+            </div>
+          )}
+        </div>
       )}
 
       {/* Hide navbar on New Payment, Payment Invitation, and Awaiting Payment screens */}
