@@ -9,6 +9,8 @@ import MobileNewPayment from "./components/Mobile/MobileNewPayment.jsx";
 import MobilePaymentInvitation from "./components/Mobile/MobilePaymentInvitation.jsx";
 import MobilePaymentRoom from "./components/Mobile/MobilePaymentRoom.jsx";
 import MobileAwaitingPayment from "./components/Mobile/MobileAwaitingPayment.jsx";
+import MobilePaymentReceived from "./components/Mobile/MobilePaymentReceived.jsx";
+import MobileInTransit from "./components/Mobile/MobileInTransit.jsx";
 
 function BrandLogo({ dark, className }) {
   return (
@@ -270,7 +272,9 @@ function MobileDashboard({
   const isNoNav =
     active === "New Payment" ||
     active === "Payment Invitation" ||
-    active === "Awaiting Payment";
+    active === "Awaiting Payment" ||
+    active === "Payment Received" ||
+    active === "In Transit";
 
   return (
     <div className={`mobile-dashboard${isNoNav ? " no-nav-mode" : ""}`} data-appearance={dark ? "dark" : "light"}>
@@ -305,6 +309,17 @@ function MobileDashboard({
           onBack={() => handleNavClick("Payment room")}
           onPaymentConfirmed={() => {}}
         />
+      ) : active === "Payment Received" ? (
+        <MobilePaymentReceived
+          room={activeRoom}
+          onBack={() => handleNavClick("Payment room")}
+        />
+      ) : active === "In Transit" ? (
+        <MobileInTransit
+          room={activeRoom}
+          onBack={() => handleNavClick("Payment room")}
+          role={role}
+        />
       ) : (
         <div className="mobile-content-scroll" ref={contentScrollRef}>
           {active === "Activity" ? (
@@ -313,12 +328,12 @@ function MobileDashboard({
             <MobilePaymentRoom
               onSelectRoom={(r) => {
                 if (r) setActiveRoom(r);
-                if (
-                  r &&
-                  (r.status === "awaiting_payment" ||
-                    r.statusText === "Awaiting Payment")
-                ) {
+                if (r && (r.status === "awaiting_payment" || r.statusText === "Awaiting Payment")) {
                   setActive("Awaiting Payment");
+                } else if (r && (r.status === "payment_received" || r.statusText === "Payment Received")) {
+                  setActive("Payment Received");
+                } else if (r && (r.status === "in_transit" || r.statusText === "In Transit")) {
+                  setActive("In Transit");
                 } else {
                   setActive("Payment Invitation");
                 }

@@ -9,7 +9,10 @@ import MobileNewPayment from "./MobileNewPayment";
 import MobilePaymentInvitation from "./MobilePaymentInvitation";
 import MobilePaymentRoom from "./MobilePaymentRoom";
 import MobileAwaitingPayment from "./MobileAwaitingPayment";
+import MobilePaymentReceived from "./MobilePaymentReceived";
+import MobileInTransit from "./MobileInTransit";
 import { useDashboard } from "../../context/DashboardContext";
+import { BUYER_ROOM, SELLER_ROOM, IN_TRANSIT_ROOM } from "../../data/paymentRooms";
 
 export default function MobileDashboard() {
   const { dark, active, setActive, transactions } = useDashboard();
@@ -30,13 +33,17 @@ export default function MobileDashboard() {
     accountNumber: "903370574",
   });
 
+  const role = room.role;
+
   const isNewPayment = active === "New Payment";
   const isPaymentInvitation = active === "Payment Invitation";
   const isAwaitingPayment = active === "Awaiting Payment";
+  const isPaymentReceived = active === "Payment Received";
+  const isInTransit = active === "In Transit";
   const isActivity = active === "Activity";
 
   return (
-    <div className={`mobile-dashboard ${isActivity ? "activity-mode" : ""} ${isAwaitingPayment ? "no-nav-mode" : ""}`} data-appearance={dark ? "dark" : "light"}>
+    <div className={`mobile-dashboard ${isActivity ? "activity-mode" : ""} ${isAwaitingPayment || isPaymentReceived || isInTransit ? "no-nav-mode" : ""}`} data-appearance={dark ? "dark" : "light"}>
       <header className="mobile-header">
         <BrandLogo className="mobile-brand" />
         <HeaderActions />
@@ -63,6 +70,17 @@ export default function MobileDashboard() {
           onBack={() => setActive("Payment room")}
           onPaymentConfirmed={() => {}}
         />
+      ) : isPaymentReceived ? (
+        <MobilePaymentReceived
+          room={room}
+          onBack={() => setActive("Payment room")}
+        />
+      ) : isInTransit ? (
+        <MobileInTransit
+          room={room}
+          onBack={() => setActive("Payment room")}
+          role={role}
+        />
       ) : (
         <div className="mobile-content-scroll">
           {isActivity ? (
@@ -77,6 +95,18 @@ export default function MobileDashboard() {
                     newRoom.statusText === "Awaiting Payment")
                 ) {
                   if (setActive) setActive("Awaiting Payment");
+                } else if (
+                  newRoom &&
+                  (newRoom.status === "payment_received" ||
+                    newRoom.statusText === "Payment Received")
+                ) {
+                  if (setActive) setActive("Payment Received");
+                } else if (
+                  newRoom &&
+                  (newRoom.status === "in_transit" ||
+                    newRoom.statusText === "In Transit")
+                ) {
+                  if (setActive) setActive("In Transit");
                 } else {
                   if (setActive) setActive("Payment Invitation");
                 }

@@ -1,0 +1,314 @@
+/* ==========================================================================
+   PAYKUDI - IN TRANSIT SCREEN STYLES
+   Harmonized with mobile-awaiting-payment.css & mobile-payment-received.css
+   for exact typography, text size, structure, animations, and color system.
+   ========================================================================== */
+
+/* ── VIBRANT PURPLE ORDER STATUS BANNER CARD ── */
+.ap-banner-card.it-banner-card {
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%) !important;
+  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.28) !important;
+}
+
+[data-appearance="dark"] .ap-banner-card.it-banner-card {
+  background: linear-gradient(135deg, #6d28d9 0%, #4c1d95 100%) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45) !important;
+}
+
+/* ── 5-Step Stepper in In Transit Card ── */
+.it-stepper-row {
+  position: relative;
+}
+
+/* Connecting Dotted Line between Step 1 and 2 (Orange to Blue gradient) */
+.it-stepper-row::before {
+  content: "";
+  position: absolute;
+  top: 11px;
+  left: 12.5%;
+  width: 15%;
+  height: 3px;
+  background: linear-gradient(90deg, #ea580c 0%, #0284c7 100%);
+  -webkit-mask: radial-gradient(circle, #000 1.5px, transparent 1.6px) 0 50% / 6px 100% repeat-x;
+  mask: radial-gradient(circle, #000 1.5px, transparent 1.6px) 0 50% / 6px 100% repeat-x;
+  z-index: 1;
+}
+
+/* Only Step 1 to 2 connecting line is present as per requirement */
+
+/* Step 1: Checked Orange Circle */
+.it-step-circle-checked-orange {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background-color: #ea580c;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  box-shadow: 0 0 8px rgba(234, 88, 12, 0.55);
+  position: relative;
+  z-index: 2;
+  line-height: 1;
+}
+
+.it-step-circle-checked-orange .material-symbols-outlined {
+  font-size: 15px !important;
+  font-weight: 800;
+  line-height: 1;
+}
+
+/* Step 2: Checked Blue Circle */
+.it-step-circle-checked-blue {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background-color: #0284c7;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 800;
+  box-shadow: 0 0 8px rgba(2, 132, 199, 0.55);
+  position: relative;
+  z-index: 2;
+  line-height: 1;
+}
+
+.it-step-circle-checked-blue .material-symbols-outlined {
+  font-size: 15px !important;
+  font-weight: 800;
+  line-height: 1;
+}
+
+/* Step 3: Glowing White Active Circle */
+.it-step-circle-active {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  color: #6d28d9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11.5px;
+  font-weight: 800;
+  box-shadow: 0 0 14px rgba(255, 255, 255, 0.95), 0 0 6px rgba(255, 255, 255, 0.8);
+  position: relative;
+  z-index: 2;
+  line-height: 1;
+}
+
+/* ── Section Title: SHIPPING DETAILS ── */
+.ap-section-title.it-title {
+  color: #7c3aed;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+[data-appearance="dark"] .ap-section-title.it-title {
+  color: #a78bfa;
+}
+
+/* ── Dual Actions Row (Order Details + Shipping Status) ── */
+.it-dual-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 4px 0 8px;
+}
+
+.it-action-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  user-select: none;
+}
+
+.it-action-trigger:hover {
+  opacity: 0.85;
+}
+
+.it-action-trigger:active {
+  transform: scale(0.97);
+}
+
+.it-order-details-trigger {
+  color: #16a34a;
+}
+
+[data-appearance="dark"] .it-order-details-trigger {
+  color: #34d399;
+}
+
+.it-shipping-status-trigger {
+  color: #7c3aed;
+}
+
+[data-appearance="dark"] .it-shipping-status-trigger {
+  color: #a78bfa;
+}
+
+.it-trigger-arrow {
+  font-size: 20px !important;
+  line-height: 1;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.it-trigger-arrow.expanded {
+  transform: rotate(180deg);
+}
+
+/* ── Shipping Status Timeline Modal Specifics ── */
+.it-shipping-sheet-body {
+  padding: 16px 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-height: 75vh;
+  overflow-y: auto;
+}
+
+.it-courier-summary-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.it-courier-summary-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.it-courier-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 13.5px;
+  color: var(--ink);
+}
+
+.it-tracking-pill {
+  font-family: monospace;
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(124, 58, 237, 0.12);
+  color: #7c3aed;
+  border: 1px solid rgba(124, 58, 237, 0.25);
+}
+
+[data-appearance="dark"] .it-tracking-pill {
+  background: rgba(167, 139, 250, 0.15);
+  color: #c4b5fd;
+  border-color: rgba(167, 139, 250, 0.3);
+}
+
+.it-eta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.it-eta-val {
+  font-weight: 700;
+  color: #16a34a;
+}
+
+/* Timeline Milestones */
+.it-timeline {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding-left: 28px;
+  gap: 20px;
+}
+
+.it-timeline::before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  left: 9px;
+  width: 2px;
+  background: var(--line);
+}
+
+.it-timeline-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.it-timeline-dot {
+  position: absolute;
+  left: -28px;
+  top: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  background: var(--surface);
+  border: 2px solid var(--line);
+  color: var(--muted);
+  z-index: 2;
+}
+
+.it-timeline-dot.completed {
+  background: #16a34a;
+  border-color: #16a34a;
+  color: #ffffff;
+}
+
+.it-timeline-dot.active {
+  background: #7c3aed;
+  border-color: #7c3aed;
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(124, 58, 237, 0.55);
+}
+
+.it-timeline-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.3;
+}
+
+.it-timeline-desc {
+  font-size: 11.5px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.it-timeline-time {
+  font-size: 10.5px;
+  color: var(--muted);
+  margin-top: 2px;
+}
