@@ -339,21 +339,21 @@ export default function MobileInTransit({
             </div>
           </div>
 
-          {/* Field 5: Buyer's / Seller's Name */}
+          {/* Field 5: Seller's Name */}
           <div className="ap-field-row" role="listitem">
             <div className="ap-field-left">
-              <span className="ap-field-label">{counterpartyLabel}</span>
-              <span className="ap-field-val">{counterpartyName}</span>
+              <span className="ap-field-label">Seller's Name</span>
+              <span className="ap-field-val">{sellerName}</span>
             </div>
             <button
               type="button"
-              className={`ap-copy-btn ${copiedKey === counterpartyLabel ? "copied" : ""}`}
-              onClick={() => handleCopy(counterpartyName, counterpartyLabel)}
-              aria-label={`Copy ${counterpartyLabel}`}
+              className={`ap-copy-btn ${copiedKey === "Seller Name" ? "copied" : ""}`}
+              onClick={() => handleCopy(sellerName, "Seller Name")}
+              aria-label="Copy Seller Name"
               title="Copy"
             >
               <span className="material-symbols-outlined">
-                {copiedKey === counterpartyLabel ? "check" : "content_copy"}
+                {copiedKey === "Seller Name" ? "check" : "content_copy"}
               </span>
             </button>
           </div>
@@ -392,7 +392,7 @@ export default function MobileInTransit({
 
         {/* ── Footer Protection Disclaimer ── */}
         <footer className="ap-footer-note">
-          <span>Your payout is protected by <strong>PayKudi</strong></span>
+          <span>Your payment is protected by <strong>PayKudi</strong></span>
           <span
             className="material-symbols-outlined ap-footer-info-icon"
             onClick={() => setIsInfoOpen(true)}

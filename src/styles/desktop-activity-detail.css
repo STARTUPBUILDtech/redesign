@@ -1,0 +1,186 @@
+/* ── Desktop Activity Detail Overlay ── */
+
+.dact-wrapper {
+  position: fixed;
+  top: clamp(64px, 3.8vw, 80px);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--page);
+  color: var(--ink);
+  box-sizing: border-box;
+  overflow-y: auto;
+  padding: clamp(16px, 1.4vw, 24px) 0 48px;
+  z-index: 10;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+
+.dact-wrapper::-webkit-scrollbar { width: 4px; }
+.dact-wrapper::-webkit-scrollbar-track { background: transparent; }
+.dact-wrapper::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
+
+.dact-container {
+  width: min(calc(100% - clamp(40px, 4vw, 80px)), 560px);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Back Button */
+.dact-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 0;
+  transition: color 0.15s;
+}
+.dact-back-btn:hover { color: var(--ink); }
+
+/* Main Card */
+.dact-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.05);
+}
+
+/* Status Header */
+.dact-status-header {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 14px 20px 12px;
+  border-bottom: 1px solid var(--line);
+}
+.dact-status-header.received { color: #16a34a; }
+.dact-status-header.sent     { color: #e55a2b; }
+.dact-status-header.payout   { color: #2563eb; }
+.dact-status-header.refund   { color: #9333ea; }
+
+/* Field rows */
+.dact-field-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--line);
+}
+.dact-field-row:last-of-type { border-bottom: none; }
+
+.dact-field-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+.dact-field-label {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.dact-field-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.dact-highlight {
+  color: #16a34a;
+}
+
+.dact-incl {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+/* Copy button */
+.dact-copy-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: none;
+  cursor: pointer;
+  color: var(--muted);
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+.dact-copy-btn:hover { background: var(--page); color: var(--ink); }
+
+/* Change button */
+.dact-change-btn {
+  font-size: 12px;
+  font-weight: 600;
+  color: #16a34a;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 0;
+  flex-shrink: 0;
+  transition: opacity 0.15s;
+}
+.dact-change-btn:hover { opacity: 0.7; }
+
+/* Order details accordion */
+.dact-order-details-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #16a34a;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 14px 20px;
+  width: 100%;
+  border-top: 1px solid var(--line);
+  transition: opacity 0.15s;
+}
+.dact-order-details-btn:hover { opacity: 0.75; }
+
+.dact-order-details-body {
+  padding: 0 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.dact-order-detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+.dact-order-detail-item span:first-child { color: var(--muted); }
+.dact-order-detail-item span:last-child  { color: var(--ink); font-weight: 500; }
+
+/* Dark mode */
+[data-appearance="dark"] .dact-card,
+.app[data-appearance="dark"] .dact-card {
+  background: #1a1d24;
+  border-color: #2a2d36;
+}

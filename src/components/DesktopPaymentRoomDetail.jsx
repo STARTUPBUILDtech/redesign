@@ -1,8 +1,20 @@
 import { useState, useRef, useEffect } from "react";
 import OrderDetailsModal from "./Shared/OrderDetailsModal";
+import ShippingStatusModal from "./Shared/ShippingStatusModal";
 import HelpDrawer from "./Shared/HelpDrawer";
 import ReceiptModal from "./Shared/ReceiptModal";
 import "../styles/desktop-payment-room-detail.css";
+
+const BANKS = [
+  "Access Bank",
+  "Guaranteed Trust Bank (GTBank)",
+  "Zenith Bank",
+  "First Bank of Nigeria",
+  "United Bank for Africa (UBA)",
+  "Kuda Bank",
+  "Opay",
+  "Palmpay",
+];
 
 export default function DesktopPaymentRoomDetail({
   room = {},
@@ -13,11 +25,30 @@ export default function DesktopPaymentRoomDetail({
 }) {
   const [copiedKey, setCopiedKey] = useState(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [isDetailsArrowUp, setIsDetailsArrowUp] = useState(false);
+  const [isDetailsLifting, setIsDetailsLifting] = useState(false);
+  const [isShippingOpen, setIsShippingOpen] = useState(false);
+  const [isShippingArrowUp, setIsShippingArrowUp] = useState(false);
+  const [isShippingLifting, setIsShippingLifting] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isReceiptOpen, setIsReceiptOpen] = useState(false);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [isPaymentConfirmed, setIsPaymentConfirmed] = useState(false);
   const [seconds, setSeconds] = useState(119);
+
+  const status = room.status || "awaiting_payment";
+  const isAwaitingPayment = status === "awaiting_payment";
+  const isPaymentReceived = status === "payment_received";
+  const isInTransit = status === "in_transit";
+  const statusText = room.statusText || (
+    isInTransit ? "In Transit" :
+    isPaymentReceived ? "Payment Received" :
+    "Awaiting Payment"
+  );
+
+  const courierService = room.courier || "GIG Logistics";
+  const trackingNumber = room.trackingNumber || "KMLMLMMO";
+  const estimatedArrival = room.estimatedArrival || "12-10-2024";
 
   // Derive order data matching screenshot
   const orderNumber = room.id || room.orderNumber || "ORD-992384";
@@ -28,21 +59,18 @@ export default function DesktopPaymentRoomDetail({
     50000;
   const txCharges = Math.round(priceNumeric * 0.015) + 300;
   const youPayAmount =
-    room.totalAmount || `₦${(priceNumeric + txCharges).toLocaleString("en-US")}`;
+    room.youPaid ||
+    room.totalAmount ||
+    (priceNumeric ? `₦${(priceNumeric + txCharges).toLocaleString("en-US")}` : "₦2,381,165");
   const bankName = room.bank || "Guaranteed Trust Bank (GTBank)";
-  const sellerName = room.sellerName || room.counterparty || "Emeka Tech Hub";
-  const buyerName = room.buyerName || "Amaka Obi";
-  const accountName = room.accountName || `PayKudi(${sellerName})`;
-  const accountNumber = room.accountNumber || "903370574";
-  const status = room.status || "awaiting_payment";
-  const statusText = room.statusText || (
-    status === "in_transit" ? "In Transit" :
-    status === "payment_received" ? "Payment Received" :
-    "Awaiting Payment"
+  const [selectedBank, setSelectedBank] = useState(
+    room.refundBank || (isPaymentReceived ? "Access Bank" : room.bank) || "Access Bank"
   );
-  const isAwaitingPayment = status === "awaiting_payment";
-  const isPaymentReceived = status === "payment_received";
-  const isInTransit = status === "in_transit";
+  const [isChangeBankOpen, setIsChangeBankOpen] = useState(false);
+  const sellerName = room.sellerName || (isPaymentReceived ? "Amaka Obi" : (room.counterparty || "Emeka Tech Hub"));
+  const buyerName = room.buyerName || "Tunde Adeleke";
+  const accountName = room.accountName || (isPaymentReceived ? "Marcus Vance" : `PayKudi(${sellerName})`);
+  const accountNumber = room.accountNumber || (isPaymentReceived ? "0123456789" : "903370574");
 
   // Chat message state
   const [chatMessages, setChatMessages] = useState([
@@ -82,6 +110,52 @@ export default function DesktopPaymentRoomDetail({
     }, 1000);
     return () => clearInterval(t);
   }, [isAwaitingPayment, seconds]);
+
+  const handleToggleDetails = () => {
+    if (isDetailsLifting) return;
+    if (!isDetailsOpen) {
+      setIsDetailsLifting(true);
+      setIsDetailsArrowUp(true);
+      setTimeout(() => {
+        setIsDetailsOpen(true);
+      }, 300);
+      setTimeout(() => {
+        setIsDetailsLifting(false);
+      }, 950);
+    } else {
+      setIsDetailsOpen(false);
+      setIsDetailsArrowUp(false);
+    }
+  };
+
+  const handleCloseDetails = () => {
+    if (isDetailsLifting) return;
+    setIsDetailsOpen(false);
+    setIsDetailsArrowUp(false);
+  };
+
+  const handleToggleShipping = () => {
+    if (isShippingLifting) return;
+    if (!isShippingOpen) {
+      setIsShippingLifting(true);
+      setIsShippingArrowUp(true);
+      setTimeout(() => {
+        setIsShippingOpen(true);
+      }, 300);
+      setTimeout(() => {
+        setIsShippingLifting(false);
+      }, 950);
+    } else {
+      setIsShippingOpen(false);
+      setIsShippingArrowUp(false);
+    }
+  };
+
+  const handleCloseShipping = () => {
+    if (isShippingLifting) return;
+    setIsShippingOpen(false);
+    setIsShippingArrowUp(false);
+  };
 
   const handleCopy = (val, key) => {
     try {
@@ -203,7 +277,15 @@ export default function DesktopPaymentRoomDetail({
               {/* Stepper */}
               <div className="desktop-prd-stepper-wrap">
                 <span className="desktop-prd-banner-label">ORDER STATUS</span>
-                <div className="desktop-prd-stepper-row">
+                <div
+                  className={`desktop-prd-stepper-row ${
+                    isPaymentReceived
+                      ? "payment-received"
+                      : isInTransit
+                      ? "in-transit"
+                      : "awaiting-payment"
+                  }`}
+                >
                   {/* Step 1: Payment */}
                   <div className="desktop-prd-step-col">
                     <div
@@ -213,13 +295,15 @@ export default function DesktopPaymentRoomDetail({
                           : "checked-orange"
                       }`}
                     >
-                      {isAwaitingPayment ? "1" : (
-                        <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
+                      {isAwaitingPayment ? (
+                        "1"
+                      ) : (
+                        <span className="material-symbols-outlined" style={{ fontSize: 14, fontWeight: 800 }}>
                           check
                         </span>
                       )}
                     </div>
-                    <span className="desktop-prd-step-name">Payment</span>
+                    <span className={`desktop-prd-step-name ${isAwaitingPayment ? "active" : ""}`}>Payment</span>
                   </div>
 
                   {/* Step 2: Received */}
@@ -227,21 +311,23 @@ export default function DesktopPaymentRoomDetail({
                     <div
                       className={`desktop-prd-step-circle ${
                         isPaymentReceived
-                          ? "checked-blue"
+                          ? "active-step"
                           : isInTransit
                           ? "checked-blue"
                           : "inactive"
                       }`}
                     >
-                      {isPaymentReceived || isInTransit ? (
-                        <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
+                      {isPaymentReceived ? (
+                        "2"
+                      ) : isInTransit ? (
+                        <span className="material-symbols-outlined" style={{ fontSize: 14, fontWeight: 800 }}>
                           check
                         </span>
                       ) : (
                         "2"
                       )}
                     </div>
-                    <span className="desktop-prd-step-name">Received</span>
+                    <span className={`desktop-prd-step-name ${isPaymentReceived ? "active" : ""}`}>Received</span>
                   </div>
 
                   {/* Step 3: In Transit */}
@@ -253,7 +339,7 @@ export default function DesktopPaymentRoomDetail({
                     >
                       3
                     </div>
-                    <span className="desktop-prd-step-name">In Transit</span>
+                    <span className={`desktop-prd-step-name ${isInTransit ? "active" : ""}`}>In Transit</span>
                   </div>
 
                   {/* Step 4: Delivered */}
@@ -345,6 +431,26 @@ export default function DesktopPaymentRoomDetail({
                     </span>
                   </button>
                 </div>
+              ) : isPaymentReceived ? (
+                <div className="desktop-prd-field-row">
+                  <div className="desktop-prd-field-left">
+                    <span className="desktop-prd-field-label">You Paid</span>
+                    <span className="desktop-prd-field-val highlight-green">
+                      {youPayAmount}
+                      <span className="charges-sub">(Incl Charges)</span>
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    className={`desktop-prd-copy-btn ${copiedKey === "paid" ? "copied" : ""}`}
+                    onClick={() => handleCopy(youPayAmount, "paid")}
+                    title="Copy You Paid Amount"
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
+                      {copiedKey === "paid" ? "check" : "content_copy"}
+                    </span>
+                  </button>
+                </div>
               ) : null}
 
               {/* Field 3: Bank / Tracking Number */}
@@ -381,6 +487,21 @@ export default function DesktopPaymentRoomDetail({
                     </span>
                   </button>
                 </div>
+              ) : isPaymentReceived ? (
+                <div className="desktop-prd-field-row">
+                  <div className="desktop-prd-field-left">
+                    <span className="desktop-prd-field-label">Bank (Refund Account)</span>
+                    <span className="desktop-prd-field-val">{selectedBank}</span>
+                  </div>
+                  <button
+                    type="button"
+                    className="desktop-prd-change-btn"
+                    onClick={() => setIsChangeBankOpen(true)}
+                    title="Change refund bank"
+                  >
+                    Change
+                  </button>
+                </div>
               ) : null}
 
               {/* Field 4: Account Name / Estimated Arrival */}
@@ -408,10 +529,27 @@ export default function DesktopPaymentRoomDetail({
                     <span className="desktop-prd-field-val">12-10-2024</span>
                   </div>
                 </div>
+              ) : isPaymentReceived ? (
+                <div className="desktop-prd-field-row">
+                  <div className="desktop-prd-field-left">
+                    <span className="desktop-prd-field-label">Account Name</span>
+                    <span className="desktop-prd-field-val">{accountName}</span>
+                  </div>
+                  <button
+                    type="button"
+                    className={`desktop-prd-copy-btn ${copiedKey === "accName" ? "copied" : ""}`}
+                    onClick={() => handleCopy(accountName, "accName")}
+                    title="Copy Account Name"
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
+                      {copiedKey === "accName" ? "check" : "content_copy"}
+                    </span>
+                  </button>
+                </div>
               ) : null}
 
-              {/* Field 5: Account Number / Buyer Name */}
-              {isAwaitingPayment ? (
+              {/* Field 5: Account Number (for payment screens) / Seller's Name (for in-transit) */}
+              {isAwaitingPayment || isPaymentReceived ? (
                 <div className="desktop-prd-field-row">
                   <div className="desktop-prd-field-left">
                     <span className="desktop-prd-field-label">Account Number</span>
@@ -428,26 +566,27 @@ export default function DesktopPaymentRoomDetail({
                     </span>
                   </button>
                 </div>
-              ) : (
+              ) : isInTransit ? (
                 <div className="desktop-prd-field-row">
                   <div className="desktop-prd-field-left">
-                    <span className="desktop-prd-field-label">Buyer's Name</span>
-                    <span className="desktop-prd-field-val">{buyerName}</span>
+                    <span className="desktop-prd-field-label">Seller's Name</span>
+                    <span className="desktop-prd-field-val">{sellerName}</span>
                   </div>
                   <button
                     type="button"
-                    className={`desktop-prd-copy-btn ${copiedKey === "buyer" ? "copied" : ""}`}
-                    onClick={() => handleCopy(buyerName, "buyer")}
+                    className={`desktop-prd-copy-btn ${copiedKey === "seller" ? "copied" : ""}`}
+                    onClick={() => handleCopy(sellerName, "seller")}
+                    title="Copy Seller's Name"
                   >
                     <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
-                      {copiedKey === "buyer" ? "check" : "content_copy"}
+                      {copiedKey === "seller" ? "check" : "content_copy"}
                     </span>
                   </button>
                 </div>
-              )}
+              ) : null}
 
-              {/* Field 6: Seller's Name */}
-              {isAwaitingPayment && (
+              {/* Field 6: Seller's Name — shown when Field 5 was Account Number */}
+              {(isAwaitingPayment || isPaymentReceived) && (
                 <div className="desktop-prd-field-row">
                   <div className="desktop-prd-field-left">
                     <span className="desktop-prd-field-label">Seller's Name</span>
@@ -471,11 +610,14 @@ export default function DesktopPaymentRoomDetail({
             <div className="desktop-prd-accordions-row">
               <button
                 type="button"
-                className="desktop-prd-accordion-trigger"
-                onClick={() => setIsDetailsOpen(true)}
+                className={`desktop-prd-accordion-trigger ${isDetailsArrowUp ? "active" : ""}`}
+                onClick={handleToggleDetails}
+                aria-expanded={isDetailsArrowUp}
+                disabled={isDetailsLifting}
+                style={{ cursor: isDetailsLifting ? "default" : "pointer" }}
               >
                 <span>Order details</span>
-                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
+                <span className={`material-symbols-outlined desktop-prd-trigger-chevron ${isDetailsArrowUp ? "expanded" : ""}`} style={{ fontSize: 18 }}>
                   expand_more
                 </span>
               </button>
@@ -483,19 +625,22 @@ export default function DesktopPaymentRoomDetail({
               {isInTransit && (
                 <button
                   type="button"
-                  className="desktop-prd-accordion-trigger purple"
-                  onClick={() => setIsDetailsOpen(true)}
+                  className={`desktop-prd-accordion-trigger purple ${isShippingArrowUp ? "active" : ""}`}
+                  onClick={handleToggleShipping}
+                  aria-expanded={isShippingArrowUp}
+                  disabled={isShippingLifting}
+                  style={{ cursor: isShippingLifting ? "default" : "pointer" }}
                 >
                   <span>Shipping status</span>
-                  <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
+                  <span className={`material-symbols-outlined desktop-prd-trigger-chevron ${isShippingArrowUp ? "expanded" : ""}`} style={{ fontSize: 18 }}>
                     expand_more
                   </span>
                 </button>
               )}
             </div>
 
-            {/* Primary Action Button (I Have Made Payment) */}
-            {isAwaitingPayment && (
+            {/* Primary Action Button (I Have Made Payment) or spacer to preserve identical height & footer position */}
+            {isAwaitingPayment ? (
               <button
                 type="button"
                 className={`desktop-prd-primary-btn ${isPaymentConfirmed ? "confirmed" : ""}`}
@@ -508,6 +653,11 @@ export default function DesktopPaymentRoomDetail({
                   {isPaymentConfirmed ? "Payment Confirmed" : "I Have Made Payment"}
                 </span>
               </button>
+            ) : (
+              <div
+                className={`desktop-prd-btn-spacer ${isInTransit ? "in-transit" : ""}`}
+                aria-hidden="true"
+              />
             )}
 
             {/* Disclaimer */}
@@ -612,7 +762,13 @@ export default function DesktopPaymentRoomDetail({
       {/* Modals */}
       <OrderDetailsModal
         isOpen={isDetailsOpen}
-        onClose={() => setIsDetailsOpen(false)}
+        onClose={handleCloseDetails}
+        room={room}
+      />
+
+      <ShippingStatusModal
+        isOpen={isShippingOpen}
+        onClose={handleCloseShipping}
         room={room}
       />
 
@@ -653,6 +809,42 @@ export default function DesktopPaymentRoomDetail({
                 <li>Seller only receives funds when you inspect and confirm</li>
                 <li>24/7 dispute resolution and full refund support</li>
               </ul>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Change Refund Bank Modal */}
+      {isChangeBankOpen && (
+        <div className="desktop-prd-modal-backdrop" onClick={() => setIsChangeBankOpen(false)}>
+          <div className="desktop-prd-bank-modal" onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700 }}>Select Refund Bank</h3>
+              <button
+                type="button"
+                onClick={() => setIsChangeBankOpen(false)}
+                style={{ background: "transparent", border: "none", cursor: "pointer", color: "inherit", display: "flex", alignItems: "center" }}
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span>
+              </button>
+            </div>
+            <div className="desktop-prd-bank-list">
+              {BANKS.map((b) => (
+                <button
+                  key={b}
+                  type="button"
+                  className={`desktop-prd-bank-opt ${selectedBank === b ? "selected" : ""}`}
+                  onClick={() => {
+                    setSelectedBank(b);
+                    setIsChangeBankOpen(false);
+                  }}
+                >
+                  <span>{b}</span>
+                  {selectedBank === b && (
+                    <span className="material-symbols-outlined" style={{ color: "#19a66c", fontSize: 18 }}>check</span>
+                  )}
+                </button>
+              ))}
             </div>
           </div>
         </div>

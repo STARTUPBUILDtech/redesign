@@ -195,14 +195,16 @@
   background: transparent !important;
   color: var(--ink);
   font-family: 'Inter', sans-serif;
-  font-size: 13.5px;
-  padding: 0 10px 0 8px;
+  font-size: clamp(11px, 3.4vw, 13.5px) !important;
+  padding: 0 clamp(6px, 1.5vw, 10px) 0 clamp(4px, 1vw, 8px);
   box-shadow: none !important;
 }
 
 .mobile-pr-search-input::placeholder {
   color: var(--muted);
   opacity: 0.85;
+  font-size: clamp(10px, 3vw, 13px) !important;
+  text-overflow: ellipsis;
 }
 
 .mobile-pr-clear-btn {

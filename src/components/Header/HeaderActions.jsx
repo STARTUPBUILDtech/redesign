@@ -5,15 +5,6 @@ export default function HeaderActions() {
 
   return (
     <div className="header-actions">
-      <button
-        type="button"
-        onClick={toggleRole}
-        className="switch-role-btn"
-        title="Switch between Buyer and Seller views"
-      >
-        Switch role
-      </button>
-
       {/* Profile Avatar */}
       <div
         className="header-avatar-circle"

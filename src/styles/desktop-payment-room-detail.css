@@ -1,27 +1,35 @@
 /* ── Desktop Payment Room Detail (2-Column: Details Left, Chat Right) ── */
 
 .desktop-prd-wrapper {
-  width: 100%;
-  min-height: calc(100vh - 96px);
+  position: fixed;
+  top: clamp(64px, 3.8vw, 80px);
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: var(--page);
   color: var(--ink);
   box-sizing: border-box;
+  overflow: hidden;
+  z-index: 10;
+  padding-top: clamp(16px, 1.4vw, 24px);
 }
 
 .desktop-prd-container {
   width: min(calc(100% - clamp(40px, 4vw, 80px)), 1240px);
+  height: auto;
   margin: 0 auto;
-  padding: 28px 0 48px;
+  padding: 0;
   display: grid;
-  grid-template-columns: minmax(360px, 450px) minmax(420px, 1fr);
+  grid-template-columns: 1.15fr 1fr;
   gap: clamp(24px, 3.5vw, 48px);
-  align-items: start;
+  align-items: stretch;
   box-sizing: border-box;
 }
 
 @media (max-width: 900px) {
   .desktop-prd-container {
     grid-template-columns: 1fr;
+    height: auto;
   }
 }
 
@@ -32,7 +40,11 @@
   display: flex;
   flex-direction: column;
   width: 100%;
+  height: auto;
+  overflow-y: visible;
+  overflow-x: hidden;
   box-sizing: border-box;
+  padding-bottom: 20px;
 }
 
 /* Left Header: Back button + Title + Switch Role + Help */
@@ -197,17 +209,23 @@
 .desktop-prd-timer-pill {
   background: rgba(255, 255, 255, 0.22);
   backdrop-filter: blur(4px);
-  padding: 4px 14px;
+  padding: 0 14px;
+  height: 28px;
   border-radius: 20px;
   font-size: 13px;
   font-weight: 700;
   color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
 }
 
 .desktop-prd-receipt-pill-btn {
   background: rgba(255, 255, 255, 0.22);
   backdrop-filter: blur(4px);
-  padding: 5px 14px;
+  padding: 0 14px;
+  height: 28px;
   border-radius: 20px;
   font-size: 12.5px;
   font-weight: 700;
@@ -215,9 +233,11 @@
   border: none;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   cursor: pointer;
   transition: all 0.15s ease;
+  box-sizing: border-box;
 }
 
 .desktop-prd-receipt-pill-btn:hover {
@@ -242,6 +262,52 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  position: relative;
+}
+
+/* ── Dotted connector line: Step 1 → Step 2 (Awaiting Payment: Step 1 is active, line from none to 1) */
+/* For Payment Received: orange checked (step1) → white active (step2) */
+.desktop-prd-stepper-row.payment-received::before {
+  content: "";
+  position: absolute;
+  top: 13px;
+  left: 12.5%;
+  width: 15%;
+  height: 3px;
+  background: linear-gradient(90deg, #ea580c 0%, #93c5fd 100%);
+  -webkit-mask: radial-gradient(circle, #000 1.5px, transparent 1.6px) 0 50% / 6px 100% repeat-x;
+  mask: radial-gradient(circle, #000 1.5px, transparent 1.6px) 0 50% / 6px 100% repeat-x;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* For In Transit: orange checked (step1) → blue checked (step2) → white active (step3)
+   Dotted line from step2 to step3 */
+.desktop-prd-stepper-row.in-transit::before {
+  content: "";
+  position: absolute;
+  top: 13px;
+  left: 30%;
+  width: 15%;
+  height: 3px;
+  background: linear-gradient(90deg, #2563eb 0%, #c4b5fd 100%);
+  -webkit-mask: radial-gradient(circle, #000 1.5px, transparent 1.6px) 0 50% / 6px 100% repeat-x;
+  mask: radial-gradient(circle, #000 1.5px, transparent 1.6px) 0 50% / 6px 100% repeat-x;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Also draw line from step1→step2 for in-transit (both checked) */
+.desktop-prd-stepper-row.in-transit::after {
+  content: "";
+  position: absolute;
+  top: 13px;
+  left: 12.5%;
+  width: 15%;
+  height: 3px;
+  background: linear-gradient(90deg, #ea580c 0%, #2563eb 100%);
+  z-index: 1;
+  pointer-events: none;
 }
 
 .desktop-prd-step-col {
@@ -250,6 +316,8 @@
   align-items: center;
   gap: 5px;
   flex: 1;
+  position: relative;
+  z-index: 2;
 }
 
 .desktop-prd-step-circle {
@@ -266,17 +334,27 @@
 .desktop-prd-step-circle.active-step {
   background: #ffffff;
   color: #c45900;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.9), 0 0 6px rgba(255, 255, 255, 0.7);
+}
+
+.desktop-prd-banner-card.payment-received .desktop-prd-step-circle.active-step {
+  color: #2563eb;
+}
+
+.desktop-prd-banner-card.in-transit .desktop-prd-step-circle.active-step {
+  color: #7c3aed;
 }
 
 .desktop-prd-step-circle.checked-orange {
   background: #ea580c;
   color: #ffffff;
+  box-shadow: 0 0 8px rgba(234, 88, 12, 0.55);
 }
 
 .desktop-prd-step-circle.checked-blue {
   background: #2563eb;
   color: #ffffff;
+  box-shadow: 0 0 8px rgba(37, 99, 235, 0.5);
 }
 
 .desktop-prd-step-circle.inactive {
@@ -289,6 +367,11 @@
   font-weight: 600;
   color: rgba(255, 255, 255, 0.9);
   text-align: center;
+}
+
+.desktop-prd-step-name.active {
+  font-weight: 800;
+  color: #ffffff;
 }
 
 /* Section Title */
@@ -404,8 +487,27 @@
   opacity: 0.85;
 }
 
+.desktop-prd-accordion-trigger:disabled {
+  pointer-events: none;
+}
+
 .desktop-prd-accordion-trigger.purple {
   color: #7c3aed;
+}
+
+/* Chevron arrow rotation */
+.desktop-prd-trigger-chevron {
+  font-size: 18px !important;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: center center;
+}
+
+.desktop-prd-trigger-chevron.expanded {
+  transform: rotate(180deg);
 }
 
 /* Primary Action Button (I Have Made Payment) */
@@ -445,6 +547,19 @@
   cursor: default;
 }
 
+/* Button spacer when primary button is not present */
+.desktop-prd-btn-spacer {
+  width: 100%;
+  height: 48px;
+  margin-top: 8px;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.desktop-prd-btn-spacer.in-transit {
+  height: 96px;
+}
+
 /* Footer note */
 .desktop-prd-footer-note {
   display: flex;
@@ -478,8 +593,7 @@
    ══════════════════════════════════════════════════════════════ */
 .desktop-prd-right-col {
   width: 100%;
-  height: 640px;
-  max-height: calc(100vh - 150px);
+  height: 100%;
   display: flex;
   flex-direction: column;
   background: #ffffff;
@@ -487,8 +601,7 @@
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
-  position: sticky;
-  top: 100px;
+  position: relative;
   box-sizing: border-box;
 }
 
@@ -709,3 +822,84 @@
   opacity: 0.5;
   cursor: default;
 }
+
+/* ── Bank Change Button & Modal ── */
+.desktop-prd-change-btn {
+  background: transparent;
+  border: none;
+  color: #19a66c;
+  font-family: 'Inter', sans-serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 2px 4px;
+  transition: opacity 0.15s ease;
+  flex-shrink: 0;
+}
+
+.desktop-prd-change-btn:hover {
+  opacity: 0.85;
+  text-decoration: underline;
+}
+
+.desktop-prd-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.desktop-prd-bank-modal {
+  background: var(--page, #ffffff);
+  color: var(--ink, #111827);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 400px;
+  padding: 22px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--line, #e5e7eb);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.desktop-prd-bank-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.desktop-prd-bank-opt {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--line, #e5e7eb);
+  background: var(--panel, #f9fafb);
+  color: var(--ink, #111827);
+  font-family: 'Inter', sans-serif;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.desktop-prd-bank-opt:hover {
+  border-color: #19a66c;
+  background: rgba(25, 166, 108, 0.05);
+}
+
+.desktop-prd-bank-opt.selected {
+  border-color: #19a66c;
+  background: rgba(25, 166, 108, 0.1);
+  color: #19a66c;
+}
+

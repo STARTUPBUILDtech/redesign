@@ -281,23 +281,15 @@
 .unified-search-container {
   display: flex;
   align-items: center;
-  height: 40px;
-  width: clamp(340px, 28vw, 460px);
-  min-width: 280px;
-  border-radius: 8px;
+  height: clamp(36px, 2.6vw, 42px);
+  width: clamp(360px, 28vw, 460px);
+  min-width: 320px;
+  border-radius: clamp(6px, 0.55vw, 9px);
   border: 1px solid var(--line);
   background: #ffffff;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
   position: relative;
   box-sizing: border-box;
-}
-
-@media (max-width: 1280px) {
-  .unified-search-container {
-    width: auto;
-    flex: 1;
-    min-width: 260px;
-  }
 }
 
 .app[data-appearance="dark"] .unified-search-container {
@@ -324,10 +316,10 @@
 }
 
 .unified-search-icon {
-  margin-left: 12px;
+  margin-left: clamp(8px, 0.7vw, 14px);
   color: var(--muted);
-  width: 16px;
-  height: 16px;
+  width: clamp(14px, 1.1vw, 17px);
+  height: clamp(14px, 1.1vw, 17px);
   flex-shrink: 0;
   pointer-events: none;
 }
@@ -341,20 +333,22 @@
   background: transparent !important;
   color: var(--ink);
   font-family: 'Inter', sans-serif;
-  font-size: 13.5px;
-  padding: 0 12px 0 8px;
+  font-size: clamp(10.5px, 0.78vw, 13.5px) !important;
+  padding: 0 clamp(6px, 0.5vw, 12px) 0 clamp(4px, 0.4vw, 8px);
   box-shadow: none !important;
 }
 
 .unified-search-input::placeholder {
   color: var(--muted);
   opacity: 0.85;
+  font-size: clamp(10px, 0.75vw, 13px) !important;
+  text-overflow: ellipsis;
 }
 
 .unified-search-divider {
   width: 1px;
-  height: 100%;
-  align-self: stretch;
+  height: clamp(16px, 1.3vw, 22px);
+  align-self: center;
   background: var(--line);
   flex-shrink: 0;
 }
@@ -364,14 +358,14 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: clamp(4px, 0.35vw, 6px);
   height: 100%;
-  padding: 0 14px;
+  padding: 0 clamp(8px, 0.75vw, 14px);
   background: transparent;
   border: none;
   color: var(--muted);
   cursor: pointer;
-  border-radius: 0 7px 7px 0;
+  border-radius: 0 clamp(6px, 0.5vw, 8px) clamp(6px, 0.5vw, 8px) 0;
   transition: all 0.15s ease;
   flex-shrink: 0;
   position: relative;
@@ -398,19 +392,19 @@
 }
 
 .unified-filter-icon {
-  width: 16px;
-  height: 16px;
+  width: clamp(13px, 1vw, 16px);
+  height: clamp(13px, 1vw, 16px);
 }
 
 .unified-filter-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 5px;
+  min-width: clamp(14px, 1.05vw, 18px);
+  height: clamp(14px, 1.05vw, 18px);
+  padding: 0 clamp(3px, 0.3vw, 5px);
   border-radius: 9px;
-  font-size: 11px;
+  font-size: clamp(9px, 0.65vw, 11px);
   font-weight: 700;
   background: #000000;
   color: #ffffff;

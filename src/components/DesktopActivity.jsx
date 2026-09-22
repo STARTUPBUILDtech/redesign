@@ -3,6 +3,7 @@ import { Download, Search, SlidersHorizontal } from "lucide-react";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Select, SelectContent, SelectItem } from "./ui/select";
+import DesktopActivityDetail from "./DesktopActivityDetail";
 import "./desktop-activity.css";
 
 const INITIAL_TRANSACTIONS = [
@@ -13,6 +14,15 @@ const INITIAL_TRANSACTIONS = [
     amount: "+₦145,000.00",
     type: "received",
     typeKey: "received",
+    orderNumber: "ORD-302914",
+    youPaid: "₦2,381,165",
+    refundBank: "Access Bank",
+    bank: "Access Bank",
+    accountName: "Marcus Vance",
+    accountNumber: "0123456789",
+    sellerName: "Amaka Obi",
+    itemName: 'MacBook Pro M3 Max 16"',
+    variant: "Space Black, 36GB RAM, 1TB SSD",
   },
   {
     id: "tx-2",
@@ -61,6 +71,15 @@ const INITIAL_TRANSACTIONS = [
     amount: "+₦320,000.00",
     type: "received",
     typeKey: "received",
+    orderNumber: "ORD-889201",
+    youPaid: "₦324,800",
+    refundBank: "GTBank",
+    bank: "GTBank",
+    accountName: "Chidi Okeke",
+    accountNumber: "0098765432",
+    sellerName: "Emeka Tech Hub",
+    itemName: "Sony WH-1000XM5",
+    variant: "Midnight Black",
   },
   {
     id: "tx-8",
@@ -69,6 +88,15 @@ const INITIAL_TRANSACTIONS = [
     amount: "+₦95,000.00",
     type: "received",
     typeKey: "received",
+    orderNumber: "ORD-441302",
+    youPaid: "₦96,425",
+    refundBank: "Access Bank",
+    bank: "Access Bank",
+    accountName: "Kemi Adeleke",
+    accountNumber: "3344556677",
+    sellerName: "Lagos Gadgets",
+    itemName: "iPhone 15 Pro",
+    variant: "Natural Titanium, 256GB",
   },
   {
     id: "tx-9",
@@ -247,10 +275,17 @@ function getActivityConfig(item) {
   };
 }
 
-function ActivityRow({ item, isLast }) {
+function ActivityRow({ item, isLast, onSelect }) {
   const cfg = getActivityConfig(item);
   return (
-    <div className="activity-item-row" role="button" tabIndex={0}>
+    <div
+      className="activity-item-row"
+      role="button"
+      tabIndex={0}
+      style={{ cursor: "pointer" }}
+      onClick={() => onSelect && onSelect(item)}
+      onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelect && onSelect(item)}
+    >
       <div className={`activity-item-icon ${cfg.iconClass}`}>
         {cfg.icon}
       </div>
@@ -273,6 +308,7 @@ export default function DesktopActivity() {
   const [selectedRange, setSelectedRange] = useState("all");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [contentFits, setContentFits] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
   const filterRef = useRef(null);
 
   const toolbarRef = useRef(null);
@@ -471,6 +507,16 @@ export default function DesktopActivity() {
     document.body.removeChild(link);
   };
 
+  // If a row is selected, show the detail view
+  if (selectedItem) {
+    return (
+      <DesktopActivityDetail
+        item={selectedItem}
+        onBack={() => setSelectedItem(null)}
+      />
+    );
+  }
+
   return (
     <div className="desktop-activity-wrapper">
       <main className="desktop-activity-main">
@@ -640,6 +686,7 @@ export default function DesktopActivity() {
                   key={tx.id}
                   item={tx}
                   isLast={idx === filteredTransactions.length - 1}
+                  onSelect={setSelectedItem}
                 />
               ))
             )}

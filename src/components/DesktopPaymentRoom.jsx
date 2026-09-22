@@ -1,10 +1,9 @@
 import { useState, useMemo, useRef, useEffect } from "react";
-import { Search, SlidersHorizontal, ArrowLeft, X } from "lucide-react";
+import { Search, SlidersHorizontal, X } from "lucide-react";
 import { Select, SelectContent, SelectItem } from "./ui/select";
 import { ALL_PAYMENT_ROOMS } from "../data/paymentRooms.js";
 import { useDashboard } from "../context/DashboardContext";
-import MobilePaymentInvitation from "./Mobile/MobilePaymentInvitation.jsx";
-import MobileAwaitingPayment from "./Mobile/MobileAwaitingPayment.jsx";
+import DesktopPaymentRoomDetail from "./DesktopPaymentRoomDetail.jsx";
 import "../styles/desktop-payment-room.css";
 
 export default function DesktopPaymentRoom({ role = "Buyer", onBackToHome, rooms }) {
@@ -104,62 +103,24 @@ export default function DesktopPaymentRoom({ role = "Buyer", onBackToHome, rooms
     });
   }, [activeTab, searchQuery, selectedRole, ongoingRooms, fulfilledRooms]);
 
-  // If a room is selected, render the room invitation / details view with back button
+  // If a room is selected, show the desktop detail view (two-column: details + chat)
   if (selectedRoom) {
-    const isAwaitingPayment =
-      selectedRoom.status === "awaiting_payment" ||
-      selectedRoom.statusText === "Awaiting Payment";
-
     return (
-      <div className="desktop-payment-room-wrapper desktop-activity-wrapper">
-        <main id="payment-room" className="desktop-payment-room-main desktop-activity-main">
-          <div className="desktop-payment-room-content desktop-activity-content">
-            <div className="desktop-pr-back-bar">
-              <button
-                type="button"
-                className="desktop-pr-back-btn"
-                onClick={() => setSelectedRoom(null)}
-              >
-                <ArrowLeft size={16} />
-                <span>Back to Payment Rooms</span>
-              </button>
-            </div>
-            <div className="desktop-payment-room-inner">
-              {isAwaitingPayment ? (
-                <MobileAwaitingPayment
-                  room={selectedRoom}
-                  onBack={() => setSelectedRoom(null)}
-                />
-              ) : (
-                <MobilePaymentInvitation
-                  room={{
-                    id: selectedRoom.id,
-                    counterparty: selectedRoom.counterparty || selectedRoom.sellerName,
-                    item: selectedRoom.item || selectedRoom.title,
-                    amount: selectedRoom.amount || selectedRoom.price,
-                    role: role,
-                  }}
-                  onCancel={() => setSelectedRoom(null)}
-                  onProceed={() => {
-                    if (onBackToHome) onBackToHome();
-                    else setSelectedRoom(null);
-                  }}
-                  onShare={() => {}}
-                />
-              )}
-            </div>
-          </div>
-        </main>
-      </div>
+      <DesktopPaymentRoomDetail
+        room={selectedRoom}
+        onBack={() => setSelectedRoom(null)}
+        role={role}
+        onPaymentConfirmed={() => setSelectedRoom(null)}
+      />
     );
   }
 
   return (
-    <div className="desktop-payment-room-wrapper desktop-activity-wrapper">
-      <main id="payment-room" className="desktop-payment-room-main desktop-activity-main">
-        <div className="desktop-payment-room-content desktop-activity-content">
-          {/* Desktop Toolbar: Tabs on Left, Search Bar with Filter on Right (copied from DesktopActivity) */}
-          <div className="desktop-pr-toolbar desktop-activity-toolbar">
+    <div className="desktop-payment-room-wrapper">
+      <main id="payment-room" className="desktop-payment-room-main">
+
+        {/* Desktop Toolbar: sticky/fixed toolbar */}
+        <div className="desktop-pr-toolbar">
           {/* Tabs */}
           <div className="desktop-pr-tabs">
             <button
@@ -178,7 +139,7 @@ export default function DesktopPaymentRoom({ role = "Buyer", onBackToHome, rooms
             </button>
           </div>
 
-          {/* Desktop Search Bar with Filter (copied from DesktopActivity) */}
+          {/* Desktop Search Bar with Filter */}
           <div className="desktop-pr-controls">
             <div className="desktop-pr-search-container" ref={filterRef}>
               <Search className="desktop-pr-search-icon" />
@@ -294,76 +255,82 @@ export default function DesktopPaymentRoom({ role = "Buyer", onBackToHome, rooms
           </div>
         </div>
 
+        {/* Spacer: fixed toolbar height + activity top padding */}
+        <div className="desktop-pr-toolbar-spacer" />
+
         {/* Responsive Grid of Payment Room Cards */}
-        <div className="desktop-pr-grid">
-          {filteredRooms.length === 0 ? (
-            <div className="desktop-pr-empty">
-              <span className="material-symbols-outlined desktop-pr-empty-icon">
-                payments
-              </span>
-              <p className="desktop-pr-empty-text">
-                No {activeTab} payment rooms found
-                {searchQuery ? ` matching "${searchQuery}"` : ""}
-              </p>
-            </div>
-          ) : (
-            filteredRooms.map((room) => {
-              const isBuying = room.role === "Buying";
-              const counterpartyLabel = isBuying ? "Seller: " : "Buyer: ";
-              const counterpartyName = isBuying ? room.sellerName : room.buyerName;
+        <div className="desktop-payment-room-content">
+          <div className="desktop-pr-grid">
+            {filteredRooms.length === 0 ? (
+              <div className="desktop-pr-empty">
+                <span className="material-symbols-outlined desktop-pr-empty-icon">
+                  payments
+                </span>
+                <p className="desktop-pr-empty-text">
+                  No {activeTab} payment rooms found
+                  {searchQuery ? ` matching "${searchQuery}"` : ""}
+                </p>
+              </div>
+            ) : (
+              filteredRooms.map((room) => {
+                const isBuying = room.role === "Buying";
+                const counterpartyLabel = isBuying ? "Seller: " : "Buyer: ";
+                const counterpartyName = isBuying ? room.sellerName : room.buyerName;
 
-              return (
-                <div
-                  key={room.id}
-                  className="desktop-pr-card"
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => setSelectedRoom(room)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      setSelectedRoom(room);
-                    }
-                  }}
-                >
-                  {/* Top Row: Role & Room ID */}
-                  <div className="desktop-pr-card-top">
-                    <span
-                      className={`desktop-pr-role-tag ${isBuying ? "buying" : "selling"}`}
-                    >
-                      {room.role}
-                    </span>
-                    <span className="desktop-pr-room-id">{room.id}</span>
+                return (
+                  <div
+                    key={room.id}
+                    className="desktop-pr-card"
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => setSelectedRoom(room)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        setSelectedRoom(room);
+                      }
+                    }}
+                  >
+                    {/* Top Row: Role & Room ID */}
+                    <div className="desktop-pr-card-top">
+                      <span
+                        className={`desktop-pr-role-tag ${isBuying ? "buying" : "selling"}`}
+                      >
+                        {room.role}
+                      </span>
+                      <span className="desktop-pr-room-id">{room.id}</span>
+                    </div>
+
+                    {/* Main Row: Title & Price */}
+                    <div className="desktop-pr-card-main">
+                      <h4 className="desktop-pr-card-title">{room.title}</h4>
+                      <span className="desktop-pr-card-price">{room.price}</span>
+                    </div>
+
+                    {/* Counterparty */}
+                    <p className="desktop-pr-card-counterparty">
+                      <span>{counterpartyLabel}</span>
+                      <strong>{counterpartyName}</strong>
+                    </p>
+
+                    {/* Bottom Row: Date & Status */}
+                    <div className="desktop-pr-card-bottom">
+                      <span className="desktop-pr-card-date">{room.date}</span>
+                      <span
+                        className={`desktop-pr-status-badge status-${room.status}`}
+                      >
+                        {room.statusText}
+                      </span>
+                    </div>
                   </div>
-
-                  {/* Main Row: Title & Price */}
-                  <div className="desktop-pr-card-main">
-                    <h4 className="desktop-pr-card-title">{room.title}</h4>
-                    <span className="desktop-pr-card-price">{room.price}</span>
-                  </div>
-
-                  {/* Counterparty */}
-                  <p className="desktop-pr-card-counterparty">
-                    <span>{counterpartyLabel}</span>
-                    <strong>{counterpartyName}</strong>
-                  </p>
-
-                  {/* Bottom Row: Date & Status */}
-                  <div className="desktop-pr-card-bottom">
-                    <span className="desktop-pr-card-date">{room.date}</span>
-                    <span
-                      className={`desktop-pr-status-badge status-${room.status}`}
-                    >
-                      {room.statusText}
-                    </span>
-                  </div>
-                </div>
-              );
-            })
-          )}
+                );
+              })
+            )}
+          </div>
         </div>
-      </div>
-    </main>
-  </div>
-);
+      </main>
+    </div>
+  );
 }
+
+

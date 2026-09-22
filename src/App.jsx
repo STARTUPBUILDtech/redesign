@@ -27,19 +27,9 @@ function BrandLogo({ dark, className }) {
 }
 
 // Header Actions matching C:\Users\abc\OneDrive\Videos\dashboard.html
-function HeaderActions({ dark, onThemeToggle, role, onSwitchRole }) {
+function HeaderActions({ dark, onThemeToggle }) {
   return (
     <div className="header-actions">
-      {onSwitchRole && (
-        <button
-          type="button"
-          onClick={onSwitchRole}
-          className="switch-role-btn"
-          title="Switch between Buyer and Seller views"
-        >
-          Switch role
-        </button>
-      )}
       {/* Profile Avatar (matching #m-profile-sticky-avatar from dashboard.html) */}
       <div
         className="header-avatar-circle"
@@ -568,8 +558,6 @@ export default function App() {
           <HeaderActions
             dark={dark}
             onThemeToggle={() => setDark(!dark)}
-            role={role}
-            onSwitchRole={() => setRole(role === "Buyer" ? "Seller" : "Buyer")}
           />
         </div>
       </header>
