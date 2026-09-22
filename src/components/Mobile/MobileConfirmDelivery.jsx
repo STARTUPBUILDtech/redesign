@@ -942,7 +942,12 @@ export default function MobileConfirmDelivery({
       />
 
       {/* ── Help Drawer ── */}
-      <HelpDrawer isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
+      <HelpDrawer
+        isOpen={isHelpOpen}
+        onClose={() => setIsHelpOpen(false)}
+        onOpenChat={() => setIsChatOpen(true)}
+        onReportIssue={() => setIsReportOpen(true)}
+      />
 
       {/* ── Protection Info Modal ── */}
       <ProtectionInfoModal isOpen={isInfoOpen} onClose={() => setIsInfoOpen(false)} />

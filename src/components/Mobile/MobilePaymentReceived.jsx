@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import "../../styles/mobile-awaiting-payment.css";
 import "../../styles/mobile-payment-received.css";
+import HelpDrawer from "../Shared/HelpDrawer";
 
 export default function MobilePaymentReceived({
   room = {},
@@ -643,35 +644,12 @@ export default function MobilePaymentReceived({
         </div>
       )}
 
-      {/* ── Help Modal ── */}
-      {isHelpOpen && (
-        <div className="ap-modal-backdrop" onClick={() => setIsHelpOpen(false)}>
-          <div className="ap-modal-card" onClick={(e) => e.stopPropagation()}>
-            <div className="ap-modal-header">
-              <h3>Payment Help & Guide</h3>
-              <button
-                type="button"
-                className="ap-modal-close"
-                onClick={() => setIsHelpOpen(false)}
-                aria-label="Close"
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>close</span>
-              </button>
-            </div>
-            <div style={{ fontSize: 13.5, lineHeight: 1.5 }}>
-              <p>
-                <strong>1. Payment Received:</strong> Your payment of <strong>{youPaidAmount}</strong> has been received and is held securely in PayKudi escrow.
-              </p>
-              <p>
-                <strong>2. Seller Dispatches:</strong> The seller will now dispatch your item. You will receive a tracking number via chat.
-              </p>
-              <p>
-                <strong>3. Confirm Delivery:</strong> Once you receive and inspect your item, confirm delivery to release payment to the seller.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* ── Help Drawer ── */}
+      <HelpDrawer
+        isOpen={isHelpOpen}
+        onClose={() => setIsHelpOpen(false)}
+        onOpenChat={() => setIsChatOpen(true)}
+      />
 
       {/* ── Change Bank Modal ── */}
       {isChangeBankOpen && (

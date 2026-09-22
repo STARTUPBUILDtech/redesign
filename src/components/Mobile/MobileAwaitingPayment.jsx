@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import "../../styles/mobile-awaiting-payment.css";
+import HelpDrawer from "../Shared/HelpDrawer";
 
 export default function MobileAwaitingPayment({
   room = {},
@@ -612,35 +613,12 @@ export default function MobileAwaitingPayment({
         </div>
       )}
 
-      {/* Help Modal */}
-      {isHelpOpen && (
-        <div className="ap-modal-backdrop" onClick={() => setIsHelpOpen(false)}>
-          <div className="ap-modal-card" onClick={(e) => e.stopPropagation()}>
-            <div className="ap-modal-header">
-              <h3>Payment Help & Guide</h3>
-              <button
-                type="button"
-                className="ap-modal-close"
-                onClick={() => setIsHelpOpen(false)}
-                aria-label="Close"
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>close</span>
-              </button>
-            </div>
-            <div style={{ fontSize: 13.5, lineHeight: 1.5 }}>
-              <p>
-                <strong>1. Transfer to Escrow:</strong> Transfer exactly <strong>{youPayAmount}</strong> to the PayKudi dedicated account shown on screen.
-              </p>
-              <p>
-                <strong>2. Confirm Transfer:</strong> Once you make the transfer via your bank app, tap <strong>"I Have Made Payment"</strong>.
-              </p>
-              <p>
-                <strong>3. Escrow Holds Funds:</strong> PayKudi holds the funds safely until you receive and confirm your item.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* ── Help Drawer ── */}
+      <HelpDrawer
+        isOpen={isHelpOpen}
+        onClose={() => setIsHelpOpen(false)}
+        onOpenChat={() => setIsChatOpen(true)}
+      />
 
       {/* Protection Info Modal */}
       {isInfoOpen && (

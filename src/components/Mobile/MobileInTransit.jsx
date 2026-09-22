@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import "../../styles/mobile-awaiting-payment.css";
 import "../../styles/mobile-payment-received.css";
 import "../../styles/mobile-in-transit.css";
+import HelpDrawer from "../Shared/HelpDrawer";
 
 export default function MobileInTransit({
   room = {},
@@ -791,35 +792,12 @@ export default function MobileInTransit({
         </div>
       )}
 
-      {/* ── Help Modal ── */}
-      {isHelpOpen && (
-        <div className="ap-modal-backdrop" onClick={() => setIsHelpOpen(false)}>
-          <div className="ap-modal-card" onClick={(e) => e.stopPropagation()}>
-            <div className="ap-modal-header">
-              <h3>Shipping Help & Guide</h3>
-              <button
-                type="button"
-                className="ap-modal-close"
-                onClick={() => setIsHelpOpen(false)}
-                aria-label="Close"
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>close</span>
-              </button>
-            </div>
-            <div style={{ fontSize: 13.5, lineHeight: 1.5 }}>
-              <p>
-                <strong>1. Item In Transit:</strong> Your item is currently being delivered by {courierService}. Tracking number: <strong>{trackingNumber}</strong>.
-              </p>
-              <p>
-                <strong>2. Escrow Held:</strong> Your payment of <strong>{orderAmount}</strong> remains safely locked in PayKudi escrow until you confirm receipt.
-              </p>
-              <p>
-                <strong>3. Confirm Delivery:</strong> Once you receive and inspect your item, confirm delivery to release payment to the seller.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* ── Help Drawer ── */}
+      <HelpDrawer
+        isOpen={isHelpOpen}
+        onClose={() => setIsHelpOpen(false)}
+        onOpenChat={() => setIsChatOpen(true)}
+      />
 
       {/* ── Protection Info Modal ── */}
       {isInfoOpen && (
