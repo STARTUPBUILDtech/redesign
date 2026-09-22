@@ -312,3 +312,9 @@
   color: var(--muted);
   margin-top: 2px;
 }
+
+/* ── Push footer note to bottom (no CTA button on this screen) ── */
+/* Scoped to In Transit (it-banner-card) so Awaiting Payment is unaffected */
+.mobile-awaiting-payment-screen:has(.it-banner-card) .ap-content-body > .ap-footer-note {
+  margin-top: auto;
+}

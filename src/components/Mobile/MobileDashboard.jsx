@@ -15,7 +15,7 @@ import { useDashboard } from "../../context/DashboardContext";
 import { BUYER_ROOM, SELLER_ROOM, IN_TRANSIT_ROOM } from "../../data/paymentRooms";
 
 export default function MobileDashboard() {
-  const { dark, active, setActive, transactions } = useDashboard();
+  const { dark, active, setActive, transactions, paymentRooms, addPaymentRoom } = useDashboard();
   const [room, setRoom] = useState({
     id: "ORD-603607",
     orderNumber: "ORD-603607",
@@ -53,7 +53,10 @@ export default function MobileDashboard() {
         <MobileNewPayment
           onCancel={() => setActive("Home")}
           onSuccess={(newRoom) => {
-            if (newRoom) setRoom(newRoom);
+            if (newRoom) {
+              const added = addPaymentRoom ? addPaymentRoom(newRoom) : newRoom;
+              setRoom(added);
+            }
             setActive("Payment Invitation");
           }}
         />
@@ -87,6 +90,7 @@ export default function MobileDashboard() {
             <MobileActivity />
           ) : active === "Payment room" || active === "Payment Room" ? (
             <MobilePaymentRoom
+              rooms={paymentRooms}
               onSelectRoom={(newRoom) => {
                 if (newRoom) setRoom(newRoom);
                 if (

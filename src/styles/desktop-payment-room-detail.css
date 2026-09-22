@@ -1,0 +1,711 @@
+/* ── Desktop Payment Room Detail (2-Column: Details Left, Chat Right) ── */
+
+.desktop-prd-wrapper {
+  width: 100%;
+  min-height: calc(100vh - 96px);
+  background: var(--page);
+  color: var(--ink);
+  box-sizing: border-box;
+}
+
+.desktop-prd-container {
+  width: min(calc(100% - clamp(40px, 4vw, 80px)), 1240px);
+  margin: 0 auto;
+  padding: 28px 0 48px;
+  display: grid;
+  grid-template-columns: minmax(360px, 450px) minmax(420px, 1fr);
+  gap: clamp(24px, 3.5vw, 48px);
+  align-items: start;
+  box-sizing: border-box;
+}
+
+@media (max-width: 900px) {
+  .desktop-prd-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   LEFT COLUMN: ORDER / PAYMENT DETAILS
+   ══════════════════════════════════════════════════════════════ */
+.desktop-prd-left-col {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Left Header: Back button + Title + Switch Role + Help */
+.desktop-prd-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.desktop-prd-header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.desktop-prd-back-circle-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.desktop-prd-back-circle-btn:hover {
+  background: color-mix(in srgb, var(--ink) 4%, transparent);
+  border-color: var(--ink);
+}
+
+[data-appearance="dark"] .desktop-prd-back-circle-btn,
+.app[data-appearance="dark"] .desktop-prd-back-circle-btn {
+  background: #1e2026;
+  border-color: var(--line);
+  color: #ffffff;
+}
+
+.desktop-prd-header-title {
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0;
+  letter-spacing: -0.4px;
+}
+
+.desktop-prd-switch-role-btn {
+  background: transparent;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 2px 4px;
+  transition: color 0.15s ease;
+}
+
+.desktop-prd-switch-role-btn:hover {
+  color: var(--ink);
+}
+
+.desktop-prd-help-circle-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.desktop-prd-help-circle-btn:hover {
+  background: color-mix(in srgb, var(--ink) 4%, transparent);
+  border-color: var(--ink);
+}
+
+[data-appearance="dark"] .desktop-prd-help-circle-btn,
+.app[data-appearance="dark"] .desktop-prd-help-circle-btn {
+  background: #1e2026;
+  border-color: var(--line);
+  color: #ffffff;
+}
+
+/* Left Card Body */
+.desktop-prd-details-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+/* Banner Card (matches mobile exact style) */
+.desktop-prd-banner-card {
+  border-radius: 8px;
+  padding: 16px 18px;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.desktop-prd-banner-card.awaiting-payment {
+  background: linear-gradient(135deg, #c45900 0%, #b24d00 100%);
+  box-shadow: 0 4px 16px rgba(196, 89, 0, 0.25);
+}
+
+.desktop-prd-banner-card.payment-received {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.25);
+}
+
+.desktop-prd-banner-card.in-transit {
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.25);
+}
+
+.desktop-prd-banner-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.desktop-prd-amount-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.desktop-prd-banner-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.desktop-prd-banner-amount {
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  margin: 0;
+  line-height: 1.15;
+}
+
+.desktop-prd-timer-pill {
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(4px);
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.desktop-prd-receipt-pill-btn {
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(4px);
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #ffffff;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.desktop-prd-receipt-pill-btn:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.desktop-prd-banner-divider {
+  width: 100%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Stepper Row */
+.desktop-prd-stepper-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.desktop-prd-stepper-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.desktop-prd-step-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  flex: 1;
+}
+
+.desktop-prd-step-circle {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.desktop-prd-step-circle.active-step {
+  background: #ffffff;
+  color: #c45900;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+}
+
+.desktop-prd-step-circle.checked-orange {
+  background: #ea580c;
+  color: #ffffff;
+}
+
+.desktop-prd-step-circle.checked-blue {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.desktop-prd-step-circle.inactive {
+  background: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.desktop-prd-step-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  text-align: center;
+}
+
+/* Section Title */
+.desktop-prd-section-title {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  margin-top: 6px;
+}
+
+.desktop-prd-section-title.awaiting-payment {
+  color: #c45900;
+}
+
+.desktop-prd-section-title.payment-received {
+  color: #2563eb;
+}
+
+.desktop-prd-section-title.in-transit {
+  color: #7c3aed;
+}
+
+/* Field Rows List */
+.desktop-prd-fields-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.desktop-prd-field-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.desktop-prd-field-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.desktop-prd-field-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.desktop-prd-field-val {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.desktop-prd-field-val.highlight-green {
+  color: #19a66c;
+}
+
+.desktop-prd-field-val .charges-sub {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+  margin-left: 4px;
+}
+
+.desktop-prd-copy-btn {
+  background: transparent;
+  border: none;
+  color: #a1a1aa;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+  border-radius: 4px;
+}
+
+.desktop-prd-copy-btn:hover {
+  color: var(--ink);
+}
+
+.desktop-prd-copy-btn.copied {
+  color: #16a34a;
+}
+
+/* Dropdown Accordions */
+.desktop-prd-accordions-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 4px;
+}
+
+.desktop-prd-accordion-trigger {
+  background: transparent;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #19a66c;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  transition: opacity 0.15s ease;
+}
+
+.desktop-prd-accordion-trigger:hover {
+  opacity: 0.85;
+}
+
+.desktop-prd-accordion-trigger.purple {
+  color: #7c3aed;
+}
+
+/* Primary Action Button (I Have Made Payment) */
+.desktop-prd-primary-btn {
+  width: 100%;
+  height: 48px;
+  border-radius: 12px;
+  background-color: #22a659;
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(34, 166, 89, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+  transition: all 0.15s ease;
+}
+
+.desktop-prd-primary-btn:hover:not(:disabled) {
+  background-color: #1d914d;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(34, 166, 89, 0.35);
+}
+
+.desktop-prd-primary-btn:active:not(:disabled) {
+  transform: scale(0.985);
+}
+
+.desktop-prd-primary-btn.confirmed {
+  background-color: #158b5a;
+  box-shadow: none;
+  cursor: default;
+}
+
+/* Footer note */
+.desktop-prd-footer-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 10px;
+  user-select: none;
+}
+
+.desktop-prd-footer-note strong {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.desktop-prd-info-icon {
+  font-size: 14px !important;
+  color: var(--muted);
+  cursor: pointer;
+  line-height: 1;
+}
+
+.desktop-prd-info-icon:hover {
+  color: var(--ink);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RIGHT COLUMN: CHAT PANEL
+   ══════════════════════════════════════════════════════════════ */
+.desktop-prd-right-col {
+  width: 100%;
+  height: 640px;
+  max-height: calc(100vh - 150px);
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  position: sticky;
+  top: 100px;
+  box-sizing: border-box;
+}
+
+[data-appearance="dark"] .desktop-prd-right-col,
+.app[data-appearance="dark"] .desktop-prd-right-col {
+  background: #181a20;
+  border-color: var(--line);
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.4);
+}
+
+/* Chat Green Header */
+.desktop-prd-chat-header {
+  background: #22a659;
+  color: #ffffff;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.desktop-prd-chat-header-user {
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.2;
+}
+
+.desktop-prd-chat-header-order {
+  font-family: 'Inter', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Security Notice */
+.desktop-prd-chat-security {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 16px;
+  font-size: 12px;
+  color: var(--muted);
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 60%, transparent);
+  background: color-mix(in srgb, var(--panel) 40%, transparent);
+  flex-shrink: 0;
+}
+
+.desktop-prd-chat-security-icon {
+  font-size: 16px !important;
+  color: #19a66c;
+}
+
+.desktop-prd-chat-security strong {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+/* Chat Messages Stream */
+.desktop-prd-chat-stream {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  background: var(--page);
+  box-sizing: border-box;
+}
+
+.desktop-prd-chat-row {
+  display: flex;
+  flex-direction: column;
+  max-width: 82%;
+}
+
+.desktop-prd-chat-row.incoming {
+  align-self: flex-start;
+  align-items: flex-start;
+}
+
+.desktop-prd-chat-row.outgoing {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+
+.desktop-prd-sender-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 4px;
+  padding-left: 2px;
+}
+
+.desktop-prd-chat-bubble {
+  padding: 11px 16px;
+  font-size: 13.5px;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.desktop-prd-chat-bubble.incoming {
+  background: color-mix(in srgb, var(--panel) 85%, #ffffff);
+  color: var(--ink);
+  border-radius: 14px 14px 14px 4px;
+  border: 1px solid var(--line);
+}
+
+[data-appearance="dark"] .desktop-prd-chat-bubble.incoming,
+.app[data-appearance="dark"] .desktop-prd-chat-bubble.incoming {
+  background: #23262e;
+  border-color: rgba(255, 255, 255, 0.08);
+  color: #f4f4f6;
+}
+
+.desktop-prd-chat-bubble.outgoing {
+  background: #22a659;
+  color: #ffffff;
+  border-radius: 14px 14px 4px 14px;
+}
+
+.desktop-prd-chat-time {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.desktop-prd-chat-time.outgoing {
+  color: var(--muted);
+  text-align: right;
+}
+
+/* Chat Input Bar */
+.desktop-prd-chat-input-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: #ffffff;
+  border-top: 1px solid var(--line);
+  flex-shrink: 0;
+}
+
+[data-appearance="dark"] .desktop-prd-chat-input-bar,
+.app[data-appearance="dark"] .desktop-prd-chat-input-bar {
+  background: #181a20;
+  border-color: var(--line);
+}
+
+.desktop-prd-chat-attach-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: color 0.15s ease;
+  flex-shrink: 0;
+}
+
+.desktop-prd-chat-attach-btn:hover {
+  color: var(--ink);
+}
+
+.desktop-prd-chat-input {
+  flex: 1;
+  min-width: 0;
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--panel) 40%, transparent);
+  color: var(--ink);
+  font-family: 'Inter', sans-serif;
+  font-size: 13.5px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.desktop-prd-chat-input:focus {
+  border-color: var(--ink);
+}
+
+[data-appearance="dark"] .desktop-prd-chat-input,
+.app[data-appearance="dark"] .desktop-prd-chat-input {
+  background: #131417;
+  border-color: var(--line);
+  color: #f4f4f6;
+}
+
+.desktop-prd-chat-send-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #0047ff;
+  border: none;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.15s ease, opacity 0.15s ease;
+  flex-shrink: 0;
+}
+
+.desktop-prd-chat-send-btn:hover:not(:disabled) {
+  background: #0037cc;
+}
+
+.desktop-prd-chat-send-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}

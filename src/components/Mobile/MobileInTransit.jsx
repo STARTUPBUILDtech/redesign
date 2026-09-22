@@ -316,9 +316,7 @@ export default function MobileInTransit({
           <div className="ap-field-row" role="listitem">
             <div className="ap-field-left">
               <span className="ap-field-label">Tracking Number</span>
-              <span className="ap-field-val" style={{ fontFamily: "monospace", letterSpacing: "0.5px" }}>
-                {trackingNumber}
-              </span>
+              <span className="ap-field-val">{trackingNumber}</span>
             </div>
             <button
               type="button"

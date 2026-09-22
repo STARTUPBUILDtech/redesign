@@ -2,11 +2,21 @@ import { useState, useMemo, useRef, useEffect } from "react";
 import { Search, SlidersHorizontal, ArrowLeft, X } from "lucide-react";
 import { Select, SelectContent, SelectItem } from "./ui/select";
 import { ALL_PAYMENT_ROOMS } from "../data/paymentRooms.js";
+import { useDashboard } from "../context/DashboardContext";
 import MobilePaymentInvitation from "./Mobile/MobilePaymentInvitation.jsx";
 import MobileAwaitingPayment from "./Mobile/MobileAwaitingPayment.jsx";
 import "../styles/desktop-payment-room.css";
 
-export default function DesktopPaymentRoom({ role = "Buyer", onBackToHome }) {
+export default function DesktopPaymentRoom({ role = "Buyer", onBackToHome, rooms }) {
+  let contextRooms;
+  try {
+    const dash = useDashboard();
+    contextRooms = dash?.paymentRooms;
+  } catch (e) {
+    contextRooms = null;
+  }
+
+  const roomsList = rooms || contextRooms || ALL_PAYMENT_ROOMS;
   const [activeTab, setActiveTab] = useState("ongoing");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedRole, setSelectedRole] = useState("all");
@@ -49,12 +59,12 @@ export default function DesktopPaymentRoom({ role = "Buyer", onBackToHome }) {
 
   // Tab counts
   const ongoingRooms = useMemo(
-    () => ALL_PAYMENT_ROOMS.filter((r) => r.category === "ongoing"),
-    []
+    () => roomsList.filter((r) => r.category === "ongoing"),
+    [roomsList]
   );
   const fulfilledRooms = useMemo(
-    () => ALL_PAYMENT_ROOMS.filter((r) => r.category === "fulfilled"),
-    []
+    () => roomsList.filter((r) => r.category === "fulfilled"),
+    [roomsList]
   );
 
   // Filtered rooms
@@ -158,7 +168,6 @@ export default function DesktopPaymentRoom({ role = "Buyer", onBackToHome }) {
               onClick={() => setActiveTab("ongoing")}
             >
               <span>Ongoing</span>
-              <span className="desktop-pr-tab-badge">{ongoingRooms.length}</span>
             </button>
             <button
               type="button"
@@ -166,7 +175,6 @@ export default function DesktopPaymentRoom({ role = "Buyer", onBackToHome }) {
               onClick={() => setActiveTab("fulfilled")}
             >
               <span>Fulfilled</span>
-              <span className="desktop-pr-tab-badge">{fulfilledRooms.length}</span>
             </button>
           </div>
 

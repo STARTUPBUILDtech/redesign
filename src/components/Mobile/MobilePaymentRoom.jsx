@@ -2,9 +2,19 @@ import { useState, useMemo, useRef, useEffect } from "react";
 import { Search, SlidersHorizontal, X } from "lucide-react";
 import { Select, SelectContent, SelectItem } from "../ui/select";
 import { ALL_PAYMENT_ROOMS } from "../../data/paymentRooms.js";
+import { useDashboard } from "../../context/DashboardContext";
 import "../../styles/mobile-payment-room.css";
 
-export default function MobilePaymentRoom({ onSelectRoom }) {
+export default function MobilePaymentRoom({ onSelectRoom, rooms }) {
+  let contextRooms;
+  try {
+    const dash = useDashboard();
+    contextRooms = dash?.paymentRooms;
+  } catch (e) {
+    contextRooms = null;
+  }
+
+  const roomsList = rooms || contextRooms || ALL_PAYMENT_ROOMS;
   const [activeTab, setActiveTab] = useState("ongoing");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRole, setSelectedRole] = useState("all");
@@ -40,12 +50,12 @@ export default function MobilePaymentRoom({ onSelectRoom }) {
 
   // Tab counts
   const ongoingRooms = useMemo(
-    () => ALL_PAYMENT_ROOMS.filter((r) => r.category === "ongoing"),
-    []
+    () => roomsList.filter((r) => r.category === "ongoing"),
+    [roomsList]
   );
   const fulfilledRooms = useMemo(
-    () => ALL_PAYMENT_ROOMS.filter((r) => r.category === "fulfilled"),
-    []
+    () => roomsList.filter((r) => r.category === "fulfilled"),
+    [roomsList]
   );
 
   // Filtered rooms based on active tab, search term, role, and state
@@ -110,7 +120,6 @@ export default function MobilePaymentRoom({ onSelectRoom }) {
                 onClick={() => setActiveTab("ongoing")}
               >
                 <span>Ongoing</span>
-                <span className="mobile-pr-tab-badge">{ongoingRooms.length}</span>
               </button>
               <button
                 type="button"
@@ -118,7 +127,6 @@ export default function MobilePaymentRoom({ onSelectRoom }) {
                 onClick={() => setActiveTab("fulfilled")}
               >
                 <span>Fulfilled</span>
-                <span className="mobile-pr-tab-badge">{fulfilledRooms.length}</span>
               </button>
             </div>
 

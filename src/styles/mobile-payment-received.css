@@ -295,3 +295,9 @@
   border-color: #19a66c;
   background-color: rgba(25, 166, 108, 0.08);
 }
+
+/* ── Push footer note to bottom (no CTA button on this screen) ── */
+/* Scoped to Payment Received (pr-banner-card) so Awaiting Payment is unaffected */
+.mobile-awaiting-payment-screen:has(.pr-banner-card) .ap-content-body > .ap-footer-note {
+  margin-top: auto;
+}

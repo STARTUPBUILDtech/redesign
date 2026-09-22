@@ -11,6 +11,7 @@ import MobilePaymentRoom from "./components/Mobile/MobilePaymentRoom.jsx";
 import MobileAwaitingPayment from "./components/Mobile/MobileAwaitingPayment.jsx";
 import MobilePaymentReceived from "./components/Mobile/MobilePaymentReceived.jsx";
 import MobileInTransit from "./components/Mobile/MobileInTransit.jsx";
+import { ALL_PAYMENT_ROOMS } from "./data/paymentRooms.js";
 
 function BrandLogo({ dark, className }) {
   return (
@@ -83,7 +84,7 @@ const ActivityIcon = ({ active }) => (
     analytics
   </span>
 );
-const PaymentRoomIcon = ({ active }) => (
+const PaymentRoomIcon = ({ active, count = 5 }) => (
   <span className="nav-pr-wrap">
     <span
       className="material-symbols-outlined nav-symbol"
@@ -91,7 +92,9 @@ const PaymentRoomIcon = ({ active }) => (
     >
       payments
     </span>
-    <span id="m-pr-nav-badge" className="nav-pr-badge">2</span>
+    {count !== undefined && count !== null && Number(count) > 0 && (
+      <span id="m-pr-nav-badge" className="nav-pr-badge">{count}</span>
+    )}
   </span>
 );
 const HelpIcon = ({ active }) => (
@@ -259,6 +262,9 @@ function MobileDashboard({
   setRole,
   activeRoom,
   setActiveRoom,
+  paymentRooms,
+  onAddPaymentRoom,
+  ongoingPaymentRoomsCount,
 }) {
   const contentScrollRef = useRef(null);
 
@@ -292,7 +298,10 @@ function MobileDashboard({
         <MobileNewPayment
           onCancel={() => handleNavClick("Home")}
           onSuccess={(newRoom) => {
-            if (newRoom) setActiveRoom(newRoom);
+            if (newRoom) {
+              const added = onAddPaymentRoom ? onAddPaymentRoom(newRoom) : newRoom;
+              setActiveRoom(added);
+            }
             setActive("Payment Invitation");
           }}
         />
@@ -326,6 +335,7 @@ function MobileDashboard({
             <MobileActivity />
           ) : active === "Payment room" || active === "Payment Room" ? (
             <MobilePaymentRoom
+              rooms={paymentRooms}
               onSelectRoom={(r) => {
                 if (r) setActiveRoom(r);
                 if (r && (r.status === "awaiting_payment" || r.statusText === "Awaiting Payment")) {
@@ -425,7 +435,10 @@ function MobileDashboard({
               className={`nav-bottom-link ${active === "Payment room" || active === "Payment Room" ? "active" : ""}`}
               onClick={() => handleNavClick("Payment room")}
             >
-              <PaymentRoomIcon active={active === "Payment room" || active === "Payment Room"} />
+              <PaymentRoomIcon
+                active={active === "Payment room" || active === "Payment Room"}
+                count={ongoingPaymentRoomsCount}
+              />
               <span className="nav-link-label">Payment Room</span>
             </button>
             <button
@@ -475,6 +488,37 @@ export default function App() {
     accountNumber: "903370574",
   });
 
+  const [paymentRooms, setPaymentRooms] = useState(ALL_PAYMENT_ROOMS);
+  const ongoingPaymentRoomsCount = paymentRooms.filter((r) => r.category === "ongoing").length;
+
+  const handleAddPaymentRoom = (newRoom) => {
+    if (!newRoom) return newRoom;
+    const formattedRoom = {
+      id: newRoom.id || ("ORD-" + Math.floor(100000 + Math.random() * 900000)),
+      orderNumber: newRoom.orderNumber || newRoom.id || ("ORD-" + Math.floor(100000 + Math.random() * 900000)),
+      title: newRoom.title || newRoom.item || "Payment Room",
+      item: newRoom.item || newRoom.title || "Payment Room",
+      price: newRoom.price || newRoom.amount || "₦0",
+      amount: newRoom.amount || newRoom.price || "₦0",
+      role: newRoom.role || "Buying",
+      sellerName:
+        newRoom.sellerName ||
+        (newRoom.role === "Selling" ? "Amaka Obi" : (newRoom.counterparty || "Seller")),
+      buyerName:
+        newRoom.buyerName ||
+        (newRoom.role === "Buying" ? "Amaka Obi" : (newRoom.counterparty || "Buyer")),
+      date: "Today · Just now",
+      rawDate: "Today",
+      status: newRoom.status || "awaiting_payment",
+      statusText: newRoom.statusText || "Awaiting Payment",
+      category: newRoom.category || "ongoing",
+      counterparty: newRoom.counterparty || "08032001585",
+      ...newRoom,
+    };
+    setPaymentRooms((prev) => [formattedRoom, ...prev]);
+    return formattedRoom;
+  };
+
   useEffect(() => {
     document.documentElement.setAttribute("data-appearance", dark ? "dark" : "light");
     document.body.setAttribute("data-appearance", dark ? "dark" : "light");
@@ -512,7 +556,10 @@ export default function App() {
               }}
               className={active === name ? "active" : ""}
             >
-              <NavIcon active={active === name} />
+              <NavIcon
+                active={active === name}
+                count={name === "Payment room" ? ongoingPaymentRoomsCount : undefined}
+              />
               <span>{name}</span>
             </button>
           ))}
@@ -532,6 +579,7 @@ export default function App() {
         <DesktopActivity />
       ) : active === "Payment room" || active === "Payment Room" ? (
         <DesktopPaymentRoom
+          rooms={paymentRooms}
           role={role}
           onBackToHome={() => setActive("Home")}
         />
@@ -626,6 +674,11 @@ export default function App() {
             setIsPaymentModalOpen(false);
             if (active === "New Payment") setActive("Home");
           }}
+          onSuccess={(created) => {
+            if (created) {
+              handleAddPaymentRoom(created);
+            }
+          }}
         />
       )}
 
@@ -641,6 +694,9 @@ export default function App() {
         setRole={setRole}
         activeRoom={activeRoom}
         setActiveRoom={setActiveRoom}
+        paymentRooms={paymentRooms}
+        onAddPaymentRoom={handleAddPaymentRoom}
+        ongoingPaymentRoomsCount={ongoingPaymentRoomsCount}
       />
     </div>
   );

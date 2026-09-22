@@ -87,7 +87,7 @@ export default function ReceiptModal({ isOpen, onClose, room = {} }) {
               </div>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <span style={{ color: "var(--muted)" }}>Reference</span>
-                <span style={{ fontFamily: "monospace", fontWeight: 700, color: "var(--ink)" }}>{trackingNumber}</span>
+                <span style={{ fontWeight: 700, color: "var(--ink)" }}>{trackingNumber}</span>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <span style={{ color: "var(--muted)" }}>Status</span>

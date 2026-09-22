@@ -16,7 +16,7 @@ export const ActivityIcon = ({ active }) => (
   </span>
 );
 
-export const PaymentRoomIcon = ({ active }) => (
+export const PaymentRoomIcon = ({ active, count = 5 }) => (
   <span className="nav-pr-wrap">
     <span
       className="material-symbols-outlined nav-symbol"
@@ -24,7 +24,9 @@ export const PaymentRoomIcon = ({ active }) => (
     >
       payments
     </span>
-    <span id="m-pr-nav-badge" className="nav-pr-badge">2</span>
+    {count !== undefined && count !== null && Number(count) > 0 && (
+      <span id="m-pr-nav-badge" className="nav-pr-badge">{count}</span>
+    )}
   </span>
 );
 

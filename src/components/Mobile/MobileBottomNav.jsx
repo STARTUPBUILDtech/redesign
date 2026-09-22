@@ -8,7 +8,7 @@ import {
 import { useDashboard } from "../../context/DashboardContext";
 
 export default function MobileBottomNav() {
-  const { active, setActive } = useDashboard();
+  const { active, setActive, ongoingPaymentRoomsCount } = useDashboard();
 
   return (
     <nav id="m-bottom-nav" className="mobile-nav" aria-label="Primary navigation">
@@ -38,7 +38,10 @@ export default function MobileBottomNav() {
         className={`nav-bottom-link ${active === "Payment room" || active === "New Payment" ? "active" : ""}`}
         onClick={() => setActive("Payment room")}
       >
-        <PaymentRoomIcon active={active === "Payment room" || active === "New Payment"} />
+        <PaymentRoomIcon
+          active={active === "Payment room" || active === "New Payment"}
+          count={ongoingPaymentRoomsCount}
+        />
         <span className="nav-link-label">Payment Room</span>
       </button>
 

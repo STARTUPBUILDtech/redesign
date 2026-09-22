@@ -490,59 +490,74 @@
   border-color: #ffffff;
 }
 
-/* Joined Payment Room Cards List (no space separating cards) */
+/* Payment Room Cards List */
 .mobile-pr-list {
   display: flex;
   flex-direction: column;
-  gap: 0;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  overflow: hidden;
-  background: var(--page);
-}
-
-[data-appearance="dark"] .mobile-pr-list,
-.app[data-appearance="dark"] .mobile-pr-list,
-.mobile-dashboard[data-appearance="dark"] .mobile-pr-list {
-  background: var(--page);
-  border-color: var(--line);
+  gap: 8px;
 }
 
 .mobile-pr-card {
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid var(--line);
-  border-radius: 0;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
   padding: 14px 16px;
   display: flex;
   flex-direction: column;
   gap: 6px;
   cursor: pointer;
   text-align: left;
-  transition: background-color 0.15s ease;
-  box-shadow: none;
-  transform: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-.mobile-pr-card:last-child {
-  border-bottom: none;
+[data-appearance="dark"] .mobile-pr-card,
+.app[data-appearance="dark"] .mobile-pr-card,
+.mobile-dashboard[data-appearance="dark"] .mobile-pr-card {
+  background: #15171c;
+  border-color: rgba(255, 255, 255, 0.08);
 }
 
-.mobile-pr-card:hover {
-  background: color-mix(in srgb, var(--ink) 4%, transparent);
-  box-shadow: none;
-  transform: none;
+.mobile-pr-card:focus,
+.mobile-pr-card:focus-visible,
+.mobile-pr-card:active {
+  outline: none;
+  border-color: var(--line);
+}
+
+[data-appearance="dark"] .mobile-pr-card:focus,
+[data-appearance="dark"] .mobile-pr-card:focus-visible,
+[data-appearance="dark"] .mobile-pr-card:active,
+.app[data-appearance="dark"] .mobile-pr-card:focus,
+.app[data-appearance="dark"] .mobile-pr-card:focus-visible,
+.app[data-appearance="dark"] .mobile-pr-card:active,
+.mobile-dashboard[data-appearance="dark"] .mobile-pr-card:focus,
+.mobile-dashboard[data-appearance="dark"] .mobile-pr-card:focus-visible,
+.mobile-dashboard[data-appearance="dark"] .mobile-pr-card:active {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+@media (hover: hover) {
+  .mobile-pr-card:hover {
+    border-color: var(--ink);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+  }
+
+  [data-appearance="dark"] .mobile-pr-card:hover,
+  .app[data-appearance="dark"] .mobile-pr-card:hover,
+  .mobile-dashboard[data-appearance="dark"] .mobile-pr-card:hover {
+    border-color: #ffffff;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3);
+  }
 }
 
 .mobile-pr-card:active {
-  background: color-mix(in srgb, var(--ink) 6%, transparent);
-  transform: none;
-}
-
-[data-appearance="dark"] .mobile-pr-card:hover,
-.app[data-appearance="dark"] .mobile-pr-card:hover,
-.mobile-dashboard[data-appearance="dark"] .mobile-pr-card:hover {
-  background: rgba(255, 255, 255, 0.05);
+  transform: scale(0.985);
 }
 
 /* Card Top: Role Tag & Room ID */

@@ -473,6 +473,15 @@
   transition: background-color 0.15s ease;
   box-shadow: none;
   transform: none;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.desktop-pr-card:focus,
+.desktop-pr-card:focus-visible {
+  outline: none;
 }
 
 .desktop-pr-card:last-child {

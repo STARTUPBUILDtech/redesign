@@ -18,7 +18,7 @@ const navItems = [
 ];
 
 export default function TopBar() {
-  const { active, setActive } = useDashboard();
+  const { active, setActive, ongoingPaymentRoomsCount } = useDashboard();
 
   return (
     <header className="topbar">
@@ -32,7 +32,10 @@ export default function TopBar() {
             onClick={() => setActive(name)}
             className={active === name ? "active" : ""}
           >
-            <NavIcon active={active === name} />
+            <NavIcon
+              active={active === name}
+              count={name === "Payment room" ? ongoingPaymentRoomsCount : undefined}
+            />
             <span>{name}</span>
           </button>
         ))}

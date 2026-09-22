@@ -138,7 +138,25 @@ export default function DesktopNewPayment({ onCancel, onSuccess }) {
       const generatedRoomId = "ORD-" + Math.floor(100000 + Math.random() * 900000);
       setRoomId(generatedRoomId);
       setStep("success");
-      if (onSuccess) onSuccess();
+      const cleanAmt = amount.trim();
+      const formattedAmount = cleanAmt.startsWith("₦") ? cleanAmt : `₦${cleanAmt}`;
+      const newRoom = {
+        id: generatedRoomId,
+        orderNumber: generatedRoomId,
+        counterparty:
+          verificationStatus === "verified"
+            ? "Howard Ukah"
+            : (counterparty.trim() || "Alex Morgan"),
+        item: itemPurpose.trim() || "Payment Item",
+        title: itemPurpose.trim() || "Payment Item",
+        amount: formattedAmount,
+        price: formattedAmount,
+        role: isSelling ? "Selling" : "Buying",
+        category: "ongoing",
+        status: "awaiting_payment",
+        statusText: "Awaiting Payment",
+      };
+      if (onSuccess) onSuccess(newRoom);
     }, 900);
   };
 
