@@ -265,50 +265,59 @@
   position: relative;
 }
 
-/* ── Dotted connector line: Step 1 → Step 2 (Awaiting Payment: Step 1 is active, line from none to 1) */
-/* For Payment Received: orange checked (step1) → white active (step2) */
-.desktop-prd-stepper-row.payment-received::before {
-  content: "";
-  position: absolute;
-  top: 13px;
-  left: 12.5%;
-  width: 15%;
-  height: 3px;
-  background: linear-gradient(90deg, #ea580c 0%, #93c5fd 100%);
-  -webkit-mask: radial-gradient(circle, #000 1.5px, transparent 1.6px) 0 50% / 6px 100% repeat-x;
-  mask: radial-gradient(circle, #000 1.5px, transparent 1.6px) 0 50% / 6px 100% repeat-x;
+/* ── Desktop Stepper 4-Dot Connectors with Color Blending ── */
+.desktop-prd-stepper-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  flex: 1;
+  margin-top: -16px;
+  position: relative;
   z-index: 1;
-  pointer-events: none;
 }
 
-/* For In Transit: orange checked (step1) → blue checked (step2) → white active (step3)
-   Dotted line from step2 to step3 */
-.desktop-prd-stepper-row.in-transit::before {
-  content: "";
-  position: absolute;
-  top: 13px;
-  left: 30%;
-  width: 15%;
-  height: 3px;
-  background: linear-gradient(90deg, #2563eb 0%, #c4b5fd 100%);
-  -webkit-mask: radial-gradient(circle, #000 1.5px, transparent 1.6px) 0 50% / 6px 100% repeat-x;
-  mask: radial-gradient(circle, #000 1.5px, transparent 1.6px) 0 50% / 6px 100% repeat-x;
-  z-index: 1;
-  pointer-events: none;
+.desktop-prd-stepper-dots span {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  flex-shrink: 0;
 }
 
-/* Also draw line from step1→step2 for in-transit (both checked) */
-.desktop-prd-stepper-row.in-transit::after {
-  content: "";
-  position: absolute;
-  top: 13px;
-  left: 12.5%;
-  width: 15%;
-  height: 3px;
-  background: linear-gradient(90deg, #ea580c 0%, #2563eb 100%);
-  z-index: 1;
-  pointer-events: none;
+/* Inactive connector segments (active to inactive, or inactive to inactive): NO DOTS */
+.desktop-prd-stepper-dots.dots-muted {
+  visibility: hidden;
 }
+
+/* Blend: Orange to Blue (Step 1 -> Step 2) */
+.desktop-prd-stepper-dots.dots-orange-to-blue span:nth-child(1) { background-color: #ea580c; }
+.desktop-prd-stepper-dots.dots-orange-to-blue span:nth-child(2) { background-color: #9d6e4b; }
+.desktop-prd-stepper-dots.dots-orange-to-blue span:nth-child(3) { background-color: #508494; }
+.desktop-prd-stepper-dots.dots-orange-to-blue span:nth-child(4) { background-color: #0284c7; }
+
+/* Blend: Orange to White (Payment -> Received when Step 2 is active) */
+.desktop-prd-stepper-dots.dots-orange-to-white span:nth-child(1) { background-color: #ea580c; }
+.desktop-prd-stepper-dots.dots-orange-to-white span:nth-child(2) { background-color: #f18e5b; }
+.desktop-prd-stepper-dots.dots-orange-to-white span:nth-child(3) { background-color: #f8c7ab; }
+.desktop-prd-stepper-dots.dots-orange-to-white span:nth-child(4) { background-color: #ffffff; }
+
+/* Blend: Blue to Purple (Step 2 -> Step 3) */
+.desktop-prd-stepper-dots.dots-blue-to-purple span:nth-child(1) { background-color: #0284c7; }
+.desktop-prd-stepper-dots.dots-blue-to-purple span:nth-child(2) { background-color: #2b6de3; }
+.desktop-prd-stepper-dots.dots-blue-to-purple span:nth-child(3) { background-color: #5453f5; }
+.desktop-prd-stepper-dots.dots-blue-to-purple span:nth-child(4) { background-color: #7c3aed; }
+
+/* Blend: Blue to White (Received -> In Transit when Step 3 is active) */
+.desktop-prd-stepper-dots.dots-blue-to-white span:nth-child(1) { background-color: #0284c7; }
+.desktop-prd-stepper-dots.dots-blue-to-white span:nth-child(2) { background-color: #56acf5; }
+.desktop-prd-stepper-dots.dots-blue-to-white span:nth-child(3) { background-color: #aad5fa; }
+.desktop-prd-stepper-dots.dots-blue-to-white span:nth-child(4) { background-color: #ffffff; }
+
+/* Blend: Purple to White (In Transit -> Delivered when Step 4 is active) */
+.desktop-prd-stepper-dots.dots-purple-to-white span:nth-child(1) { background-color: #7c3aed; }
+.desktop-prd-stepper-dots.dots-purple-to-white span:nth-child(2) { background-color: #a87ff2; }
+.desktop-prd-stepper-dots.dots-purple-to-white span:nth-child(3) { background-color: #d4bff8; }
+.desktop-prd-stepper-dots.dots-purple-to-white span:nth-child(4) { background-color: #ffffff; }
 
 .desktop-prd-step-col {
   display: flex;
@@ -355,6 +364,12 @@
   background: #2563eb;
   color: #ffffff;
   box-shadow: 0 0 8px rgba(37, 99, 235, 0.5);
+}
+
+.desktop-prd-step-circle.checked-purple {
+  background: #7c3aed;
+  color: #ffffff;
+  box-shadow: 0 0 8px rgba(124, 58, 237, 0.55);
 }
 
 .desktop-prd-step-circle.inactive {
@@ -472,8 +487,9 @@
   background: transparent;
   border: none;
   font-family: 'Inter', sans-serif;
-  font-size: 13.5px;
-  font-weight: 700;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
   color: #19a66c;
   cursor: pointer;
   display: inline-flex;
@@ -481,6 +497,12 @@
   gap: 4px;
   padding: 0;
   transition: opacity 0.15s ease;
+}
+
+.desktop-prd-accordion-trigger span:first-child {
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
 }
 
 .desktop-prd-accordion-trigger:hover {
@@ -493,6 +515,14 @@
 
 .desktop-prd-accordion-trigger.purple {
   color: #7c3aed;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+}
+
+.desktop-prd-accordion-trigger.purple span:first-child {
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
 }
 
 /* Chevron arrow rotation */

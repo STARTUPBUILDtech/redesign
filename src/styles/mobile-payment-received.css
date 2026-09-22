@@ -54,20 +54,6 @@
   position: relative;
 }
 
-/* Connecting Dotted Line between Step 1 and 2 with Orange to Blue gradient */
-.pr-stepper-row::before {
-  content: "";
-  position: absolute;
-  top: 11px;
-  left: 12.5%;
-  width: 15%;
-  height: 3px;
-  background: linear-gradient(90deg, #ea580c 0%, #38bdf8 100%);
-  -webkit-mask: radial-gradient(circle, #000 1.5px, transparent 1.6px) 0 50% / 6px 100% repeat-x;
-  mask: radial-gradient(circle, #000 1.5px, transparent 1.6px) 0 50% / 6px 100% repeat-x;
-  z-index: 1;
-}
-
 /* Step 1: Checked Orange Circle */
 .pr-step-circle-checked {
   width: 25px;

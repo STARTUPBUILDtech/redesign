@@ -1,44 +1,49 @@
 import { useState, useEffect, useRef } from "react";
 import "../../styles/mobile-awaiting-payment.css";
-import "../../styles/mobile-payment-received.css";
 import "../../styles/mobile-in-transit.css";
+import "../../styles/mobile-confirm-delivery.css";
+import ReceiptModal from "../Shared/ReceiptModal";
+import HelpDrawer from "../Shared/HelpDrawer";
+import ProtectionInfoModal from "../Shared/ProtectionInfoModal";
 
-export default function MobileInTransit({
+export default function MobileConfirmDelivery({
   room = {},
   onBack,
-  role = "Buyer",
+  onDeliveryConfirmed,
+  role = "Buying",
 }) {
+  // 59m 57s countdown timer as shown in reference image (3597 seconds)
+  const [seconds, setSeconds] = useState(3597);
   const [copiedKey, setCopiedKey] = useState(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [isArrowUp, setIsArrowUp] = useState(false);
   const [isLifting, setIsLifting] = useState(false);
+
   const [isShippingStatusOpen, setIsShippingStatusOpen] = useState(false);
   const [isShippingArrowUp, setIsShippingArrowUp] = useState(false);
   const [isShippingLifting, setIsShippingLifting] = useState(false);
+
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isReceiptOpen, setIsReceiptOpen] = useState(false);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
+  const [isReportOpen, setIsReportOpen] = useState(false);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [toastText, setToastText] = useState(null);
 
+  // Chat message state matching reference design
   const [chatMessages, setChatMessages] = useState([
     {
       id: 1,
       sender: "seller",
-      text: "Package has been dispatched via GIG Logistics! Tracking # is KMLMLMMO.",
-      time: "Yesterday 3:15 PM",
+      text: "Package delivered! Please inspect the item and confirm delivery when satisfied.",
+      time: "Today 1:15 PM",
     },
     {
       id: 2,
       sender: "buyer",
-      text: "Thanks for the update! I can see it is currently in transit.",
-      time: "Yesterday 3:42 PM",
-    },
-    {
-      id: 3,
-      sender: "seller",
-      text: "You're welcome! Please confirm delivery once received.",
-      time: "Today 9:10 AM",
+      text: "Received the package from GIG rider. Inspecting now!",
+      time: "Today 1:22 PM",
     },
   ]);
   const [chatInput, setChatInput] = useState("");
@@ -61,22 +66,43 @@ export default function MobileInTransit({
     }
   }, [isChatOpen, chatMessages]);
 
-  const orderNumber = room.id || room.orderNumber || "ORD-774120";
-  const orderAmountRaw = room.amount || room.price || "₦385,000";
-  const orderAmount = orderAmountRaw;
-  // Compute fees matching Awaiting Payment modal
-  const priceNum = room.priceNumeric || parseFloat(orderAmountRaw.replace(/[^0-9.]/g, "")) || 385000;
-  const txFee = Math.round(priceNum * 0.015).toLocaleString("en-US");
-  const totalAmount = room.totalAmount || `₦${(priceNum + Math.round(priceNum * 0.015) + 300).toLocaleString("en-US")}`;
+  // Countdown timer effect (counting down every second)
+  useEffect(() => {
+    if (seconds <= 0) return;
+    const timer = setInterval(() => {
+      setSeconds((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [seconds]);
+
+  const formatTimer = (totalSecs) => {
+    const mins = Math.floor(totalSecs / 60);
+    const secs = totalSecs % 60;
+    return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+  };
+
+  // Order data matching reference image
+  const orderNumber = room.id || room.orderNumber || "ORD-662819";
+  const orderAmount = room.amount || room.price || "₦50,000";
   const courierService = room.courier || "GIG Logistics";
-  const trackingNumber = room.trackingNumber || "KMLMLMMO";
-  const estimatedArrival = room.estimatedArrival || "12-10-2024";
+  const trackingNumber = room.trackingNumber || "GIG2208471";
+  const deliveryStatus = room.deliveryStatus || "Delivered Today";
+  const sellerName = room.sellerName || "Emeka Tech Hub";
   const buyerName = room.buyerName || "Amaka Obi";
-  const sellerName = room.sellerName || "Gadget Haven";
-  const counterpartyName = (role === "Seller" || room.role === "Selling") ? buyerName : sellerName;
-  const counterpartyLabel = (role === "Seller" || room.role === "Selling") ? "Buyer's Name" : "Seller's Name";
-  const itemName = room.item || room.title || "Sony WH-1000XM5 Headphones";
-  const variantText = room.variant || "Midnight Silver, Noise Cancelling";
+  const itemName = room.item || room.title || "Nike Air Max 2025";
+  const variantText = room.variant || "Black / Volt, Size 43";
+
+  const isBuying = role === "Buying" || room.role === "Buying";
+  const counterpartyLabel = isBuying ? "Seller's Name" : "Buyer's Name";
+  const counterpartyName = isBuying ? sellerName : buyerName;
+
+  // Pricing calculations
+  const rawNum =
+    typeof room.priceNumeric === "number"
+      ? room.priceNumeric
+      : parseInt(String(orderAmount).replace(/[^0-9]/g, ""), 10) || 50000;
+  const txFee = (rawNum * 0.015).toLocaleString();
+  const totalAmount = `₦${(rawNum + rawNum * 0.015 + 300).toLocaleString()}`;
 
   const handleCopy = (text, label) => {
     try {
@@ -96,6 +122,7 @@ export default function MobileInTransit({
     setTimeout(() => setToastText(null), 2000);
   };
 
+  // Toggle Order Details with smooth lift animation
   const handleToggleDetails = () => {
     if (isLifting) return;
     if (!isDetailsOpen) {
@@ -119,6 +146,7 @@ export default function MobileInTransit({
     setIsArrowUp(false);
   };
 
+  // Toggle Shipping Status Modal
   const handleToggleShippingStatus = () => {
     if (isShippingLifting) return;
     if (!isShippingStatusOpen) {
@@ -142,6 +170,12 @@ export default function MobileInTransit({
     setIsShippingArrowUp(false);
   };
 
+  const handleConfirmAction = () => {
+    setIsConfirmModalOpen(false);
+    showToast("Delivery confirmed successfully! Escrow released.");
+    if (onDeliveryConfirmed) onDeliveryConfirmed();
+  };
+
   const handleSendChat = (e) => {
     e.preventDefault();
     if (!chatInput.trim()) return;
@@ -149,7 +183,7 @@ export default function MobileInTransit({
       ...prev,
       {
         id: Date.now(),
-        sender: role === "Seller" ? "seller" : "buyer",
+        sender: "buyer",
         text: chatInput.trim(),
         time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       },
@@ -177,7 +211,7 @@ export default function MobileInTransit({
                 chevron_left
               </span>
             </button>
-            <h1 className="ap-header-title">In Transit</h1>
+            <h1 className="ap-header-title">Confirm Delivery</h1>
           </div>
 
           <div className="ap-header-actions">
@@ -207,8 +241,8 @@ export default function MobileInTransit({
 
       {/* ── Content Body ── */}
       <div className="ap-content-body">
-        {/* ── PURPLE ORDER STATUS BANNER CARD ── */}
-        <section className="ap-banner-card it-banner-card" aria-label="Order summary">
+        {/* ── TEAL ORDER AMOUNT & STATUS BANNER CARD ── */}
+        <section className="ap-banner-card cd-banner-card" aria-label="Order summary">
           {/* Top Row: ORDER AMOUNT + RECEIPT BUTTON */}
           <div className="ap-banner-top-row">
             <div className="ap-amount-col">
@@ -229,13 +263,13 @@ export default function MobileInTransit({
           {/* Divider */}
           <div className="ap-banner-divider" />
 
-          {/* Bottom Row: ORDER STATUS with 5 steps */}
+          {/* Bottom Row: ORDER STATUS with 5 steps and connector dots */}
           <div className="ap-stepper-wrap">
             <span className="ap-sublabel">ORDER STATUS</span>
-            <div className="ap-stepper-row it-stepper-row">
+            <div className="ap-stepper-row cd-stepper-row">
               {/* Step 1: Payment (Checked Orange) */}
               <div className="ap-step-col">
-                <div className="it-step-circle-checked-orange">
+                <div className="cd-step-circle-checked-orange">
                   <span className="material-symbols-outlined">check</span>
                 </div>
                 <span className="ap-step-name">Payment</span>
@@ -248,32 +282,34 @@ export default function MobileInTransit({
 
               {/* Step 2: Received (Checked Blue) */}
               <div className="ap-step-col">
-                <div className="it-step-circle-checked-blue">
+                <div className="cd-step-circle-checked-blue">
                   <span className="material-symbols-outlined">check</span>
                 </div>
                 <span className="ap-step-name">Received</span>
               </div>
 
-              {/* Dots 2 -> 3: Blending Blue to White (prev to present active) */}
-              <div className="ap-stepper-dots dots-blue-to-white" aria-hidden="true">
+              {/* Dots 2 -> 3: Blending Blue to Purple */}
+              <div className="ap-stepper-dots dots-blue-to-purple" aria-hidden="true">
                 <span></span><span></span><span></span><span></span>
               </div>
 
-              {/* Step 3: In Transit (Active Glowing White) */}
+              {/* Step 3: In Transit (Checked Purple) */}
               <div className="ap-step-col">
-                <div className="it-step-circle-active">3</div>
-                <span className="ap-step-name" style={{ fontWeight: 800 }}>In Transit</span>
+                <div className="cd-step-circle-checked-purple">
+                  <span className="material-symbols-outlined">check</span>
+                </div>
+                <span className="ap-step-name">In Transit</span>
               </div>
 
-              {/* Dots 3 -> 4 */}
-              <div className="ap-stepper-dots dots-muted" aria-hidden="true">
+              {/* Dots 3 -> 4: Blending Purple to White (prev to present active) */}
+              <div className="ap-stepper-dots dots-purple-to-white" aria-hidden="true">
                 <span></span><span></span><span></span><span></span>
               </div>
 
-              {/* Step 4: Delivered */}
+              {/* Step 4: Delivered (Active Glowing White) */}
               <div className="ap-step-col">
-                <div className="ap-step-circle-inactive">4</div>
-                <span className="ap-step-name">Delivered</span>
+                <div className="cd-step-circle-active">4</div>
+                <span className="ap-step-name" style={{ fontWeight: 800 }}>Delivered</span>
               </div>
 
               {/* Dots 4 -> 5 */}
@@ -281,7 +317,7 @@ export default function MobileInTransit({
                 <span></span><span></span><span></span><span></span>
               </div>
 
-              {/* Step 5: Completed */}
+              {/* Step 5: Completed (Inactive) */}
               <div className="ap-step-col">
                 <div className="ap-step-circle-inactive">5</div>
                 <span className="ap-step-name">Completed</span>
@@ -290,9 +326,10 @@ export default function MobileInTransit({
           </div>
         </section>
 
-        {/* ── SHIPPING DETAILS SECTION ── */}
-        <div className="ap-section-title it-title">SHIPPING DETAILS</div>
+        {/* ── SECTION TITLE: ORDER DELIVERED ── */}
+        <div className="cd-section-title">ORDER DELIVERED</div>
 
+        {/* ── DETAILS FIELDS LIST ── */}
         <div className="ap-details-list" role="list">
           {/* Field 1: Order Number */}
           <div className="ap-field-row" role="listitem">
@@ -351,29 +388,29 @@ export default function MobileInTransit({
             </button>
           </div>
 
-          {/* Field 4: Estimated Arrival (no copy) */}
+          {/* Field 4: Delivery Status */}
           <div className="ap-field-row" role="listitem">
             <div className="ap-field-left">
-              <span className="ap-field-label">Estimated Arrival</span>
-              <span className="ap-field-val">{estimatedArrival}</span>
+              <span className="ap-field-label">Delivery Status</span>
+              <span className="ap-field-val cd-delivery-status-val">{deliveryStatus}</span>
             </div>
           </div>
 
           {/* Field 5: Seller's Name */}
           <div className="ap-field-row" role="listitem">
             <div className="ap-field-left">
-              <span className="ap-field-label">Seller's Name</span>
-              <span className="ap-field-val">{sellerName}</span>
+              <span className="ap-field-label">{counterpartyLabel}</span>
+              <span className="ap-field-val">{counterpartyName}</span>
             </div>
             <button
               type="button"
-              className={`ap-copy-btn ${copiedKey === "Seller Name" ? "copied" : ""}`}
-              onClick={() => handleCopy(sellerName, "Seller Name")}
-              aria-label="Copy Seller Name"
+              className={`ap-copy-btn ${copiedKey === "Seller's Name" ? "copied" : ""}`}
+              onClick={() => handleCopy(counterpartyName, "Seller's Name")}
+              aria-label="Copy Seller's Name"
               title="Copy"
             >
               <span className="material-symbols-outlined">
-                {copiedKey === "Seller Name" ? "check" : "content_copy"}
+                {copiedKey === "Seller's Name" ? "check" : "content_copy"}
               </span>
             </button>
           </div>
@@ -407,6 +444,31 @@ export default function MobileInTransit({
             <span className={`material-symbols-outlined it-trigger-arrow ${isShippingArrowUp ? "expanded" : ""}`}>
               expand_more
             </span>
+          </button>
+        </div>
+
+        {/* ── Action Buttons ── */}
+        <div className="cd-actions-container">
+          {/* Primary Green CTA: Confirm Delivery with Timer */}
+          <button
+            type="button"
+            className="cd-confirm-btn"
+            onClick={() => setIsConfirmModalOpen(true)}
+          >
+            <span>Confirm Delivery</span>
+            <div className="cd-timer-badge">
+              <span className="material-symbols-outlined">timer</span>
+              <span>{formatTimer(seconds)}</span>
+            </div>
+          </button>
+
+          {/* Secondary Red CTA: Report an Issue */}
+          <button
+            type="button"
+            className="cd-report-btn"
+            onClick={() => setIsReportOpen(true)}
+          >
+            <span>Report an Issue</span>
           </button>
         </div>
 
@@ -499,7 +561,7 @@ export default function MobileInTransit({
                   <div className="ap-sheet-term-content">
                     <div className="ap-sheet-term-label">Delivery Terms</div>
                     <div className="ap-sheet-term-val">
-                      {courierService} <span className="ap-sheet-term-sub">(3–5 business days)</span>
+                      {courierService} <span className="ap-sheet-term-sub">(Delivered)</span>
                     </div>
                   </div>
                 </div>
@@ -511,7 +573,7 @@ export default function MobileInTransit({
                   <div className="ap-sheet-term-content">
                     <div className="ap-sheet-term-label">Inspection Window</div>
                     <div className="ap-sheet-term-val">
-                      24 Hours post-delivery <span className="ap-sheet-term-sub">(To confirm or dispute)</span>
+                      24 Hours post-delivery <span className="ap-sheet-term-sub">(Inspection active)</span>
                     </div>
                   </div>
                 </div>
@@ -562,14 +624,11 @@ export default function MobileInTransit({
 
             {/* Body */}
             <div className="ssm-body">
-
               {/* ORDER TRACKING */}
               <div className="ssm-section-label">ORDER TRACKING</div>
 
               <div className="ssm-timeline">
-                <div className="ssm-timeline-line" />
-
-                {/* Step 1: Package Picked Up — completed */}
+                {/* Step 1 */}
                 <div className="ssm-step ssm-step--completed">
                   <div className="ssm-dot ssm-dot--completed">
                     <span className="material-symbols-outlined" style={{ fontSize: 14, fontVariationSettings: "'FILL' 1" }}>check_circle</span>
@@ -583,7 +642,7 @@ export default function MobileInTransit({
                   </div>
                 </div>
 
-                {/* Step 2: Sorted at Origin Hub — completed */}
+                {/* Step 2 */}
                 <div className="ssm-step ssm-step--completed">
                   <div className="ssm-dot ssm-dot--completed">
                     <span className="material-symbols-outlined" style={{ fontSize: 14, fontVariationSettings: "'FILL' 1" }}>check_circle</span>
@@ -597,45 +656,45 @@ export default function MobileInTransit({
                   </div>
                 </div>
 
-                {/* Step 3: In Transit — active */}
-                <div className="ssm-step ssm-step--active">
-                  <div className="ssm-dot ssm-dot--active">
-                    <span className="material-symbols-outlined" style={{ fontSize: 13 }}>local_shipping</span>
+                {/* Step 3 */}
+                <div className="ssm-step ssm-step--completed">
+                  <div className="ssm-dot ssm-dot--completed">
+                    <span className="material-symbols-outlined" style={{ fontSize: 14, fontVariationSettings: "'FILL' 1" }}>check_circle</span>
                   </div>
                   <div className="ssm-step-content">
                     <div className="ssm-step-row">
-                      <span className="ssm-step-title ssm-step-title--active">In Transit to Destination</span>
-                      <span className="ssm-step-badge ssm-step-badge--active">Active</span>
+                      <span className="ssm-step-title ssm-step-title--completed">In Transit to Destination</span>
+                      <span className="ssm-step-time">08:20 AM</span>
                     </div>
-                    <p className="ssm-step-desc">En route to destination delivery hub</p>
+                    <p className="ssm-step-desc">Processed through regional sorting hub</p>
                   </div>
                 </div>
 
-                {/* Step 4: Arrived at Local Facility — pending */}
-                <div className="ssm-step ssm-step--pending">
-                  <div className="ssm-dot ssm-dot--pending">
-                    <span className="material-symbols-outlined" style={{ fontSize: 14 }}>domain</span>
+                {/* Step 4 */}
+                <div className="ssm-step ssm-step--completed">
+                  <div className="ssm-dot ssm-dot--completed">
+                    <span className="material-symbols-outlined" style={{ fontSize: 14, fontVariationSettings: "'FILL' 1" }}>check_circle</span>
                   </div>
                   <div className="ssm-step-content">
                     <div className="ssm-step-row">
-                      <span className="ssm-step-title ssm-step-title--pending">Arrived at Local Facility</span>
-                      <span className="ssm-step-badge ssm-step-badge--pending">Pending</span>
+                      <span className="ssm-step-title ssm-step-title--completed">Arrived at Local Facility</span>
+                      <span className="ssm-step-time">11:05 AM</span>
                     </div>
-                    <p className="ssm-step-desc">Sorting for local dispatch rider allocation</p>
+                    <p className="ssm-step-desc">Sorted and allocated to delivery rider</p>
                   </div>
                 </div>
 
-                {/* Step 5: Out for Delivery — pending */}
-                <div className="ssm-step ssm-step--pending">
-                  <div className="ssm-dot ssm-dot--pending">
-                    <span className="material-symbols-outlined" style={{ fontSize: 14 }}>two_wheeler</span>
+                {/* Step 5: Delivered Today */}
+                <div className="ssm-step ssm-step--completed">
+                  <div className="ssm-dot ssm-dot--completed">
+                    <span className="material-symbols-outlined" style={{ fontSize: 14, fontVariationSettings: "'FILL' 1" }}>check_circle</span>
                   </div>
                   <div className="ssm-step-content">
                     <div className="ssm-step-row">
-                      <span className="ssm-step-title ssm-step-title--pending">Out for Delivery</span>
-                      <span className="ssm-step-badge ssm-step-badge--pending">Pending</span>
+                      <span className="ssm-step-title ssm-step-title--completed">Delivered to Buyer</span>
+                      <span className="ssm-step-time">01:15 PM</span>
                     </div>
-                    <p className="ssm-step-desc">Courier rider on the way to delivery address</p>
+                    <p className="ssm-step-desc">Signed and received at delivery address</p>
                   </div>
                 </div>
               </div>
@@ -664,7 +723,144 @@ export default function MobileInTransit({
                   +1
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
 
+      {/* ── Confirm Delivery Confirmation Modal ── */}
+      {isConfirmModalOpen && (
+        <div className="ap-bottom-sheet-backdrop" onClick={() => setIsConfirmModalOpen(false)}>
+          <div className="ap-bottom-sheet" onClick={(e) => e.stopPropagation()}>
+            <div className="ap-sheet-handle" />
+            <div className="ap-sheet-header">
+              <div className="ap-sheet-title-group">
+                <h3 className="ap-sheet-title">Confirm Delivery</h3>
+              </div>
+              <button
+                type="button"
+                className="ap-sheet-close-btn"
+                onClick={() => setIsConfirmModalOpen(false)}
+                aria-label="Close"
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>close</span>
+              </button>
+            </div>
+
+            <div style={{ padding: "8px 0 16px", display: "flex", flexDirection: "column", gap: 14 }}>
+              <p style={{ fontSize: 13.5, color: "var(--ink)", lineHeight: 1.5, margin: 0 }}>
+                Are you sure you want to confirm delivery for <strong>{itemName}</strong>?
+              </p>
+              <div style={{ background: "rgba(22, 163, 74, 0.08)", border: "1px solid rgba(22, 163, 74, 0.25)", borderRadius: 10, padding: "12px 14px" }}>
+                <p style={{ fontSize: 12.5, color: "#15803d", margin: 0, fontWeight: 600, lineHeight: 1.4 }}>
+                  Once confirmed, the escrow payment of <strong>{orderAmount}</strong> will be released immediately to {counterpartyName}.
+                </p>
+              </div>
+
+              <div style={{ display: "flex", gap: 10, marginTop: 6 }}>
+                <button
+                  type="button"
+                  onClick={() => setIsConfirmModalOpen(false)}
+                  style={{
+                    flex: 1,
+                    height: 44,
+                    borderRadius: 10,
+                    border: "1px solid var(--line)",
+                    background: "var(--surface)",
+                    color: "var(--ink)",
+                    fontFamily: "inherit",
+                    fontSize: 13.5,
+                    fontWeight: 700,
+                    cursor: "pointer",
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirmAction}
+                  style={{
+                    flex: 1,
+                    height: 44,
+                    borderRadius: 10,
+                    border: "none",
+                    background: "#16a34a",
+                    color: "#ffffff",
+                    fontFamily: "inherit",
+                    fontSize: 13.5,
+                    fontWeight: 700,
+                    cursor: "pointer",
+                  }}
+                >
+                  Yes, Release Funds
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Report Issue Modal Sheet ── */}
+      {isReportOpen && (
+        <div className="ap-bottom-sheet-backdrop" onClick={() => setIsReportOpen(false)}>
+          <div className="ap-bottom-sheet" onClick={(e) => e.stopPropagation()}>
+            <div className="ap-sheet-handle" />
+            <div className="ap-sheet-header">
+              <div className="ap-sheet-title-group">
+                <h3 className="ap-sheet-title" style={{ color: "#dc2626" }}>Report an Issue</h3>
+              </div>
+              <button
+                type="button"
+                className="ap-sheet-close-btn"
+                onClick={() => setIsReportOpen(false)}
+                aria-label="Close"
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>close</span>
+              </button>
+            </div>
+
+            <div className="cd-issue-modal" style={{ padding: "4px 0 16px" }}>
+              <p style={{ fontSize: 12.5, color: "var(--muted)", margin: 0 }}>
+                Select the issue you encountered with your delivery:
+              </p>
+
+              {[
+                "Item received is damaged or defective",
+                "Wrong item or specifications delivered",
+                "Items missing from package",
+                "Package marked delivered but not received",
+              ].map((reason, idx) => (
+                <div
+                  key={idx}
+                  className="cd-issue-option"
+                  onClick={() => {
+                    setIsReportOpen(false);
+                    showToast("Dispute ticket opened. Escrow funds placed on hold.");
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ color: "#dc2626", fontSize: 18 }}>
+                    error_outline
+                  </span>
+                  <span>{reason}</span>
+                </div>
+              ))}
+
+              <textarea
+                className="cd-issue-textarea"
+                placeholder="Describe your issue in detail (optional)..."
+              />
+
+              <button
+                type="button"
+                onClick={() => {
+                  setIsReportOpen(false);
+                  showToast("Dispute report submitted. Support will reach out within 2 hours.");
+                }}
+                className="cd-report-btn"
+                style={{ height: 44, fontSize: 13.5 }}
+              >
+                Submit Report
+              </button>
             </div>
           </div>
         </div>
@@ -690,49 +886,36 @@ export default function MobileInTransit({
               </button>
             </div>
 
-            {/* Security Notice */}
-            <div className="ap-chat-security-banner">
-              <span className="material-symbols-outlined">verified_user</span>
-              <span>This chat is protected by <strong>PayKudi security</strong></span>
-            </div>
-
-            {/* Messages Container */}
-            <div ref={chatMessagesRef} className="ap-chat-messages-container">
+            {/* Chat Messages */}
+            <div className="ap-chat-messages-container" ref={chatMessagesRef}>
               {chatMessages.map((msg) => (
-                <div key={msg.id} className={`ap-chat-message-row ${msg.sender}`}>
-                  {msg.sender === "seller" && (
-                    <span className="ap-chat-sender-name">{sellerName}</span>
-                  )}
-                  <div className={`ap-chat-bubble ${msg.sender}`}>
-                    <p>{msg.text}</p>
+                <div
+                  key={msg.id}
+                  className={`ap-chat-bubble-wrap ${msg.sender === "buyer" ? "buyer" : "seller"}`}
+                >
+                  <div className="ap-chat-bubble">
+                    <p className="ap-chat-text">{msg.text}</p>
+                    <span className="ap-chat-time">{msg.time}</span>
                   </div>
-                  <span className="ap-chat-timestamp">
-                    {msg.time} {msg.sender === "buyer" ? "• Sent" : ""}
-                  </span>
                 </div>
               ))}
             </div>
 
-            {/* Bottom Input Bar */}
-            <form onSubmit={handleSendChat} className="ap-chat-input-bar">
-              <button type="button" className="ap-chat-attach-btn" aria-label="Add attachment">
-                <span className="material-symbols-outlined">add_circle</span>
-              </button>
+            {/* Chat Input Footer */}
+            <form className="ap-chat-input-row" onSubmit={handleSendChat}>
               <input
                 type="text"
+                className="ap-chat-input"
+                placeholder="Type your message..."
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
-                onFocus={() => {
-                  setTimeout(scrollToChatBottom, 120);
-                }}
-                placeholder="Type a message..."
-                className="ap-chat-text-input"
+                autoFocus
               />
               <button
                 type="submit"
                 className="ap-chat-send-btn"
                 disabled={!chatInput.trim()}
-                aria-label="Send message"
+                aria-label="Send"
               >
                 <span className="material-symbols-outlined">send</span>
               </button>
@@ -742,114 +925,37 @@ export default function MobileInTransit({
       )}
 
       {/* ── Receipt Modal ── */}
-      {isReceiptOpen && (
-        <div className="ap-modal-backdrop" onClick={() => setIsReceiptOpen(false)}>
-          <div className="ap-bottom-sheet" onClick={(e) => e.stopPropagation()}>
-            <div className="ap-sheet-handle" />
-            <div className="ap-sheet-header">
-              <div className="ap-sheet-title-group">
-                <h3 className="ap-sheet-title">Payment Receipt</h3>
-                <span className="ap-sheet-ord-pill">{orderNumber}</span>
-              </div>
-              <button
-                type="button"
-                className="ap-sheet-close-btn"
-                onClick={() => setIsReceiptOpen(false)}
-                aria-label="Close"
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>close</span>
-              </button>
-            </div>
-            <div className="ap-sheet-body" style={{ textAlign: "center", padding: "16px 0" }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 48, color: "#7c3aed", display: "block", marginBottom: 8 }}>
-                local_shipping
-              </span>
-              <div style={{ fontWeight: 800, fontSize: 18, marginBottom: 4 }}>In Transit</div>
-              <div style={{ color: "#6b7280", fontSize: 13, marginBottom: 16 }}>
-                {orderNumber} · {itemName}
-              </div>
-              <div style={{ fontSize: 28, fontWeight: 800, color: "#161618", marginBottom: 20 }}>
-                {orderAmount}
-              </div>
-              <button
-                type="button"
-                style={{
-                  background: "#161618",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: 10,
-                  padding: "12px 32px",
-                  fontWeight: 700,
-                  fontSize: 14,
-                  cursor: "pointer",
-                }}
-              >
-                Download Receipt
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ReceiptModal
+        isOpen={isReceiptOpen}
+        onClose={() => setIsReceiptOpen(false)}
+        room={{
+          ...room,
+          id: orderNumber,
+          amount: orderAmount,
+          price: orderAmount,
+          item: itemName,
+          sellerName,
+          buyerName,
+          courier: courierService,
+          trackingNumber,
+        }}
+      />
 
-      {/* ── Help Modal ── */}
-      {isHelpOpen && (
-        <div className="ap-modal-backdrop" onClick={() => setIsHelpOpen(false)}>
-          <div className="ap-modal-card" onClick={(e) => e.stopPropagation()}>
-            <div className="ap-modal-header">
-              <h3>Shipping Help & Guide</h3>
-              <button
-                type="button"
-                className="ap-modal-close"
-                onClick={() => setIsHelpOpen(false)}
-                aria-label="Close"
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>close</span>
-              </button>
-            </div>
-            <div style={{ fontSize: 13.5, lineHeight: 1.5 }}>
-              <p>
-                <strong>1. Item In Transit:</strong> Your item is currently being delivered by {courierService}. Tracking number: <strong>{trackingNumber}</strong>.
-              </p>
-              <p>
-                <strong>2. Escrow Held:</strong> Your payment of <strong>{orderAmount}</strong> remains safely locked in PayKudi escrow until you confirm receipt.
-              </p>
-              <p>
-                <strong>3. Confirm Delivery:</strong> Once you receive and inspect your item, confirm delivery to release payment to the seller.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* ── Help Drawer ── */}
+      <HelpDrawer isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
 
       {/* ── Protection Info Modal ── */}
-      {isInfoOpen && (
-        <div className="ap-modal-backdrop" onClick={() => setIsInfoOpen(false)}>
-          <div className="ap-modal-card" onClick={(e) => e.stopPropagation()}>
-            <div className="ap-modal-header">
-              <h3>PayKudi Escrow Protection</h3>
-              <button
-                type="button"
-                className="ap-modal-close"
-                onClick={() => setIsInfoOpen(false)}
-                aria-label="Close"
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>close</span>
-              </button>
-            </div>
-            <div style={{ fontSize: 13.5, lineHeight: 1.5 }}>
-              <p>Every transaction on PayKudi is backed by 100% money-back escrow protection:</p>
-              <ul style={{ paddingLeft: 20, margin: "8px 0" }}>
-                <li>Zero risk of fraud or non-delivery</li>
-                <li>Seller only receives funds when you inspect and confirm</li>
-                <li>24/7 dispute resolution and full refund support</li>
-              </ul>
-            </div>
-          </div>
+      <ProtectionInfoModal isOpen={isInfoOpen} onClose={() => setIsInfoOpen(false)} />
+
+      {/* ── Toast Notification ── */}
+      {toastText && (
+        <div className="ap-toast" role="status" aria-live="polite">
+          <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
+            check_circle
+          </span>
+          <span>{toastText}</span>
         </div>
       )}
-
-      {/* Toast */}
-      {toastText && <div className="ap-toast">{toastText}</div>}
     </div>
   );
 }

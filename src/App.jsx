@@ -11,6 +11,7 @@ import MobilePaymentRoom from "./components/Mobile/MobilePaymentRoom.jsx";
 import MobileAwaitingPayment from "./components/Mobile/MobileAwaitingPayment.jsx";
 import MobilePaymentReceived from "./components/Mobile/MobilePaymentReceived.jsx";
 import MobileInTransit from "./components/Mobile/MobileInTransit.jsx";
+import MobileConfirmDelivery from "./components/Mobile/MobileConfirmDelivery.jsx";
 import { ALL_PAYMENT_ROOMS } from "./data/paymentRooms.js";
 
 function BrandLogo({ dark, className }) {
@@ -270,7 +271,9 @@ function MobileDashboard({
     active === "Payment Invitation" ||
     active === "Awaiting Payment" ||
     active === "Payment Received" ||
-    active === "In Transit";
+    active === "In Transit" ||
+    active === "Confirm Delivery" ||
+    active === "Confirm delivery";
 
   return (
     <div className={`mobile-dashboard${isNoNav ? " no-nav-mode" : ""}`} data-appearance={dark ? "dark" : "light"}>
@@ -319,6 +322,12 @@ function MobileDashboard({
           onBack={() => handleNavClick("Payment room")}
           role={role}
         />
+      ) : active === "Confirm Delivery" || active === "Confirm delivery" ? (
+        <MobileConfirmDelivery
+          room={activeRoom}
+          onBack={() => handleNavClick("Payment room")}
+          role={role}
+        />
       ) : (
         <div className="mobile-content-scroll" ref={contentScrollRef}>
           {active === "Activity" ? (
@@ -334,6 +343,8 @@ function MobileDashboard({
                   setActive("Payment Received");
                 } else if (r && (r.status === "in_transit" || r.statusText === "In Transit")) {
                   setActive("In Transit");
+                } else if (r && (r.status === "delivered" || r.statusText === "Confirm delivery" || r.statusText === "Confirm Delivery")) {
+                  setActive("Confirm Delivery");
                 } else {
                   setActive("Payment Invitation");
                 }

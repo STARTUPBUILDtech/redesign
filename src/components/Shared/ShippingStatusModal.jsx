@@ -2,6 +2,14 @@ import React from "react";
 import "../../styles/mobile-awaiting-payment.css";
 import "../../styles/mobile-in-transit.css";
 
+/* ── Proof-of-shipping placeholder images (coloured blocks used as thumbnails) ── */
+const PROOF_IMAGES = [
+  { label: "Package Box",    color: "#e0e7ff", icon: "inventory_2" },
+  { label: "Waybill Slip",   color: "#fef9c3", icon: "receipt_long" },
+  { label: "Packaging",      color: "#dcfce7", icon: "category" },
+  { label: "Security Seal",  color: "#fce7f3", icon: "verified" },
+];
+
 export default function ShippingStatusModal({
   isOpen,
   onClose,
@@ -11,9 +19,48 @@ export default function ShippingStatusModal({
 }) {
   if (!isOpen) return null;
 
-  const courierService = room.courier || "GIG Logistics";
-  const trackingNumber = room.trackingNumber || "KMLMLMMO";
-  const estimatedArrival = room.estimatedArrival || "12-10-2024";
+  const orderNumber     = room.id || room.orderNumber || "ORD-771920";
+  const courierService  = room.courier || "GIG Logistics";
+  const trackingNumber  = room.trackingNumber || "KMLMLMMO";
+
+  /* ── Timeline steps matching the design ── */
+  const steps = [
+    {
+      state: "completed",
+      icon: "check_circle",
+      title: "Package Picked Up",
+      desc: "Collected by courier from seller facility",
+      time: "11:30 AM",
+    },
+    {
+      state: "completed",
+      icon: "check_circle",
+      title: "Sorted at Origin Hub",
+      desc: "Processed at main regional sorting facility",
+      time: "03:45 PM",
+    },
+    {
+      state: "active",
+      icon: "local_shipping",
+      title: "In Transit to Destination",
+      desc: "En route to destination delivery hub",
+      badge: "Active",
+    },
+    {
+      state: "pending",
+      icon: "domain",
+      title: "Arrived at Local Facility",
+      desc: "Sorting for local dispatch rider allocation",
+      badge: "Pending",
+    },
+    {
+      state: "pending",
+      icon: "two_wheeler",
+      title: "Out for Delivery",
+      desc: "Courier rider on the way to delivery address",
+      badge: "Pending",
+    },
+  ];
 
   return (
     <div
@@ -21,16 +68,18 @@ export default function ShippingStatusModal({
       onClick={onClose}
     >
       <div
-        className="ap-bottom-sheet"
+        className="ap-bottom-sheet ssm-sheet"
         onClick={(e) => e.stopPropagation()}
         onAnimationEnd={onAnimationEnd}
       >
+        {/* Drag handle */}
         <div className="ap-sheet-handle" />
 
+        {/* ── Header ── */}
         <div className="ap-sheet-header">
           <div className="ap-sheet-title-group">
             <h3 className="ap-sheet-title">Shipping Status</h3>
-            <span className="it-tracking-pill">{trackingNumber}</span>
+            <span className="it-tracking-pill">{orderNumber}</span>
           </div>
           <button
             type="button"
@@ -45,90 +94,84 @@ export default function ShippingStatusModal({
           </button>
         </div>
 
-        <div className="it-shipping-sheet-body">
-          <div className="it-courier-summary-card">
-            <div className="it-courier-summary-top">
-              <div className="it-courier-badge">
-                <span className="material-symbols-outlined" style={{ color: "#7c3aed" }}>
-                  local_shipping
-                </span>
-                <span>{courierService}</span>
+        {/* ── Body ── */}
+        <div className="ssm-body">
+
+          {/* ── ORDER TRACKING ── */}
+          <div className="ssm-section-label">ORDER TRACKING</div>
+
+          <div className="ssm-timeline">
+            {/* vertical connector line */}
+            <div className="ssm-timeline-line" />
+
+            {steps.map((step, i) => (
+              <div key={i} className={`ssm-step ssm-step--${step.state}`}>
+                {/* dot */}
+                <div className={`ssm-dot ssm-dot--${step.state}`}>
+                  <span
+                    className="material-symbols-outlined"
+                    style={{
+                      fontSize: step.state === "completed" ? 14 : 13,
+                      fontVariationSettings: "'FILL' 1",
+                    }}
+                  >
+                    {step.state === "completed" ? "check_circle" : step.icon}
+                  </span>
+                </div>
+
+                {/* content */}
+                <div className="ssm-step-content">
+                  <div className="ssm-step-row">
+                    <span className={`ssm-step-title ssm-step-title--${step.state}`}>
+                      {step.title}
+                    </span>
+                    {step.time && (
+                      <span className="ssm-step-time">{step.time}</span>
+                    )}
+                    {step.badge && (
+                      <span className={`ssm-step-badge ssm-step-badge--${step.state}`}>
+                        {step.badge}
+                      </span>
+                    )}
+                  </div>
+                  <p className="ssm-step-desc">{step.desc}</p>
+                </div>
               </div>
-              <span
-                style={{
-                  background: "rgba(124, 58, 237, 0.12)",
-                  color: "#7c3aed",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                  padding: "2px 8px",
-                  borderRadius: "6px",
-                }}
-              >
-                On Schedule
-              </span>
-            </div>
-            <div className="it-eta-row">
-              <span>Estimated Delivery:</span>
-              <span className="it-eta-val">{estimatedArrival}</span>
-            </div>
+            ))}
           </div>
 
-          <div className="it-timeline">
-            <div className="it-timeline-item">
-              <div className="it-timeline-dot completed">
-                <span className="material-symbols-outlined" style={{ fontSize: 13, fontWeight: 800 }}>
-                  check
-                </span>
-              </div>
-              <h4 className="it-timeline-title">Escrow Payment Confirmed</h4>
-              <p className="it-timeline-desc">Funds locked securely in PayKudi escrow.</p>
-              <span className="it-timeline-time">10-10-2024 · 10:42 AM</span>
-            </div>
-
-            <div className="it-timeline-item">
-              <div className="it-timeline-dot completed">
-                <span className="material-symbols-outlined" style={{ fontSize: 13, fontWeight: 800 }}>
-                  check
-                </span>
-              </div>
-              <h4 className="it-timeline-title">Dispatched with {courierService}</h4>
-              <p className="it-timeline-desc">Package registered under Waybill #{trackingNumber}.</p>
-              <span className="it-timeline-time">11-10-2024 · 02:15 PM</span>
-            </div>
-
-            <div className="it-timeline-item">
-              <div className="it-timeline-dot active">
-                <span className="material-symbols-outlined" style={{ fontSize: 12 }}>
-                  directions_transit
-                </span>
-              </div>
-              <h4 className="it-timeline-title" style={{ color: "#7c3aed" }}>
-                In Transit to Delivery Hub
-              </h4>
-              <p className="it-timeline-desc">Package is on route to the regional sorting facility.</p>
-              <span className="it-timeline-time">11-10-2024 · 06:40 PM</span>
-            </div>
-
-            <div className="it-timeline-item">
-              <div className="it-timeline-dot">
-                <span>4</span>
-              </div>
-              <h4 className="it-timeline-title" style={{ color: "var(--muted)" }}>
-                Out for Delivery
-              </h4>
-              <p className="it-timeline-desc">Courier assigned for destination dispatch.</p>
-            </div>
-
-            <div className="it-timeline-item">
-              <div className="it-timeline-dot">
-                <span>5</span>
-              </div>
-              <h4 className="it-timeline-title" style={{ color: "var(--muted)" }}>
-                Delivered & Escrow Release
-              </h4>
-              <p className="it-timeline-desc">Buyer confirms package inspection and payout is released.</p>
-            </div>
+          {/* ── PROOF OF SHIPPING ── */}
+          <div className="ssm-proof-header">
+            <span className="ssm-section-label">PROOF OF SHIPPING</span>
+            <button type="button" className="ssm-view-all-btn">
+              View All (5)
+            </button>
           </div>
+
+          <div className="ssm-proof-grid">
+            {PROOF_IMAGES.map((img, i) => (
+              <div key={i} className="ssm-proof-thumb">
+                <div
+                  className="ssm-proof-img"
+                  style={{ background: img.color }}
+                >
+                  <span
+                    className="material-symbols-outlined"
+                    style={{ fontSize: 24, color: "#6b7280", fontVariationSettings: "'FILL' 0" }}
+                  >
+                    {img.icon}
+                  </span>
+                </div>
+                <span className="ssm-proof-label">{img.label}</span>
+              </div>
+            ))}
+
+            {/* +1 badge */}
+            <button type="button" className="ssm-proof-more-btn" aria-label="View 1 more photo">
+              +1
+            </button>
+          </div>
+
         </div>
       </div>
     </div>

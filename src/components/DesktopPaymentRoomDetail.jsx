@@ -40,7 +40,9 @@ export default function DesktopPaymentRoomDetail({
   const isAwaitingPayment = status === "awaiting_payment";
   const isPaymentReceived = status === "payment_received";
   const isInTransit = status === "in_transit";
+  const isDelivered = status === "delivered" || room.statusText === "Confirm delivery" || room.statusText === "Confirm Delivery";
   const statusText = room.statusText || (
+    isDelivered ? "Confirm delivery" :
     isInTransit ? "In Transit" :
     isPaymentReceived ? "Payment Received" :
     "Awaiting Payment"
@@ -279,10 +281,12 @@ export default function DesktopPaymentRoomDetail({
                 <span className="desktop-prd-banner-label">ORDER STATUS</span>
                 <div
                   className={`desktop-prd-stepper-row ${
-                    isPaymentReceived
-                      ? "payment-received"
+                    isDelivered
+                      ? "delivered"
                       : isInTransit
                       ? "in-transit"
+                      : isPaymentReceived
+                      ? "payment-received"
                       : "awaiting-payment"
                   }`}
                 >
@@ -306,20 +310,34 @@ export default function DesktopPaymentRoomDetail({
                     <span className={`desktop-prd-step-name ${isAwaitingPayment ? "active" : ""}`}>Payment</span>
                   </div>
 
+                  {/* Dots 1 -> 2 */}
+                  <div
+                    className={`desktop-prd-stepper-dots ${
+                      isPaymentReceived
+                        ? "dots-orange-to-white"
+                        : (isInTransit || isDelivered)
+                        ? "dots-orange-to-blue"
+                        : "dots-muted"
+                    }`}
+                    aria-hidden="true"
+                  >
+                    <span></span><span></span><span></span><span></span>
+                  </div>
+
                   {/* Step 2: Received */}
                   <div className="desktop-prd-step-col">
                     <div
                       className={`desktop-prd-step-circle ${
                         isPaymentReceived
                           ? "active-step"
-                          : isInTransit
+                          : (isInTransit || isDelivered)
                           ? "checked-blue"
                           : "inactive"
                       }`}
                     >
                       {isPaymentReceived ? (
                         "2"
-                      ) : isInTransit ? (
+                      ) : (isInTransit || isDelivered) ? (
                         <span className="material-symbols-outlined" style={{ fontSize: 14, fontWeight: 800 }}>
                           check
                         </span>
@@ -330,22 +348,67 @@ export default function DesktopPaymentRoomDetail({
                     <span className={`desktop-prd-step-name ${isPaymentReceived ? "active" : ""}`}>Received</span>
                   </div>
 
+                  {/* Dots 2 -> 3 */}
+                  <div
+                    className={`desktop-prd-stepper-dots ${
+                      isInTransit
+                        ? "dots-blue-to-white"
+                        : isDelivered
+                        ? "dots-blue-to-purple"
+                        : "dots-muted"
+                    }`}
+                    aria-hidden="true"
+                  >
+                    <span></span><span></span><span></span><span></span>
+                  </div>
+
                   {/* Step 3: In Transit */}
                   <div className="desktop-prd-step-col">
                     <div
                       className={`desktop-prd-step-circle ${
-                        isInTransit ? "active-step" : "inactive"
+                        isDelivered
+                          ? "checked-purple"
+                          : isInTransit
+                          ? "active-step"
+                          : "inactive"
                       }`}
                     >
-                      3
+                      {isDelivered ? (
+                        <span className="material-symbols-outlined" style={{ fontSize: 14, fontWeight: 800 }}>
+                          check
+                        </span>
+                      ) : (
+                        "3"
+                      )}
                     </div>
                     <span className={`desktop-prd-step-name ${isInTransit ? "active" : ""}`}>In Transit</span>
                   </div>
 
+                  {/* Dots 3 -> 4 */}
+                  <div
+                    className={`desktop-prd-stepper-dots ${
+                      isDelivered ? "dots-purple-to-white" : "dots-muted"
+                    }`}
+                    aria-hidden="true"
+                  >
+                    <span></span><span></span><span></span><span></span>
+                  </div>
+
                   {/* Step 4: Delivered */}
                   <div className="desktop-prd-step-col">
-                    <div className="desktop-prd-step-circle inactive">4</div>
-                    <span className="desktop-prd-step-name">Delivered</span>
+                    <div
+                      className={`desktop-prd-step-circle ${
+                        isDelivered ? "active-step" : "inactive"
+                      }`}
+                    >
+                      4
+                    </div>
+                    <span className={`desktop-prd-step-name ${isDelivered ? "active" : ""}`}>Delivered</span>
+                  </div>
+
+                  {/* Dots 4 -> 5 */}
+                  <div className="desktop-prd-stepper-dots dots-muted" aria-hidden="true">
+                    <span></span><span></span><span></span><span></span>
                   </div>
 
                   {/* Step 5: Completed */}

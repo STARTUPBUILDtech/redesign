@@ -297,20 +297,78 @@
 /* 5 Steps Horizontally Aligned */
 .ap-stepper-row {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   width: 100%;
   margin-top: 4px;
+  position: relative;
 }
 
 .ap-step-col {
   display: flex;
   flex-direction: column;
   align-items: center;
-  flex: 1;
+  flex: 0 0 auto;
   text-align: center;
   gap: 4px;
+  min-width: 42px;
+  position: relative;
+  z-index: 2;
 }
+
+/* ── Stepper 4-Dot Connectors with Color Blending ── */
+.ap-stepper-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  flex: 1;
+  margin-top: -16px;
+  position: relative;
+  z-index: 1;
+}
+
+.ap-stepper-dots span {
+  width: 3.5px;
+  height: 3.5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Inactive connector segments (active to inactive, or inactive to inactive): NO DOTS */
+.ap-stepper-dots.dots-muted {
+  visibility: hidden;
+}
+
+/* Blend: Orange to Blue (Step 1 -> Step 2) */
+.ap-stepper-dots.dots-orange-to-blue span:nth-child(1) { background-color: #ea580c; }
+.ap-stepper-dots.dots-orange-to-blue span:nth-child(2) { background-color: #9d6e4b; }
+.ap-stepper-dots.dots-orange-to-blue span:nth-child(3) { background-color: #508494; }
+.ap-stepper-dots.dots-orange-to-blue span:nth-child(4) { background-color: #0284c7; }
+
+/* Blend: Orange to White (Payment -> Received when Step 2 is active) */
+.ap-stepper-dots.dots-orange-to-white span:nth-child(1) { background-color: #ea580c; }
+.ap-stepper-dots.dots-orange-to-white span:nth-child(2) { background-color: #f18e5b; }
+.ap-stepper-dots.dots-orange-to-white span:nth-child(3) { background-color: #f8c7ab; }
+.ap-stepper-dots.dots-orange-to-white span:nth-child(4) { background-color: #ffffff; }
+
+/* Blend: Blue to Purple (Step 2 -> Step 3) */
+.ap-stepper-dots.dots-blue-to-purple span:nth-child(1) { background-color: #0284c7; }
+.ap-stepper-dots.dots-blue-to-purple span:nth-child(2) { background-color: #2b6de3; }
+.ap-stepper-dots.dots-blue-to-purple span:nth-child(3) { background-color: #5453f5; }
+.ap-stepper-dots.dots-blue-to-purple span:nth-child(4) { background-color: #7c3aed; }
+
+/* Blend: Blue to White (Received -> In Transit when Step 3 is active) */
+.ap-stepper-dots.dots-blue-to-white span:nth-child(1) { background-color: #0284c7; }
+.ap-stepper-dots.dots-blue-to-white span:nth-child(2) { background-color: #56acf5; }
+.ap-stepper-dots.dots-blue-to-white span:nth-child(3) { background-color: #aad5fa; }
+.ap-stepper-dots.dots-blue-to-white span:nth-child(4) { background-color: #ffffff; }
+
+/* Blend: Purple to White (In Transit -> Delivered when Step 4 is active) */
+.ap-stepper-dots.dots-purple-to-white span:nth-child(1) { background-color: #7c3aed; }
+.ap-stepper-dots.dots-purple-to-white span:nth-child(2) { background-color: #a87ff2; }
+.ap-stepper-dots.dots-purple-to-white span:nth-child(3) { background-color: #d4bff8; }
+.ap-stepper-dots.dots-purple-to-white span:nth-child(4) { background-color: #ffffff; }
 
 /* Active circle: white solid circle with dark text */
 .ap-step-circle-active {
@@ -471,8 +529,9 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 12.5px;
-  font-weight: 700;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
   color: #19a66c;
   background: transparent;
   border: none;
@@ -481,6 +540,12 @@
   text-align: left;
   user-select: none;
   width: fit-content;
+}
+
+.ap-order-details-trigger span:first-child {
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
 }
 
 .ap-order-details-trigger:hover {

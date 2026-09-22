@@ -32,6 +32,12 @@
     padding-bottom: 0 !important;
   }
 
+  .mobile-dashboard.no-nav-mode #m-bottom-nav,
+  .mobile-dashboard.no-nav-mode .mobile-nav,
+  .mobile-dashboard.no-nav-mode .mobile-bottom-blur-curtain {
+    display: none !important;
+  }
+
   /* ── Mobile Scroll Container ── */
   .mobile-content-scroll {
     flex: 1 1 auto;

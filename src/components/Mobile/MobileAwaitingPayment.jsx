@@ -211,10 +211,20 @@ export default function MobileAwaitingPayment({
                 <span className="ap-step-name">Payment</span>
               </div>
 
+              {/* Dots 1 -> 2 */}
+              <div className="ap-stepper-dots dots-muted" aria-hidden="true">
+                <span></span><span></span><span></span><span></span>
+              </div>
+
               {/* Step 2: Received */}
               <div className="ap-step-col">
                 <div className="ap-step-circle-inactive">2</div>
                 <span className="ap-step-name">Received</span>
+              </div>
+
+              {/* Dots 2 -> 3 */}
+              <div className="ap-stepper-dots dots-muted" aria-hidden="true">
+                <span></span><span></span><span></span><span></span>
               </div>
 
               {/* Step 3: In Transit */}
@@ -223,10 +233,20 @@ export default function MobileAwaitingPayment({
                 <span className="ap-step-name">In Transit</span>
               </div>
 
+              {/* Dots 3 -> 4 */}
+              <div className="ap-stepper-dots dots-muted" aria-hidden="true">
+                <span></span><span></span><span></span><span></span>
+              </div>
+
               {/* Step 4: Delivered */}
               <div className="ap-step-col">
                 <div className="ap-step-circle-inactive">4</div>
                 <span className="ap-step-name">Delivered</span>
+              </div>
+
+              {/* Dots 4 -> 5 */}
+              <div className="ap-stepper-dots dots-muted" aria-hidden="true">
+                <span></span><span></span><span></span><span></span>
               </div>
 
               {/* Step 5: Completed */}

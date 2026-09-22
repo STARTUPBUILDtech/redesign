@@ -11,6 +11,7 @@ import MobilePaymentRoom from "./MobilePaymentRoom";
 import MobileAwaitingPayment from "./MobileAwaitingPayment";
 import MobilePaymentReceived from "./MobilePaymentReceived";
 import MobileInTransit from "./MobileInTransit";
+import MobileConfirmDelivery from "./MobileConfirmDelivery";
 import { useDashboard } from "../../context/DashboardContext";
 import { BUYER_ROOM, SELLER_ROOM, IN_TRANSIT_ROOM } from "../../data/paymentRooms";
 
@@ -40,10 +41,19 @@ export default function MobileDashboard() {
   const isAwaitingPayment = active === "Awaiting Payment";
   const isPaymentReceived = active === "Payment Received";
   const isInTransit = active === "In Transit";
+  const isConfirmDelivery = active === "Confirm Delivery" || active === "Confirm delivery";
   const isActivity = active === "Activity";
 
+  const isNoNav =
+    isNewPayment ||
+    isPaymentInvitation ||
+    isAwaitingPayment ||
+    isPaymentReceived ||
+    isInTransit ||
+    isConfirmDelivery;
+
   return (
-    <div className={`mobile-dashboard ${isActivity ? "activity-mode" : ""} ${isAwaitingPayment || isPaymentReceived || isInTransit ? "no-nav-mode" : ""}`} data-appearance={dark ? "dark" : "light"}>
+    <div className={`mobile-dashboard ${isActivity ? "activity-mode" : ""} ${isNoNav ? "no-nav-mode" : ""}`} data-appearance={dark ? "dark" : "light"}>
       <header className="mobile-header">
         <BrandLogo className="mobile-brand" />
         <HeaderActions />
@@ -84,6 +94,12 @@ export default function MobileDashboard() {
           onBack={() => setActive("Payment room")}
           role={role}
         />
+      ) : isConfirmDelivery ? (
+        <MobileConfirmDelivery
+          room={room}
+          onBack={() => setActive("Payment room")}
+          role={role}
+        />
       ) : (
         <div className="mobile-content-scroll">
           {isActivity ? (
@@ -111,6 +127,13 @@ export default function MobileDashboard() {
                     newRoom.statusText === "In Transit")
                 ) {
                   if (setActive) setActive("In Transit");
+                } else if (
+                  newRoom &&
+                  (newRoom.status === "delivered" ||
+                    newRoom.statusText === "Confirm delivery" ||
+                    newRoom.statusText === "Confirm Delivery")
+                ) {
+                  if (setActive) setActive("Confirm Delivery");
                 } else {
                   if (setActive) setActive("Payment Invitation");
                 }
@@ -170,8 +193,8 @@ export default function MobileDashboard() {
         </div>
       )}
 
-      {/* Hide navbar on New Payment, Payment Invitation, and Awaiting Payment screens */}
-      {!isNewPayment && !isPaymentInvitation && !isAwaitingPayment && <MobileBottomNav />}
+      {/* Hide navbar on payment room screens */}
+      {!isNoNav && <MobileBottomNav />}
     </div>
   );
 }
