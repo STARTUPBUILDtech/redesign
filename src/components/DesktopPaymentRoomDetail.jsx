@@ -267,7 +267,7 @@ export default function DesktopPaymentRoomDetail({
                     onClick={() => setIsReceiptOpen(true)}
                   >
                     <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
-                      receipt_long
+                      receipt
                     </span>
                     <span>Receipt</span>
                   </button>

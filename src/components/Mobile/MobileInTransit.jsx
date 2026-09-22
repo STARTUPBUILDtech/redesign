@@ -221,7 +221,7 @@ export default function MobileInTransit({
               onClick={() => setIsReceiptOpen(true)}
               aria-label="View Receipt"
             >
-              <span className="material-symbols-outlined">receipt_long</span>
+              <span className="material-symbols-outlined">receipt</span>
               <span>Receipt</span>
             </button>
           </div>
