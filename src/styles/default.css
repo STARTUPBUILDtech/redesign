@@ -91,7 +91,7 @@ textarea,
   height: 32px;
   border-radius: 9999px;
   overflow: hidden;
-  border: 2px solid rgba(46, 160, 67, 0.4);
+  border: 2px solid #000000;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   cursor: pointer;
   flex-shrink: 0;
@@ -121,7 +121,7 @@ textarea,
 
 .app[data-appearance="dark"] .header-avatar-circle {
   background-color: rgba(255, 255, 255, 0.1);
-  border-color: rgba(46, 160, 67, 0.5);
+  border-color: #ffffff;
 }
 
 .app[data-appearance="dark"] .header-avatar-circle .avatar-icon {
