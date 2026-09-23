@@ -5,6 +5,7 @@ import "../../styles/mobile-confirm-delivery.css";
 import ReceiptModal from "../Shared/ReceiptModal";
 import HelpDrawer from "../Shared/HelpDrawer";
 import ProtectionInfoModal from "../Shared/ProtectionInfoModal";
+import ReportIssueModal from "../Shared/ReportIssueModal";
 
 export default function MobileConfirmDelivery({
   room = {},
@@ -801,70 +802,15 @@ export default function MobileConfirmDelivery({
       )}
 
       {/* ── Report Issue Modal Sheet ── */}
-      {isReportOpen && (
-        <div className="ap-bottom-sheet-backdrop" onClick={() => setIsReportOpen(false)}>
-          <div className="ap-bottom-sheet" onClick={(e) => e.stopPropagation()}>
-            <div className="ap-sheet-handle" />
-            <div className="ap-sheet-header">
-              <div className="ap-sheet-title-group">
-                <h3 className="ap-sheet-title" style={{ color: "#dc2626" }}>Report an Issue</h3>
-              </div>
-              <button
-                type="button"
-                className="ap-sheet-close-btn"
-                onClick={() => setIsReportOpen(false)}
-                aria-label="Close"
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>close</span>
-              </button>
-            </div>
-
-            <div className="cd-issue-modal" style={{ padding: "4px 0 16px" }}>
-              <p style={{ fontSize: 12.5, color: "var(--muted)", margin: 0 }}>
-                Select the issue you encountered with your delivery:
-              </p>
-
-              {[
-                "Item received is damaged or defective",
-                "Wrong item or specifications delivered",
-                "Items missing from package",
-                "Package marked delivered but not received",
-              ].map((reason, idx) => (
-                <div
-                  key={idx}
-                  className="cd-issue-option"
-                  onClick={() => {
-                    setIsReportOpen(false);
-                    showToast("Dispute ticket opened. Escrow funds placed on hold.");
-                  }}
-                >
-                  <span className="material-symbols-outlined" style={{ color: "#dc2626", fontSize: 18 }}>
-                    error_outline
-                  </span>
-                  <span>{reason}</span>
-                </div>
-              ))}
-
-              <textarea
-                className="cd-issue-textarea"
-                placeholder="Describe your issue in detail (optional)..."
-              />
-
-              <button
-                type="button"
-                onClick={() => {
-                  setIsReportOpen(false);
-                  showToast("Dispute report submitted. Support will reach out within 2 hours.");
-                }}
-                className="cd-report-btn"
-                style={{ height: 44, fontSize: 13.5 }}
-              >
-                Submit Report
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ReportIssueModal
+        isOpen={isReportOpen}
+        onClose={() => setIsReportOpen(false)}
+        orderNumber={orderNumber}
+        onSubmitReport={({ reason, images }) => {
+          const imgCountText = images && images.length > 0 ? ` with ${images.length} photo${images.length > 1 ? "s" : ""}` : "";
+          showToast(`Dispute opened (${reason})${imgCountText}. Escrow funds placed on hold.`);
+        }}
+      />
 
       {/* ── Chat Slide-In Modal ── */}
       {isChatOpen && (

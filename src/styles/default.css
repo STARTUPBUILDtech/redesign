@@ -24,7 +24,6 @@ button:focus-visible, a:focus-visible { outline: 3px solid #26a66f; outline-offs
 
 /* Default capital letter for input fields across the app */
 input:not([type="password"]):not([type="email"]):not([type="number"]):not([type="tel"]),
-textarea,
 .ui-input {
   text-transform: capitalize;
 }

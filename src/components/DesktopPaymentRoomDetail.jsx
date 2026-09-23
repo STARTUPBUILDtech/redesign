@@ -3,6 +3,7 @@ import OrderDetailsModal from "./Shared/OrderDetailsModal";
 import ShippingStatusModal from "./Shared/ShippingStatusModal";
 import HelpDrawer from "./Shared/HelpDrawer";
 import ReceiptModal from "./Shared/ReceiptModal";
+import ReportIssueModal from "./Shared/ReportIssueModal";
 import "../styles/desktop-payment-room-detail.css";
 
 const BANKS = [
@@ -33,6 +34,7 @@ export default function DesktopPaymentRoomDetail({
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isReceiptOpen, setIsReceiptOpen] = useState(false);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
+  const [isReportOpen, setIsReportOpen] = useState(false);
   const [isPaymentConfirmed, setIsPaymentConfirmed] = useState(false);
   const [seconds, setSeconds] = useState(119);
 
@@ -838,6 +840,14 @@ export default function DesktopPaymentRoomDetail({
       <HelpDrawer
         isOpen={isHelpOpen}
         onClose={() => setIsHelpOpen(false)}
+        room={room}
+        onReportIssue={() => setIsReportOpen(true)}
+      />
+
+      <ReportIssueModal
+        isOpen={isReportOpen}
+        onClose={() => setIsReportOpen(false)}
+        orderNumber={orderNumber}
       />
 
       <ReceiptModal
