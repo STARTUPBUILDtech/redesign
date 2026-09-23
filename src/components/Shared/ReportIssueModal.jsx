@@ -90,7 +90,7 @@ export default function ReportIssueModal({
   };
 
   return (
-    <div className="ap-bottom-sheet-backdrop" onClick={onClose}>
+    <div className="ap-bottom-sheet-backdrop cd-issue-backdrop" onClick={onClose}>
       <div
         className="ap-bottom-sheet cd-issue-sheet-container"
         onClick={(e) => e.stopPropagation()}
@@ -125,50 +125,52 @@ export default function ReportIssueModal({
 
         {/* ── Modal Body Content ── */}
         <div className="cd-issue-modal">
-          <p className="cd-issue-subtitle">
-            Select the issue you encountered with your delivery:
-          </p>
+          <div className="cd-issue-top-group">
+            <p className="cd-issue-subtitle">
+              Select the issue you encountered with your delivery:
+            </p>
 
-          {/* Issue Reasons Selection */}
-          <div className="cd-issue-reasons-list">
-            {reasons.map((reason, idx) => {
-              const isSelected = selectedReason === reason;
-              return (
-                <div
-                  key={idx}
-                  className={`cd-issue-option ${isSelected ? "selected" : ""}`}
-                  onClick={() => {
-                    setSelectedReason(reason);
-                    setErrorMessage("");
-                  }}
-                  role="radio"
-                  aria-checked={isSelected}
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
+            {/* Issue Reasons Selection */}
+            <div className="cd-issue-reasons-list">
+              {reasons.map((reason, idx) => {
+                const isSelected = selectedReason === reason;
+                return (
+                  <div
+                    key={idx}
+                    className={`cd-issue-option ${isSelected ? "selected" : ""}`}
+                    onClick={() => {
                       setSelectedReason(reason);
                       setErrorMessage("");
-                    }
-                  }}
-                >
-                  <span
-                    className="material-symbols-outlined cd-issue-icon"
-                    style={{
-                      color: isSelected ? "#dc2626" : "var(--muted)",
-                      fontSize: 19,
+                    }}
+                    role="radio"
+                    aria-checked={isSelected}
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        setSelectedReason(reason);
+                        setErrorMessage("");
+                      }
                     }}
                   >
-                    {isSelected ? "check_circle" : "radio_button_unchecked"}
-                  </span>
-                  <span className="cd-issue-reason-text">{reason}</span>
-                </div>
-              );
-            })}
+                    <span
+                      className="material-symbols-outlined cd-issue-icon"
+                      style={{
+                        color: isSelected ? "#dc2626" : "var(--muted)",
+                        fontSize: 19,
+                      }}
+                    >
+                      {isSelected ? "check_circle" : "radio_button_unchecked"}
+                    </span>
+                    <span className="cd-issue-reason-text">{reason}</span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
           {/* Description Textarea */}
-          <div className="cd-issue-field-group">
+          <div className="cd-issue-field-group cd-issue-desc-group">
             <label className="cd-issue-label" htmlFor="issue-description">
               Issue Details <span className="cd-issue-label-sub">(optional)</span>
             </label>
@@ -178,12 +180,12 @@ export default function ReportIssueModal({
               placeholder="Describe your issues in details"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              rows={3}
+              rows={2}
             />
           </div>
 
           {/* ── Image Upload Section ── */}
-          <div className="cd-issue-field-group">
+          <div className="cd-issue-field-group cd-issue-photo-group">
             <div className="cd-issue-upload-header">
               <label className="cd-issue-label">
                 Attach Evidence Photos <span className="cd-issue-label-sub">(optional)</span>
