@@ -1,0 +1,501 @@
+/* ==========================================================================
+   Mobile Dispute Ongoing Screen Styles
+   PayKudi Escrow Dispute Management Screen
+   ========================================================================== */
+
+/* ── Red Order Amount & Dispute Status Banner Card ── */
+.mdo-banner-card {
+  background: linear-gradient(135deg, #c5221f 0%, #991b1b 100%) !important;
+  box-shadow: 0 4px 16px rgba(197, 34, 31, 0.28) !important;
+  color: #ffffff;
+  border-radius: 14px;
+  padding: 16px 16px 14px 16px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+[data-appearance="dark"] .mdo-banner-card {
+  background: linear-gradient(135deg, #991b1b 0%, #7f1d1d 100%) !important;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* ── 3-Step Dispute Stepper ── */
+.mdo-stepper-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  position: relative;
+  padding: 0 4px;
+}
+
+/* Step Column */
+.mdo-step-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  position: relative;
+  z-index: 2;
+  min-width: 68px;
+}
+
+/* Step 1: Yellow Checkmark Circle */
+.mdo-step-circle-checked {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background-color: #facc15;
+  color: #1c1917;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 800;
+  box-shadow: 0 0 10px rgba(250, 204, 21, 0.55);
+  line-height: 1;
+}
+
+.mdo-step-circle-checked .material-symbols-outlined {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+/* Step 2: Active White Circle with Red Number */
+.mdo-step-circle-active {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  color: #c5221f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13.5px;
+  font-weight: 800;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
+  line-height: 1;
+}
+
+/* Step 3: Inactive Dark Red Translucent Circle */
+.mdo-step-circle-inactive {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.28);
+  color: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* Step Labels */
+.mdo-step-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: #ffffff;
+  text-align: center;
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+}
+
+.mdo-step-name.active {
+  font-weight: 800;
+}
+
+.mdo-step-name.muted {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Dotted Connector Lines */
+.mdo-stepper-dots {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  margin: 0 4px;
+  margin-bottom: 18px;
+}
+
+.mdo-stepper-dots span {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  display: block;
+}
+
+.mdo-stepper-dots.dots-active span {
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+.mdo-stepper-dots.dots-inactive span {
+  background-color: rgba(255, 255, 255, 0.35);
+}
+
+/* ── Dispute Trails Section Header ── */
+.mdo-trails-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 18px;
+  margin-bottom: 12px;
+  width: 100%;
+}
+
+.mdo-trails-title {
+  color: #dc2626;
+  font-size: 13.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0;
+}
+
+[data-appearance="dark"] .mdo-trails-title {
+  color: #ef4444;
+}
+
+/* Countdown Timer Capsule */
+.mdo-timer-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background-color: #fee2e2;
+  color: #dc2626;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+[data-appearance="dark"] .mdo-timer-pill {
+  background-color: rgba(220, 38, 38, 0.18);
+  color: #fca5a5;
+}
+
+.mdo-timer-icon {
+  font-size: 15px !important;
+  color: #dc2626;
+}
+
+[data-appearance="dark"] .mdo-timer-icon {
+  color: #fca5a5;
+}
+
+/* ── BOXLESS DISPUTE TRAILS (No card, no borders, open timeline) ── */
+.mdo-boxless-timeline {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding-left: 36px;
+  margin-bottom: 14px;
+}
+
+/* Vertical Continuous Spine Line */
+.mdo-timeline-spine {
+  position: absolute;
+  top: 16px;
+  bottom: 0px;
+  left: 13px;
+  width: 2px;
+  background: var(--line, #e2e8f0);
+}
+
+[data-appearance="dark"] .mdo-timeline-spine {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Timeline Item (Completely Boxless) */
+.mdo-boxless-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 22px;
+}
+
+.mdo-boxless-item:last-child {
+  padding-bottom: 24px;
+}
+
+/* Timeline Node Icon Badge */
+.mdo-timeline-node {
+  position: absolute;
+  left: -36px;
+  top: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  z-index: 2;
+  box-shadow: 0 0 0 3px var(--page, #ffffff);
+}
+
+[data-appearance="dark"] .mdo-timeline-node {
+  box-shadow: 0 0 0 3px var(--page, #121316);
+}
+
+.mdo-timeline-node.node-buyer {
+  background: #dc2626;
+}
+
+.mdo-timeline-node.node-cs {
+  background: #16a34a;
+}
+
+.mdo-timeline-node .material-symbols-outlined {
+  font-size: 16px;
+}
+
+/* Boxless Content Container (NO background, NO border box) */
+.mdo-boxless-content {
+  display: flex;
+  flex-direction: column;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+/* Sender & Timestamp Row */
+.mdo-sender-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+
+.mdo-sender-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--ink, #1e293b);
+}
+
+.mdo-sender-name.cs {
+  color: #16a34a;
+}
+
+[data-appearance="dark"] .mdo-sender-name {
+  color: #f1f5f9;
+}
+
+[data-appearance="dark"] .mdo-sender-name.cs {
+  color: #4ade80;
+}
+
+.mdo-timestamp {
+  font-size: 10px;
+  color: #94a3b8;
+  font-weight: 500;
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+}
+
+[data-appearance="dark"] .mdo-timestamp {
+  color: #64748b;
+}
+
+/* Divider hidden per design update */
+.mdo-item-divider {
+  display: none !important;
+}
+
+[data-appearance="dark"] .mdo-item-divider {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Dispute Reason Row */
+.mdo-reason-row {
+  font-size: 12.5px;
+  margin-bottom: 5px;
+  line-height: 1.35;
+}
+
+.mdo-reason-label {
+  color: var(--muted, #64748b);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 11.5px;
+  letter-spacing: 0.02em;
+}
+
+.mdo-reason-val {
+  color: #dc2626;
+  font-weight: 700;
+}
+
+[data-appearance="dark"] .mdo-reason-val {
+  color: #ef4444;
+}
+
+/* Description / Message Text */
+.mdo-message-text {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--ink, #334155);
+  margin: 0;
+}
+
+[data-appearance="dark"] .mdo-message-text {
+  color: #cbd5e1;
+}
+
+/* Evidence photos thumbnails inside trail */
+.mdo-trail-photos {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.mdo-trail-photo-thumb {
+  width: 52px;
+  height: 52px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid var(--line, #e2e8f0);
+}
+
+[data-appearance="dark"] .mdo-trail-photo-thumb {
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+/* ── Order Details Accordion Button ── */
+.mdo-order-details-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  color: #16a34a;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 0;
+  margin-top: 0;
+  margin-bottom: 2px;
+  font-family: inherit;
+  transition: opacity 0.15s ease;
+}
+
+.mdo-order-details-trigger:hover {
+  opacity: 0.85;
+}
+
+[data-appearance="dark"] .mdo-order-details-trigger {
+  color: #4ade80;
+}
+
+.mdo-order-details-trigger .material-symbols-outlined {
+  font-size: 18px;
+}
+
+/* ── Primary Action Button: Submit More Proof ── */
+.mdo-submit-proof-btn {
+  width: 100%;
+  height: 48px;
+  border-radius: 12px;
+  background-color: #dc2626;
+  color: #ffffff;
+  border: none;
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.28);
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  font-family: inherit;
+  margin: 0;
+  flex-shrink: 0;
+}
+
+.mdo-submit-proof-btn:hover {
+  background-color: #b91c1c;
+  box-shadow: 0 6px 18px rgba(220, 38, 38, 0.38);
+  transform: translateY(-1px);
+}
+
+.mdo-submit-proof-btn:active {
+  transform: scale(0.98);
+}
+
+.mdo-submit-proof-btn .material-symbols-outlined {
+  font-size: 22px;
+}
+
+/* ── Submit More Proof Slide-Up Bottom Sheet ── */
+.mdo-proof-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-top: 6px;
+}
+
+.mdo-proof-textarea {
+  width: 100%;
+  height: 90px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--line, #e2e8f0);
+  background: var(--page, #f8fafc);
+  color: var(--ink, #1e293b);
+  font-family: inherit;
+  font-size: 13px;
+  resize: none;
+  box-sizing: border-box;
+  line-height: 1.4;
+}
+
+[data-appearance="dark"] .mdo-proof-textarea {
+  background: #151619;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #f1f5f9;
+}
+
+.mdo-proof-textarea:focus {
+  outline: none;
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12);
+}
+
+/* ── Toast Notification for Proof Submitted ── */
+.mdo-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #1e293b;
+  color: #ffffff;
+  padding: 10px 18px;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  z-index: 200;
+  animation: apFadeIn 0.25s ease-out;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+[data-appearance="dark"] .mdo-toast {
+  background-color: #f8fafc;
+  color: #0f172a;
+}

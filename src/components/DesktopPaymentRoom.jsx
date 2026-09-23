@@ -4,6 +4,7 @@ import { Select, SelectContent, SelectItem } from "./ui/select";
 import { ALL_PAYMENT_ROOMS } from "../data/paymentRooms.js";
 import { useDashboard } from "../context/DashboardContext";
 import DesktopPaymentRoomDetail from "./DesktopPaymentRoomDetail.jsx";
+import MobileDisputeOngoing from "./Mobile/MobileDisputeOngoing.jsx";
 import "../styles/desktop-payment-room.css";
 
 export default function DesktopPaymentRoom({ role = "Buyer", onBackToHome, rooms }) {
@@ -103,8 +104,29 @@ export default function DesktopPaymentRoom({ role = "Buyer", onBackToHome, rooms
     });
   }, [activeTab, searchQuery, selectedRole, ongoingRooms, fulfilledRooms]);
 
-  // If a room is selected, show the desktop detail view (two-column: details + chat)
+  // If a room is selected, show detail view or dispute ongoing view
   if (selectedRoom) {
+    if (
+      selectedRoom.status === "dispute_ongoing" ||
+      selectedRoom.statusText === "Dispute Ongoing" ||
+      selectedRoom.statusText === "Dispute ongoing"
+    ) {
+      return (
+        <div
+          className="desktop-payment-room-wrapper"
+          style={{ display: "flex", justifyContent: "center", padding: "20px 0" }}
+        >
+          <div style={{ width: "100%", maxWidth: "480px" }}>
+            <MobileDisputeOngoing
+              room={selectedRoom}
+              onBack={() => setSelectedRoom(null)}
+              role={role}
+            />
+          </div>
+        </div>
+      );
+    }
+
     return (
       <DesktopPaymentRoomDetail
         room={selectedRoom}

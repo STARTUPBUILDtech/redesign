@@ -12,6 +12,7 @@ import MobileAwaitingPayment from "./components/Mobile/MobileAwaitingPayment.jsx
 import MobilePaymentReceived from "./components/Mobile/MobilePaymentReceived.jsx";
 import MobileInTransit from "./components/Mobile/MobileInTransit.jsx";
 import MobileConfirmDelivery from "./components/Mobile/MobileConfirmDelivery.jsx";
+import MobileDisputeOngoing from "./components/Mobile/MobileDisputeOngoing.jsx";
 import { ALL_PAYMENT_ROOMS } from "./data/paymentRooms.js";
 
 function BrandLogo({ dark, className }) {
@@ -273,7 +274,9 @@ function MobileDashboard({
     active === "Payment Received" ||
     active === "In Transit" ||
     active === "Confirm Delivery" ||
-    active === "Confirm delivery";
+    active === "Confirm delivery" ||
+    active === "Dispute Ongoing" ||
+    active === "Dispute ongoing";
 
   return (
     <div className={`mobile-dashboard${isNoNav ? " no-nav-mode" : ""}`} data-appearance={dark ? "dark" : "light"}>
@@ -327,6 +330,25 @@ function MobileDashboard({
           room={activeRoom}
           onBack={() => handleNavClick("Payment room")}
           role={role}
+          onNavigateToDispute={(disputeData) => {
+            if (disputeData) {
+              setActiveRoom((prev) => ({
+                ...prev,
+                status: "dispute_ongoing",
+                statusText: "Dispute Ongoing",
+                disputeReason: disputeData.reason,
+                disputeMessage: disputeData.description,
+                disputePhotos: disputeData.images,
+              }));
+            }
+            setActive("Dispute Ongoing");
+          }}
+        />
+      ) : active === "Dispute Ongoing" || active === "Dispute ongoing" ? (
+        <MobileDisputeOngoing
+          room={activeRoom}
+          onBack={() => handleNavClick("Payment room")}
+          role={role}
         />
       ) : (
         <div className="mobile-content-scroll" ref={contentScrollRef}>
@@ -345,6 +367,8 @@ function MobileDashboard({
                   setActive("In Transit");
                 } else if (r && (r.status === "delivered" || r.statusText === "Confirm delivery" || r.statusText === "Confirm Delivery")) {
                   setActive("Confirm Delivery");
+                } else if (r && (r.status === "dispute_ongoing" || r.statusText === "Dispute Ongoing" || r.statusText === "Dispute ongoing")) {
+                  setActive("Dispute Ongoing");
                 } else {
                   setActive("Payment Invitation");
                 }
@@ -606,6 +630,16 @@ export default function App() {
               room={activeRoom}
               onBack={() => setActive("Payment room")}
               onPaymentConfirmed={() => {}}
+            />
+          </div>
+        </main>
+      ) : active === "Dispute Ongoing" || active === "Dispute ongoing" ? (
+        <main id="payment-room" className="desktop-container desktop-payment-room">
+          <div className="desktop-payment-room-inner">
+            <MobileDisputeOngoing
+              room={activeRoom}
+              onBack={() => setActive("Payment room")}
+              role={role}
             />
           </div>
         </main>

@@ -12,6 +12,7 @@ import MobileAwaitingPayment from "./MobileAwaitingPayment";
 import MobilePaymentReceived from "./MobilePaymentReceived";
 import MobileInTransit from "./MobileInTransit";
 import MobileConfirmDelivery from "./MobileConfirmDelivery";
+import MobileDisputeOngoing from "./MobileDisputeOngoing";
 import { useDashboard } from "../../context/DashboardContext";
 import { BUYER_ROOM, SELLER_ROOM, IN_TRANSIT_ROOM } from "../../data/paymentRooms";
 
@@ -42,6 +43,7 @@ export default function MobileDashboard() {
   const isPaymentReceived = active === "Payment Received";
   const isInTransit = active === "In Transit";
   const isConfirmDelivery = active === "Confirm Delivery" || active === "Confirm delivery";
+  const isDisputeOngoing = active === "Dispute Ongoing" || active === "Dispute ongoing";
   const isActivity = active === "Activity";
 
   const isNoNav =
@@ -50,7 +52,8 @@ export default function MobileDashboard() {
     isAwaitingPayment ||
     isPaymentReceived ||
     isInTransit ||
-    isConfirmDelivery;
+    isConfirmDelivery ||
+    isDisputeOngoing;
 
   return (
     <div className={`mobile-dashboard ${isActivity ? "activity-mode" : ""} ${isNoNav ? "no-nav-mode" : ""}`} data-appearance={dark ? "dark" : "light"}>
@@ -99,6 +102,25 @@ export default function MobileDashboard() {
           room={room}
           onBack={() => setActive("Payment room")}
           role={role}
+          onNavigateToDispute={(disputeData) => {
+            if (disputeData) {
+              setRoom((prev) => ({
+                ...prev,
+                status: "dispute_ongoing",
+                statusText: "Dispute Ongoing",
+                disputeReason: disputeData.reason,
+                disputeMessage: disputeData.description,
+                disputePhotos: disputeData.images,
+              }));
+            }
+            setActive("Dispute Ongoing");
+          }}
+        />
+      ) : isDisputeOngoing ? (
+        <MobileDisputeOngoing
+          room={room}
+          onBack={() => setActive("Payment room")}
+          role={role}
         />
       ) : (
         <div className="mobile-content-scroll">
@@ -134,6 +156,13 @@ export default function MobileDashboard() {
                     newRoom.statusText === "Confirm Delivery")
                 ) {
                   if (setActive) setActive("Confirm Delivery");
+                } else if (
+                  newRoom &&
+                  (newRoom.status === "dispute_ongoing" ||
+                    newRoom.statusText === "Dispute Ongoing" ||
+                    newRoom.statusText === "Dispute ongoing")
+                ) {
+                  if (setActive) setActive("Dispute Ongoing");
                 } else {
                   if (setActive) setActive("Payment Invitation");
                 }

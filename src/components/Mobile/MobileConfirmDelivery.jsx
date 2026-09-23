@@ -11,6 +11,7 @@ export default function MobileConfirmDelivery({
   room = {},
   onBack,
   onDeliveryConfirmed,
+  onNavigateToDispute,
   role = "Buying",
 }) {
   // 59m 57s countdown timer as shown in reference image (3597 seconds)
@@ -806,9 +807,14 @@ export default function MobileConfirmDelivery({
         isOpen={isReportOpen}
         onClose={() => setIsReportOpen(false)}
         orderNumber={orderNumber}
-        onSubmitReport={({ reason, images }) => {
+        onSubmitReport={({ reason, description, images }) => {
           const imgCountText = images && images.length > 0 ? ` with ${images.length} photo${images.length > 1 ? "s" : ""}` : "";
           showToast(`Dispute opened (${reason})${imgCountText}. Escrow funds placed on hold.`);
+          if (onNavigateToDispute) {
+            setTimeout(() => {
+              onNavigateToDispute({ reason, description, images });
+            }, 1000);
+          }
         }}
       />
 
