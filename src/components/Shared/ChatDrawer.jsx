@@ -92,6 +92,12 @@ export default function ChatDrawer({
           </button>
         </div>
 
+        {/* Security Notice */}
+        <div className="ap-chat-security-banner">
+          <span className="material-symbols-outlined">verified_user</span>
+          <span>This chat is protected by <strong>PayKudi security</strong></span>
+        </div>
+
         {/* Message Stream */}
         <div className="ap-chat-messages-container" ref={messagesEndRef}>
           {messages.map((msg) => {
@@ -101,10 +107,15 @@ export default function ChatDrawer({
                 key={msg.id}
                 className={`ap-chat-message-row ${isUser ? "buyer" : "seller"}`}
               >
-                <div className="ap-chat-bubble">
+                {!isUser && (
+                  <span className="ap-chat-sender-name">{counterpartyName}</span>
+                )}
+                <div className={`ap-chat-bubble ${isUser ? "buyer" : "seller"}`}>
                   <p>{msg.text}</p>
-                  <span className="ap-chat-bubble-time">{msg.time}</span>
                 </div>
+                <span className="ap-chat-timestamp">
+                  {msg.time} {isUser ? "• Sent" : ""}
+                </span>
               </div>
             );
           })}

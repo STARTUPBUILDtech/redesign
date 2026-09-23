@@ -161,10 +161,10 @@ export default function MobileInTransit({
   return (
     <div
       ref={screenRef}
-      className={`mobile-awaiting-payment-screen ${isChatOpen ? "chat-open" : ""}`}
+      className={`mobile-awaiting-payment-screen ${isChatOpen ? "chat-open" : ""} ${isHelpOpen ? "modal-open" : ""}`}
     >
-      {/* ── Top Header (Hidden when chat is up) ── */}
-      {!isChatOpen && (
+      {/* ── Top Header (Hidden when chat is up or help is up) ── */}
+      {!isChatOpen && !isHelpOpen && (
         <header className="ap-top-header">
           <div className="ap-header-left">
             <button

@@ -20,6 +20,9 @@
   -ms-overflow-style: none;
   box-sizing: border-box;
   position: relative;
+  /* Creates a new containing block so position:fixed children
+     (bottom-sheet backdrops) are scoped inside this frame */
+  transform: translateZ(0);
 }
 
 .mobile-awaiting-payment-screen.chat-open {
@@ -74,8 +77,8 @@
 }
 
 .ap-back-btn {
-  width: clamp(38px, 10vw, 42px);
-  height: clamp(38px, 10vw, 42px);
+  width: clamp(30px, 8vw, 34px);
+  height: clamp(30px, 8vw, 34px);
   border-radius: 50%;
   background-color: #ffffff !important;
   border: 1px solid var(--line) !important;
@@ -101,6 +104,7 @@
 
 .ap-back-btn .material-symbols-outlined {
   color: var(--ink) !important;
+  font-size: 20px !important;
 }
 
 [data-appearance="dark"] .ap-back-btn,
@@ -143,8 +147,8 @@
 }
 
 .ap-help-btn {
-  width: clamp(38px, 10vw, 42px);
-  height: clamp(38px, 10vw, 42px);
+  width: clamp(30px, 8vw, 34px);
+  height: clamp(30px, 8vw, 34px);
   border-radius: 50%;
   background-color: #ffffff !important;
   border: 1px solid var(--line) !important;
@@ -171,6 +175,7 @@
 
 .ap-help-btn .material-symbols-outlined {
   color: var(--ink) !important;
+  font-size: 18px !important;
 }
 
 [data-appearance="dark"] .ap-help-btn,

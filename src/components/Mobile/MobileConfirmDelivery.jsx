@@ -195,10 +195,10 @@ export default function MobileConfirmDelivery({
   return (
     <div
       ref={screenRef}
-      className={`mobile-awaiting-payment-screen ${isChatOpen ? "chat-open" : ""}`}
+      className={`mobile-awaiting-payment-screen ${isChatOpen ? "chat-open" : ""} ${isReportOpen || isHelpOpen ? "modal-open" : ""}`}
     >
-      {/* ── Top Header (Hidden when chat is up) ── */}
-      {!isChatOpen && (
+      {/* ── Top Header (Hidden when chat is up or help is up) ── */}
+      {!isChatOpen && !isHelpOpen && (
         <header className="ap-top-header">
           <div className="ap-header-left">
             <button
@@ -208,7 +208,7 @@ export default function MobileConfirmDelivery({
               aria-label="Back to Payment Rooms"
               title="Back"
             >
-              <span className="material-symbols-outlined" style={{ fontSize: 24 }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
                 chevron_left
               </span>
             </button>
@@ -223,7 +223,7 @@ export default function MobileConfirmDelivery({
               aria-label="Help"
               title="Help"
             >
-              <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
                 help_outline
               </span>
             </button>
@@ -812,7 +812,7 @@ export default function MobileConfirmDelivery({
         }}
       />
 
-      {/* ── Chat Slide-In Modal ── */}
+      {/* ── Chat Slide-In Modal (Stops right under PayKudi header) ── */}
       {isChatOpen && (
         <div className="ap-chat-backdrop" onClick={() => setIsChatOpen(false)}>
           <div className="ap-chat-slide-modal" onClick={(e) => e.stopPropagation()}>
@@ -832,36 +832,49 @@ export default function MobileConfirmDelivery({
               </button>
             </div>
 
-            {/* Chat Messages */}
-            <div className="ap-chat-messages-container" ref={chatMessagesRef}>
+            {/* Security Notice */}
+            <div className="ap-chat-security-banner">
+              <span className="material-symbols-outlined">verified_user</span>
+              <span>This chat is protected by <strong>PayKudi security</strong></span>
+            </div>
+
+            {/* Messages Container */}
+            <div ref={chatMessagesRef} className="ap-chat-messages-container">
               {chatMessages.map((msg) => (
-                <div
-                  key={msg.id}
-                  className={`ap-chat-bubble-wrap ${msg.sender === "buyer" ? "buyer" : "seller"}`}
-                >
-                  <div className="ap-chat-bubble">
-                    <p className="ap-chat-text">{msg.text}</p>
-                    <span className="ap-chat-time">{msg.time}</span>
+                <div key={msg.id} className={`ap-chat-message-row ${msg.sender}`}>
+                  {msg.sender === "seller" && (
+                    <span className="ap-chat-sender-name">{counterpartyName}</span>
+                  )}
+                  <div className={`ap-chat-bubble ${msg.sender}`}>
+                    <p>{msg.text}</p>
                   </div>
+                  <span className="ap-chat-timestamp">
+                    {msg.time} {msg.sender === "buyer" ? "• Sent" : ""}
+                  </span>
                 </div>
               ))}
             </div>
 
-            {/* Chat Input Footer */}
-            <form className="ap-chat-input-row" onSubmit={handleSendChat}>
+            {/* Bottom Input Bar */}
+            <form onSubmit={handleSendChat} className="ap-chat-input-bar">
+              <button type="button" className="ap-chat-attach-btn" aria-label="Add attachment">
+                <span className="material-symbols-outlined">add_circle</span>
+              </button>
               <input
                 type="text"
-                className="ap-chat-input"
-                placeholder="Type your message..."
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
-                autoFocus
+                onFocus={() => {
+                  setTimeout(scrollToChatBottom, 120);
+                }}
+                placeholder="Type a message..."
+                className="ap-chat-text-input"
               />
               <button
                 type="submit"
                 className="ap-chat-send-btn"
                 disabled={!chatInput.trim()}
-                aria-label="Send"
+                aria-label="Send message"
               >
                 <span className="material-symbols-outlined">send</span>
               </button>

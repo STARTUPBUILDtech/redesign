@@ -124,7 +124,7 @@ export default function ReportIssueModal({
         </div>
 
         {/* ── Modal Body Content ── */}
-        <div className="cd-issue-modal" style={{ padding: "4px 0 20px" }}>
+        <div className="cd-issue-modal">
           <p className="cd-issue-subtitle">
             Select the issue you encountered with your delivery:
           </p>
@@ -284,7 +284,6 @@ export default function ReportIssueModal({
             type="button"
             onClick={handleSubmit}
             className="cd-report-btn"
-            style={{ height: 46, fontSize: 14, marginTop: 6 }}
           >
             Submit Report
           </button>

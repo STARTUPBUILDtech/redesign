@@ -39,18 +39,28 @@ export default function HelpDrawer({
   onReportIssue,
   faqs,
 }) {
-  const [headerBottom, setHeaderBottom] = useState(44);
+  const [headerBottom, setHeaderBottom] = useState(0);
 
   useEffect(() => {
     if (!isOpen) return;
 
     const updatePosition = () => {
-      const mobileHeader = document.querySelector(".mobile-header");
-      const desktopHeader = document.querySelector(".topbar");
-      const header = mobileHeader || desktopHeader;
-      if (header) {
-        const rect = header.getBoundingClientRect();
-        setHeaderBottom(rect.bottom);
+      // On mobile screens, the screen container already starts directly under the PayKudi header.
+      // Top 0 allows it to cover the screen sub-header (Confirm Delivery) and sit flush under PayKudi.
+      const isMobile =
+        window.innerWidth <= 700 ||
+        document.querySelector(".mobile-dashboard") ||
+        document.querySelector(".mobile-awaiting-payment-screen");
+
+      if (isMobile) {
+        setHeaderBottom(0);
+      } else {
+        const desktopHeader = document.querySelector(".topbar");
+        if (desktopHeader) {
+          setHeaderBottom(desktopHeader.getBoundingClientRect().bottom);
+        } else {
+          setHeaderBottom(0);
+        }
       }
     };
 
