@@ -398,8 +398,23 @@
   color: #4ade80;
 }
 
-.mdo-order-details-trigger .material-symbols-outlined {
-  font-size: 18px;
+.mdo-order-details-trigger:disabled {
+  pointer-events: none;
+}
+
+.mdo-order-details-trigger .ap-details-chevron {
+  font-size: 17px !important;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: center center;
+}
+
+.mdo-order-details-trigger .ap-details-chevron.expanded,
+.mdo-order-details-trigger[aria-expanded="true"] .ap-details-chevron {
+  transform: rotate(180deg);
 }
 
 /* ── Primary Action Button: Submit More Proof ── */

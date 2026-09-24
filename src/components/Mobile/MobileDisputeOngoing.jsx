@@ -7,6 +7,8 @@ import OrderDetailsModal from "../Shared/OrderDetailsModal";
 import ReceiptModal from "../Shared/ReceiptModal";
 import HelpDrawer from "../Shared/HelpDrawer";
 import ProtectionInfoModal from "../Shared/ProtectionInfoModal";
+import ChatDrawer from "../Shared/ChatDrawer";
+import ReceiptIcon from "../Shared/ReceiptIcon";
 
 export default function MobileDisputeOngoing({
   room = {},
@@ -16,6 +18,8 @@ export default function MobileDisputeOngoing({
   // Countdown timer for dispute response (starts at 29m 30s as in reference design)
   const [seconds, setSeconds] = useState(1770);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [isArrowUp, setIsArrowUp] = useState(false);
+  const [isLifting, setIsLifting] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isReceiptOpen, setIsReceiptOpen] = useState(false);
@@ -74,8 +78,6 @@ export default function MobileDisputeOngoing({
       time: "Today 2:18 PM",
     },
   ]);
-  const [chatInput, setChatInput] = useState("");
-  const chatMessagesRef = useRef(null);
 
   // Timer countdown
   useEffect(() => {
@@ -96,27 +98,32 @@ export default function MobileDisputeOngoing({
     setTimeout(() => setToastText(null), 3500);
   };
 
+  const handleToggleDetails = () => {
+    if (isLifting) return;
+    if (!isDetailsOpen) {
+      setIsLifting(true);
+      setIsArrowUp(true);
+      setTimeout(() => {
+        setIsDetailsOpen(true);
+      }, 300);
+      setTimeout(() => {
+        setIsLifting(false);
+      }, 950);
+    } else {
+      setIsDetailsOpen(false);
+      setIsArrowUp(false);
+    }
+  };
+
+  const handleCloseDetails = () => {
+    if (isLifting) return;
+    setIsDetailsOpen(false);
+    setIsArrowUp(false);
+  };
+
   const orderNumber = room.id || room.orderNumber || "ORD-884102";
   const orderAmount = room.amount || room.price || "₦50,000";
   const counterpartyName = room.sellerName || room.counterparty || "Marcus Vance";
-
-  const handleSendChat = (e) => {
-    e.preventDefault();
-    if (!chatInput.trim()) return;
-    setChatMessages((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
-        sender: "buyer",
-        text: chatInput.trim(),
-        time: "Just now",
-      },
-    ]);
-    setChatInput("");
-    if (chatMessagesRef.current) {
-      chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
-    }
-  };
 
   const handleProofPhotoUpload = (e) => {
     const files = Array.from(e.target.files || []);
@@ -217,7 +224,7 @@ export default function MobileDisputeOngoing({
               onClick={() => setIsReceiptOpen(true)}
               aria-label="View Receipt"
             >
-              <span className="material-symbols-outlined">receipt</span>
+              <ReceiptIcon size={15} />
               <span>Receipt</span>
             </button>
           </div>
@@ -336,11 +343,14 @@ export default function MobileDisputeOngoing({
         <div className="ap-accordion-wrap">
           <button
             type="button"
-            className="ap-order-details-trigger mdo-order-details-trigger"
-            onClick={() => setIsDetailsOpen(true)}
+            className={`ap-order-details-trigger mdo-order-details-trigger ${isArrowUp ? "active" : ""}`}
+            onClick={handleToggleDetails}
+            aria-expanded={isArrowUp}
+            disabled={isLifting}
+            style={{ cursor: isLifting ? "default" : "pointer" }}
           >
             <span>Order details</span>
-            <span className="material-symbols-outlined ap-details-chevron">
+            <span className={`material-symbols-outlined ap-details-chevron ${isArrowUp ? "expanded" : ""}`}>
               expand_more
             </span>
           </button>
@@ -499,7 +509,7 @@ export default function MobileDisputeOngoing({
       {/* ── Order Details Slide-Up Modal ── */}
       <OrderDetailsModal
         isOpen={isDetailsOpen}
-        onClose={() => setIsDetailsOpen(false)}
+        onClose={handleCloseDetails}
         room={{ ...room, id: orderNumber, amount: orderAmount }}
       />
 
@@ -527,66 +537,16 @@ export default function MobileDisputeOngoing({
       />
 
       {/* ── Chat Slide-In Modal (Stops right under PayKudi header) ── */}
-      {isChatOpen && (
-        <div className="ap-chat-backdrop" onClick={() => setIsChatOpen(false)}>
-          <div className="ap-chat-slide-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="ap-chat-green-header">
-              <div className="ap-chat-header-info">
-                <span className="ap-chat-header-user">{counterpartyName}</span>
-                <span className="ap-chat-header-order">{orderNumber}</span>
-              </div>
-              <button
-                type="button"
-                className="ap-chat-close-btn"
-                onClick={() => setIsChatOpen(false)}
-                aria-label="Close Chat"
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span>
-              </button>
-            </div>
-
-            <div className="ap-chat-security-banner">
-              <span className="material-symbols-outlined">verified_user</span>
-              <span>This chat is protected by <strong>PayKudi security</strong></span>
-            </div>
-
-            <div ref={chatMessagesRef} className="ap-chat-messages-container">
-              {chatMessages.map((msg) => (
-                <div key={msg.id} className={`ap-chat-message-row ${msg.sender}`}>
-                  {msg.sender === "seller" && (
-                    <span className="ap-chat-sender-name">{counterpartyName}</span>
-                  )}
-                  {msg.sender === "cs" && (
-                    <span className="ap-chat-sender-name" style={{ color: "#16a34a" }}>
-                      PayKudi Dispute Support
-                    </span>
-                  )}
-                  <div className={`ap-chat-bubble ${msg.sender}`}>
-                    <p>{msg.text}</p>
-                  </div>
-                  <span className="ap-chat-timestamp">{msg.time}</span>
-                </div>
-              ))}
-            </div>
-
-            <form onSubmit={handleSendChat} className="ap-chat-input-bar">
-              <button type="button" className="ap-chat-attach-btn" aria-label="Add attachment">
-                <span className="material-symbols-outlined">attach_file</span>
-              </button>
-              <input
-                type="text"
-                placeholder="Type your message..."
-                value={chatInput}
-                onChange={(e) => setChatInput(e.target.value)}
-                className="ap-chat-input-field"
-              />
-              <button type="submit" className="ap-chat-send-btn" aria-label="Send message">
-                <span className="material-symbols-outlined">send</span>
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
+      <ChatDrawer
+        isOpen={isChatOpen}
+        onClose={() => setIsChatOpen(false)}
+        room={room}
+        role={role}
+        sellerName={counterpartyName}
+        counterpartyName={counterpartyName}
+        orderNumber={orderNumber}
+        initialMessages={chatMessages}
+      />
 
       {/* ── Toast Notification ── */}
       {toastText && (

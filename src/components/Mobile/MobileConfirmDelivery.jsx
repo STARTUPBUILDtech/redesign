@@ -6,6 +6,8 @@ import ReceiptModal from "../Shared/ReceiptModal";
 import HelpDrawer from "../Shared/HelpDrawer";
 import ProtectionInfoModal from "../Shared/ProtectionInfoModal";
 import ReportIssueModal from "../Shared/ReportIssueModal";
+import ChatDrawer from "../Shared/ChatDrawer";
+import ReceiptIcon from "../Shared/ReceiptIcon";
 
 export default function MobileConfirmDelivery({
   room = {},
@@ -32,31 +34,7 @@ export default function MobileConfirmDelivery({
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [toastText, setToastText] = useState(null);
-
-  // Chat message state matching reference design
-  const [chatMessages, setChatMessages] = useState([
-    {
-      id: 1,
-      sender: "seller",
-      text: "Package delivered! Please inspect the item and confirm delivery when satisfied.",
-      time: "Today 1:15 PM",
-    },
-    {
-      id: 2,
-      sender: "buyer",
-      text: "Received the package from GIG rider. Inspecting now!",
-      time: "Today 1:22 PM",
-    },
-  ]);
-  const [chatInput, setChatInput] = useState("");
-  const chatMessagesRef = useRef(null);
   const screenRef = useRef(null);
-
-  const scrollToChatBottom = () => {
-    if (chatMessagesRef.current) {
-      chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
-    }
-  };
 
   useEffect(() => {
     if (isChatOpen) {
@@ -64,9 +42,8 @@ export default function MobileConfirmDelivery({
         screenRef.current.scrollTop = 0;
       }
       window.scrollTo(0, 0);
-      scrollToChatBottom();
     }
-  }, [isChatOpen, chatMessages]);
+  }, [isChatOpen]);
 
   // Countdown timer effect (counting down every second)
   useEffect(() => {
@@ -178,21 +155,6 @@ export default function MobileConfirmDelivery({
     if (onDeliveryConfirmed) onDeliveryConfirmed();
   };
 
-  const handleSendChat = (e) => {
-    e.preventDefault();
-    if (!chatInput.trim()) return;
-    setChatMessages((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
-        sender: "buyer",
-        text: chatInput.trim(),
-        time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      },
-    ]);
-    setChatInput("");
-  };
-
   return (
     <div
       ref={screenRef}
@@ -257,7 +219,7 @@ export default function MobileConfirmDelivery({
               onClick={() => setIsReceiptOpen(true)}
               aria-label="View Receipt"
             >
-              <span className="material-symbols-outlined">receipt</span>
+              <ReceiptIcon size={15} />
               <span>Receipt</span>
             </button>
           </div>
@@ -819,75 +781,15 @@ export default function MobileConfirmDelivery({
       />
 
       {/* ── Chat Slide-In Modal (Stops right under PayKudi header) ── */}
-      {isChatOpen && (
-        <div className="ap-chat-backdrop" onClick={() => setIsChatOpen(false)}>
-          <div className="ap-chat-slide-modal" onClick={(e) => e.stopPropagation()}>
-            {/* Green Header */}
-            <div className="ap-chat-green-header">
-              <div className="ap-chat-header-info">
-                <span className="ap-chat-header-user">{counterpartyName}</span>
-                <span className="ap-chat-header-order">{orderNumber}</span>
-              </div>
-              <button
-                type="button"
-                className="ap-chat-close-btn"
-                onClick={() => setIsChatOpen(false)}
-                aria-label="Close Chat"
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span>
-              </button>
-            </div>
-
-            {/* Security Notice */}
-            <div className="ap-chat-security-banner">
-              <span className="material-symbols-outlined">verified_user</span>
-              <span>This chat is protected by <strong>PayKudi security</strong></span>
-            </div>
-
-            {/* Messages Container */}
-            <div ref={chatMessagesRef} className="ap-chat-messages-container">
-              {chatMessages.map((msg) => (
-                <div key={msg.id} className={`ap-chat-message-row ${msg.sender}`}>
-                  {msg.sender === "seller" && (
-                    <span className="ap-chat-sender-name">{counterpartyName}</span>
-                  )}
-                  <div className={`ap-chat-bubble ${msg.sender}`}>
-                    <p>{msg.text}</p>
-                  </div>
-                  <span className="ap-chat-timestamp">
-                    {msg.time} {msg.sender === "buyer" ? "• Sent" : ""}
-                  </span>
-                </div>
-              ))}
-            </div>
-
-            {/* Bottom Input Bar */}
-            <form onSubmit={handleSendChat} className="ap-chat-input-bar">
-              <button type="button" className="ap-chat-attach-btn" aria-label="Add attachment">
-                <span className="material-symbols-outlined">add_circle</span>
-              </button>
-              <input
-                type="text"
-                value={chatInput}
-                onChange={(e) => setChatInput(e.target.value)}
-                onFocus={() => {
-                  setTimeout(scrollToChatBottom, 120);
-                }}
-                placeholder="Type a message..."
-                className="ap-chat-text-input"
-              />
-              <button
-                type="submit"
-                className="ap-chat-send-btn"
-                disabled={!chatInput.trim()}
-                aria-label="Send message"
-              >
-                <span className="material-symbols-outlined">send</span>
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
+      <ChatDrawer
+        isOpen={isChatOpen}
+        onClose={() => setIsChatOpen(false)}
+        room={room}
+        role={role}
+        sellerName={counterpartyName}
+        counterpartyName={counterpartyName}
+        orderNumber={orderNumber}
+      />
 
       {/* ── Receipt Modal ── */}
       <ReceiptModal

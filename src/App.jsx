@@ -13,6 +13,7 @@ import MobilePaymentReceived from "./components/Mobile/MobilePaymentReceived.jsx
 import MobileInTransit from "./components/Mobile/MobileInTransit.jsx";
 import MobileConfirmDelivery from "./components/Mobile/MobileConfirmDelivery.jsx";
 import MobileDisputeOngoing from "./components/Mobile/MobileDisputeOngoing.jsx";
+import MobileCompleted from "./components/Mobile/MobileCompleted.jsx";
 import { ALL_PAYMENT_ROOMS } from "./data/paymentRooms.js";
 
 function BrandLogo({ dark, className }) {
@@ -276,7 +277,9 @@ function MobileDashboard({
     active === "Confirm Delivery" ||
     active === "Confirm delivery" ||
     active === "Dispute Ongoing" ||
-    active === "Dispute ongoing";
+    active === "Dispute ongoing" ||
+    active === "Completed" ||
+    active === "Payment Completed";
 
   return (
     <div className={`mobile-dashboard${isNoNav ? " no-nav-mode" : ""}`} data-appearance={dark ? "dark" : "light"}>
@@ -350,6 +353,12 @@ function MobileDashboard({
           onBack={() => handleNavClick("Payment room")}
           role={role}
         />
+      ) : active === "Completed" || active === "Payment Completed" ? (
+        <MobileCompleted
+          room={activeRoom}
+          onBack={() => handleNavClick("Payment room")}
+          role={role}
+        />
       ) : (
         <div className="mobile-content-scroll" ref={contentScrollRef}>
           {active === "Activity" ? (
@@ -369,6 +378,8 @@ function MobileDashboard({
                   setActive("Confirm Delivery");
                 } else if (r && (r.status === "dispute_ongoing" || r.statusText === "Dispute Ongoing" || r.statusText === "Dispute ongoing")) {
                   setActive("Dispute Ongoing");
+                } else if (r && (r.status === "completed" || r.statusText === "Completed")) {
+                  setActive("Completed");
                 } else {
                   setActive("Payment Invitation");
                 }

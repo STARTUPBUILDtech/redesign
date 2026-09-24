@@ -3,6 +3,9 @@ import "../../styles/mobile-awaiting-payment.css";
 import "../../styles/mobile-payment-received.css";
 import "../../styles/mobile-in-transit.css";
 import HelpDrawer from "../Shared/HelpDrawer";
+import ChatDrawer from "../Shared/ChatDrawer";
+import ReceiptIcon from "../Shared/ReceiptIcon";
+import ReceiptModal from "../Shared/ReceiptModal";
 
 export default function MobileInTransit({
   room = {},
@@ -21,36 +24,7 @@ export default function MobileInTransit({
   const [isReceiptOpen, setIsReceiptOpen] = useState(false);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [toastText, setToastText] = useState(null);
-
-  const [chatMessages, setChatMessages] = useState([
-    {
-      id: 1,
-      sender: "seller",
-      text: "Package has been dispatched via GIG Logistics! Tracking # is KMLMLMMO.",
-      time: "Yesterday 3:15 PM",
-    },
-    {
-      id: 2,
-      sender: "buyer",
-      text: "Thanks for the update! I can see it is currently in transit.",
-      time: "Yesterday 3:42 PM",
-    },
-    {
-      id: 3,
-      sender: "seller",
-      text: "You're welcome! Please confirm delivery once received.",
-      time: "Today 9:10 AM",
-    },
-  ]);
-  const [chatInput, setChatInput] = useState("");
-  const chatMessagesRef = useRef(null);
   const screenRef = useRef(null);
-
-  const scrollToChatBottom = () => {
-    if (chatMessagesRef.current) {
-      chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
-    }
-  };
 
   useEffect(() => {
     if (isChatOpen) {
@@ -58,9 +32,8 @@ export default function MobileInTransit({
         screenRef.current.scrollTop = 0;
       }
       window.scrollTo(0, 0);
-      scrollToChatBottom();
     }
-  }, [isChatOpen, chatMessages]);
+  }, [isChatOpen]);
 
   const orderNumber = room.id || room.orderNumber || "ORD-774120";
   const orderAmountRaw = room.amount || room.price || "₦385,000";
@@ -143,21 +116,6 @@ export default function MobileInTransit({
     setIsShippingArrowUp(false);
   };
 
-  const handleSendChat = (e) => {
-    e.preventDefault();
-    if (!chatInput.trim()) return;
-    setChatMessages((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
-        sender: role === "Seller" ? "seller" : "buyer",
-        text: chatInput.trim(),
-        time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      },
-    ]);
-    setChatInput("");
-  };
-
   return (
     <div
       ref={screenRef}
@@ -222,7 +180,7 @@ export default function MobileInTransit({
               onClick={() => setIsReceiptOpen(true)}
               aria-label="View Receipt"
             >
-              <span className="material-symbols-outlined">receipt</span>
+              <ReceiptIcon size={15} />
               <span>Receipt</span>
             </button>
           </div>
@@ -671,126 +629,30 @@ export default function MobileInTransit({
         </div>
       )}
 
-      {/* ── Chat Slide-In Modal ── */}
-      {isChatOpen && (
-        <div className="ap-chat-backdrop" onClick={() => setIsChatOpen(false)}>
-          <div className="ap-chat-slide-modal" onClick={(e) => e.stopPropagation()}>
-            {/* Green Header */}
-            <div className="ap-chat-green-header">
-              <div className="ap-chat-header-info">
-                <span className="ap-chat-header-user">{counterpartyName}</span>
-                <span className="ap-chat-header-order">{orderNumber}</span>
-              </div>
-              <button
-                type="button"
-                className="ap-chat-close-btn"
-                onClick={() => setIsChatOpen(false)}
-                aria-label="Close Chat"
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span>
-              </button>
-            </div>
-
-            {/* Security Notice */}
-            <div className="ap-chat-security-banner">
-              <span className="material-symbols-outlined">verified_user</span>
-              <span>This chat is protected by <strong>PayKudi security</strong></span>
-            </div>
-
-            {/* Messages Container */}
-            <div ref={chatMessagesRef} className="ap-chat-messages-container">
-              {chatMessages.map((msg) => (
-                <div key={msg.id} className={`ap-chat-message-row ${msg.sender}`}>
-                  {msg.sender === "seller" && (
-                    <span className="ap-chat-sender-name">{sellerName}</span>
-                  )}
-                  <div className={`ap-chat-bubble ${msg.sender}`}>
-                    <p>{msg.text}</p>
-                  </div>
-                  <span className="ap-chat-timestamp">
-                    {msg.time} {msg.sender === "buyer" ? "• Sent" : ""}
-                  </span>
-                </div>
-              ))}
-            </div>
-
-            {/* Bottom Input Bar */}
-            <form onSubmit={handleSendChat} className="ap-chat-input-bar">
-              <button type="button" className="ap-chat-attach-btn" aria-label="Add attachment">
-                <span className="material-symbols-outlined">add_circle</span>
-              </button>
-              <input
-                type="text"
-                value={chatInput}
-                onChange={(e) => setChatInput(e.target.value)}
-                onFocus={() => {
-                  setTimeout(scrollToChatBottom, 120);
-                }}
-                placeholder="Type a message..."
-                className="ap-chat-text-input"
-              />
-              <button
-                type="submit"
-                className="ap-chat-send-btn"
-                disabled={!chatInput.trim()}
-                aria-label="Send message"
-              >
-                <span className="material-symbols-outlined">send</span>
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
+      {/* ── Chat Slide-In Modal (Stops right under PayKudi header) ── */}
+      <ChatDrawer
+        isOpen={isChatOpen}
+        onClose={() => setIsChatOpen(false)}
+        room={room}
+        role={role}
+        sellerName={sellerName}
+        counterpartyName={counterpartyName}
+        orderNumber={orderNumber}
+      />
 
       {/* ── Receipt Modal ── */}
-      {isReceiptOpen && (
-        <div className="ap-modal-backdrop" onClick={() => setIsReceiptOpen(false)}>
-          <div className="ap-bottom-sheet" onClick={(e) => e.stopPropagation()}>
-            <div className="ap-sheet-handle" />
-            <div className="ap-sheet-header">
-              <div className="ap-sheet-title-group">
-                <h3 className="ap-sheet-title">Payment Receipt</h3>
-                <span className="ap-sheet-ord-pill">{orderNumber}</span>
-              </div>
-              <button
-                type="button"
-                className="ap-sheet-close-btn"
-                onClick={() => setIsReceiptOpen(false)}
-                aria-label="Close"
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>close</span>
-              </button>
-            </div>
-            <div className="ap-sheet-body" style={{ textAlign: "center", padding: "16px 0" }}>
-              <span className="material-symbols-outlined" style={{ fontSize: 48, color: "#7c3aed", display: "block", marginBottom: 8 }}>
-                local_shipping
-              </span>
-              <div style={{ fontWeight: 800, fontSize: 18, marginBottom: 4 }}>In Transit</div>
-              <div style={{ color: "#6b7280", fontSize: 13, marginBottom: 16 }}>
-                {orderNumber} · {itemName}
-              </div>
-              <div style={{ fontSize: 28, fontWeight: 800, color: "#161618", marginBottom: 20 }}>
-                {orderAmount}
-              </div>
-              <button
-                type="button"
-                style={{
-                  background: "#161618",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: 10,
-                  padding: "12px 32px",
-                  fontWeight: 700,
-                  fontSize: 14,
-                  cursor: "pointer",
-                }}
-              >
-                Download Receipt
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ReceiptModal
+        isOpen={isReceiptOpen}
+        onClose={() => setIsReceiptOpen(false)}
+        room={{
+          ...room,
+          id: orderNumber,
+          amount: orderAmount,
+          price: orderAmount,
+          item: itemName,
+          sellerName,
+        }}
+      />
 
       {/* ── Help Drawer ── */}
       <HelpDrawer

@@ -4,6 +4,7 @@ import ShippingStatusModal from "./Shared/ShippingStatusModal";
 import HelpDrawer from "./Shared/HelpDrawer";
 import ReceiptModal from "./Shared/ReceiptModal";
 import ReportIssueModal from "./Shared/ReportIssueModal";
+import ReceiptIcon from "./Shared/ReceiptIcon";
 import "../styles/desktop-payment-room-detail.css";
 
 const BANKS = [
@@ -268,9 +269,7 @@ export default function DesktopPaymentRoomDetail({
                     className="desktop-prd-receipt-pill-btn"
                     onClick={() => setIsReceiptOpen(true)}
                   >
-                    <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
-                      receipt
-                    </span>
+                    <ReceiptIcon size={16} />
                     <span>Receipt</span>
                   </button>
                 )}

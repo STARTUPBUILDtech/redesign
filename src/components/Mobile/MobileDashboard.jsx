@@ -13,6 +13,7 @@ import MobilePaymentReceived from "./MobilePaymentReceived";
 import MobileInTransit from "./MobileInTransit";
 import MobileConfirmDelivery from "./MobileConfirmDelivery";
 import MobileDisputeOngoing from "./MobileDisputeOngoing";
+import MobileCompleted from "./MobileCompleted";
 import { useDashboard } from "../../context/DashboardContext";
 import { BUYER_ROOM, SELLER_ROOM, IN_TRANSIT_ROOM } from "../../data/paymentRooms";
 
@@ -44,6 +45,7 @@ export default function MobileDashboard() {
   const isInTransit = active === "In Transit";
   const isConfirmDelivery = active === "Confirm Delivery" || active === "Confirm delivery";
   const isDisputeOngoing = active === "Dispute Ongoing" || active === "Dispute ongoing";
+  const isCompleted = active === "Completed" || active === "Payment Completed";
   const isActivity = active === "Activity";
 
   const isNoNav =
@@ -53,7 +55,8 @@ export default function MobileDashboard() {
     isPaymentReceived ||
     isInTransit ||
     isConfirmDelivery ||
-    isDisputeOngoing;
+    isDisputeOngoing ||
+    isCompleted;
 
   return (
     <div className={`mobile-dashboard ${isActivity ? "activity-mode" : ""} ${isNoNav ? "no-nav-mode" : ""}`} data-appearance={dark ? "dark" : "light"}>
@@ -122,6 +125,12 @@ export default function MobileDashboard() {
           onBack={() => setActive("Payment room")}
           role={role}
         />
+      ) : isCompleted ? (
+        <MobileCompleted
+          room={room}
+          onBack={() => setActive("Payment room")}
+          role={role}
+        />
       ) : (
         <div className="mobile-content-scroll">
           {isActivity ? (
@@ -163,6 +172,12 @@ export default function MobileDashboard() {
                     newRoom.statusText === "Dispute ongoing")
                 ) {
                   if (setActive) setActive("Dispute Ongoing");
+                } else if (
+                  newRoom &&
+                  (newRoom.status === "completed" ||
+                    newRoom.statusText === "Completed")
+                ) {
+                  if (setActive) setActive("Completed");
                 } else {
                   if (setActive) setActive("Payment Invitation");
                 }

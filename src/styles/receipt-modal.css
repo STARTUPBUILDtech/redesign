@@ -1,0 +1,312 @@
+/* ==========================================================================
+   PAYKUDI - RECEIPT MODAL (BOTTOM SHEET / MODAL)
+   Matches reference design:
+   - Floating drag handle pill & circular close button
+   - Blue circular hero with white paper plane icon
+   - "Payout sent" title + "Total Amount" + large bold amount
+   - Dotted divider line
+   - Clean Date, Payment Method, and Payment Reference rows
+   - Dark "Download Receipt" CTA + light "Share" secondary button
+   ========================================================================== */
+
+.pk-receipt-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 9999;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: pkReceiptFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes pkReceiptFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.pk-receipt-sheet {
+  width: 100%;
+  max-width: 440px;
+  background-color: var(--bg-surface, #faf8f5);
+  border-top-left-radius: 28px;
+  border-top-right-radius: 28px;
+  box-sizing: border-box;
+  padding: 12px 24px 28px 24px;
+  position: relative;
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  animation: pkReceiptSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+@keyframes pkReceiptSlideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+[data-appearance="dark"] .pk-receipt-sheet {
+  background-color: #18181b;
+  color: #f4f4f6;
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.6);
+}
+
+/* Drag Handle */
+.pk-receipt-handle {
+  width: 42px;
+  height: 4.5px;
+  border-radius: 9999px;
+  background-color: rgba(0, 0, 0, 0.16);
+  margin: 2px auto 14px auto;
+  flex-shrink: 0;
+}
+
+[data-appearance="dark"] .pk-receipt-handle {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Circular Close Button (Top-Right) */
+.pk-receipt-close-btn {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.05);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #64748b;
+  transition: all 0.15s ease;
+  z-index: 10;
+}
+
+.pk-receipt-close-btn:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+  color: #1e293b;
+  transform: scale(1.05);
+}
+
+[data-appearance="dark"] .pk-receipt-close-btn {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #94a3b8;
+}
+
+[data-appearance="dark"] .pk-receipt-close-btn:hover {
+  background-color: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+}
+
+/* Hero Circle & Icon */
+.pk-receipt-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 8px;
+  margin-bottom: 20px;
+}
+
+.pk-receipt-hero-circle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color: #2563eb;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.32);
+  margin-bottom: 14px;
+  flex-shrink: 0;
+}
+
+.pk-receipt-title {
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--ink, #0f172a);
+  margin: 0;
+  text-align: center;
+  letter-spacing: -0.3px;
+}
+
+[data-appearance="dark"] .pk-receipt-title {
+  color: #f8fafc;
+}
+
+/* Amount Section */
+.pk-receipt-amount-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.pk-receipt-amount-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
+[data-appearance="dark"] .pk-receipt-amount-label {
+  color: #94a3b8;
+}
+
+.pk-receipt-amount-val {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--ink, #0f172a);
+  letter-spacing: -0.6px;
+  line-height: 1.15;
+  margin: 0;
+}
+
+[data-appearance="dark"] .pk-receipt-amount-val {
+  color: #ffffff;
+}
+
+/* Dotted Divider */
+.pk-receipt-dotted-divider {
+  width: 100%;
+  border: none;
+  border-top: 1.5px dotted rgba(0, 0, 0, 0.16);
+  margin: 22px 0 18px 0;
+}
+
+[data-appearance="dark"] .pk-receipt-dotted-divider {
+  border-top-color: rgba(255, 255, 255, 0.18);
+}
+
+/* Key-Value Details Rows */
+.pk-receipt-details-list {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  width: 100%;
+}
+
+.pk-receipt-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.pk-receipt-label {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #64748b;
+}
+
+[data-appearance="dark"] .pk-receipt-label {
+  color: #94a3b8;
+}
+
+.pk-receipt-val {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--ink, #1e293b);
+  text-align: right;
+  letter-spacing: -0.1px;
+}
+
+[data-appearance="dark"] .pk-receipt-val {
+  color: #f1f5f9;
+}
+
+/* Action Buttons Container */
+.pk-receipt-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  margin-top: 26px;
+}
+
+/* Primary Dark Button: Download Receipt */
+.pk-receipt-download-btn {
+  width: 100%;
+  height: 48px;
+  border-radius: 12px;
+  background-color: var(--ink, #18181b);
+  color: #ffffff;
+  border: none;
+  font-size: 14.5px;
+  font-weight: 700;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pk-receipt-download-btn:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+}
+
+.pk-receipt-download-btn:active {
+  transform: translateY(0);
+}
+
+[data-appearance="dark"] .pk-receipt-download-btn {
+  background-color: #27272a;
+  color: #ffffff;
+}
+
+/* Secondary Button: Share */
+.pk-receipt-share-btn {
+  width: 100%;
+  height: 48px;
+  border-radius: 12px;
+  background-color: rgba(0, 0, 0, 0.04);
+  color: var(--ink, #1e293b);
+  border: none;
+  font-size: 14.5px;
+  font-weight: 700;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pk-receipt-share-btn:hover {
+  background-color: rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+
+.pk-receipt-share-btn:active {
+  transform: translateY(0);
+}
+
+[data-appearance="dark"] .pk-receipt-share-btn {
+  background-color: rgba(255, 255, 255, 0.06);
+  color: #f1f5f9;
+}
+
+[data-appearance="dark"] .pk-receipt-share-btn:hover {
+  background-color: rgba(255, 255, 255, 0.12);
+}
