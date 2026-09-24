@@ -163,34 +163,34 @@
   color: #ef4444;
 }
 
-/* Countdown Timer Orange Pill (aligned beside DISPUTE TRAILS) */
+/* Countdown Timer Solid Orange Pill (aligned beside DISPUTE TRAILS) */
 .mdo-timer-pill {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  background-color: #ffedd5;
-  color: #ea580c;
-  border: 1px solid rgba(234, 88, 12, 0.22);
+  background-color: #ea580c;
+  color: #ffffff;
+  border: none;
   font-size: 11.5px;
   font-weight: 700;
-  padding: 3px 8px;
+  padding: 3px 9px;
   border-radius: 9999px;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 [data-appearance="dark"] .mdo-timer-pill {
-  background-color: rgba(234, 88, 12, 0.18);
-  color: #fb923c;
-  border-color: rgba(251, 146, 60, 0.3);
+  background-color: #ea580c;
+  color: #ffffff;
+  border: none;
 }
 
 .mdo-timer-icon {
   font-size: 14px !important;
-  color: #ea580c;
+  color: #ffffff;
 }
 
 [data-appearance="dark"] .mdo-timer-icon {
-  color: #fb923c;
+  color: #ffffff;
 }
 
 /* ── BOXLESS DISPUTE TRAILS (No card, no borders, open timeline) ── */
