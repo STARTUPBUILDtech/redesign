@@ -422,21 +422,6 @@ export default function DesktopPaymentRoomDetail({
             <div className="desktop-prd-header-right">
               <button
                 type="button"
-                className="desktop-prd-chat-btn"
-                onClick={() => setIsChatModalOpen(true)}
-                aria-label="Chat"
-                title="Chat with counterparty"
-              >
-                <span
-                  className="material-symbols-outlined"
-                  style={{ fontSize: 20, fontVariationSettings: "'FILL' 1" }}
-                >
-                  chat
-                </span>
-              </button>
-
-              <button
-                type="button"
                 className="desktop-prd-help-circle-btn"
                 onClick={() => setIsHelpOpen(true)}
                 aria-label="Help"
@@ -444,6 +429,18 @@ export default function DesktopPaymentRoomDetail({
               >
                 <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
                   help_outline
+                </span>
+              </button>
+
+              <button
+                type="button"
+                className="desktop-prd-chat-circle-btn"
+                onClick={() => setIsChatModalOpen(true)}
+                aria-label="Open Chat"
+                title="Chat with counterparty"
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 19 }}>
+                  chat
                 </span>
               </button>
             </div>
