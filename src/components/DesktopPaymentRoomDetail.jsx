@@ -434,14 +434,15 @@ export default function DesktopPaymentRoomDetail({
 
               <button
                 type="button"
-                className="desktop-prd-chat-circle-btn"
+                className="desktop-prd-chat-btn"
                 onClick={() => setIsChatModalOpen(true)}
-                aria-label="Open Chat"
+                aria-label="Chat"
                 title="Chat with counterparty"
               >
-                <span className="material-symbols-outlined" style={{ fontSize: 19 }}>
+                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
                   chat
                 </span>
+                <span>Chat</span>
               </button>
             </div>
           </div>
