@@ -644,12 +644,14 @@ export default function App() {
          active === "Dispute ongoing" ||
          active === "Completed" ||
          active === "Payment Completed" ? (
-        <DesktopPaymentRoomDetail
-          room={activeRoom || paymentRooms[0]}
-          onBack={() => setActive("Payment room")}
-          role={role}
-          onPaymentConfirmed={() => {}}
-        />
+        <main id="desktop-payment-room-detail" className="desktop-container desktop-prd-main-wrapper" style={{ padding: 0, maxWidth: "none", margin: 0 }}>
+          <DesktopPaymentRoomDetail
+            room={activeRoom || paymentRooms[0]}
+            onBack={() => setActive("Payment room")}
+            role={role}
+            onPaymentConfirmed={() => {}}
+          />
+        </main>
       ) : (
         <main id="home" className="desktop-container">
           <div className="desktop-content-wrap desktop-intro-wrap">

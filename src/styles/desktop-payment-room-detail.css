@@ -1,5 +1,11 @@
 /* ── Desktop Payment Room Detail (2-Column: Details Left, Chat Right) ── */
 
+@media (max-width: 700px) {
+  .desktop-prd-wrapper {
+    display: none !important;
+  }
+}
+
 .desktop-prd-wrapper {
   position: fixed;
   top: clamp(64px, 3.8vw, 80px);

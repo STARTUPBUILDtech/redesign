@@ -11,7 +11,7 @@
 }
 
 @media (max-width: 700px) {
-  .app > .topbar, .app > main, .desktop-payment-room { display: none !important; }
+  .app > .topbar, .app > main, .desktop-payment-room, .desktop-prd-wrapper { display: none !important; }
   
   .mobile-dashboard {
     display: flex;
