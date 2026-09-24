@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import OrderDetailsModal from "./Shared/OrderDetailsModal";
 import ShippingStatusModal from "./Shared/ShippingStatusModal";
 import HelpDrawer from "./Shared/HelpDrawer";
@@ -421,14 +422,18 @@ export default function DesktopPaymentRoomDetail({
             <div className="desktop-prd-header-right">
               <button
                 type="button"
-                className="desktop-prd-chat-circle-btn"
+                className="desktop-prd-chat-btn"
                 onClick={() => setIsChatModalOpen(true)}
-                aria-label="Open Chat"
+                aria-label="Chat"
                 title="Chat with counterparty"
               >
-                <span className="material-symbols-outlined" style={{ fontSize: 19 }}>
+                <span
+                  className="material-symbols-outlined"
+                  style={{ fontSize: 18, fontVariationSettings: "'FILL' 1" }}
+                >
                   chat
                 </span>
+                <span>Chat</span>
               </button>
 
               <button
@@ -1250,111 +1255,114 @@ export default function DesktopPaymentRoomDetail({
       </div>
 
       {/* ── Chat Modal Dialog for Mini Desktop Screens (<= 1024px) ── */}
-      {isChatModalOpen && (
-        <div
-          className="desktop-prd-chat-modal-backdrop"
-          onClick={() => setIsChatModalOpen(false)}
-        >
+      {isChatModalOpen &&
+        typeof document !== "undefined" &&
+        createPortal(
           <div
-            className="desktop-prd-chat-modal-dialog"
-            onClick={(e) => e.stopPropagation()}
+            className="desktop-prd-chat-modal-backdrop"
+            onClick={() => setIsChatModalOpen(false)}
           >
-            <div className="desktop-prd-right-col as-modal">
-              {/* Green Header with Close Button */}
-              <div className="desktop-prd-chat-header">
-                <div className="desktop-prd-chat-header-text">
-                  <span className="desktop-prd-chat-header-user">{counterpartyName}</span>
-                  <span className="desktop-prd-chat-header-order">{orderNumber}</span>
+            <div
+              className="desktop-prd-chat-modal-dialog"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="desktop-prd-right-col as-modal">
+                {/* Green Header with Close Button */}
+                <div className="desktop-prd-chat-header">
+                  <div className="desktop-prd-chat-header-text">
+                    <span className="desktop-prd-chat-header-user">{counterpartyName}</span>
+                    <span className="desktop-prd-chat-header-order">{orderNumber}</span>
+                  </div>
+                  <button
+                    type="button"
+                    className="desktop-prd-chat-modal-close-btn"
+                    onClick={() => setIsChatModalOpen(false)}
+                    aria-label="Close Chat"
+                    title="Close Chat"
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
+                      close
+                    </span>
+                  </button>
                 </div>
-                <button
-                  type="button"
-                  className="desktop-prd-chat-modal-close-btn"
-                  onClick={() => setIsChatModalOpen(false)}
-                  aria-label="Close Chat"
-                  title="Close Chat"
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
-                    close
+
+                {/* Security Notice */}
+                <div className="desktop-prd-chat-security">
+                  <span className="material-symbols-outlined desktop-prd-chat-security-icon">
+                    verified_user
                   </span>
-                </button>
-              </div>
+                  <span>
+                    This chat is protected by <strong>PayKudi security</strong>
+                  </span>
+                </div>
 
-              {/* Security Notice */}
-              <div className="desktop-prd-chat-security">
-                <span className="material-symbols-outlined desktop-prd-chat-security-icon">
-                  verified_user
-                </span>
-                <span>
-                  This chat is protected by <strong>PayKudi security</strong>
-                </span>
-              </div>
-
-              {/* Messages Container */}
-              <div className="desktop-prd-chat-stream">
-                {chatMessages.map((msg) => {
-                  const isOutgoing = msg.sender === (role === "Seller" ? "seller" : "buyer");
-                  return (
-                    <div
-                      key={msg.id}
-                      className={`desktop-prd-chat-row ${isOutgoing ? "outgoing" : "incoming"}`}
-                    >
-                      {!isOutgoing && (
-                        <span className="desktop-prd-sender-label">{msg.senderName}</span>
-                      )}
+                {/* Messages Container */}
+                <div className="desktop-prd-chat-stream">
+                  {chatMessages.map((msg) => {
+                    const isOutgoing = msg.sender === (role === "Seller" ? "seller" : "buyer");
+                    return (
                       <div
-                        className={`desktop-prd-chat-bubble ${
-                          isOutgoing ? "outgoing" : "incoming"
-                        }`}
+                        key={msg.id}
+                        className={`desktop-prd-chat-row ${isOutgoing ? "outgoing" : "incoming"}`}
                       >
-                        {msg.text}
+                        {!isOutgoing && (
+                          <span className="desktop-prd-sender-label">{msg.senderName}</span>
+                        )}
+                        <div
+                          className={`desktop-prd-chat-bubble ${
+                            isOutgoing ? "outgoing" : "incoming"
+                          }`}
+                        >
+                          {msg.text}
+                        </div>
+                        <span
+                          className={`desktop-prd-chat-time ${
+                            isOutgoing ? "outgoing" : ""
+                          }`}
+                        >
+                          {msg.time} {isOutgoing ? "• Sent" : ""}
+                        </span>
                       </div>
-                      <span
-                        className={`desktop-prd-chat-time ${
-                          isOutgoing ? "outgoing" : ""
-                        }`}
-                      >
-                        {msg.time} {isOutgoing ? "• Sent" : ""}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
+                    );
+                  })}
+                </div>
 
-              {/* Input Bar */}
-              <form onSubmit={handleSendChat} className="desktop-prd-chat-input-bar">
-                <button
-                  type="button"
-                  className="desktop-prd-chat-attach-btn"
-                  aria-label="Add attachment"
-                  title="Add attachment"
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
-                    attach_file
-                  </span>
-                </button>
-                <input
-                  type="text"
-                  className="desktop-prd-chat-input"
-                  placeholder="Type your message..."
-                  value={chatInput}
-                  onChange={(e) => setChatInput(e.target.value)}
-                />
-                <button
-                  type="submit"
-                  className="desktop-prd-chat-send-btn"
-                  aria-label="Send message"
-                  title="Send message"
-                  disabled={!chatInput.trim()}
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
-                    send
-                  </span>
-                </button>
-              </form>
+                {/* Input Bar */}
+                <form onSubmit={handleSendChat} className="desktop-prd-chat-input-bar">
+                  <button
+                    type="button"
+                    className="desktop-prd-chat-attach-btn"
+                    aria-label="Add attachment"
+                    title="Add attachment"
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
+                      attach_file
+                    </span>
+                  </button>
+                  <input
+                    type="text"
+                    className="desktop-prd-chat-input"
+                    placeholder="Type your message..."
+                    value={chatInput}
+                    onChange={(e) => setChatInput(e.target.value)}
+                  />
+                  <button
+                    type="submit"
+                    className="desktop-prd-chat-send-btn"
+                    aria-label="Send message"
+                    title="Send message"
+                    disabled={!chatInput.trim()}
+                  >
+                    <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
+                      send
+                    </span>
+                  </button>
+                </form>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )}
 
       {/* ── Slide-up / Drawer Modals ── */}
       <OrderDetailsModal
