@@ -1,4 +1,3 @@
-import React from "react";
 import "../../styles/mobile-awaiting-payment.css";
 
 export default function OrderDetailsModal({

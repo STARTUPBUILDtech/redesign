@@ -1,5 +1,3 @@
-import React from "react";
-
 /**
  * ReceiptIcon matches the custom serrated receipt icon provided in design specs:
  * Solid body with rounded top, 3 rounded pill cutout bars, and a jagged 4-tooth serrated bottom.

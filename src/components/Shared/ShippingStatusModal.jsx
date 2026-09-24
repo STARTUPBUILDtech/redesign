@@ -1,4 +1,3 @@
-import React from "react";
 import "../../styles/mobile-awaiting-payment.css";
 import "../../styles/mobile-in-transit.css";
 

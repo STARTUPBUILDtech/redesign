@@ -377,6 +377,11 @@
     max-width: 82px !important;
   }
 
+  #m-nav-notifications #m-pr-nav-badge {
+    top: -4px !important;
+    right: -6px !important;
+  }
+
   .nav-bottom-link:not(.active):hover {
     background: rgba(0, 0, 0, 0.04) !important;
     color: #18181b !important;
