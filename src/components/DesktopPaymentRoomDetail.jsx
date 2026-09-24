@@ -429,11 +429,10 @@ export default function DesktopPaymentRoomDetail({
               >
                 <span
                   className="material-symbols-outlined"
-                  style={{ fontSize: 18, fontVariationSettings: "'FILL' 1" }}
+                  style={{ fontSize: 20, fontVariationSettings: "'FILL' 1" }}
                 >
                   chat
                 </span>
-                <span>Chat</span>
               </button>
 
               <button
