@@ -4,6 +4,7 @@ import logoDarkMode from "./assets/logodarkmode.png";
 import DesktopActivity from "./components/DesktopActivity.jsx";
 import DesktopNewPayment from "./components/DesktopNewPayment.jsx";
 import DesktopPaymentRoom from "./components/DesktopPaymentRoom.jsx";
+import DesktopPaymentRoomDetail from "./components/DesktopPaymentRoomDetail.jsx";
 import MobileActivity from "./components/Mobile/MobileActivity.jsx";
 import MobileNewPayment from "./components/Mobile/MobileNewPayment.jsx";
 import MobilePaymentInvitation from "./components/Mobile/MobilePaymentInvitation.jsx";
@@ -634,26 +635,21 @@ export default function App() {
             />
           </div>
         </main>
-      ) : active === "Awaiting Payment" ? (
-        <main id="payment-room" className="desktop-container desktop-payment-room">
-          <div className="desktop-payment-room-inner">
-            <MobileAwaitingPayment
-              room={activeRoom}
-              onBack={() => setActive("Payment room")}
-              onPaymentConfirmed={() => {}}
-            />
-          </div>
-        </main>
-      ) : active === "Dispute Ongoing" || active === "Dispute ongoing" ? (
-        <main id="payment-room" className="desktop-container desktop-payment-room">
-          <div className="desktop-payment-room-inner">
-            <MobileDisputeOngoing
-              room={activeRoom}
-              onBack={() => setActive("Payment room")}
-              role={role}
-            />
-          </div>
-        </main>
+      ) : active === "Awaiting Payment" ||
+         active === "Payment Received" ||
+         active === "In Transit" ||
+         active === "Confirm Delivery" ||
+         active === "Confirm delivery" ||
+         active === "Dispute Ongoing" ||
+         active === "Dispute ongoing" ||
+         active === "Completed" ||
+         active === "Payment Completed" ? (
+        <DesktopPaymentRoomDetail
+          room={activeRoom || paymentRooms[0]}
+          onBack={() => setActive("Payment room")}
+          role={role}
+          onPaymentConfirmed={() => {}}
+        />
       ) : (
         <main id="home" className="desktop-container">
           <div className="desktop-content-wrap desktop-intro-wrap">

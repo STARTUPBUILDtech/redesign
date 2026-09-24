@@ -9,9 +9,10 @@
   background: var(--page);
   color: var(--ink);
   box-sizing: border-box;
-  overflow: hidden;
+  overflow-y: auto;
   z-index: 10;
   padding-top: clamp(16px, 1.4vw, 24px);
+  padding-bottom: 40px;
 }
 
 .desktop-prd-container {
@@ -174,6 +175,22 @@
 .desktop-prd-banner-card.in-transit {
   background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
   box-shadow: 0 4px 16px rgba(124, 58, 237, 0.25);
+}
+
+.desktop-prd-banner-card.delivered,
+.desktop-prd-banner-card.confirm-delivery {
+  background: linear-gradient(135deg, #007788 0%, #005f6d 100%);
+  box-shadow: 0 4px 16px rgba(0, 119, 136, 0.28);
+}
+
+.desktop-prd-banner-card.dispute-ongoing {
+  background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+  box-shadow: 0 4px 16px rgba(185, 28, 28, 0.28);
+}
+
+.desktop-prd-banner-card.completed {
+  background: linear-gradient(135deg, #065f46 0%, #044e39 100%);
+  box-shadow: 0 4px 16px rgba(6, 95, 70, 0.28);
 }
 
 .desktop-prd-banner-top {
@@ -354,6 +371,10 @@
   color: #7c3aed;
 }
 
+.desktop-prd-banner-card.delivered .desktop-prd-step-circle.active-step {
+  color: #007788;
+}
+
 .desktop-prd-step-circle.checked-orange {
   background: #ea580c;
   color: #ffffff;
@@ -370,6 +391,23 @@
   background: #7c3aed;
   color: #ffffff;
   box-shadow: 0 0 8px rgba(124, 58, 237, 0.55);
+}
+
+.desktop-prd-step-circle.checked-teal,
+.desktop-prd-step-circle.checked-green {
+  background: #007788;
+  color: #ffffff;
+  box-shadow: 0 0 8px rgba(0, 119, 136, 0.55);
+}
+
+.desktop-prd-step-circle.completed-active {
+  background: #ffffff;
+  color: #16a34a;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.95), 0 0 6px rgba(255, 255, 255, 0.8);
+}
+
+.desktop-prd-stepper-dots.dots-comp-white span {
+  background-color: rgba(255, 255, 255, 0.9) !important;
 }
 
 .desktop-prd-step-circle.inactive {
@@ -408,6 +446,18 @@
 
 .desktop-prd-section-title.in-transit {
   color: #7c3aed;
+}
+
+.desktop-prd-section-title.delivered {
+  color: #007788;
+}
+
+.desktop-prd-section-title.dispute-ongoing {
+  color: #dc2626;
+}
+
+.desktop-prd-section-title.completed {
+  color: #059669;
 }
 
 /* Field Rows List */
@@ -577,6 +627,129 @@
   cursor: default;
 }
 
+/* Confirm Delivery Action Buttons */
+.desktop-prd-cd-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.desktop-prd-confirm-btn {
+  width: 100%;
+  height: 48px;
+  border-radius: 12px;
+  background-color: #16a34a;
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(22, 163, 74, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.15s ease;
+}
+
+.desktop-prd-confirm-btn:hover:not(:disabled) {
+  background-color: #15803d;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(22, 163, 74, 0.35);
+}
+
+.desktop-prd-confirm-btn:active:not(:disabled) {
+  transform: scale(0.985);
+}
+
+.desktop-prd-confirm-btn.confirmed {
+  background-color: #15803d;
+  cursor: default;
+}
+
+.desktop-prd-timer-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.22);
+  color: #ffffff;
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: ui-monospace, SFMono-Regular, monospace;
+}
+
+.desktop-prd-timer-badge .material-symbols-outlined {
+  font-size: 14px !important;
+}
+
+.desktop-prd-report-btn {
+  width: 100%;
+  height: 44px;
+  border-radius: 12px;
+  background-color: transparent;
+  color: #dc2626;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  border: 1px solid rgba(220, 38, 38, 0.35);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.desktop-prd-report-btn:hover {
+  background-color: rgba(220, 38, 38, 0.08);
+  border-color: #dc2626;
+}
+
+[data-appearance="dark"] .desktop-prd-report-btn {
+  color: #f87171;
+  border-color: rgba(248, 113, 113, 0.35);
+}
+
+[data-appearance="dark"] .desktop-prd-report-btn:hover {
+  background-color: rgba(239, 68, 68, 0.12);
+  border-color: #ef4444;
+}
+
+/* Submit More Proof Button for Dispute Ongoing */
+.desktop-prd-submit-proof-btn {
+  width: 100%;
+  height: 48px;
+  border-radius: 12px;
+  background-color: #dc2626;
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(220, 38, 38, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+  transition: all 0.15s ease;
+}
+
+.desktop-prd-submit-proof-btn:hover {
+  background-color: #b91c1c;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.35);
+}
+
+.desktop-prd-submit-proof-btn:active {
+  transform: scale(0.985);
+}
+
 /* Button spacer when primary button is not present */
 .desktop-prd-btn-spacer {
   width: 100%;
@@ -618,12 +791,35 @@
   color: var(--ink);
 }
 
+/* Toast banner */
+.desktop-prd-toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #18181b;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 20px;
+  border-radius: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  z-index: 1000;
+  animation: apSlideUp 0.2s ease-out;
+}
+
+[data-appearance="dark"] .desktop-prd-toast {
+  background: #27272a;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
 /* ══════════════════════════════════════════════════════════════
-   RIGHT COLUMN: CHAT PANEL
+   RIGHT COLUMN: CHAT PANEL (Persistent & Same Size Across All Rooms)
    ══════════════════════════════════════════════════════════════ */
 .desktop-prd-right-col {
   width: 100%;
   height: 100%;
+  min-height: 540px;
   display: flex;
   flex-direction: column;
   background: #ffffff;

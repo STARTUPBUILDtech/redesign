@@ -242,6 +242,7 @@
   color: #ffffff;
   z-index: 2;
   box-shadow: 0 0 0 3px var(--page, #ffffff);
+  flex-shrink: 0;
 }
 
 [data-appearance="dark"] .mdo-timeline-node {
@@ -256,8 +257,17 @@
   background: #16a34a;
 }
 
+.mdo-timeline-node.node-user {
+  background: #2563eb;
+}
+
 .mdo-timeline-node .material-symbols-outlined {
-  font-size: 16px;
+  font-size: 16px !important;
+  line-height: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-variation-settings: 'FILL' 1;
 }
 
 /* Boxless Content Container (NO background, NO border box) */
