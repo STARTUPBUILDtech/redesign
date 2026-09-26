@@ -72,7 +72,7 @@ export default function MobileHelp({ room = {} }) {
         <h1 className="pk-support-title">24/7 PayKudi Support</h1>
       </div>
 
-      {/* ── Support List Matching Exact 4 Options ── */}
+      {/* ── Support List Matching Exact 4 Options (Activity Row Style) ── */}
       <div className="pk-support-list" role="list">
         {/* 1. Send us a message */}
         <button
@@ -81,18 +81,18 @@ export default function MobileHelp({ room = {} }) {
           onClick={() => setActiveModal("message")}
           aria-label="Send us a message: Chat with resolution specialists"
         >
-          <div className="pk-support-item-left">
-            <div className="pk-support-icon-circle message">
-              <HeadsetAgentIcon />
-            </div>
+          <div className="pk-support-icon-circle message">
+            <HeadsetAgentIcon />
+          </div>
+          <div className="pk-support-item-inner">
             <div className="pk-support-text">
               <span className="pk-support-label">Send us a message</span>
               <span className="pk-support-subtitle">Chat with resolution specialists</span>
             </div>
+            <span className="material-symbols-outlined pk-support-chevron">
+              chevron_right
+            </span>
           </div>
-          <span className="material-symbols-outlined pk-support-chevron">
-            chevron_right
-          </span>
         </button>
 
         {/* 2. PayKudi Bot Assistant */}
@@ -102,18 +102,18 @@ export default function MobileHelp({ room = {} }) {
           onClick={() => setActiveModal("bot")}
           aria-label="PayKudi Bot Assistant: Instant automated answers & diagnostics"
         >
-          <div className="pk-support-item-left">
-            <div className="pk-support-icon-circle bot">
-              <RobotBotIcon />
-            </div>
+          <div className="pk-support-icon-circle bot">
+            <RobotBotIcon />
+          </div>
+          <div className="pk-support-item-inner">
             <div className="pk-support-text">
               <span className="pk-support-label">PayKudi Bot Assistant</span>
               <span className="pk-support-subtitle">Instant automated answers & diagnostics</span>
             </div>
+            <span className="material-symbols-outlined pk-support-chevron">
+              chevron_right
+            </span>
           </div>
-          <span className="material-symbols-outlined pk-support-chevron">
-            chevron_right
-          </span>
         </button>
 
         {/* 3. Frequently Asked Questions */}
@@ -123,18 +123,18 @@ export default function MobileHelp({ room = {} }) {
           onClick={() => setActiveModal("faq")}
           aria-label="Frequently Asked Questions: Search escrow rules & policies"
         >
-          <div className="pk-support-item-left">
-            <div className="pk-support-icon-circle faq">
-              <QuestionBoxIcon />
-            </div>
+          <div className="pk-support-icon-circle faq">
+            <QuestionBoxIcon />
+          </div>
+          <div className="pk-support-item-inner">
             <div className="pk-support-text">
               <span className="pk-support-label">Frequently Asked Questions</span>
               <span className="pk-support-subtitle">Search escrow rules & policies</span>
             </div>
+            <span className="material-symbols-outlined pk-support-chevron">
+              chevron_right
+            </span>
           </div>
-          <span className="material-symbols-outlined pk-support-chevron">
-            chevron_right
-          </span>
         </button>
 
         {/* 4. WhatsApp Live Support */}
@@ -144,18 +144,18 @@ export default function MobileHelp({ room = {} }) {
           onClick={handleWhatsAppClick}
           aria-label="WhatsApp Live Support: Connect instantly with our support team"
         >
-          <div className="pk-support-item-left">
-            <div className="pk-support-icon-circle whatsapp">
-              <WhatsAppIcon />
-            </div>
+          <div className="pk-support-icon-circle whatsapp">
+            <WhatsAppIcon />
+          </div>
+          <div className="pk-support-item-inner no-border">
             <div className="pk-support-text">
               <span className="pk-support-label whatsapp-label">WhatsApp Live Support</span>
               <span className="pk-support-subtitle">Connect instantly with our support team</span>
             </div>
+            <span className="material-symbols-outlined pk-support-chevron whatsapp-chevron">
+              chevron_right
+            </span>
           </div>
-          <span className="material-symbols-outlined pk-support-chevron whatsapp-chevron">
-            chevron_right
-          </span>
         </button>
       </div>
 

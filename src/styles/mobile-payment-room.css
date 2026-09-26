@@ -3,7 +3,7 @@
 .mobile-payment-room-view {
   width: min(100% - clamp(24px, 6vw, 36px), 520px);
   margin: 0 auto;
-  padding-top: clamp(12px, 3vw, 16px);
+  padding-top: 0;
   padding-bottom: 0;
   display: flex;
   flex-direction: column;
@@ -11,13 +11,14 @@
   box-sizing: border-box;
 }
 
-/* Sticky Header containing Tabs & Expandable Search */
+/* Sticky Header containing Tabs & Expandable Search - docked at top without initial jumping */
 .mobile-pr-sticky-toolbar {
   position: sticky;
   top: 0;
   z-index: 35;
   background: var(--page);
-  padding: 8px 0;
+  padding: clamp(10px, 2.5vw, 14px) 0 8px 0;
+  margin: 0;
   display: flex;
   flex-direction: column;
   transition: background-color 0.2s ease;

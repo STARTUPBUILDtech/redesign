@@ -1378,9 +1378,9 @@ body[data-appearance="dark"] .m-invite-add-spec-btn:hover,
 
 /* My Avatar: PayKudi Green Accent Ring */
 .m-invite-avatar-me {
-  background: rgba(46, 160, 67, 0.16);
-  border: 2px solid #2EA043;
-  color: #2EA043;
+  background: #0f0f0f;
+  border: 2px solid #1b4924;
+  color: #94a3b8;
 }
 
 /* Counterparty Avatar: Neutral/Muted Ring */

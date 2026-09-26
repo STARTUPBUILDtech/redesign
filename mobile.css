@@ -58,11 +58,13 @@
   /* ── Mobile Header Matching dashboard.html Layout ── */
   .mobile-header {
     flex-shrink: 0;
-    height: 44px;
+    min-height: 52px;
+    height: auto;
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding-inline: clamp(14px, 4vw, 18px);
+    padding-block: clamp(8px, 2.2vw, 12px);
     background: var(--page);
     border-bottom: 1px solid var(--line);
     position: relative;

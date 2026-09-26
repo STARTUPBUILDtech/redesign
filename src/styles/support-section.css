@@ -5,9 +5,10 @@
    ========================================================================== */
 
 .pk-support-screen {
-  width: 100%;
+  width: min(100% - clamp(24px, 6vw, 36px), 520px);
+  margin: 0 auto;
   min-height: 100%;
-  background-color: var(--page, #ffffff);
+  background-color: transparent;
   color: var(--ink, #161618);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   display: flex;
@@ -17,21 +18,22 @@
 
 [data-appearance="dark"] .pk-support-screen,
 .mobile-dashboard[data-appearance="dark"] .pk-support-screen {
-  background-color: var(--page, #131417);
+  background-color: transparent;
   color: var(--ink, #f4f4f6);
 }
 
-/* ── Container Header with fluid clamp ── */
+/* ── Container Header with fluid clamp matching Activity/Home ── */
 .pk-support-header {
-  padding: clamp(14px, 3.5vw, 20px) clamp(14px, 3.5vw, 18px) clamp(10px, 2.5vw, 14px);
+  padding: clamp(20px, 5vw, 28px) 0 clamp(14px, 3.5vw, 20px) 0;
 }
 
 .pk-support-title {
   margin: 0;
-  font-size: clamp(18px, 4.5vw, 23px);
+  font-size: clamp(20px, 5.2vw, 24px);
   letter-spacing: -0.6px;
   line-height: 1.15;
   font-weight: 700;
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif;
   color: var(--ink, #161618);
 }
 
@@ -40,66 +42,53 @@
   color: var(--ink, #f4f4f6);
 }
 
-/* ── Support Options List ── */
+/* ── Support Options List: Unboxed Activity List Style ── */
 .pk-support-list {
   display: flex;
   flex-direction: column;
   width: 100%;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 0;
+  margin: 0;
 }
 
 .pk-support-item {
   width: 100%;
   background: transparent;
   border: none;
-  border-bottom: 1px solid var(--line, #edf0f4);
-  padding: clamp(12px, 3vw, 16px) clamp(14px, 3.5vw, 18px);
+  padding: 0 4px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: clamp(10px, 2.5vw, 16px);
+  gap: 14px;
   cursor: pointer;
   text-align: left;
+  border-radius: 8px;
   transition: background-color 0.15s ease;
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
 }
 
-[data-appearance="dark"] .pk-support-item,
-.mobile-dashboard[data-appearance="dark"] .pk-support-item {
-  border-bottom-color: var(--line, #26282e);
-}
-
 .pk-support-item:hover {
-  background-color: rgba(0, 0, 0, 0.025);
+  background-color: color-mix(in srgb, var(--ink) 4%, transparent);
 }
 
 [data-appearance="dark"] .pk-support-item:hover,
 .mobile-dashboard[data-appearance="dark"] .pk-support-item:hover {
-  background-color: rgba(255, 255, 255, 0.035);
+  background-color: color-mix(in srgb, var(--ink) 5%, transparent);
 }
 
 .pk-support-item:active {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: color-mix(in srgb, var(--ink) 7%, transparent);
 }
 
-[data-appearance="dark"] .pk-support-item:active,
-.mobile-dashboard[data-appearance="dark"] .pk-support-item:active {
-  background-color: rgba(255, 255, 255, 0.07);
-}
-
-.pk-support-item-left {
-  display: flex;
-  align-items: center;
-  gap: clamp(11px, 2.8vw, 15px);
-  flex: 1;
-  min-width: 0;
-}
-
-/* ── Circular Icon Avatars with fluid clamp sizing ── */
+/* ── Circular Icon Avatars matching activity-item-icon ── */
 .pk-support-icon-circle {
-  width: clamp(38px, 9.5vw, 45px);
-  height: clamp(38px, 9.5vw, 45px);
-  min-width: clamp(38px, 9.5vw, 45px);
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -109,12 +98,33 @@
 }
 
 .pk-support-icon-circle svg {
-  width: clamp(19px, 4.8vw, 23px);
-  height: clamp(19px, 4.8vw, 23px);
+  width: 20px;
+  height: 20px;
 }
 
 .pk-support-item:hover .pk-support-icon-circle {
   transform: scale(1.04);
+}
+
+/* ── Inner content row: border-bottom stops before icon with generous vertical spacing ── */
+.pk-support-item-inner {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: clamp(18px, 4.5vw, 24px) 0;
+  border-bottom: 1px solid var(--line);
+  gap: 8px;
+}
+
+.pk-support-item:first-child .pk-support-item-inner {
+  padding-top: clamp(16px, 4vw, 20px);
+}
+
+.pk-support-item:last-child .pk-support-item-inner,
+.pk-support-item-inner.no-border {
+  border-bottom: none !important;
 }
 
 /* Send us a message: soft light ice blue */
@@ -167,7 +177,7 @@
   font-weight: 700;
   color: var(--ink, #161618);
   line-height: 1.25;
-  margin: 0 0 2px 0;
+  margin: 0 0 clamp(4px, 1vw, 6px) 0;
   letter-spacing: -0.2px;
 }
 
@@ -249,62 +259,225 @@
   line-height: 1.35;
 }
 
-.desktop-help-list {
-  display: flex;
-  flex-direction: column;
+/* ── Desktop Help Cards Grid (Fluid Clamp Resizing & Generous Layout) ── */
+.desktop-help-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(12px, 1.4vw, 22px);
   width: 100%;
-  max-width: 880px;
-  background: transparent;
-  border-top: 1px solid var(--line);
-  margin-top: 8px;
+  margin-top: clamp(8px, 1vw, 16px);
 }
 
-.desktop-help-item {
-  width: 100%;
-  background: transparent;
-  border: none;
-  border-bottom: 1px solid var(--line);
-  padding: clamp(14px, 1.5vw, 18px) 12px;
+@media (max-width: 1080px) {
+  .desktop-help-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 580px) {
+  .desktop-help-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.desktop-help-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: clamp(145px, 11vw, 172px);
+  padding: clamp(18px, 1.6vw, 24px);
+  border-radius: clamp(16px, 1.3vw, 20px);
+  background-color: var(--panel, #ffffff);
+  border: 1px solid var(--line, rgba(0, 0, 0, 0.08));
+  cursor: pointer;
+  text-align: left;
+  position: relative;
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s ease, border-color 0.18s ease, background-color 0.18s ease;
+  box-sizing: border-box;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  user-select: none;
+}
+
+.desktop-help-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  border-color: color-mix(in srgb, var(--ink) 18%, transparent);
+}
+
+.desktop-help-card:active {
+  transform: translateY(0) scale(0.995);
+}
+
+[data-appearance="dark"] .desktop-help-card {
+  background-color: var(--panel, #18191c);
+  border-color: var(--line, rgba(255, 255, 255, 0.09));
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+[data-appearance="dark"] .desktop-help-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+/* ── Card Header (Top Row: Badge + Chevron/External Icon) ── */
+.desktop-help-card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
-  cursor: pointer;
-  text-align: left;
-  border-radius: 12px;
-  transition: background-color 0.15s ease, transform 0.1s ease;
-  box-sizing: border-box;
+  width: 100%;
 }
 
-.desktop-help-item:hover {
-  background-color: color-mix(in srgb, var(--ink) 4%, transparent);
+/* Squircle Icon Badge matching reference image */
+.desktop-help-card-badge {
+  width: clamp(40px, 3.2vw, 46px);
+  height: clamp(40px, 3.2vw, 46px);
+  min-width: clamp(40px, 3.2vw, 46px);
+  border-radius: clamp(11px, 0.9vw, 13px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.desktop-help-item:active {
-  transform: scale(0.995);
+.desktop-help-card:hover .desktop-help-card-badge {
+  transform: scale(1.05);
 }
 
-.desktop-help-item .pk-support-icon-circle {
-  width: clamp(42px, 3.5vw, 48px);
-  height: clamp(42px, 3.5vw, 48px);
-  min-width: clamp(42px, 3.5vw, 48px);
+.desktop-help-card-badge svg {
+  width: clamp(20px, 1.6vw, 24px);
+  height: clamp(20px, 1.6vw, 24px);
 }
 
-.desktop-help-item .pk-support-icon-circle svg {
-  width: clamp(21px, 1.8vw, 24px);
-  height: clamp(21px, 1.8vw, 24px);
+/* Badge Color Schemes */
+.desktop-help-card-badge.message {
+  background-color: #dde7f2;
+  color: #234872;
 }
 
-.desktop-help-item .pk-support-label {
-  font-size: clamp(14px, 1.1vw, 16px);
+[data-appearance="dark"] .desktop-help-card-badge.message {
+  background-color: rgba(66, 126, 196, 0.22);
+  color: #93c5fd;
+}
+
+.desktop-help-card-badge.bot {
+  background-color: #dcf2e4;
+  color: #1b7347;
+}
+
+[data-appearance="dark"] .desktop-help-card-badge.bot {
+  background-color: rgba(34, 166, 89, 0.2);
+  color: #86efac;
+}
+
+.desktop-help-card-badge.faq {
+  background-color: #fce8d3;
+  color: #c76016;
+}
+
+[data-appearance="dark"] .desktop-help-card-badge.faq {
+  background-color: rgba(217, 119, 6, 0.2);
+  color: #fcd34d;
+}
+
+/* Chevron & External Icons on Top Right */
+.desktop-help-card-chevron {
+  font-size: clamp(18px, 1.4vw, 21px);
+  color: #9aa4b2;
+  transition: transform 0.18s ease, color 0.18s ease;
+  line-height: 1;
+}
+
+.desktop-help-card:hover .desktop-help-card-chevron:not(.whatsapp-external) {
+  transform: translateX(3px);
+  color: var(--ink);
+}
+
+[data-appearance="dark"] .desktop-help-card-chevron {
+  color: #717d90;
+}
+
+[data-appearance="dark"] .desktop-help-card:hover .desktop-help-card-chevron:not(.whatsapp-external) {
+  color: #f4f4f6;
+}
+
+/* ── Card Body (Bottom Row: Title + Subtitle) ── */
+.desktop-help-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(3px, 0.3vw, 5px);
+  margin-top: clamp(22px, 2vw, 32px);
+}
+
+.desktop-help-card-title {
+  margin: 0;
+  font-size: clamp(14px, 1.05vw, 15.5px);
   font-weight: 700;
-  margin-bottom: 3px;
+  letter-spacing: -0.2px;
+  line-height: 1.25;
+  color: var(--ink, #161618);
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif;
 }
 
-.desktop-help-item .pk-support-subtitle {
-  font-size: clamp(12px, 0.95vw, 13.5px);
+[data-appearance="dark"] .desktop-help-card-title {
+  color: var(--ink, #f4f4f6);
 }
 
-.desktop-help-item .pk-support-chevron {
-  font-size: clamp(20px, 1.5vw, 23px);
+.desktop-help-card-subtitle {
+  margin: 0;
+  font-size: clamp(11.5px, 0.85vw, 13px);
+  line-height: 1.35;
+  font-weight: 400;
+  color: var(--muted, #737c8b);
+}
+
+[data-appearance="dark"] .desktop-help-card-subtitle {
+  color: #94a3b8;
+}
+
+/* ── Card 4: WhatsApp Featured Card (Solid Emerald Green) ── */
+.desktop-help-card.whatsapp-featured-card {
+  background-color: #059669 !important;
+  border-color: #059669 !important;
+  box-shadow: 0 4px 16px rgba(5, 150, 105, 0.24);
+}
+
+.desktop-help-card.whatsapp-featured-card:hover {
+  background-color: #047857 !important;
+  border-color: #047857 !important;
+  box-shadow: 0 8px 24px rgba(5, 150, 105, 0.35);
+}
+
+[data-appearance="dark"] .desktop-help-card.whatsapp-featured-card {
+  background-color: #059669 !important;
+  border-color: #059669 !important;
+  box-shadow: 0 4px 18px rgba(5, 150, 105, 0.3);
+}
+
+[data-appearance="dark"] .desktop-help-card.whatsapp-featured-card:hover {
+  background-color: #047857 !important;
+  border-color: #047857 !important;
+}
+
+.desktop-help-card.whatsapp-featured-card .desktop-help-card-badge.whatsapp {
+  background-color: rgba(255, 255, 255, 0.18) !important;
+  color: #ffffff !important;
+}
+
+.desktop-help-card.whatsapp-featured-card .desktop-help-card-chevron.whatsapp-external {
+  font-size: clamp(18px, 1.4vw, 21px);
+  color: #ffffff !important;
+  transition: transform 0.18s ease;
+}
+
+.desktop-help-card.whatsapp-featured-card:hover .desktop-help-card-chevron.whatsapp-external {
+  transform: translate(2px, -2px);
+}
+
+.desktop-help-card.whatsapp-featured-card .desktop-help-card-title {
+  color: #ffffff !important;
+}
+
+.desktop-help-card.whatsapp-featured-card .desktop-help-card-subtitle {
+  color: rgba(255, 255, 255, 0.88) !important;
 }

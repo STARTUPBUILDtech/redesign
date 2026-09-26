@@ -99,28 +99,28 @@ textarea,
   color: #ffffff;
 }
 
-/* Profile avatar circle matching #m-profile-sticky-avatar from dashboard.html */
+/* Profile avatar circle in header navbar (matches profile avatar theme colors) */
 .header-avatar-circle {
   width: 32px;
   height: 32px;
   border-radius: 9999px;
   overflow: hidden;
-  border: 2px solid #22a659 !important;
-  box-shadow: 0 1px 2px rgba(34, 166, 89, 0.15);
+  border: 1px solid var(--line) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   cursor: pointer;
   flex-shrink: 0;
-  background-color: #eaf8ef;
+  background-color: #e5ebf3 !important;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
   user-select: none;
   box-sizing: border-box;
 }
 
 .header-avatar-circle:hover {
   transform: scale(1.05);
-  border-color: #16a34a !important;
+  background-color: #dbe3ed !important;
 }
 
 .header-avatar-circle:active {
@@ -128,24 +128,32 @@ textarea,
 }
 
 .header-avatar-circle .avatar-icon {
-  font-size: 18px;
-  color: #22a659;
+  font-size: 19px;
+  color: #7d8b9d !important;
   user-select: none;
   line-height: 1;
+  transition: color 0.2s ease;
 }
 
 .app[data-appearance="dark"] .header-avatar-circle,
 .mobile-dashboard[data-appearance="dark"] .header-avatar-circle,
 [data-appearance="dark"] .header-avatar-circle {
-  background-color: rgba(34, 166, 89, 0.16);
-  border: 2px solid #22a659 !important;
-  border-color: #22a659 !important;
+  background-color: #22262e !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+.app[data-appearance="dark"] .header-avatar-circle:hover,
+.mobile-dashboard[data-appearance="dark"] .header-avatar-circle:hover,
+[data-appearance="dark"] .header-avatar-circle:hover {
+  background-color: #2a2f39 !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
 }
 
 .app[data-appearance="dark"] .header-avatar-circle .avatar-icon,
 .mobile-dashboard[data-appearance="dark"] .header-avatar-circle .avatar-icon,
 [data-appearance="dark"] .header-avatar-circle .avatar-icon {
-  color: #4ade80;
+  color: #94a3b8 !important;
 }
 
 /* Theme Toggle Button matching dashboard.html */
@@ -616,6 +624,33 @@ main.desktop-container {
   vertical-align: -1px !important;
   margin-right: 3px !important;
   font-weight: 700 !important;
+}
+
+/* Dark mode: primary-button (New Payment) is white with dark text and plus */
+.app[data-appearance="dark"] .primary-button,
+.mobile-dashboard[data-appearance="dark"] .primary-button,
+[data-appearance="dark"] .primary-button {
+  background: #ffffff !important;
+  color: #111215 !important;
+  border: none !important;
+}
+
+.app[data-appearance="dark"] .primary-button:hover,
+.mobile-dashboard[data-appearance="dark"] .primary-button:hover,
+[data-appearance="dark"] .primary-button:hover {
+  background: #f0f1f4 !important;
+  border: none !important;
+}
+
+.app[data-appearance="dark"] .primary-button b,
+.app[data-appearance="dark"] .primary-button .btn-plus,
+[data-appearance="dark"] .primary-button b,
+[data-appearance="dark"] .primary-button .btn-plus,
+.app[data-appearance="dark"] .mobile-primary b,
+.app[data-appearance="dark"] .mobile-primary .btn-plus,
+[data-appearance="dark"] .mobile-primary b,
+[data-appearance="dark"] .mobile-primary .btn-plus {
+  color: #111215 !important;
 }
 
 .desktop-balance-banner {

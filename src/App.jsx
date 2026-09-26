@@ -17,6 +17,7 @@ import MobileDisputeOngoing from "./components/Mobile/MobileDisputeOngoing.jsx";
 import MobileCompleted from "./components/Mobile/MobileCompleted.jsx";
 import MobileHelp from "./components/Mobile/MobileHelp.jsx";
 import DesktopHelp from "./components/DesktopHelp.jsx";
+import DesktopProfile from "./components/DesktopProfile.jsx";
 import { ALL_PAYMENT_ROOMS } from "./data/paymentRooms.js";
 
 function BrandLogo({ dark, className }) {
@@ -33,17 +34,21 @@ function BrandLogo({ dark, className }) {
 }
 
 // Header Actions matching C:\Users\abc\OneDrive\Videos\dashboard.html
-function HeaderActions({ dark, onThemeToggle }) {
+function HeaderActions({ dark, onThemeToggle, onOpenProfile, isProfileActive }) {
   return (
     <div className="header-actions">
-      {/* Profile Avatar (matching #m-profile-sticky-avatar from dashboard.html) */}
-      <div
-        className="header-avatar-circle"
-        aria-label="Open profile"
-        title="Profile"
-      >
-        <span className="material-symbols-outlined avatar-icon">account_circle</span>
-      </div>
+      {/* Profile Avatar (matching #m-profile-sticky-avatar from dashboard.html) - hidden when in Profile */}
+      {!isProfileActive && (
+        <div
+          className="header-avatar-circle"
+          aria-label="Open profile"
+          title="Profile"
+          onClick={onOpenProfile}
+          style={{ cursor: "pointer" }}
+        >
+          <span className="material-symbols-outlined avatar-icon">account_circle</span>
+        </div>
+      )}
 
       {/* Theme Toggle Button (matching dashboard.html) */}
       <button
@@ -293,6 +298,8 @@ function MobileDashboard({
           onThemeToggle={onThemeToggle}
           role={role}
           onSwitchRole={() => setRole(role === "Buyer" ? "Seller" : "Buyer")}
+          onOpenProfile={() => handleNavClick("Profile")}
+          isProfileActive={active === "Profile"}
         />
       </header>
 
@@ -390,6 +397,8 @@ function MobileDashboard({
             />
           ) : active === "Help" || active === "Help & support" ? (
             <MobileHelp onOpenChat={() => {}} />
+          ) : active === "Profile" ? (
+            <DesktopProfile userName="Amaka" />
           ) : (
             <div className="mobile-home-content">
               <div className="mobile-main mobile-main-top">
@@ -609,6 +618,12 @@ export default function App() {
           <HeaderActions
             dark={dark}
             onThemeToggle={() => setDark(!dark)}
+            onOpenProfile={() => {
+              setActive("Profile");
+              setIsPaymentModalOpen(false);
+              window.scrollTo({ top: 0, behavior: "instant" });
+            }}
+            isProfileActive={active === "Profile"}
           />
         </div>
       </header>
@@ -624,6 +639,8 @@ export default function App() {
         />
       ) : active === "Help" || active === "Help & support" ? (
         <DesktopHelp />
+      ) : active === "Profile" ? (
+        <DesktopProfile userName="Amaka" />
       ) : active === "Payment Invitation" ? (
         <main id="payment-room" className="desktop-container desktop-payment-room">
           <div className="desktop-payment-room-inner">

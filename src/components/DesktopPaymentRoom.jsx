@@ -274,7 +274,7 @@ export default function DesktopPaymentRoom({ role = "Buyer", onBackToHome, rooms
             ) : (
               filteredRooms.map((room) => {
                 const isBuying = room.role === "Buying";
-                const counterpartyLabel = isBuying ? "Seller: " : "Buyer: ";
+                const counterpartyLabel = isBuying ? "Seller's Name: " : "Buyer's Name: ";
                 const counterpartyName = isBuying ? room.sellerName : room.buyerName;
 
                 return (

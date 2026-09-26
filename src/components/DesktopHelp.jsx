@@ -76,91 +76,91 @@ export default function DesktopHelp({ room = {} }) {
         </section>
       </div>
 
-      {/* ── Desktop Support List obeying desktop-content-wrap padding ── */}
+      {/* ── Desktop Support Grid obeying desktop-content-wrap padding ── */}
       <div className="desktop-content-wrap">
-        <div className="desktop-help-list">
+        <div className="desktop-help-cards-grid">
           {/* 1. Send us a message */}
           <button
             type="button"
-            className="desktop-help-item"
+            className="desktop-help-card"
             onClick={() => setActiveModal("message")}
             aria-label="Send us a message: Chat with resolution specialists"
           >
-            <div className="pk-support-item-left">
-              <div className="pk-support-icon-circle message">
+            <div className="desktop-help-card-header">
+              <div className="desktop-help-card-badge message">
                 <HeadsetAgentIcon />
               </div>
-              <div className="pk-support-text">
-                <span className="pk-support-label">Send us a message</span>
-                <span className="pk-support-subtitle">Chat with resolution specialists</span>
-              </div>
+              <span className="material-symbols-outlined desktop-help-card-chevron">
+                chevron_right
+              </span>
             </div>
-            <span className="material-symbols-outlined pk-support-chevron">
-              chevron_right
-            </span>
+            <div className="desktop-help-card-body">
+              <span className="desktop-help-card-title">Send us a message</span>
+              <span className="desktop-help-card-subtitle">Chat with resolution specialists</span>
+            </div>
           </button>
 
           {/* 2. PayKudi Bot Assistant */}
           <button
             type="button"
-            className="desktop-help-item"
+            className="desktop-help-card"
             onClick={() => setActiveModal("bot")}
             aria-label="PayKudi Bot Assistant: Instant automated answers & diagnostics"
           >
-            <div className="pk-support-item-left">
-              <div className="pk-support-icon-circle bot">
+            <div className="desktop-help-card-header">
+              <div className="desktop-help-card-badge bot">
                 <RobotBotIcon />
               </div>
-              <div className="pk-support-text">
-                <span className="pk-support-label">PayKudi Bot Assistant</span>
-                <span className="pk-support-subtitle">Instant automated answers & diagnostics</span>
-              </div>
+              <span className="material-symbols-outlined desktop-help-card-chevron">
+                chevron_right
+              </span>
             </div>
-            <span className="material-symbols-outlined pk-support-chevron">
-              chevron_right
-            </span>
+            <div className="desktop-help-card-body">
+              <span className="desktop-help-card-title">PayKudi Bot Assistant</span>
+              <span className="desktop-help-card-subtitle">Instant automated answers & diagnostics</span>
+            </div>
           </button>
 
           {/* 3. Frequently Asked Questions */}
           <button
             type="button"
-            className="desktop-help-item"
+            className="desktop-help-card"
             onClick={() => setActiveModal("faq")}
             aria-label="Frequently Asked Questions: Search escrow rules & policies"
           >
-            <div className="pk-support-item-left">
-              <div className="pk-support-icon-circle faq">
+            <div className="desktop-help-card-header">
+              <div className="desktop-help-card-badge faq">
                 <QuestionBoxIcon />
               </div>
-              <div className="pk-support-text">
-                <span className="pk-support-label">Frequently Asked Questions</span>
-                <span className="pk-support-subtitle">Search escrow rules & policies</span>
-              </div>
+              <span className="material-symbols-outlined desktop-help-card-chevron">
+                chevron_right
+              </span>
             </div>
-            <span className="material-symbols-outlined pk-support-chevron">
-              chevron_right
-            </span>
+            <div className="desktop-help-card-body">
+              <span className="desktop-help-card-title">Frequently Asked Questions</span>
+              <span className="desktop-help-card-subtitle">Search escrow rules & policies</span>
+            </div>
           </button>
 
           {/* 4. WhatsApp Live Support */}
           <button
             type="button"
-            className="desktop-help-item"
+            className="desktop-help-card whatsapp-featured-card"
             onClick={handleWhatsAppClick}
-            aria-label="WhatsApp Live Support: Connect instantly with our support team"
+            aria-label="WhatsApp Live Support: Direct live chat assistance"
           >
-            <div className="pk-support-item-left">
-              <div className="pk-support-icon-circle whatsapp">
+            <div className="desktop-help-card-header">
+              <div className="desktop-help-card-badge whatsapp">
                 <WhatsAppIcon />
               </div>
-              <div className="pk-support-text">
-                <span className="pk-support-label whatsapp-label">WhatsApp Live Support</span>
-                <span className="pk-support-subtitle">Connect instantly with our support team</span>
-              </div>
+              <span className="material-symbols-outlined desktop-help-card-chevron whatsapp-external">
+                open_in_new
+              </span>
             </div>
-            <span className="material-symbols-outlined pk-support-chevron whatsapp-chevron">
-              chevron_right
-            </span>
+            <div className="desktop-help-card-body">
+              <span className="desktop-help-card-title">WhatsApp Live Support</span>
+              <span className="desktop-help-card-subtitle">Direct live chat assistance</span>
+            </div>
           </button>
         </div>
       </div>
