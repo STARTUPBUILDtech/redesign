@@ -260,42 +260,31 @@
   font-weight: 800 !important;
 }
 
-/* Connecting Line - Default / Light Mode: Crisp dark line */
+/* Connecting Line - Removed as requested */
 .new-payment-timeline-line {
-  width: 2px;
-  flex: 1 1 auto;
-  background: #161618;
-  margin-top: -2px;
-  margin-bottom: 0;
-  min-height: 20px;
-  z-index: 1;
+  display: none !important;
 }
 
 .new-payment-timeline-line.is-last {
-  margin-bottom: 0;
-  min-height: 40px;
-  background: linear-gradient(to bottom, #161618 0%, rgba(22, 22, 24, 0.65) 70%, transparent 100%);
+  display: none !important;
 }
 
-/* Connecting Line - Dark Mode: Solid White line with subtle glow */
+/* Connecting Line - Dark Mode */
 [data-appearance="dark"] .new-payment-timeline-line,
 .app[data-appearance="dark"] .new-payment-timeline-line,
 .mobile-dashboard[data-appearance="dark"] .new-payment-timeline-line {
-  background: #ffffff !important;
-  box-shadow: 0 0 8px rgba(255, 255, 255, 0.3) !important;
+  display: none !important;
 }
 
 [data-appearance="dark"] .new-payment-timeline-line.is-last,
 .app[data-appearance="dark"] .new-payment-timeline-line.is-last,
 .mobile-dashboard[data-appearance="dark"] .new-payment-timeline-line.is-last {
-  background: linear-gradient(to bottom, #ffffff 0%, rgba(255, 255, 255, 0.65) 70%, transparent 100%) !important;
+  display: none !important;
 }
 
 /* Connecting Line - Dimmed / Disabled progression */
 .new-payment-timeline-line.is-dimmed {
-  opacity: 0.22 !important;
-  background: var(--line) !important;
-  box-shadow: none !important;
+  display: none !important;
 }
 
 .new-payment-timeline-content {
