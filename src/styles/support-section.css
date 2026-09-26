@@ -1,0 +1,310 @@
+/* ==========================================================================
+   24/7 PAYKUDI SUPPORT SECTION
+   Matches exact reference design with pixel-perfect icons, typography & palette
+   Fluid clamp sizing on all text and elements across viewport resizes
+   ========================================================================== */
+
+.pk-support-screen {
+  width: 100%;
+  min-height: 100%;
+  background-color: var(--page, #ffffff);
+  color: var(--ink, #161618);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+[data-appearance="dark"] .pk-support-screen,
+.mobile-dashboard[data-appearance="dark"] .pk-support-screen {
+  background-color: var(--page, #131417);
+  color: var(--ink, #f4f4f6);
+}
+
+/* ── Container Header with fluid clamp ── */
+.pk-support-header {
+  padding: clamp(14px, 3.5vw, 20px) clamp(14px, 3.5vw, 18px) clamp(10px, 2.5vw, 14px);
+}
+
+.pk-support-title {
+  margin: 0;
+  font-size: clamp(18px, 4.5vw, 23px);
+  letter-spacing: -0.6px;
+  line-height: 1.15;
+  font-weight: 700;
+  color: var(--ink, #161618);
+}
+
+[data-appearance="dark"] .pk-support-title,
+.mobile-dashboard[data-appearance="dark"] .pk-support-title {
+  color: var(--ink, #f4f4f6);
+}
+
+/* ── Support Options List ── */
+.pk-support-list {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.pk-support-item {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--line, #edf0f4);
+  padding: clamp(12px, 3vw, 16px) clamp(14px, 3.5vw, 18px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(10px, 2.5vw, 16px);
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.15s ease;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+[data-appearance="dark"] .pk-support-item,
+.mobile-dashboard[data-appearance="dark"] .pk-support-item {
+  border-bottom-color: var(--line, #26282e);
+}
+
+.pk-support-item:hover {
+  background-color: rgba(0, 0, 0, 0.025);
+}
+
+[data-appearance="dark"] .pk-support-item:hover,
+.mobile-dashboard[data-appearance="dark"] .pk-support-item:hover {
+  background-color: rgba(255, 255, 255, 0.035);
+}
+
+.pk-support-item:active {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+[data-appearance="dark"] .pk-support-item:active,
+.mobile-dashboard[data-appearance="dark"] .pk-support-item:active {
+  background-color: rgba(255, 255, 255, 0.07);
+}
+
+.pk-support-item-left {
+  display: flex;
+  align-items: center;
+  gap: clamp(11px, 2.8vw, 15px);
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Circular Icon Avatars with fluid clamp sizing ── */
+.pk-support-icon-circle {
+  width: clamp(38px, 9.5vw, 45px);
+  height: clamp(38px, 9.5vw, 45px);
+  min-width: clamp(38px, 9.5vw, 45px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pk-support-icon-circle svg {
+  width: clamp(19px, 4.8vw, 23px);
+  height: clamp(19px, 4.8vw, 23px);
+}
+
+.pk-support-item:hover .pk-support-icon-circle {
+  transform: scale(1.04);
+}
+
+/* Send us a message: soft light ice blue */
+.pk-support-icon-circle.message {
+  background-color: #dde7f2;
+  color: #274872;
+}
+[data-appearance="dark"] .pk-support-icon-circle.message {
+  background-color: rgba(66, 126, 196, 0.22);
+  color: #93c5fd;
+}
+
+/* PayKudi Bot Assistant: soft pale mint green */
+.pk-support-icon-circle.bot {
+  background-color: #dcf2e4;
+  color: #1b7347;
+}
+[data-appearance="dark"] .pk-support-icon-circle.bot {
+  background-color: rgba(34, 166, 89, 0.2);
+  color: #86efac;
+}
+
+/* Frequently Asked Questions: soft peach amber */
+.pk-support-icon-circle.faq {
+  background-color: #fce8d3;
+  color: #c76016;
+}
+[data-appearance="dark"] .pk-support-icon-circle.faq {
+  background-color: rgba(217, 119, 6, 0.2);
+  color: #fcd34d;
+}
+
+/* WhatsApp Live Support: solid WhatsApp green */
+.pk-support-icon-circle.whatsapp {
+  background-color: #25d366;
+  color: #ffffff;
+  box-shadow: 0 3px 10px rgba(37, 211, 102, 0.28);
+}
+
+/* ── Item Text with fluid clamp ── */
+.pk-support-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.pk-support-label {
+  font-size: clamp(13px, 2.9vw, 15px);
+  font-weight: 700;
+  color: var(--ink, #161618);
+  line-height: 1.25;
+  margin: 0 0 2px 0;
+  letter-spacing: -0.2px;
+}
+
+[data-appearance="dark"] .pk-support-label {
+  color: var(--ink, #f4f4f6);
+}
+
+/* WhatsApp label is green */
+.pk-support-label.whatsapp-label {
+  color: #16a34a;
+}
+[data-appearance="dark"] .pk-support-label.whatsapp-label {
+  color: #22c55e;
+}
+
+.pk-support-subtitle {
+  font-size: clamp(11px, 2.4vw, 12.5px);
+  font-weight: 400;
+  color: #737c8b;
+  line-height: 1.35;
+  margin: 0;
+}
+
+[data-appearance="dark"] .pk-support-subtitle {
+  color: #94a3b8;
+}
+
+/* ── Chevron Arrow with fluid clamp ── */
+.pk-support-chevron {
+  color: #a6b2c0;
+  font-size: clamp(18px, 4vw, 21px);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+[data-appearance="dark"] .pk-support-chevron {
+  color: #64748b;
+}
+
+.pk-support-chevron.whatsapp-chevron {
+  color: #16a34a;
+}
+[data-appearance="dark"] .pk-support-chevron.whatsapp-chevron {
+  color: #22c55e;
+}
+
+.pk-support-item:hover .pk-support-chevron {
+  transform: translateX(3px);
+}
+
+/* ── Desktop Support Layout (Obeying desktop container & content-wrap padding) ── */
+.desktop-help-main {
+  min-height: calc(100vh - 96px);
+  background-color: var(--page) !important;
+  color: var(--ink);
+  padding-bottom: 80px;
+}
+
+.desktop-help-intro {
+  margin-bottom: clamp(16px, 1.8vw, 24px);
+}
+
+.desktop-help-intro h1 {
+  font-size: clamp(24px, 2.6vw, 34px);
+  letter-spacing: -1.2px;
+  line-height: 1.15;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0 0 6px 0;
+}
+
+.desktop-help-intro p {
+  font-size: clamp(13px, 1.2vw, 16px);
+  color: var(--muted);
+  margin: 0 0 clamp(16px, 1.8vw, 24px) 0;
+  line-height: 1.35;
+}
+
+.desktop-help-list {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 880px;
+  background: transparent;
+  border-top: 1px solid var(--line);
+  margin-top: 8px;
+}
+
+.desktop-help-item {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--line);
+  padding: clamp(14px, 1.5vw, 18px) 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  cursor: pointer;
+  text-align: left;
+  border-radius: 12px;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+  box-sizing: border-box;
+}
+
+.desktop-help-item:hover {
+  background-color: color-mix(in srgb, var(--ink) 4%, transparent);
+}
+
+.desktop-help-item:active {
+  transform: scale(0.995);
+}
+
+.desktop-help-item .pk-support-icon-circle {
+  width: clamp(42px, 3.5vw, 48px);
+  height: clamp(42px, 3.5vw, 48px);
+  min-width: clamp(42px, 3.5vw, 48px);
+}
+
+.desktop-help-item .pk-support-icon-circle svg {
+  width: clamp(21px, 1.8vw, 24px);
+  height: clamp(21px, 1.8vw, 24px);
+}
+
+.desktop-help-item .pk-support-label {
+  font-size: clamp(14px, 1.1vw, 16px);
+  font-weight: 700;
+  margin-bottom: 3px;
+}
+
+.desktop-help-item .pk-support-subtitle {
+  font-size: clamp(12px, 0.95vw, 13.5px);
+}
+
+.desktop-help-item .pk-support-chevron {
+  font-size: clamp(20px, 1.5vw, 23px);
+}

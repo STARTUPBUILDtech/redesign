@@ -341,6 +341,25 @@
     box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3) !important;
   }
 
+  /* ── Hide Bottom Nav Dock & Blur Curtain when any slide-up modal is open ── */
+  body.pk-modal-up #m-bottom-nav,
+  body.pk-modal-up .mobile-nav,
+  body.pk-modal-up .mobile-bottom-blur-curtain,
+  html.pk-modal-up #m-bottom-nav,
+  html.pk-modal-up .mobile-nav,
+  html.pk-modal-up .mobile-bottom-blur-curtain,
+  body:has(.pk-slideup-backdrop) #m-bottom-nav,
+  body:has(.pk-slideup-backdrop) .mobile-nav,
+  body:has(.pk-slideup-backdrop) .mobile-bottom-blur-curtain,
+  body:has(.ap-order-help-backdrop) #m-bottom-nav,
+  body:has(.ap-order-help-backdrop) .mobile-nav,
+  body:has(.ap-order-help-backdrop) .mobile-bottom-blur-curtain {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+
   .nav-bottom-link {
     position: relative;
     display: flex;

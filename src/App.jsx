@@ -15,6 +15,8 @@ import MobileInTransit from "./components/Mobile/MobileInTransit.jsx";
 import MobileConfirmDelivery from "./components/Mobile/MobileConfirmDelivery.jsx";
 import MobileDisputeOngoing from "./components/Mobile/MobileDisputeOngoing.jsx";
 import MobileCompleted from "./components/Mobile/MobileCompleted.jsx";
+import MobileHelp from "./components/Mobile/MobileHelp.jsx";
+import DesktopHelp from "./components/DesktopHelp.jsx";
 import { ALL_PAYMENT_ROOMS } from "./data/paymentRooms.js";
 
 function BrandLogo({ dark, className }) {
@@ -386,6 +388,8 @@ function MobileDashboard({
                 }
               }}
             />
+          ) : active === "Help" || active === "Help & support" ? (
+            <MobileHelp onOpenChat={() => {}} />
           ) : (
             <div className="mobile-home-content">
               <div className="mobile-main mobile-main-top">
@@ -618,6 +622,8 @@ export default function App() {
           role={role}
           onBackToHome={() => setActive("Home")}
         />
+      ) : active === "Help" || active === "Help & support" ? (
+        <DesktopHelp />
       ) : active === "Payment Invitation" ? (
         <main id="payment-room" className="desktop-container desktop-payment-room">
           <div className="desktop-payment-room-inner">

@@ -1,0 +1,587 @@
+/* ==========================================================================
+   SUPPORT SLIDE-UP MODALS
+   Stops EXACTLY at the bottom of the PayKudi header
+   Fluid clamp sizing on all text and elements across viewport resizes
+   1. Send us a message (Navy Blue header)
+   2. PayKudi Assistant (Emerald Green header)
+   3. Frequently Asked Questions (Amber Orange header)
+   ========================================================================== */
+
+/* ── Fixed Backdrop starting right at PayKudi header bottom ── */
+.pk-slideup-backdrop {
+  position: fixed;
+  top: var(--header-bottom, 44px);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100000 !important;
+  background-color: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  overflow: hidden;
+  animation: pkBackdropFade 0.2s ease-out;
+}
+
+@keyframes pkBackdropFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ── Modal Container ── */
+.pk-slideup-container {
+  width: 100%;
+  max-width: 500px;
+  height: 100%;
+  background-color: #f5f2eb;
+  color: #16181d;
+  display: flex;
+  flex-direction: column;
+  animation: pkSlideUpFromBottom 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  position: relative;
+  box-sizing: border-box;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  box-shadow: 0 4px 28px rgba(0, 0, 0, 0.25);
+}
+
+@media (max-width: 700px) {
+  .pk-slideup-container {
+    max-width: 100%;
+    box-shadow: none;
+  }
+}
+
+[data-appearance="dark"] .pk-slideup-container {
+  background-color: #15161a;
+  color: #f4f4f6;
+}
+
+@keyframes pkSlideUpFromBottom {
+  from {
+    transform: translateY(100%);
+    opacity: 0.85;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ── Distinct Colored Headers matching Screenshots with fluid clamp ── */
+.pk-slideup-header {
+  height: clamp(44px, 8.5vw, 50px);
+  min-height: clamp(44px, 8.5vw, 50px);
+  padding: 0 clamp(12px, 3vw, 16px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  color: #ffffff;
+  position: relative;
+  z-index: 2;
+}
+
+/* 1. Send us a message: Royal Navy Blue */
+.pk-slideup-header.header-message {
+  background-color: #0b4ea2;
+}
+
+/* 2. PayKudi Assistant: Vibrant Emerald Green */
+.pk-slideup-header.header-bot {
+  background-color: #249e54;
+}
+
+/* 3. Frequently Asked Questions: Warm Amber Orange */
+.pk-slideup-header.header-faq {
+  background-color: #df7400;
+}
+
+.pk-slideup-header-left {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 2vw, 10px);
+}
+
+.pk-slideup-header-left svg {
+  width: clamp(18px, 4.2vw, 21px);
+  height: clamp(18px, 4.2vw, 21px);
+}
+
+.pk-slideup-header-title {
+  font-size: clamp(13.5px, 3.2vw, 15.5px);
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: -0.2px;
+}
+
+.pk-slideup-close-btn {
+  width: clamp(28px, 6vw, 32px);
+  height: clamp(28px, 6vw, 32px);
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.22);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+  padding: 0;
+}
+
+.pk-slideup-close-btn span {
+  font-size: clamp(16px, 3.8vw, 19px) !important;
+}
+
+.pk-slideup-close-btn:hover {
+  background-color: rgba(255, 255, 255, 0.35);
+}
+
+.pk-slideup-close-btn:active {
+  transform: scale(0.92);
+}
+
+/* ── Scrollable Body ── */
+.pk-slideup-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==========================================================================
+   MODAL 1: SEND US A MESSAGE
+   ========================================================================== */
+.pk-msg-official-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  color: #16a34a;
+  font-size: clamp(11px, 2.5vw, 12.5px);
+  font-weight: 600;
+  padding: clamp(10px, 2.5vw, 14px) 16px 6px 16px;
+  flex-shrink: 0;
+}
+
+.pk-msg-official-badge svg {
+  width: clamp(13px, 3vw, 15px);
+  height: clamp(13px, 3vw, 15px);
+}
+
+.pk-msg-thread {
+  flex: 1;
+  padding: 10px clamp(12px, 3vw, 16px);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+}
+
+.pk-chat-bubble {
+  max-width: 82%;
+  padding: clamp(9px, 2.2vw, 12px) clamp(11px, 2.6vw, 14px);
+  border-radius: 15px;
+  font-size: clamp(12px, 2.7vw, 13px);
+  line-height: 1.4;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.pk-chat-bubble.agent {
+  align-self: flex-start;
+  background-color: #ffffff;
+  color: #1f2937;
+  border-bottom-left-radius: 4px;
+}
+
+[data-appearance="dark"] .pk-chat-bubble.agent {
+  background-color: #20232a;
+  color: #e5e7eb;
+}
+
+.pk-chat-bubble.user {
+  align-self: flex-end;
+  background-color: #0b4ea2;
+  color: #ffffff;
+  border-bottom-right-radius: 4px;
+}
+
+.pk-chat-time {
+  font-size: clamp(9.5px, 2.2vw, 10.5px);
+  color: #94a3b8;
+  margin-top: 3px;
+  text-align: right;
+}
+
+/* ==========================================================================
+   MODAL 2: PAYKUDI ASSISTANT
+   ========================================================================== */
+.pk-assistant-welcome-card {
+  margin: clamp(10px, 2.6vw, 15px);
+  padding: clamp(12px, 3vw, 16px);
+  background-color: #fbf9f4;
+  border: 1px solid #e7e2d6;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: clamp(12px, 2.7vw, 13px);
+  line-height: 1.45;
+  color: #2d3748;
+}
+
+[data-appearance="dark"] .pk-assistant-welcome-card {
+  background-color: #1e2026;
+  border-color: #2e323b;
+  color: #e2e8f0;
+}
+
+.pk-assistant-welcome-card p {
+  margin: 0;
+}
+
+.pk-assistant-topics-wrap {
+  margin-top: auto;
+  padding: clamp(10px, 2.2vw, 12px) clamp(12px, 3vw, 16px);
+  background-color: #ffffff;
+  border-top: 1px solid #e8e4da;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+[data-appearance="dark"] .pk-assistant-topics-wrap {
+  background-color: #18191f;
+  border-top-color: #282b33;
+}
+
+.pk-assistant-topics-label {
+  font-size: clamp(9.5px, 2.2vw, 10.5px);
+  font-weight: 700;
+  color: #888e99;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.pk-assistant-chips-scroll {
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+}
+
+.pk-assistant-chips-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.pk-assistant-chip-btn {
+  background-color: #249e54;
+  color: #ffffff;
+  font-size: clamp(11px, 2.4vw, 12px);
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  padding: clamp(6px, 1.6vw, 8px) clamp(10px, 2.4vw, 13px);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+  font-family: inherit;
+}
+
+.pk-assistant-chip-btn:hover {
+  background-color: #1e8647;
+}
+
+.pk-assistant-chip-btn:active {
+  transform: scale(0.97);
+}
+
+/* ==========================================================================
+   MODAL 3: FREQUENTLY ASKED QUESTIONS
+   ========================================================================== */
+.pk-faq-search-box-wrap {
+  padding: clamp(12px, 3vw, 15px) clamp(12px, 3vw, 16px) clamp(8px, 2vw, 10px) clamp(12px, 3vw, 16px);
+  flex-shrink: 0;
+}
+
+.pk-faq-search-inner {
+  position: relative;
+  width: 100%;
+}
+
+.pk-faq-search-inner-icon {
+  position: absolute;
+  left: clamp(10px, 2.4vw, 13px);
+  top: 50%;
+  transform: translateY(-50%);
+  color: #8c97a5;
+  font-size: clamp(17px, 3.8vw, 19px);
+  pointer-events: none;
+}
+
+.pk-faq-input-field {
+  width: 100%;
+  height: clamp(38px, 8vw, 42px);
+  background-color: #ffffff;
+  border: 1px solid #e2ddd2;
+  border-radius: 12px;
+  padding: 0 12px 0 clamp(34px, 7vw, 38px);
+  font-size: clamp(12px, 2.6vw, 13px);
+  font-family: inherit;
+  color: #1a202c;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease;
+}
+
+.pk-faq-input-field:focus {
+  border-color: #df7400;
+}
+
+[data-appearance="dark"] .pk-faq-input-field {
+  background-color: #1f2229;
+  border-color: #31353f;
+  color: #f1f5f9;
+}
+
+.pk-faq-pills-row {
+  display: flex;
+  gap: clamp(6px, 1.5vw, 8px);
+  padding: 0 clamp(12px, 3vw, 16px) clamp(8px, 2vw, 10px) clamp(12px, 3vw, 16px);
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex-shrink: 0;
+}
+
+.pk-faq-pills-row::-webkit-scrollbar {
+  display: none;
+}
+
+.pk-faq-filter-pill {
+  border-radius: 9999px;
+  padding: clamp(6px, 1.4vw, 7.5px) clamp(11px, 2.6vw, 14px);
+  font-size: clamp(11px, 2.4vw, 12px);
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: inherit;
+  transition: all 0.15s ease;
+}
+
+.pk-faq-filter-pill.active {
+  background-color: #df7400;
+  color: #ffffff;
+}
+
+.pk-faq-filter-pill.inactive {
+  background-color: #f0ede6;
+  color: #4a5568;
+}
+
+[data-appearance="dark"] .pk-faq-filter-pill.inactive {
+  background-color: #242730;
+  color: #a0aec0;
+}
+
+.pk-faq-cards-list {
+  padding: 0 clamp(12px, 3vw, 16px) clamp(14px, 3.5vw, 20px) clamp(12px, 3vw, 16px);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(7px, 1.8vw, 9px);
+}
+
+.pk-faq-card-item {
+  background-color: #fbf9f4;
+  border: 1px solid #ebe5d9;
+  border-radius: clamp(13px, 3.2vw, 16px);
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+[data-appearance="dark"] .pk-faq-card-item {
+  background-color: #1c1e24;
+  border-color: #2b2e38;
+}
+
+.pk-faq-card-trigger {
+  width: 100%;
+  padding: clamp(11px, 2.6vw, 13.5px) clamp(12px, 2.8vw, 15px);
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  outline: none;
+}
+
+.pk-faq-card-left {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: 1;
+  min-width: 0;
+}
+
+.pk-faq-card-q {
+  font-size: clamp(12px, 2.6vw, 13px);
+  font-weight: 800;
+  color: #df7400;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.pk-faq-card-question {
+  font-size: clamp(11.5px, 2.5vw, 12.8px);
+  font-weight: 700;
+  color: #1a202c;
+  line-height: 1.35;
+  letter-spacing: -0.2px;
+}
+
+[data-appearance="dark"] .pk-faq-card-question {
+  color: #e2e8f0;
+}
+
+.pk-faq-card-chevron {
+  color: #8c97a5;
+  font-size: clamp(18px, 4vw, 20px);
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
+}
+
+.pk-faq-card-chevron.open {
+  transform: rotate(180deg);
+}
+
+.pk-faq-card-answer {
+  padding: 0 clamp(12px, 2.8vw, 15px) clamp(10px, 2.4vw, 13px) clamp(12px, 2.8vw, 15px);
+  font-size: clamp(11px, 2.4vw, 12.2px);
+  line-height: 1.45;
+  color: #4a5568;
+  animation: pkFadeIn 0.2s ease-out;
+}
+
+[data-appearance="dark"] .pk-faq-card-answer {
+  color: #a0aec0;
+}
+
+/* ==========================================================================
+   UNIVERSAL BOTTOM INPUT BAR (Matching Screenshots 1 & 2)
+   ========================================================================== */
+.pk-slideup-bottom-bar {
+  padding: clamp(8px, 1.8vw, 10px) clamp(10px, 2.5vw, 14px) calc(clamp(8px, 1.8vw, 10px) + env(safe-area-inset-bottom, 0px)) clamp(10px, 2.5vw, 14px);
+  background-color: #f2efe7;
+  border-top: 1px solid #e7e2d6;
+  display: flex;
+  align-items: center;
+  gap: clamp(7px, 1.8vw, 10px);
+  flex-shrink: 0;
+}
+
+[data-appearance="dark"] .pk-slideup-bottom-bar {
+  background-color: #16171b;
+  border-top-color: #272a33;
+}
+
+.pk-bottom-plus-btn {
+  width: clamp(34px, 7.5vw, 38px);
+  height: clamp(34px, 7.5vw, 38px);
+  border-radius: 50%;
+  border: 1.5px solid #6b7280;
+  background: transparent;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+  transition: background-color 0.15s ease;
+}
+
+.pk-bottom-plus-btn span {
+  font-size: clamp(18px, 4.2vw, 21px) !important;
+}
+
+.pk-bottom-plus-btn:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+[data-appearance="dark"] .pk-bottom-plus-btn {
+  border-color: #9ca3af;
+  color: #9ca3af;
+}
+
+.pk-bottom-input-wrap {
+  flex: 1;
+  position: relative;
+}
+
+.pk-bottom-input {
+  width: 100%;
+  height: clamp(36px, 8vw, 40px);
+  background-color: #ffffff;
+  border: none;
+  border-radius: 9999px;
+  padding: 0 clamp(12px, 2.8vw, 16px);
+  font-size: clamp(12px, 2.6vw, 13px);
+  font-family: inherit;
+  color: #1a202c;
+  outline: none;
+  box-sizing: border-box;
+}
+
+[data-appearance="dark"] .pk-bottom-input {
+  background-color: #21242c;
+  color: #f1f5f9;
+}
+
+.pk-bottom-input::placeholder {
+  color: #8c97a5;
+}
+
+.pk-bottom-send-btn {
+  width: clamp(36px, 8vw, 40px);
+  height: clamp(36px, 8vw, 40px);
+  border-radius: 50%;
+  background-color: #16a34a;
+  border: none;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  padding: 0;
+  box-shadow: 0 2px 6px rgba(22, 163, 74, 0.28);
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.pk-bottom-send-btn svg {
+  width: clamp(15px, 3.4vw, 17px);
+  height: clamp(15px, 3.4vw, 17px);
+}
+
+.pk-bottom-send-btn:hover {
+  background-color: #15803d;
+}
+
+.pk-bottom-send-btn:active {
+  transform: scale(0.92);
+}
