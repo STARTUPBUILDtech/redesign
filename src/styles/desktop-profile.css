@@ -16,10 +16,11 @@
 }
 
 .desktop-profile-wrap {
-  width: min(calc(100% - clamp(40px, 4vw, 98px)), 1280px);
+  width: min(calc(100% - clamp(48px, 4.3vw, 98px)), 1718px);
   margin-left: auto;
   margin-right: auto;
-  padding-top: clamp(28px, 2.5vw, 44px);
+  padding-top: clamp(28px, 2.4vw, 40px);
+  box-sizing: border-box;
 }
 
 /* ── Top Header: Avatar & Info ── */
