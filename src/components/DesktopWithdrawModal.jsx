@@ -50,7 +50,24 @@ export default function DesktopWithdrawModal({
   const [txRef, setTxRef] = useState("");
 
   const inputRef = useRef(null);
+  const dropdownRef = useRef(null);
   const fee = 50;
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    if (!isDropdownOpen) return;
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [isDropdownOpen]);
 
   useEffect(() => {
     // Focus input on open
@@ -230,57 +247,72 @@ export default function DesktopWithdrawModal({
                 </div>
 
                 {/* 2. Selected Payout Bank Account */}
-                <div className="payout-account-card">
-                  <div className="payout-account-card-left">
-                    <BankLogo bankCode={selectedAccount.bankCode} bankName={selectedAccount.bank} />
-                    <div className="payout-account-details">
-                      <p className="payout-account-name">
-                        {selectedAccount.name}
-                      </p>
-                      <p className="payout-account-number">
-                        {selectedAccount.bank} Bank · <span className="payout-account-num-val">{selectedAccount.number}</span>
-                      </p>
-                    </div>
-                  </div>
-
-                  <button
-                    type="button"
-                    className={`payout-account-chevron-btn ${isDropdownOpen ? "is-open" : ""}`}
-                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                <div className="payout-account-card-wrapper" ref={dropdownRef}>
+                  <div
+                    className="payout-account-card"
+                    onClick={() => setIsDropdownOpen((prev) => !prev)}
+                    role="button"
+                    tabIndex={0}
+                    aria-expanded={isDropdownOpen}
                     aria-label="Change payout account"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        setIsDropdownOpen((prev) => !prev);
+                      }
+                    }}
                   >
-                    <ChevronDown size={18} strokeWidth={2.4} />
-                  </button>
-                </div>
+                    <div className="payout-account-card-left">
+                      <BankLogo bankCode={selectedAccount.bankCode} bankName={selectedAccount.bank} />
+                      <div className="payout-account-details">
+                        <p className="payout-account-name">
+                          {selectedAccount.name}
+                        </p>
+                        <p className="payout-account-number">
+                          {selectedAccount.bank} Bank · <span className="payout-account-num-val">{selectedAccount.number}</span>
+                        </p>
+                      </div>
+                    </div>
 
-                {isDropdownOpen && (
-                  <div className="payout-account-dropdown">
-                    {DEFAULT_ACCOUNTS.map((acc) => (
-                      <button
-                        key={acc.id}
-                        type="button"
-                        className={`payout-dropdown-item ${acc.id === selectedAccount.id ? "is-selected" : ""}`}
-                        onClick={() => {
-                          setSelectedAccount(acc);
-                          setIsDropdownOpen(false);
-                        }}
-                      >
-                        <BankLogo bankCode={acc.bankCode} bankName={acc.bank} />
-                        <div className="payout-dropdown-item-info">
-                          <span className="payout-dropdown-item-name">
-                            {acc.name}
-                          </span>
-                          <span className="payout-dropdown-item-sub">
-                            {acc.bank} · <span className="payout-account-num-val">{acc.number}</span>
-                          </span>
-                        </div>
-                        {acc.id === selectedAccount.id && (
-                          <Check size={16} strokeWidth={2.5} style={{ color: "var(--payout-green)" }} />
-                        )}
-                      </button>
-                    ))}
+                    <button
+                      type="button"
+                      className={`payout-account-chevron-btn ${isDropdownOpen ? "is-open" : ""}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setIsDropdownOpen(!isDropdownOpen);
+                      }}
+                      aria-label="Change payout account"
+                    >
+                      <ChevronDown size={18} strokeWidth={2.4} />
+                    </button>
                   </div>
-                )}
+
+                  {isDropdownOpen && (
+                    <div className="payout-account-dropdown">
+                      {DEFAULT_ACCOUNTS.map((acc) => (
+                        <button
+                          key={acc.id}
+                          type="button"
+                          className={`payout-dropdown-item ${acc.id === selectedAccount.id ? "is-selected" : ""}`}
+                          onClick={() => {
+                            setSelectedAccount(acc);
+                            setIsDropdownOpen(false);
+                          }}
+                        >
+                          <BankLogo bankCode={acc.bankCode} bankName={acc.bank} />
+                          <div className="payout-dropdown-item-info">
+                            <span className="payout-dropdown-item-name">
+                              {acc.name}
+                            </span>
+                            <span className="payout-dropdown-item-sub">
+                              {acc.bank} · <span className="payout-account-num-val">{acc.number}</span>
+                            </span>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* 3. AMOUNT SECTION */}

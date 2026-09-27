@@ -323,8 +323,9 @@ body.dark .desktop-withdraw-modal-container,
 
 
 .payout-withdraw-all-btn {
-  font-size: 11.5px;
+  font-size: 10px;
   font-weight: 600;
+  letter-spacing: 0.15px;
   color: var(--payout-green);
   background: none;
   border: none;
@@ -466,6 +467,7 @@ body.dark .desktop-withdraw-modal-container,
   position: relative;
   margin-top: 10px;
   margin-bottom: 12px;
+  z-index: 25;
 }
 
 .payout-pocket-card {
@@ -618,6 +620,12 @@ body.dark .desktop-withdraw-modal-container,
   flex-direction: column;
 }
 
+.payout-account-card-wrapper {
+  position: relative;
+  width: 100%;
+  z-index: 60;
+}
+
 .payout-account-card {
   display: flex;
   align-items: center;
@@ -630,7 +638,13 @@ body.dark .desktop-withdraw-modal-container,
   min-height: 52px;
   position: relative;
   box-sizing: border-box;
+  cursor: pointer;
+  user-select: none;
   transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.payout-account-card:hover {
+  border-color: color-mix(in srgb, var(--line) 70%, var(--ink));
 }
 
 [data-appearance="dark"] .payout-account-card,
@@ -757,23 +771,32 @@ body.dark .desktop-withdraw-modal-container,
 
 /* Payout Account Picker Dropdown */
 .payout-account-dropdown {
-  margin-top: 6px;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  width: 100%;
+  margin-top: 0;
   background: var(--page, #ffffff);
   border: 1px solid var(--line);
   border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  max-height: 240px;
+  -webkit-overflow-scrolling: touch;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
-  animation: payoutDropdownOpen 0.15s ease forwards;
+  z-index: 100;
+  box-sizing: border-box;
+  animation: payoutDropdownOpen 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 [data-appearance="dark"] .payout-account-dropdown,
 .app[data-appearance="dark"] .payout-account-dropdown,
 .mobile-dashboard[data-appearance="dark"] .payout-account-dropdown {
   background: #141518;
-  border-color: var(--line);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.65), 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 @keyframes payoutDropdownOpen {
@@ -806,9 +829,80 @@ body.dark .desktop-withdraw-modal-container,
   border-bottom: none;
 }
 
-.payout-dropdown-item:hover,
-.payout-dropdown-item.is-selected {
+.payout-dropdown-item:hover {
   background: color-mix(in srgb, var(--ink) 6%, transparent);
+}
+
+[data-appearance="dark"] .payout-dropdown-item:hover,
+.app[data-appearance="dark"] .payout-dropdown-item:hover,
+.mobile-dashboard[data-appearance="dark"] .payout-dropdown-item:hover,
+body.dark .payout-dropdown-item:hover,
+.dark .payout-dropdown-item:hover,
+.desktop-withdraw-modal-container[data-appearance="dark"] .payout-dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Selected Account Highlight - Black in Light Mode */
+.payout-dropdown-item.is-selected,
+.payout-dropdown-item.is-selected:hover {
+  background: #000000 !important;
+  color: #ffffff !important;
+}
+
+.payout-dropdown-item.is-selected .payout-dropdown-item-name {
+  color: #ffffff !important;
+}
+
+.payout-dropdown-item.is-selected .payout-dropdown-item-sub {
+  color: rgba(255, 255, 255, 0.72) !important;
+}
+
+.payout-dropdown-item.is-selected .payout-account-num-val {
+  color: #ffffff !important;
+}
+
+/* Selected Account Highlight - White in Dark Mode */
+[data-appearance="dark"] .payout-dropdown-item.is-selected,
+[data-appearance="dark"] .payout-dropdown-item.is-selected:hover,
+.app[data-appearance="dark"] .payout-dropdown-item.is-selected,
+.app[data-appearance="dark"] .payout-dropdown-item.is-selected:hover,
+.mobile-dashboard[data-appearance="dark"] .payout-dropdown-item.is-selected,
+.mobile-dashboard[data-appearance="dark"] .payout-dropdown-item.is-selected:hover,
+body.dark .payout-dropdown-item.is-selected,
+body.dark .payout-dropdown-item.is-selected:hover,
+.dark .payout-dropdown-item.is-selected,
+.dark .payout-dropdown-item.is-selected:hover,
+.desktop-withdraw-modal-container[data-appearance="dark"] .payout-dropdown-item.is-selected,
+.desktop-withdraw-modal-container[data-appearance="dark"] .payout-dropdown-item.is-selected:hover {
+  background: #ffffff !important;
+  color: #000000 !important;
+}
+
+[data-appearance="dark"] .payout-dropdown-item.is-selected .payout-dropdown-item-name,
+.app[data-appearance="dark"] .payout-dropdown-item.is-selected .payout-dropdown-item-name,
+.mobile-dashboard[data-appearance="dark"] .payout-dropdown-item.is-selected .payout-dropdown-item-name,
+body.dark .payout-dropdown-item.is-selected .payout-dropdown-item-name,
+.dark .payout-dropdown-item.is-selected .payout-dropdown-item-name,
+.desktop-withdraw-modal-container[data-appearance="dark"] .payout-dropdown-item.is-selected .payout-dropdown-item-name {
+  color: #000000 !important;
+}
+
+[data-appearance="dark"] .payout-dropdown-item.is-selected .payout-dropdown-item-sub,
+.app[data-appearance="dark"] .payout-dropdown-item.is-selected .payout-dropdown-item-sub,
+.mobile-dashboard[data-appearance="dark"] .payout-dropdown-item.is-selected .payout-dropdown-item-sub,
+body.dark .payout-dropdown-item.is-selected .payout-dropdown-item-sub,
+.dark .payout-dropdown-item.is-selected .payout-dropdown-item-sub,
+.desktop-withdraw-modal-container[data-appearance="dark"] .payout-dropdown-item.is-selected .payout-dropdown-item-sub {
+  color: rgba(0, 0, 0, 0.62) !important;
+}
+
+[data-appearance="dark"] .payout-dropdown-item.is-selected .payout-account-num-val,
+.app[data-appearance="dark"] .payout-dropdown-item.is-selected .payout-account-num-val,
+.mobile-dashboard[data-appearance="dark"] .payout-dropdown-item.is-selected .payout-account-num-val,
+body.dark .payout-dropdown-item.is-selected .payout-account-num-val,
+.dark .payout-dropdown-item.is-selected .payout-account-num-val,
+.desktop-withdraw-modal-container[data-appearance="dark"] .payout-dropdown-item.is-selected .payout-account-num-val {
+  color: #000000 !important;
 }
 
 .payout-dropdown-item-info {
@@ -1275,18 +1369,52 @@ body.dark .desktop-withdraw-modal-container,
 }
 
 .payout-terms-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
   width: 17px;
   height: 17px;
-  accent-color: #000000;
-  cursor: pointer;
+  border: 1.5px solid var(--line, #d1d5db);
   border-radius: 4px;
+  background-color: var(--page, #ffffff);
+  cursor: pointer;
   flex-shrink: 0;
+  transition: all 0.15s ease;
+  display: inline-block;
+  vertical-align: middle;
+  box-sizing: border-box;
+}
+
+.payout-terms-checkbox:checked {
+  background-color: #000000;
+  border-color: #000000;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+  background-size: 11px 11px;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 [data-appearance="dark"] .payout-terms-checkbox,
 .app[data-appearance="dark"] .payout-terms-checkbox,
-.mobile-dashboard[data-appearance="dark"] .payout-terms-checkbox {
-  accent-color: #ffffff;
+.mobile-dashboard[data-appearance="dark"] .payout-terms-checkbox,
+body.dark .payout-terms-checkbox,
+.dark .payout-terms-checkbox,
+.desktop-withdraw-modal-container[data-appearance="dark"] .payout-terms-checkbox {
+  border-color: rgba(255, 255, 255, 0.32);
+  background-color: #1a1c20;
+}
+
+[data-appearance="dark"] .payout-terms-checkbox:checked,
+.app[data-appearance="dark"] .payout-terms-checkbox:checked,
+.mobile-dashboard[data-appearance="dark"] .payout-terms-checkbox:checked,
+body.dark .payout-terms-checkbox:checked,
+.dark .payout-terms-checkbox:checked,
+.desktop-withdraw-modal-container[data-appearance="dark"] .payout-terms-checkbox:checked {
+  background-color: #ffffff;
+  border-color: #ffffff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000000' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+  background-size: 11px 11px;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .payout-terms-text {
