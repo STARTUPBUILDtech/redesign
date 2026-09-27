@@ -1,0 +1,1301 @@
+/* ==========================================================================
+   PAYOUT / WITHDRAW SCREEN & MODAL STYLES
+   - Body colors inherit standard app theme (--page, --ink, --panel, --line)
+   - Header with "Payout" and close "X" circle
+   - AMOUNT TO WITHDRAW with "Withdraw All" link & large ₦ 0 input
+   - Available Balance row
+   - PAYOUT TO card with KUDA badge, user name, phone & chevron dropdown
+   - PAYOUT BREAKDOWN with Requested Amount, red Payout fee (₦50), green Total Payout
+   - Pill "Continue to Payout" green CTA button
+   - Mobile: Full screen page (not a modal)
+   - Desktop: Centered modal with backdrop
+   ========================================================================== */
+
+/* ── Light / Dark Theme Variables ── */
+:root {
+  --payout-bg: var(--page, #ffffff);
+  --payout-card-bg: var(--panel, #f9f8fd);
+  --payout-card-border: var(--line, #e9e9ec);
+  --payout-input-color: var(--ink, #161618);
+  --payout-close-bg: color-mix(in srgb, var(--ink, #161618) 6%, transparent);
+  --payout-close-hover: color-mix(in srgb, var(--ink, #161618) 12%, transparent);
+  --payout-fee-color: #ef4444;
+  --payout-green: #22a348;
+  --payout-green-hover: #1ea044;
+  --payout-green-active: #198c3b;
+}
+
+[data-appearance="dark"],
+.app[data-appearance="dark"] {
+  --payout-bg: var(--page, #131417);
+  --payout-card-bg: var(--panel, #1a1c22);
+  --payout-card-border: var(--line, #26282e);
+  --payout-input-color: var(--ink, #f4f4f6);
+  --payout-close-bg: color-mix(in srgb, var(--ink, #f4f4f6) 8%, transparent);
+  --payout-close-hover: color-mix(in srgb, var(--ink, #f4f4f6) 14%, transparent);
+  --payout-fee-color: #f87171;
+  --payout-green: #22a348;
+  --payout-green-hover: #26b34f;
+  --payout-green-active: #1c913e;
+}
+
+/* ──────────────────────────────────────────────────────────
+   1. DESKTOP MODAL OVERLAY & CONTAINER
+   ────────────────────────────────────────────────────────── */
+.desktop-withdraw-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.68);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: payoutModalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes payoutModalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.desktop-withdraw-modal-container {
+  position: relative;
+  width: min(580px, calc(100vw - 32px));
+  max-height: min(90vh, 840px);
+  background: var(--page, #ffffff);
+  border: 1px solid var(--line, #e9e9ec);
+  border-radius: 20px;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.32), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: payoutModalPopIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  color: var(--ink);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  box-sizing: border-box;
+}
+
+[data-appearance="dark"] .desktop-withdraw-modal-container,
+.app[data-appearance="dark"] .desktop-withdraw-modal-container,
+body.dark .desktop-withdraw-modal-container,
+.dark .desktop-withdraw-modal-container,
+.desktop-withdraw-modal-container[data-appearance="dark"] {
+  background: var(--page, #131417) !important;
+  color: var(--ink, #f4f4f6) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.desktop-withdraw-modal-container .payout-header {
+  background: transparent !important;
+}
+
+.desktop-withdraw-modal-container .payout-body {
+  background: transparent !important;
+}
+
+@keyframes payoutModalPopIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Hide desktop modal on mobile */
+@media (max-width: 700px) {
+  .desktop-withdraw-modal-overlay {
+    display: none !important;
+  }
+}
+
+/* ──────────────────────────────────────────────────────────
+   2. MOBILE FULL PAGE CONTAINER (NOT A MODAL)
+   ────────────────────────────────────────────────────────── */
+.mobile-withdraw-page {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  min-height: 100%;
+  height: 100%;
+  background: var(--page, #ffffff);
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
+  flex: 1 1 auto;
+}
+
+[data-appearance="dark"] .mobile-withdraw-page,
+.app[data-appearance="dark"] .mobile-withdraw-page {
+  background: var(--page, #131417);
+  color: var(--ink);
+}
+
+.mobile-withdraw-scroll-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  overscroll-behavior-y: contain;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 18px;
+  padding-bottom: calc(84px + env(safe-area-inset-bottom, 16px));
+  box-sizing: border-box;
+}
+
+.mobile-withdraw-inner {
+  width: min(100% - 40px, 520px);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ──────────────────────────────────────────────────────────
+   3. HEADER (TITLE, SUBTITLE & CANCEL BUTTON)
+   Matches New Payment top row structure & padding exactly
+   ────────────────────────────────────────────────────────── */
+.payout-top-row {
+  flex-shrink: 0;
+  position: relative;
+  z-index: 30;
+  width: 100%;
+  background: var(--page);
+  padding-top: clamp(20px, 5vw, 28px);
+  padding-bottom: 14px;
+  display: flex;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.payout-top-row-inner {
+  width: min(100% - 40px, 520px);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.payout-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 28px 10px;
+  width: 100%;
+  background: var(--page);
+  border-bottom: none;
+  box-sizing: border-box;
+}
+
+.desktop-withdraw-modal-container .payout-body {
+  padding: 18px 28px 28px;
+}
+
+.payout-title-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.payout-title {
+  margin: 0;
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif;
+  font-size: 23px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  line-height: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  color: var(--ink);
+}
+
+.desktop-withdraw-modal-container .payout-title {
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.6px;
+  color: var(--ink);
+  margin: 0;
+  line-height: 1.2;
+  height: auto;
+  display: block;
+}
+
+.payout-subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.payout-cancel-btn {
+  pointer-events: auto;
+  background: #000000;
+  color: #ffffff;
+  border: 1px solid #000000;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  height: 30px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+  flex-shrink: 0;
+  line-height: 1;
+  user-select: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  margin: 0;
+}
+
+.payout-cancel-btn:hover {
+  opacity: 0.85;
+}
+
+.payout-cancel-btn:active {
+  transform: scale(0.96);
+}
+
+[data-appearance="dark"] .payout-cancel-btn,
+.app[data-appearance="dark"] .payout-cancel-btn,
+.mobile-dashboard[data-appearance="dark"] .payout-cancel-btn {
+  background: #ffffff;
+  color: #000000;
+  border-color: #ffffff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+/* ──────────────────────────────────────────────────────────
+   4. CONTENT BODY (SECTIONS)
+   ────────────────────────────────────────────────────────── */
+.payout-body {
+  padding: 4px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  box-sizing: border-box;
+}
+
+.mobile-withdraw-page .payout-body {
+  padding: 0 0 20px;
+  width: 100%;
+}
+
+.mobile-withdraw-page .payout-amount-box {
+  margin-top: 0;
+}
+
+/* Section Header Rows */
+.payout-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.payout-section-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--muted, #737c8b);
+  margin: 0;
+}
+
+
+
+.payout-withdraw-all-btn {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--payout-green);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: opacity 0.15s ease;
+}
+
+.payout-withdraw-all-btn:hover {
+  text-decoration: underline;
+  opacity: 0.88;
+}
+
+.payout-amount-label {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #000000;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  letter-spacing: -0.1px;
+}
+
+[data-appearance="dark"] .payout-amount-label,
+.app[data-appearance="dark"] .payout-amount-label,
+.mobile-dashboard[data-appearance="dark"] .payout-amount-label {
+  color: #ffffff;
+}
+
+.payout-label-star {
+  color: #ef4444;
+  margin-left: 2px;
+  font-weight: 600;
+}
+
+/* ──────────────────────────────────────────────────────────
+   AMOUNT INPUT SECTION (Style matching New Payment)
+   ────────────────────────────────────────────────────────── */
+.payout-amount-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.payout-amount-box-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  min-height: 44px;
+  background: var(--page, #ffffff);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0 14px;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+[data-appearance="dark"] .payout-amount-box-card,
+.app[data-appearance="dark"] .payout-amount-box-card,
+.mobile-dashboard[data-appearance="dark"] .payout-amount-box-card {
+  background: #141518;
+  border-color: var(--line);
+}
+
+.payout-amount-box-card:focus-within {
+  border-color: #000000;
+  box-shadow: 0 0 0 1px #000000;
+}
+
+[data-appearance="dark"] .payout-amount-box-card:focus-within,
+.app[data-appearance="dark"] .payout-amount-box-card:focus-within,
+.mobile-dashboard[data-appearance="dark"] .payout-amount-box-card:focus-within {
+  border-color: #ffffff;
+  box-shadow: 0 0 0 1px #ffffff;
+}
+
+.payout-amount-box-card.has-error {
+  border-color: var(--payout-fee-color) !important;
+  box-shadow: 0 0 0 1px var(--payout-fee-color) !important;
+}
+
+.payout-amount-box-card .payout-currency-prefix {
+  font-size: 14px;
+  font-weight: 700;
+  color: #6b7280;
+  user-select: none;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.3px;
+  margin-right: 4px;
+  display: inline-flex;
+  align-items: center;
+}
+
+[data-appearance="dark"] .payout-amount-box-card .payout-currency-prefix,
+.app[data-appearance="dark"] .payout-amount-box-card .payout-currency-prefix,
+.mobile-dashboard[data-appearance="dark"] .payout-amount-box-card .payout-currency-prefix {
+  color: #9ca3af;
+}
+
+.payout-amount-box-card .payout-amount-input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  font-weight: 500;
+  color: #000000;
+  line-height: 1;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+}
+
+[data-appearance="dark"] .payout-amount-box-card .payout-amount-input,
+.app[data-appearance="dark"] .payout-amount-box-card .payout-amount-input,
+.mobile-dashboard[data-appearance="dark"] .payout-amount-box-card .payout-amount-input {
+  color: #ffffff;
+}
+
+.payout-amount-box-card .payout-amount-input::placeholder {
+  color: #6b7280;
+  opacity: 0.9;
+}
+
+.payout-amount-error {
+  font-size: 12px;
+  color: var(--payout-fee-color);
+  margin: 4px 0 0;
+  font-weight: 500;
+}
+
+/* ──────────────────────────────────────────────────────────
+   5. POCKET BALANCE CARD & FLOW CONNECTOR (Matching New Payment)
+   ────────────────────────────────────────────────────────── */
+.payout-flow-group {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  margin-top: 10px;
+  margin-bottom: 12px;
+}
+
+.payout-pocket-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--page, #ffffff);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 14px;
+  min-height: 52px;
+  box-sizing: border-box;
+  position: relative;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+[data-appearance="dark"] .payout-pocket-card,
+.app[data-appearance="dark"] .payout-pocket-card,
+.mobile-dashboard[data-appearance="dark"] .payout-pocket-card {
+  background: #141518;
+  border-color: var(--line);
+}
+
+.payout-pocket-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.payout-pocket-icon-badge {
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  border-radius: 6px;
+  background: #000000;
+  border: 1px solid #000000;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+[data-appearance="dark"] .payout-pocket-icon-badge,
+.app[data-appearance="dark"] .payout-pocket-icon-badge,
+.mobile-dashboard[data-appearance="dark"] .payout-pocket-icon-badge {
+  background: #ffffff;
+  border-color: #ffffff;
+  color: #000000;
+  box-shadow: 0 1px 4px rgba(255, 255, 255, 0.12);
+}
+
+.payout-pocket-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.payout-pocket-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #000000;
+  line-height: 1.25;
+}
+
+[data-appearance="dark"] .payout-pocket-name,
+.app[data-appearance="dark"] .payout-pocket-name,
+.mobile-dashboard[data-appearance="dark"] .payout-pocket-name {
+  color: #ffffff;
+}
+
+.payout-pocket-sub {
+  font-size: 11.5px;
+  font-weight: 400;
+  color: var(--muted);
+  line-height: 1.1;
+}
+
+.payout-pocket-balance {
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--payout-green, #22a348);
+  white-space: nowrap;
+  letter-spacing: -0.2px;
+}
+
+[data-appearance="dark"] .payout-pocket-balance,
+.app[data-appearance="dark"] .payout-pocket-balance,
+.mobile-dashboard[data-appearance="dark"] .payout-pocket-balance {
+  color: #4ade80;
+}
+
+/* ── Transfer Flow Arrow Connector ── */
+.payout-flow-connector {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 48px;
+  width: 100%;
+  position: relative;
+  z-index: 5;
+}
+
+.payout-flow-arrow {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #000000 !important;
+  border: 1px solid #000000 !important;
+  color: #ffffff !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.16);
+}
+
+.payout-flow-arrow svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+  stroke-width: 3.2px !important;
+}
+
+[data-appearance="dark"] .payout-flow-arrow,
+.app[data-appearance="dark"] .payout-flow-arrow,
+.mobile-dashboard[data-appearance="dark"] .payout-flow-arrow {
+  background: #ffffff !important;
+  border-color: #ffffff !important;
+  color: #000000 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+[data-appearance="dark"] .payout-flow-arrow svg,
+.app[data-appearance="dark"] .payout-flow-arrow svg,
+.mobile-dashboard[data-appearance="dark"] .payout-flow-arrow svg {
+  color: #000000 !important;
+  stroke: #000000 !important;
+  stroke-width: 3.2px !important;
+}
+
+/* ──────────────────────────────────────────────────────────
+   6. PAYOUT TO (ACCOUNT CARD & SELECTOR) (Matching New Payment)
+   ────────────────────────────────────────────────────────── */
+.payout-to-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.payout-account-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--page, #ffffff);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 14px;
+  min-height: 52px;
+  position: relative;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+[data-appearance="dark"] .payout-account-card,
+.app[data-appearance="dark"] .payout-account-card,
+.mobile-dashboard[data-appearance="dark"] .payout-account-card {
+  background: #141518;
+  border-color: var(--line);
+}
+
+.payout-account-card-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Bank Logo Badge */
+.payout-bank-badge {
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  overflow: hidden;
+  box-sizing: border-box;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  flex-shrink: 0;
+}
+
+.payout-bank-badge-img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  box-sizing: border-box;
+}
+
+.payout-bank-badge.kuda {
+  background-color: #40196d;
+  border-color: #40196d;
+}
+
+.payout-bank-badge.gtbank {
+  background-color: #dd4f05;
+  border-color: #dd4f05;
+}
+
+.payout-bank-badge span {
+  font-size: 10px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 900;
+  color: #ffffff;
+}
+
+/* Account Info */
+.payout-account-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.payout-account-name {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: 'Inter', sans-serif;
+  line-height: 1.25;
+}
+
+.payout-account-number {
+  margin: 0;
+  font-size: 11.5px;
+  font-weight: 400;
+  color: var(--muted);
+  letter-spacing: 0.1px;
+  line-height: 1.1;
+}
+
+.payout-account-num-val {
+  color: #000000;
+  font-weight: 600;
+}
+
+[data-appearance="dark"] .payout-account-num-val,
+.app[data-appearance="dark"] .payout-account-num-val,
+.mobile-dashboard[data-appearance="dark"] .payout-account-num-val {
+  color: #ffffff;
+}
+
+/* Chevron Button on right */
+.payout-account-chevron-btn {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  border-radius: 6px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  transition: transform 0.15s ease, color 0.15s ease;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.payout-account-chevron-btn:hover {
+  color: var(--ink);
+}
+
+.payout-account-chevron-btn.is-open {
+  transform: rotate(180deg);
+}
+
+/* Payout Account Picker Dropdown */
+.payout-account-dropdown {
+  margin-top: 6px;
+  background: var(--page, #ffffff);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  animation: payoutDropdownOpen 0.15s ease forwards;
+}
+
+[data-appearance="dark"] .payout-account-dropdown,
+.app[data-appearance="dark"] .payout-account-dropdown,
+.mobile-dashboard[data-appearance="dark"] .payout-account-dropdown {
+  background: #141518;
+  border-color: var(--line);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+@keyframes payoutDropdownOpen {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.payout-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--payout-card-border);
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  color: var(--ink);
+  transition: background-color 0.12s ease;
+}
+
+.payout-dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.payout-dropdown-item:hover,
+.payout-dropdown-item.is-selected {
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
+}
+
+.payout-dropdown-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.payout-dropdown-item-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  display: block;
+}
+
+.payout-dropdown-item-sub {
+  font-size: 12px;
+  color: var(--muted);
+  display: block;
+}
+
+/* ──────────────────────────────────────────────────────────
+   7. PAYOUT BREAKDOWN
+   ────────────────────────────────────────────────────────── */
+.payout-breakdown-section {
+  display: flex;
+  flex-direction: column;
+  animation: payoutBreakdownFade 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes payoutBreakdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+
+.payout-breakdown-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 2px;
+}
+
+.payout-breakdown-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.payout-breakdown-label {
+  font-size: 14px;
+  color: var(--ink);
+  font-weight: 500;
+  margin: 0;
+}
+
+.payout-breakdown-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  margin: 0;
+}
+
+/* Fee row styling (salmon / coral red) */
+.payout-breakdown-row.fee .payout-breakdown-label {
+  color: var(--payout-fee-color);
+}
+
+.payout-breakdown-row.fee .payout-breakdown-value {
+  color: var(--payout-fee-color);
+  font-weight: 700;
+}
+
+/* Total row styling (bold + green value) */
+.payout-breakdown-row.total {
+  padding-top: 6px;
+  border-top: none;
+  margin-top: 2px;
+}
+
+.payout-breakdown-row.total .payout-breakdown-label {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.payout-breakdown-row.total .payout-breakdown-value {
+  font-size: 15.5px;
+  font-weight: 700;
+  color: var(--payout-green);
+}
+
+/* ──────────────────────────────────────────────────────────
+   8. ACTION BUTTON ("Continue to Payout")
+   ────────────────────────────────────────────────────────── */
+.payout-actions {
+  margin-top: 10px;
+}
+
+.payout-submit-btn {
+  width: 100%;
+  height: 50px;
+  border-radius: 8px;
+  background: #171717 !important;
+  color: #ffffff !important;
+  border: none;
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transition: transform 0.1s ease, background-color 0.15s ease, opacity 0.15s ease;
+  -webkit-font-smoothing: antialiased;
+}
+
+.payout-submit-btn:hover:not(:disabled) {
+  background: #2c2d33 !important;
+}
+
+.payout-submit-btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+[data-appearance="dark"] .payout-submit-btn,
+.app[data-appearance="dark"] .payout-submit-btn,
+.mobile-dashboard[data-appearance="dark"] .payout-submit-btn {
+  background: #ffffff !important;
+  color: #111215 !important;
+}
+
+[data-appearance="dark"] .payout-submit-btn:hover:not(:disabled),
+.app[data-appearance="dark"] .payout-submit-btn:hover:not(:disabled),
+.mobile-dashboard[data-appearance="dark"] .payout-submit-btn:hover:not(:disabled) {
+  background: #f0f1f4 !important;
+}
+
+.payout-submit-btn:disabled {
+  opacity: 1 !important;
+  filter: none !important;
+  -webkit-filter: none !important;
+  cursor: pointer;
+  transform: none;
+}
+
+/* Mobile Fixed Bottom CTA Dock */
+.mobile-withdraw-bottom-dock {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 10px 0 max(14px, env(safe-area-inset-bottom, 14px));
+  background: color-mix(in srgb, var(--page) 92%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-top: 1px solid color-mix(in srgb, var(--line) 60%, transparent);
+  z-index: 40;
+  display: flex;
+  justify-content: center;
+}
+
+.mobile-withdraw-bottom-dock .payout-submit-btn {
+  width: min(100% - 40px, 520px);
+  max-width: 520px;
+}
+
+/* ──────────────────────────────────────────────────────────
+   9. SUCCESS CONFIRMATION STATE
+   ────────────────────────────────────────────────────────── */
+.payout-success-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 24px 8px 12px;
+  gap: 18px;
+}
+
+.payout-success-badge {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #dcfce7;
+  color: var(--payout-green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(34, 163, 72, 0.2);
+}
+
+[data-appearance="dark"] .payout-success-badge {
+  background: rgba(34, 163, 72, 0.2);
+  color: #4ade80;
+}
+
+.payout-success-title {
+  margin: 0 0 6px;
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.payout-success-desc {
+  margin: 0;
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.payout-success-card {
+  width: 100%;
+  background: var(--payout-card-bg);
+  border: 1px solid var(--payout-card-border);
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: left;
+}
+
+.payout-receipt-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13.5px;
+}
+
+.payout-receipt-label {
+  color: var(--muted);
+}
+
+.payout-receipt-value {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* ──────────────────────────────────────────────────────────
+   10. CONFIRM PAYOUT SLIDE-UP MODAL / BOTTOM SHEET
+   ────────────────────────────────────────────────────────── */
+.payout-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  z-index: 99999;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: payoutSheetFadeIn 0.2s ease-out;
+}
+
+@keyframes payoutSheetFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.payout-confirm-sheet {
+  width: 100%;
+  max-width: 480px;
+  background-color: var(--page, #ffffff);
+  color: var(--ink);
+  border-radius: 20px 20px 0 0;
+  padding: 12px 20px calc(24px + env(safe-area-inset-bottom, 12px));
+  box-sizing: border-box;
+  animation: payoutSheetSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.22);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+[data-appearance="dark"] .payout-confirm-sheet,
+.app[data-appearance="dark"] .payout-confirm-sheet,
+.mobile-dashboard[data-appearance="dark"] .payout-confirm-sheet {
+  background-color: #141518;
+  border: 1px solid var(--line);
+  border-bottom: none;
+  box-shadow: 0 -8px 36px rgba(0, 0, 0, 0.65);
+}
+
+@media (min-width: 641px) {
+  .payout-sheet-backdrop {
+    align-items: center;
+    padding: 20px;
+  }
+  .payout-confirm-sheet {
+    border-radius: 16px;
+    border-bottom: 1px solid var(--line);
+    padding: 20px 24px 24px;
+    animation: payoutDesktopModalIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .payout-sheet-handle-wrap {
+    display: none !important;
+  }
+}
+
+@keyframes payoutDesktopModalIn {
+  from {
+    transform: translateY(30px) scale(0.97);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes payoutSheetSlideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0.8;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.payout-sheet-handle-wrap {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding-bottom: 2px;
+}
+
+.payout-sheet-grab-bar {
+  width: 36px;
+  height: 4px;
+  border-radius: 9999px;
+  background: var(--line, #e2e4e9);
+}
+
+[data-appearance="dark"] .payout-sheet-grab-bar,
+.app[data-appearance="dark"] .payout-sheet-grab-bar,
+.mobile-dashboard[data-appearance="dark"] .payout-sheet-grab-bar {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.payout-sheet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.payout-sheet-title-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.payout-sheet-title {
+  margin: 0;
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif;
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.3px;
+}
+
+.payout-sheet-sub {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.payout-sheet-close-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
+  border: none;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.payout-sheet-close-btn:hover {
+  background: color-mix(in srgb, var(--ink) 12%, transparent);
+}
+
+.payout-sheet-dest-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #000000;
+  border: 1px solid #000000;
+  border-radius: 8px;
+  padding: 10px 14px;
+  box-sizing: border-box;
+  color: #ffffff;
+}
+
+.payout-sheet-dest-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.payout-sheet-dest-card .payout-sheet-dest-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.payout-sheet-dest-card .payout-sheet-dest-sub {
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.payout-sheet-dest-card .payout-account-num-val {
+  color: #ffffff;
+}
+
+[data-appearance="dark"] .payout-sheet-dest-card,
+.app[data-appearance="dark"] .payout-sheet-dest-card,
+.mobile-dashboard[data-appearance="dark"] .payout-sheet-dest-card {
+  background: #ffffff;
+  border-color: #ffffff;
+  color: #000000;
+}
+
+[data-appearance="dark"] .payout-sheet-dest-card .payout-sheet-dest-name,
+.app[data-appearance="dark"] .payout-sheet-dest-card .payout-sheet-dest-name,
+.mobile-dashboard[data-appearance="dark"] .payout-sheet-dest-card .payout-sheet-dest-name {
+  color: #000000;
+}
+
+[data-appearance="dark"] .payout-sheet-dest-card .payout-sheet-dest-sub,
+.app[data-appearance="dark"] .payout-sheet-dest-card .payout-sheet-dest-sub,
+.mobile-dashboard[data-appearance="dark"] .payout-sheet-dest-card .payout-sheet-dest-sub {
+  color: rgba(0, 0, 0, 0.65);
+}
+
+[data-appearance="dark"] .payout-sheet-dest-card .payout-account-num-val,
+.app[data-appearance="dark"] .payout-sheet-dest-card .payout-account-num-val,
+.mobile-dashboard[data-appearance="dark"] .payout-sheet-dest-card .payout-account-num-val {
+  color: #000000;
+}
+
+.payout-terms-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+  padding: 4px 2px;
+}
+
+.payout-terms-checkbox {
+  width: 17px;
+  height: 17px;
+  accent-color: #000000;
+  cursor: pointer;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+[data-appearance="dark"] .payout-terms-checkbox,
+.app[data-appearance="dark"] .payout-terms-checkbox,
+.mobile-dashboard[data-appearance="dark"] .payout-terms-checkbox {
+  accent-color: #ffffff;
+}
+
+.payout-terms-text {
+  font-size: 12.5px;
+  color: var(--ink);
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.payout-sheet-action {
+  margin-top: 4px;
+}

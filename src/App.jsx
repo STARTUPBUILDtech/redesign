@@ -18,6 +18,8 @@ import MobileCompleted from "./components/Mobile/MobileCompleted.jsx";
 import MobileHelp from "./components/Mobile/MobileHelp.jsx";
 import DesktopHelp from "./components/DesktopHelp.jsx";
 import DesktopProfile from "./components/DesktopProfile.jsx";
+import DesktopWithdrawModal from "./components/DesktopWithdrawModal.jsx";
+import MobileWithdraw from "./components/Mobile/MobileWithdraw.jsx";
 import { ALL_PAYMENT_ROOMS } from "./data/paymentRooms.js";
 
 function BrandLogo({ dark, className }) {
@@ -277,6 +279,8 @@ function MobileDashboard({
   };
 
   const isNoNav =
+    active === "Withdraw" ||
+    active === "Payout" ||
     active === "New Payment" ||
     active === "Payment Invitation" ||
     active === "Awaiting Payment" ||
@@ -303,7 +307,12 @@ function MobileDashboard({
         />
       </header>
 
-      {active === "New Payment" ? (
+      {active === "Withdraw" || active === "Payout" ? (
+        <MobileWithdraw
+          onCancel={() => handleNavClick("Home")}
+          onSuccess={() => {}}
+        />
+      ) : active === "New Payment" ? (
         <MobileNewPayment
           onCancel={() => handleNavClick("Home")}
           onSuccess={(newRoom) => {
@@ -414,7 +423,13 @@ function MobileDashboard({
                   >
                     <b className="btn-plus">＋</b> New Payment
                   </button>
-                  <button type="button" className="mobile-secondary">Withdraw</button>
+                  <button
+                    type="button"
+                    className="mobile-secondary"
+                    onClick={() => handleNavClick("Withdraw")}
+                  >
+                    Withdraw
+                  </button>
                 </section>
               </div>
 
@@ -582,6 +597,7 @@ export default function App() {
   }, [dark]);
 
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
 
   const nav = [
     ["Home", HomeIcon],
@@ -602,6 +618,7 @@ export default function App() {
               onClick={() => {
                 setActive(name);
                 setIsPaymentModalOpen(false);
+                setIsWithdrawModalOpen(false);
                 window.scrollTo({ top: 0, behavior: "instant" });
               }}
               className={active === name ? "active" : ""}
@@ -621,6 +638,7 @@ export default function App() {
             onOpenProfile={() => {
               setActive("Profile");
               setIsPaymentModalOpen(false);
+              setIsWithdrawModalOpen(false);
               window.scrollTo({ top: 0, behavior: "instant" });
             }}
             isProfileActive={active === "Profile"}
@@ -690,7 +708,12 @@ export default function App() {
                 >
                   <b className="btn-plus">＋</b> New Payment
                 </button>
-                <button className="secondary-button">Withdraw</button>
+                <button
+                  className="secondary-button"
+                  onClick={() => setIsWithdrawModalOpen(true)}
+                >
+                  Withdraw
+                </button>
               </div>
             </section>
           </div>
@@ -744,6 +767,18 @@ export default function App() {
               handleAddPaymentRoom(created);
             }
           }}
+        />
+      )}
+
+      {/* Desktop Withdraw Modal (pops up in the middle of home screen) */}
+      {(isWithdrawModalOpen || active === "Withdraw" || active === "Payout") && (
+        <DesktopWithdrawModal
+          dark={dark}
+          onClose={() => {
+            setIsWithdrawModalOpen(false);
+            if (active === "Withdraw" || active === "Payout") setActive("Home");
+          }}
+          onSuccess={() => {}}
         />
       )}
 
