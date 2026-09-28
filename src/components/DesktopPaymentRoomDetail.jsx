@@ -7,12 +7,48 @@ import ReceiptModal from "./Shared/ReceiptModal";
 import ReportIssueModal from "./Shared/ReportIssueModal";
 import ProtectionInfoModal from "./Shared/ProtectionInfoModal";
 import ReceiptIcon from "./Shared/ReceiptIcon";
+import {
+  SendMessageSlideUpModal,
+  FaqSlideUpModal,
+} from "./Shared/SupportSlideUpModals";
 import "../styles/mobile-awaiting-payment.css";
 import "../styles/mobile-in-transit.css";
 import "../styles/mobile-confirm-delivery.css";
 import "../styles/mobile-dispute-ongoing.css";
 import "../styles/mobile-completed.css";
 import "../styles/desktop-payment-room-detail.css";
+
+function HelpPhoneIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 0 0-1.01.24l-2.2 2.2a15.053 15.053 0 0 1-6.59-6.59l2.2-2.21a.96.96 0 0 0 .25-1.01A11.36 11.36 0 0 1 8.5 3.9c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.52c0-.55-.45-1-.99-1z" />
+    </svg>
+  );
+}
+
+function HelpReportIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+    </svg>
+  );
+}
+
+function HelpMessageIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-3 12H7v-2h10v2zm0-3H7V9h10v2zm0-3H7V6h10v2z" />
+    </svg>
+  );
+}
+
+function HelpQuestionIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 16h-2v-2h2v2zm1.07-7.75l-.9.92C12.45 11.9 12 12.5 12 14h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z" />
+    </svg>
+  );
+}
 
 const BANKS = [
   "Access Bank",
@@ -51,6 +87,9 @@ export default function DesktopPaymentRoomDetail({
   const [isReportOpen, setIsReportOpen] = useState(false);
   const [isChangeBankOpen, setIsChangeBankOpen] = useState(false);
   const [isChatModalOpen, setIsChatModalOpen] = useState(false);
+  const [isSendMessageOpen, setIsSendMessageOpen] = useState(false);
+  const [isFaqModalOpen, setIsFaqModalOpen] = useState(false);
+  const [isCallModalOpen, setIsCallModalOpen] = useState(false);
 
   // Confirm delivery & Payment confirmed states
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
@@ -422,18 +461,6 @@ export default function DesktopPaymentRoomDetail({
             <div className="desktop-prd-header-right">
               <button
                 type="button"
-                className="desktop-prd-help-circle-btn"
-                onClick={() => setIsHelpOpen(true)}
-                aria-label="Help"
-                title="Help and guide"
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
-                  help_outline
-                </span>
-              </button>
-
-              <button
-                type="button"
                 className="desktop-prd-chat-btn"
                 onClick={() => setIsChatModalOpen(true)}
                 aria-label="Chat"
@@ -447,8 +474,9 @@ export default function DesktopPaymentRoomDetail({
             </div>
           </div>
 
-          {/* Details Body */}
-          <div className="desktop-prd-details-body">
+          {/* Order Details Card Tile */}
+          <div className="desktop-prd-details-card">
+            <div className={`desktop-prd-details-body ${isPaymentReceived ? "is-payment-received" : ""} ${isInTransit ? "is-in-transit" : ""}`}>
             {/* Banner Card */}
             <div
               className={`desktop-prd-banner-card ${
@@ -806,7 +834,7 @@ export default function DesktopPaymentRoomDetail({
               </div>
             ) : (
               /* ── DETAILS FIELDS LIST ── */
-              <div className="desktop-prd-fields-list">
+              <div className={`desktop-prd-fields-list ${isPaymentReceived ? "payment-received" : ""} ${isInTransit ? "in-transit" : ""}`}>
                 {/* Field 1: Order Number */}
                 <div className="desktop-prd-field-row">
                   <div className="desktop-prd-field-left">
@@ -1106,12 +1134,7 @@ export default function DesktopPaymentRoomDetail({
                 className={`desktop-prd-primary-btn ${isPaymentConfirmed ? "confirmed" : ""}`}
                 onClick={handlePaymentClick}
               >
-                <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
-                  check_circle
-                </span>
-                <span>
-                  {isPaymentConfirmed ? "Payment Confirmed" : "I Have Made Payment"}
-                </span>
+                {isPaymentConfirmed ? "Payment Confirmed" : "I Have Made Payment"}
               </button>
             ) : isDelivered ? (
               <div className="desktop-prd-cd-actions">
@@ -1163,6 +1186,7 @@ export default function DesktopPaymentRoomDetail({
             </footer>
           </div>
         </div>
+      </div>
 
         {/* ══════════════════════════════════════════════════════════════
             RIGHT COLUMN: PERSISTENT CHAT BOX (Consistent Across All Rooms)
@@ -1248,6 +1272,68 @@ export default function DesktopPaymentRoomDetail({
               </span>
             </button>
           </form>
+        </div>
+
+        {/* ══════════════════════════════════════════════════════════════
+            3RD COLUMN: NEED HELP TILES
+            ══════════════════════════════════════════════════════════════ */}
+        <div className="desktop-prd-help-col">
+          <h3 className="desktop-prd-help-heading">Need help?</h3>
+          <div className="desktop-prd-help-card">
+            <button
+              type="button"
+              className="desktop-prd-help-item"
+              onClick={() => setIsReportOpen(true)}
+              aria-label="Report an issue: Report a problem or dispute"
+            >
+              <div className="desktop-prd-help-icon-badge">
+                <HelpReportIcon />
+              </div>
+              <div className="desktop-prd-help-text">
+                <span className="desktop-prd-help-item-title">Report an issue</span>
+                <span className="desktop-prd-help-item-sub">Report a problem or dispute</span>
+              </div>
+              <span className="material-symbols-outlined desktop-prd-help-chevron">
+                chevron_right
+              </span>
+            </button>
+
+            <button
+              type="button"
+              className="desktop-prd-help-item"
+              onClick={() => setIsSendMessageOpen(true)}
+              aria-label="Chat with us: Send an in-app message"
+            >
+              <div className="desktop-prd-help-icon-badge">
+                <HelpMessageIcon />
+              </div>
+              <div className="desktop-prd-help-text">
+                <span className="desktop-prd-help-item-title">Chat with us</span>
+                <span className="desktop-prd-help-item-sub">Send an in-app message</span>
+              </div>
+              <span className="material-symbols-outlined desktop-prd-help-chevron">
+                chevron_right
+              </span>
+            </button>
+
+            <button
+              type="button"
+              className="desktop-prd-help-item"
+              onClick={() => setIsFaqModalOpen(true)}
+              aria-label="FAQs: Find answers to some frequently asked questions"
+            >
+              <div className="desktop-prd-help-icon-badge">
+                <HelpQuestionIcon />
+              </div>
+              <div className="desktop-prd-help-text">
+                <span className="desktop-prd-help-item-title">FAQs</span>
+                <span className="desktop-prd-help-item-sub">Find answers to some frequently asked questions</span>
+              </div>
+              <span className="material-symbols-outlined desktop-prd-help-chevron">
+                chevron_right
+              </span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -1441,8 +1527,9 @@ export default function DesktopPaymentRoomDetail({
       />
 
       {/* ── Confirm Delivery Confirmation Modal ── */}
-      {isConfirmModalOpen && (
-        <div className="ap-bottom-sheet-backdrop" onClick={() => setIsConfirmModalOpen(false)}>
+      {isConfirmModalOpen &&
+        createPortal(
+          <div className="ap-bottom-sheet-backdrop" onClick={() => setIsConfirmModalOpen(false)}>
           <div className="ap-bottom-sheet" onClick={(e) => e.stopPropagation()}>
             <div className="ap-sheet-handle" />
             <div className="ap-sheet-header">
@@ -1507,15 +1594,17 @@ export default function DesktopPaymentRoomDetail({
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* ── Submit More Proof Modal ── */}
-      {isProofModalOpen && (
-        <div
-          className="ap-bottom-sheet-backdrop"
-          onClick={() => setIsProofModalOpen(false)}
-        >
+      {isProofModalOpen &&
+        createPortal(
+          <div
+            className="ap-bottom-sheet-backdrop"
+            onClick={() => setIsProofModalOpen(false)}
+          >
           <div
             className="ap-bottom-sheet"
             onClick={(e) => e.stopPropagation()}
@@ -1617,12 +1706,14 @@ export default function DesktopPaymentRoomDetail({
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Change Refund Bank Modal */}
-      {isChangeBankOpen && (
-        <div className="desktop-prd-modal-backdrop" onClick={() => setIsChangeBankOpen(false)}>
+      {isChangeBankOpen &&
+        createPortal(
+          <div className="desktop-prd-modal-backdrop" onClick={() => setIsChangeBankOpen(false)}>
           <div className="desktop-prd-bank-modal" onClick={(e) => e.stopPropagation()}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700 }}>Select Refund Bank</h3>
@@ -1654,8 +1745,98 @@ export default function DesktopPaymentRoomDetail({
               ))}
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
+
+      {/* ── Call Us Support Modal ── */}
+      {isCallModalOpen &&
+        createPortal(
+          <div
+            className="desktop-prd-call-modal-backdrop"
+            onClick={() => setIsCallModalOpen(false)}
+          >
+          <div
+            className="desktop-prd-call-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="desktop-prd-call-header">
+              <div className="desktop-prd-call-badge">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 0 0-1.01.24l-2.2 2.2a15.053 15.053 0 0 1-6.59-6.59l2.2-2.21a.96.96 0 0 0 .25-1.01A11.36 11.36 0 0 1 8.5 3.9c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.52c0-.55-.45-1-.99-1z"/>
+                </svg>
+              </div>
+              <div>
+                <h4 className="desktop-prd-call-title">Call PayKudi Support</h4>
+                <p className="desktop-prd-call-sub">Available 24/7 for urgent transaction assistance</p>
+              </div>
+              <button
+                type="button"
+                className="desktop-prd-call-close-btn"
+                onClick={() => setIsCallModalOpen(false)}
+                aria-label="Close"
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>close</span>
+              </button>
+            </div>
+
+            <div className="desktop-prd-call-body">
+              <div className="desktop-prd-call-phone-box">
+                <span className="desktop-prd-call-phone-num">+234 803 200 1585</span>
+                <button
+                  type="button"
+                  className="desktop-prd-call-copy-btn"
+                  onClick={() => {
+                    navigator.clipboard.writeText("+2348032001585");
+                    showToast("Phone number copied to clipboard!");
+                  }}
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 16 }}>content_copy</span>
+                  <span>Copy</span>
+                </button>
+              </div>
+
+              <div className="desktop-prd-call-actions">
+                <a
+                  href="tel:+2348032001585"
+                  className="desktop-prd-call-dial-btn"
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 18 }}>call</span>
+                  <span>Call Now</span>
+                </a>
+                <button
+                  type="button"
+                  className="desktop-prd-call-wa-btn"
+                  onClick={() => {
+                    window.open(
+                      "https://wa.me/2348032001585?text=Hello%20PayKudi%20Support%2C%20I%20need%20assistance%20with%20order%20" +
+                        (room.orderNumber || "ORD-603607"),
+                      "_blank"
+                    );
+                  }}
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.456 5.71 1.457h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.414z" />
+                  </svg>
+                  <span>WhatsApp Live</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* ── Slide-Up Support Modals for Chat & FAQs ── */}
+      <SendMessageSlideUpModal
+        isOpen={isSendMessageOpen}
+        onClose={() => setIsSendMessageOpen(false)}
+      />
+
+      <FaqSlideUpModal
+        isOpen={isFaqModalOpen}
+        onClose={() => setIsFaqModalOpen(false)}
+      />
 
       {/* Toast Feedback */}
       {toastText && <div className="desktop-prd-toast">{toastText}</div>}

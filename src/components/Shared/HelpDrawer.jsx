@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import "../../styles/order-help-modal.css";
 
 function HelpFaqItem({ question, answer }) {
@@ -92,10 +93,9 @@ export default function HelpDrawer({
 
   const items = faqs && faqs.length > 0 ? faqs : defaultFaqs;
 
-  return (
+  return createPortal(
     <div
       className="ap-order-help-backdrop"
-      style={{ top: `${headerBottom}px` }}
       onClick={onClose}
     >
       <div
@@ -194,6 +194,7 @@ export default function HelpDrawer({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

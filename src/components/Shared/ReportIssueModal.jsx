@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { createPortal } from "react-dom";
 import "../../styles/mobile-confirm-delivery.css";
 
 export default function ReportIssueModal({
@@ -89,7 +90,7 @@ export default function ReportIssueModal({
     onClose();
   };
 
-  return (
+  return createPortal(
     <div className="ap-bottom-sheet-backdrop cd-issue-backdrop" onClick={onClose}>
       <div
         className="ap-bottom-sheet cd-issue-sheet-container"
@@ -291,6 +292,7 @@ export default function ReportIssueModal({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

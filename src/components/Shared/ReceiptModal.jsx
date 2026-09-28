@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import "../../styles/receipt-modal.css";
 
 function PaperAirplaneIcon() {
@@ -115,7 +116,7 @@ export default function ReceiptModal({ isOpen, onClose, room = {} }) {
     }
   };
 
-  return (
+  return createPortal(
     <div className="pk-receipt-backdrop" onClick={onClose} role="dialog" aria-modal="true">
       <div className="pk-receipt-sheet" onClick={(e) => e.stopPropagation()}>
         {/* Floating Top Drag Handle */}
@@ -192,6 +193,7 @@ export default function ReceiptModal({ isOpen, onClose, room = {} }) {
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

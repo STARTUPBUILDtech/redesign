@@ -53,6 +53,7 @@
   align-items: center;
   justify-content: center;
   padding: 24px;
+  overflow-y: auto;
   animation: payoutModalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
@@ -64,6 +65,7 @@
 .desktop-withdraw-modal-container {
   position: relative;
   width: min(580px, calc(100vw - 32px));
+  min-height: 440px;
   max-height: min(90vh, 840px);
   background: var(--page, #ffffff);
   border: 1px solid var(--line, #e9e9ec);
@@ -94,6 +96,9 @@ body.dark .desktop-withdraw-modal-container,
 
 .desktop-withdraw-modal-container .payout-body {
   background: transparent !important;
+  padding: 18px 28px 28px;
+  overflow-y: auto;
+  flex: 1 1 auto;
 }
 
 @keyframes payoutModalPopIn {
@@ -201,9 +206,7 @@ body.dark .desktop-withdraw-modal-container,
   box-sizing: border-box;
 }
 
-.desktop-withdraw-modal-container .payout-body {
-  padding: 18px 28px 28px;
-}
+
 
 .payout-title-wrap {
   display: flex;
@@ -781,8 +784,11 @@ body.dark .desktop-withdraw-modal-container,
   border: 1px solid var(--line);
   border-radius: 8px;
   overflow-y: auto;
-  max-height: 240px;
+  max-height: 176px;
+  overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.25) transparent;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
@@ -791,12 +797,46 @@ body.dark .desktop-withdraw-modal-container,
   animation: payoutDropdownOpen 0.15s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+.payout-account-dropdown::-webkit-scrollbar {
+  width: 6px;
+}
+
+.payout-account-dropdown::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 4px 0;
+}
+
+.payout-account-dropdown::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.22);
+  border-radius: 9999px;
+}
+
+.payout-account-dropdown::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.38);
+}
+
 [data-appearance="dark"] .payout-account-dropdown,
 .app[data-appearance="dark"] .payout-account-dropdown,
-.mobile-dashboard[data-appearance="dark"] .payout-account-dropdown {
+.mobile-dashboard[data-appearance="dark"] .payout-account-dropdown,
+.desktop-withdraw-modal-container[data-appearance="dark"] .payout-account-dropdown {
   background: #141518;
   border-color: rgba(255, 255, 255, 0.14);
   box-shadow: 0 14px 36px rgba(0, 0, 0, 0.65), 0 2px 8px rgba(0, 0, 0, 0.4);
+  scrollbar-color: rgba(255, 255, 255, 0.28) transparent;
+}
+
+[data-appearance="dark"] .payout-account-dropdown::-webkit-scrollbar-thumb,
+.app[data-appearance="dark"] .payout-account-dropdown::-webkit-scrollbar-thumb,
+.mobile-dashboard[data-appearance="dark"] .payout-account-dropdown::-webkit-scrollbar-thumb,
+.desktop-withdraw-modal-container[data-appearance="dark"] .payout-account-dropdown::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+[data-appearance="dark"] .payout-account-dropdown::-webkit-scrollbar-thumb:hover,
+.app[data-appearance="dark"] .payout-account-dropdown::-webkit-scrollbar-thumb:hover,
+.mobile-dashboard[data-appearance="dark"] .payout-account-dropdown::-webkit-scrollbar-thumb:hover,
+.desktop-withdraw-modal-container[data-appearance="dark"] .payout-account-dropdown::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.42);
 }
 
 @keyframes payoutDropdownOpen {
@@ -1155,13 +1195,15 @@ body.dark .payout-dropdown-item.is-selected .payout-account-num-val,
 .payout-sheet-backdrop {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
+  background-color: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   z-index: 99999;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
+  padding: clamp(16px, 3vw, 24px);
+  box-sizing: border-box;
   animation: payoutSheetFadeIn 0.2s ease-out;
 }
 
@@ -1175,23 +1217,34 @@ body.dark .payout-dropdown-item.is-selected .payout-account-num-val,
   max-width: 480px;
   background-color: var(--page, #ffffff);
   color: var(--ink);
-  border-radius: 20px 20px 0 0;
-  padding: 12px 20px calc(24px + env(safe-area-inset-bottom, 12px));
+  border-radius: 20px;
+  padding: 20px 24px 24px;
   box-sizing: border-box;
-  animation: payoutSheetSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.22);
+  animation: pkModalCenterIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
   display: flex;
   flex-direction: column;
   gap: 14px;
+  border: 1px solid var(--line);
 }
 
 [data-appearance="dark"] .payout-confirm-sheet,
 .app[data-appearance="dark"] .payout-confirm-sheet,
 .mobile-dashboard[data-appearance="dark"] .payout-confirm-sheet {
   background-color: #141518;
-  border: 1px solid var(--line);
-  border-bottom: none;
-  box-shadow: 0 -8px 36px rgba(0, 0, 0, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.75);
+}
+
+@keyframes pkModalCenterIn {
+  from {
+    transform: scale(0.95) translateY(12px);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
 }
 
 @media (min-width: 641px) {

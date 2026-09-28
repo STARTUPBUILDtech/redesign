@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import "../../styles/support-slideup-modal.css";
 
 /* ── Calculate exact bottom of the PayKudi header ── */
@@ -153,10 +154,9 @@ export function SendMessageSlideUpModal({ isOpen, onClose }) {
     }, 900);
   };
 
-  return (
+  return createPortal(
     <div
       className="pk-slideup-backdrop"
-      style={{ top: `${headerBottom}px` }}
       onClick={onClose}
     >
       <div className="pk-slideup-container" onClick={(e) => e.stopPropagation()}>
@@ -217,7 +217,8 @@ export function SendMessageSlideUpModal({ isOpen, onClose }) {
           </button>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -283,10 +284,9 @@ export function BotAssistantSlideUpModal({ isOpen, onClose, room = {} }) {
     }, 700);
   };
 
-  return (
+  return createPortal(
     <div
       className="pk-slideup-backdrop"
-      style={{ top: `${headerBottom}px` }}
       onClick={onClose}
     >
       <div className="pk-slideup-container" onClick={(e) => e.stopPropagation()}>
@@ -402,7 +402,8 @@ export function BotAssistantSlideUpModal({ isOpen, onClose, room = {} }) {
           </button>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -412,73 +413,137 @@ export function BotAssistantSlideUpModal({ isOpen, onClose, room = {} }) {
 export function FaqSlideUpModal({ isOpen, onClose }) {
   const headerBottom = useHeaderBottom(isOpen);
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeTab, setActiveTab] = useState("all"); // 'all' | 'inspection' | 'escrow'
+  const [activeTab, setActiveTab] = useState("all");
   const [expandedFaq, setExpandedFaq] = useState(null);
 
-  // Exact 11 FAQs matching Image 3
+  const FAQ_TABS = [
+    { id: "all", label: "All FAQs" },
+    { id: "awaiting_payment", label: "Awaiting Payment" },
+    { id: "payment_received", label: "Payment Received" },
+    { id: "in_transit", label: "In Transit" },
+    { id: "delivered", label: "Delivered" },
+    { id: "dispute", label: "Dispute" },
+    { id: "completed", label: "Completed" },
+  ];
+
   const faqs = [
+    // ── Awaiting Payment ──
     {
-      category: "inspection",
+      category: "awaiting_payment",
+      q: "How long do I have to complete payment?",
+      a: "Buyers have until the countdown timer expires (typically 30-60 minutes) to complete payment to the dedicated PayKudi virtual account shown in the room.",
+    },
+    {
+      category: "awaiting_payment",
+      q: "Which payment methods are accepted?",
+      a: "We accept direct bank transfers from all verified Nigerian commercial banks via mobile banking apps, USSD, or internet banking to the dedicated virtual account.",
+    },
+    {
+      category: "awaiting_payment",
+      q: "Can a seller dispatch while Awaiting Payment?",
+      a: "No! Never dispatch goods until the order status changes to 'Payment Received' and PayKudi confirms funds are secured in escrow.",
+    },
+    {
+      category: "awaiting_payment",
+      q: "What if the payment countdown timer expires?",
+      a: "If the timer expires before deposit is verified, the order closes automatically. Any funds received after expiry are safely refunded to your account.",
+    },
+
+    // ── Payment Received ──
+    {
+      category: "payment_received",
+      q: "What happens once payment is received?",
+      a: "PayKudi instantly verifies the deposit via automated bank webhooks, secures funds in escrow, and alerts the seller that it is safe to package and dispatch.",
+    },
+    {
+      category: "payment_received",
+      q: "How does PayKudi protect my payment?",
+      a: "Funds are locked in a secure licensed escrow holding account. Neither buyer nor seller can access or withdraw funds until inspection terms are fulfilled.",
+    },
+    {
+      category: "payment_received",
+      q: "Where is escrow money held?",
+      a: "Escrow funds are held securely in CBN-regulated settlement trust accounts with our licensed banking partners (GTBank, Providus, and Wema Bank).",
+    },
+
+    // ── In Transit ──
+    {
+      category: "in_transit",
+      q: "How does shipment tracking work?",
+      a: "Once the seller dispatches your parcel, they input the courier service, tracking waybill number, and packaging photos. You can track transit in real-time.",
+    },
+    {
+      category: "in_transit",
+      q: "Can the seller cancel while In Transit?",
+      a: "No. Once an order is marked In Transit, goods are en route and the transaction cannot be cancelled without dispute review.",
+    },
+    {
+      category: "in_transit",
+      q: "What if delivery takes longer than expected?",
+      a: "You can message the seller directly in the payment room chat. If the courier cannot locate your parcel, you can report an issue to keep funds safe.",
+    },
+
+    // ── Delivered ──
+    {
+      category: "delivered",
       q: "How does 2-hour inspection work?",
       a: "Once the item is delivered, a 2-hour countdown timer begins. This window allows you to physically test, inspect, and verify the item before funds are released to the seller.",
     },
     {
-      category: "inspection",
+      category: "delivered",
       q: "What if inspection timer expires?",
       a: "If the 2-hour inspection timer expires without an active dispute or manual confirmation, the escrow engine automatically marks the order fulfilled and dispatches payment to the seller.",
     },
     {
-      category: "inspection",
+      category: "delivered",
       q: "What should I check during inspection?",
       a: "Verify that the item matches the seller's agreed description, correct model/specifications, serial number, and that all accessories and functions work as expected.",
     },
     {
-      category: "escrow",
+      category: "delivered",
+      q: "How do I release funds to the seller?",
+      a: "Simply click 'Confirm Delivery' on the order screen. The escrow engine will immediately release the payment to the seller's bank account.",
+    },
+
+    // ── Dispute ──
+    {
+      category: "dispute",
+      q: "How do I report an issue or dispute?",
+      a: "Tap 'Report an issue' in the payment room or Need Help menu before the inspection timer expires. Select the problem reason, attach photos, and explain the issue.",
+    },
+    {
+      category: "dispute",
+      q: "What happens when a dispute is opened?",
+      a: "The inspection timer immediately pauses and escrow funds are frozen. Neither party can withdraw the funds while our dispute arbitration team reviews the case.",
+    },
+    {
+      category: "dispute",
+      q: "How does dispute resolution work?",
+      a: "Both buyer and seller submit evidence (chat history, waybills, photos). PayKudi moderators review the case within 24 hours to enforce return, replacement, or full refund.",
+    },
+
+    // ── Completed ──
+    {
+      category: "completed",
       q: "When do I get my bank payout?",
       a: "Sellers receive payouts instantly the moment the buyer clicks 'Confirm Delivery' or when the inspection timer safely elapses.",
     },
     {
-      category: "escrow",
+      category: "completed",
       q: "How fast does payout reflect?",
       a: "Bank payouts are dispatched via instant NIP transfer directly to your verified Nigerian commercial bank account within 2-5 minutes.",
     },
     {
-      category: "escrow",
-      q: "How does PayKudi protect payments?",
-      a: "Funds are locked in a secure licensed escrow holding account. Neither buyer nor seller can tamper with the funds until inspection terms are satisfied.",
-    },
-    {
-      category: "escrow",
-      q: "How long to complete payment?",
-      a: "Buyers have until the countdown timer expires (typically 30-60 minutes) to complete payment to the dedicated virtual account shown in the room.",
-    },
-    {
-      category: "escrow",
-      q: "What payment methods are accepted?",
-      a: "We accept direct bank transfers from all verified Nigerian banks via mobile banking apps, USSD, or internet banking to the dedicated virtual account.",
-    },
-    {
-      category: "escrow",
-      q: "Where is escrow money held?",
-      a: "Escrow funds are held securely in CBN-regulated settlement trust accounts with our banking partners (GTBank, Providus, and Wema Bank).",
-    },
-    {
-      category: "inspection",
-      q: "Can I dispatch while Awaiting Payment?",
-      a: "No! Never dispatch goods until the order status changes to 'Payment Received' and PayKudi confirms funds are secured in escrow.",
-    },
-    {
-      category: "escrow",
-      q: "Is payment verified and protected?",
-      a: "Yes, all incoming payments undergo automated webhook verification with real-time fraud monitoring and dispute arbitration guarantees.",
+      category: "completed",
+      q: "How do I download my payment receipt?",
+      a: "Click 'View Receipt' or the receipt button in the payment room to view, share, or download your official PDF transaction receipt with payment reference.",
     },
   ];
 
   if (!isOpen) return null;
 
   const filteredFaqs = faqs.filter((item) => {
-    if (activeTab === "inspection" && item.category !== "inspection") return false;
-    if (activeTab === "escrow" && item.category !== "escrow") return false;
+    if (activeTab !== "all" && item.category !== activeTab) return false;
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       return item.q.toLowerCase().includes(q) || item.a.toLowerCase().includes(q);
@@ -486,10 +551,9 @@ export function FaqSlideUpModal({ isOpen, onClose }) {
     return true;
   });
 
-  return (
+  return createPortal(
     <div
       className="pk-slideup-backdrop"
-      style={{ top: `${headerBottom}px` }}
       onClick={onClose}
     >
       <div className="pk-slideup-container" onClick={(e) => e.stopPropagation()}>
@@ -509,47 +573,41 @@ export function FaqSlideUpModal({ isOpen, onClose }) {
           </button>
         </div>
 
-        {/* Scrollable Body */}
-        <div className="pk-slideup-body">
-          {/* Search Bar matching Image 3 */}
+        {/* Pinned Top: Unscrollable Search Bar & Filter Pills */}
+        <div className="pk-faq-pinned-top">
           <div className="pk-faq-search-box-wrap">
             <div className="pk-faq-search-inner">
               <span className="material-symbols-outlined pk-faq-search-inner-icon">search</span>
               <input
                 type="text"
                 className="pk-faq-input-field"
-                placeholder="Search FAQs (e.g. payout, refund, tracking...)"
+                placeholder="Search FAQs..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
           </div>
 
-          {/* Filter Pills matching Image 3 */}
+          {/* Filter Pills for each active payment state */}
           <div className="pk-faq-pills-row">
-            <button
-              type="button"
-              className={`pk-faq-filter-pill ${activeTab === "all" ? "active" : "inactive"}`}
-              onClick={() => setActiveTab("all")}
-            >
-              All FAQs
-            </button>
-            <button
-              type="button"
-              className={`pk-faq-filter-pill ${activeTab === "inspection" ? "active" : "inactive"}`}
-              onClick={() => setActiveTab("inspection")}
-            >
-              Delivered (Inspection)
-            </button>
-            <button
-              type="button"
-              className={`pk-faq-filter-pill ${activeTab === "escrow" ? "active" : "inactive"}`}
-              onClick={() => setActiveTab("escrow")}
-            >
-              Payments & Escrow
-            </button>
+            {FAQ_TABS.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                className={`pk-faq-filter-pill ${activeTab === tab.id ? "active" : "inactive"}`}
+                onClick={() => {
+                  setActiveTab(tab.id);
+                  setExpandedFaq(null);
+                }}
+              >
+                {tab.label}
+              </button>
+            ))}
           </div>
+        </div>
 
+        {/* Scrollable Body (Only FAQ Cards Scroll) */}
+        <div className="pk-slideup-body pk-faq-scroll-body">
           {/* Accordion FAQ Cards matching Image 3 */}
           <div className="pk-faq-cards-list">
             {filteredFaqs.length > 0 ? (
@@ -588,6 +646,7 @@ export function FaqSlideUpModal({ isOpen, onClose }) {
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

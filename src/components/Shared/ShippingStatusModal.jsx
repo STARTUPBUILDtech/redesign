@@ -1,3 +1,4 @@
+import { createPortal } from "react-dom";
 import "../../styles/mobile-awaiting-payment.css";
 import "../../styles/mobile-in-transit.css";
 
@@ -61,7 +62,7 @@ export default function ShippingStatusModal({
     },
   ];
 
-  return (
+  return createPortal(
     <div
       className={`ap-bottom-sheet-backdrop ${isLifting ? "lifting" : ""}`}
       onClick={onClose}
@@ -173,6 +174,7 @@ export default function ShippingStatusModal({
 
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

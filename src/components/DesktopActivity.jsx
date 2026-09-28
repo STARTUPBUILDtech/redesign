@@ -1,6 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from "react";
-import { Download, Search, SlidersHorizontal } from "lucide-react";
-import { Button } from "./ui/button";
+import { Search, SlidersHorizontal } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Select, SelectContent, SelectItem } from "./ui/select";
 import DesktopActivityDetail from "./DesktopActivityDetail";
@@ -485,28 +484,6 @@ export default function DesktopActivity() {
     };
   }, [isFilterOpen]);
 
-  const handleExport = () => {
-    const headers = ["Activity", "Type", "Amount", "Date and time"];
-    const rows = filteredTransactions.map((tx) => [
-      `"${tx.title.replace(/"/g, '""')}"`,
-      `"${tx.title}"`,
-      `"${tx.amount}"`,
-      `"${tx.time}"`,
-    ]);
-
-    const csvContent =
-      "data:text/csv;charset=utf-8," +
-      [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
-
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `paykudi-activity-${new Date().toISOString().slice(0, 10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
   // If a row is selected, show the detail view
   if (selectedItem) {
     return (
@@ -666,11 +643,6 @@ export default function DesktopActivity() {
                   </div>
                 )}
               </div>
-
-              <Button variant="outline" onClick={handleExport} className="ui-btn-outline">
-                <Download className="desktop-export-icon" size={16} />
-                Export activity
-              </Button>
             </div>
           </div>
 

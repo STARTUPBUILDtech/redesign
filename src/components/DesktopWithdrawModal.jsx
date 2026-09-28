@@ -293,6 +293,11 @@ export default function DesktopWithdrawModal({
                         <button
                           key={acc.id}
                           type="button"
+                          ref={(el) => {
+                            if (el && acc.id === selectedAccount.id) {
+                              el.scrollIntoView({ block: "nearest" });
+                            }
+                          }}
                           className={`payout-dropdown-item ${acc.id === selectedAccount.id ? "is-selected" : ""}`}
                           onClick={() => {
                             setSelectedAccount(acc);

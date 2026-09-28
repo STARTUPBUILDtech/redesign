@@ -10,15 +10,17 @@
    ========================================================================== */
 
 .pk-receipt-backdrop {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  z-index: 9999;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
+  position: fixed !important;
+  inset: 0 !important;
+  background-color: rgba(0, 0, 0, 0.65) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  z-index: 100000 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: clamp(16px, 3vw, 24px) !important;
+  box-sizing: border-box !important;
   animation: pkReceiptFadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
@@ -32,49 +34,54 @@
 }
 
 .pk-receipt-sheet {
-  width: 100%;
-  max-width: 440px;
+  width: 100% !important;
+  max-width: 450px !important;
   background-color: var(--bg-surface, #faf8f5);
-  border-top-left-radius: 28px;
-  border-top-right-radius: 28px;
+  border-radius: 20px !important;
   box-sizing: border-box;
-  padding: 12px 24px 28px 24px;
+  padding: 20px 24px 28px 24px;
   position: relative;
-  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45) !important;
   display: flex;
   flex-direction: column;
-  animation: pkReceiptSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  max-height: 90vh;
+  animation: pkModalCenterIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  max-height: min(640px, 86vh) !important;
   overflow-y: auto;
+  border: 1px solid var(--line, rgba(0, 0, 0, 0.08));
+}
+
+@keyframes pkModalCenterIn {
+  from {
+    transform: scale(0.95) translateY(12px);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
 }
 
 @keyframes pkReceiptSlideUp {
   from {
-    transform: translateY(100%);
+    transform: scale(0.95) translateY(12px);
+    opacity: 0;
   }
   to {
-    transform: translateY(0);
+    transform: scale(1) translateY(0);
+    opacity: 1;
   }
 }
 
 [data-appearance="dark"] .pk-receipt-sheet {
   background-color: #18181b;
   color: #f4f4f6;
-  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.75);
 }
 
 /* Drag Handle */
 .pk-receipt-handle {
-  width: 42px;
-  height: 4.5px;
-  border-radius: 9999px;
-  background-color: rgba(0, 0, 0, 0.16);
-  margin: 2px auto 14px auto;
-  flex-shrink: 0;
-}
-
-[data-appearance="dark"] .pk-receipt-handle {
-  background-color: rgba(255, 255, 255, 0.2);
+  display: none !important;
 }
 
 /* Circular Close Button (Top-Right) */

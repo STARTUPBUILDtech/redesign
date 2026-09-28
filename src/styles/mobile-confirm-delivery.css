@@ -247,49 +247,54 @@
 }
 
 .cd-issue-backdrop {
-  position: absolute !important;
+  position: fixed !important;
+  inset: 0 !important;
   top: 0 !important;
   left: 0 !important;
   right: 0 !important;
   bottom: 0 !important;
   width: 100% !important;
   height: 100% !important;
-  z-index: 95 !important;
-  background-color: transparent !important;
-  backdrop-filter: none !important;
+  z-index: 100000 !important;
+  background-color: rgba(0, 0, 0, 0.65) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
   display: flex !important;
   justify-content: center !important;
-  align-items: stretch !important;
+  align-items: center !important;
+  padding: clamp(16px, 3vw, 24px) !important;
+  box-sizing: border-box !important;
   overflow: hidden !important;
+  animation: apFadeIn 0.22s ease-out;
 }
 
 .cd-issue-sheet-container {
   width: 100% !important;
-  max-width: 440px !important;
-  height: 100% !important;
-  max-height: 100% !important;
-  border-radius: 0 !important;
-  border-top: none !important;
-  border-bottom: none !important;
-  box-shadow: none !important;
+  max-width: 620px !important;
+  height: auto !important;
+  max-height: min(680px, 86vh) !important;
+  min-height: 520px !important;
+  border-radius: 20px !important;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45) !important;
   display: flex !important;
   flex-direction: column !important;
   overflow: hidden !important;
-  padding: 16px 20px 22px 20px !important;
+  padding: 18px 22px 22px 22px !important;
   box-sizing: border-box !important;
   background-color: var(--page, #ffffff) !important;
+  border: 1px solid var(--line, rgba(0, 0, 0, 0.08)) !important;
+  animation: pkModalCenterIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 .cd-issue-sheet-container .ap-sheet-handle {
-  display: none;
+  display: none !important;
 }
 
 [data-appearance="dark"] .cd-issue-sheet-container {
-  border-radius: 0 !important;
-  border-top: none !important;
-  border-left: none;
-  border-right: none;
+  border-radius: 20px !important;
   background-color: #121316 !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.75) !important;
 }
 
 .cd-issue-header {
@@ -432,10 +437,10 @@
 }
 
 .cd-issue-option.selected {
-  border-color: #dc2626;
-  background: rgba(220, 38, 38, 0.06);
+  border-color: var(--line, #e2e8f0);
+  background: rgba(220, 38, 38, 0.08);
   font-weight: 600;
-  box-shadow: 0 0 0 1px #dc2626;
+  box-shadow: none;
 }
 
 [data-appearance="dark"] .cd-issue-option {
@@ -450,9 +455,9 @@
 }
 
 [data-appearance="dark"] .cd-issue-option.selected {
-  background: rgba(220, 38, 38, 0.16);
-  border-color: #ef4444;
-  box-shadow: 0 0 0 1px #ef4444;
+  background: rgba(220, 38, 38, 0.18);
+  border-color: rgba(255, 255, 255, 0.09);
+  box-shadow: none;
 }
 
 .cd-issue-icon {
@@ -639,19 +644,28 @@
   color: var(--muted, #64748b);
 }
 
-/* Image Previews Grid */
+/* Image Previews Grid – horizontal row matching dropzone height */
 .cd-image-previews-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  display: flex;
+  flex-direction: row;
   gap: 8px;
-  margin-top: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  height: 64px;
+  align-items: stretch;
+}
+
+.cd-image-previews-grid::-webkit-scrollbar {
+  display: none;
 }
 
 .cd-preview-card {
   position: relative;
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  border-radius: 12px;
+  flex: 0 0 auto;
+  width: 64px;
+  height: 64px;
+  border-radius: 10px;
   overflow: hidden;
   border: 1.5px solid var(--line, #e2e8f0);
   background-color: #f1f5f9;
@@ -711,9 +725,10 @@
 }
 
 .cd-preview-add-more-btn {
-  width: 100%;
-  aspect-ratio: 1 / 1;
-  border-radius: 12px;
+  flex: 0 0 auto;
+  width: 64px;
+  height: 64px;
+  border-radius: 10px;
   border: 1.5px dashed #dc2626;
   background-color: rgba(220, 38, 38, 0.03);
   color: #dc2626;
@@ -721,9 +736,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 2px;
   cursor: pointer;
-  font-size: 11.5px;
+  font-size: 10px;
   font-weight: 600;
   transition: all 0.15s ease;
   font-family: inherit;
