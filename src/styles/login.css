@@ -1,0 +1,444 @@
+/* ══════════════════════════════════════════════════════════════
+   LOGIN PAGE — PayKudi
+   Full-screen video background + centered glassmorphism card
+   ══════════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Mulish:wght@400;500;600;700;800;900&display=swap');
+
+/* ── Page wrapper ── */
+.login-page {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Mulish', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  overflow: hidden;
+}
+
+/* ── Full-screen background video ── */
+.login-bg-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  z-index: 0;
+}
+
+/* ── Dark overlay on top of video ── */
+.login-bg-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.52);
+  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(1px);
+  z-index: 1;
+}
+
+/* ── Logo — fixed top-left of page ── */
+.login-page-logo {
+  position: absolute;
+  top: 20px;
+  left: 28px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+}
+
+.login-page-logo-img {
+  height: 22px;
+  max-height: 22px;
+  width: auto;
+  object-fit: contain;
+  display: block;
+  filter: none;
+}
+
+/* ── Theme toggle — top-right ── */
+.login-theme-btn {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  z-index: 10;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.login-theme-btn .material-symbols-outlined {
+  font-size: 19px;
+}
+
+.login-theme-btn:hover {
+  background: rgba(255, 255, 255, 0.22);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CENTER MODAL CARD (Transparent Glassmorphism Theme)
+   ══════════════════════════════════════════════════════════════ */
+.login-card {
+  position: relative;
+  z-index: 5;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 16px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(24px) saturate(170%);
+  -webkit-backdrop-filter: blur(24px) saturate(170%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 16px;
+  padding: 44px 44px 38px;
+  box-shadow:
+    0 24px 64px rgba(0, 0, 0, 0.6),
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  box-sizing: border-box;
+  animation: loginCardIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes loginCardIn {
+  from { opacity: 0; transform: translateY(16px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ── Card title ── */
+.login-card-title {
+  font-size: 32px;
+  font-weight: 800;
+  color: #ffffff;
+  text-align: left;
+  margin: 0 0 18px;
+  letter-spacing: -0.6px;
+  line-height: 1.2;
+}
+
+/* ── Login Method Selector (Email / WhatsApp) ── */
+.login-method-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 24px;
+  backdrop-filter: blur(8px);
+}
+
+.login-method-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 42px;
+  border-radius: 9px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.login-method-btn:hover:not(.active) {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.login-method-btn.active {
+  background: #000000;
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+.login-method-btn.active svg {
+  color: #25d366;
+}
+
+.login-method-btn .material-symbols-outlined {
+  font-size: 18px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   FORM ELEMENTS
+   ══════════════════════════════════════════════════════════════ */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.login-label {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.92);
+  letter-spacing: 0.1px;
+  text-align: left;
+}
+
+.login-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.login-input {
+  width: 100%;
+  height: 52px;
+  border-radius: 10px;
+  border: 1.5px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #ffffff;
+  font-size: 15px;
+  font-family: inherit;
+  padding: 0 16px;
+  outline: none;
+  transition: all 0.18s ease;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+}
+
+.login-input.password-input {
+  padding-right: 48px;
+}
+
+.login-phone-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.login-phone-prefix {
+  position: absolute;
+  left: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14.5px;
+  font-weight: 600;
+  pointer-events: none;
+  z-index: 2;
+  user-select: none;
+}
+
+.login-phone-flag {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.login-input.phone-input {
+  padding-left: 86px;
+}
+
+.login-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.login-input:focus {
+  border-color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08);
+}
+
+/* Error state */
+.login-field.has-error .login-input {
+  border-color: #f87171;
+  background: rgba(239, 68, 68, 0.12);
+}
+
+.login-field.has-error .login-input:focus {
+  box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.2);
+}
+
+.login-error-msg {
+  font-size: 12px;
+  color: #fca5a5;
+  text-align: left;
+}
+
+/* Show/hide password button */
+.login-show-pass-btn {
+  position: absolute;
+  right: 14px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 6px;
+  transition: color 0.15s ease;
+}
+
+.login-show-pass-btn:hover {
+  color: #ffffff;
+}
+
+.login-show-pass-btn .material-symbols-outlined {
+  font-size: 20px;
+}
+
+/* ── Forgot row ── */
+.login-forgot-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  margin-top: 2px;
+  margin-bottom: 6px;
+  font-size: 14.5px;
+}
+
+.login-forgot-text {
+  color: rgba(255, 255, 255, 0.88);
+  font-weight: 500;
+}
+
+.login-reset-link {
+  color: #ffffff;
+  font-weight: 700;
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+}
+
+.login-reset-link:hover {
+  opacity: 0.85;
+  text-decoration: underline;
+}
+
+/* ── Submit button ── */
+.login-submit-btn {
+  width: 100%;
+  height: 52px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: #000000;
+  color: #ffffff;
+  font-size: 15.5px;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
+  transition: all 0.18s ease;
+  margin-top: 6px;
+}
+
+.login-submit-btn.active {
+  background: #000000;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.login-submit-btn:hover:not(:disabled) {
+  background: #151515;
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.55);
+}
+
+.login-submit-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.login-submit-btn:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+
+/* Spinner */
+.login-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2.5px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: loginSpin 0.7s linear infinite;
+}
+
+@keyframes loginSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Create an Account row ── */
+.login-register-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+.login-create-account-btn {
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+  cursor: pointer;
+}
+
+.login-create-account-btn:hover {
+  opacity: 0.85;
+  text-decoration: underline;
+}
+
+/* ── Responsive adjustments ── */
+@media (max-width: 520px) {
+  .login-card {
+    padding: 34px 24px 28px;
+    border-radius: 16px;
+    margin: 0 12px;
+  }
+
+  .login-card-title {
+    font-size: 26px;
+  }
+
+  .login-card-subtitle {
+    font-size: 13.5px;
+    margin-bottom: 22px;
+  }
+
+  .login-page-logo {
+    top: 16px;
+    left: 18px;
+  }
+
+  .login-theme-btn {
+    top: 16px;
+    right: 18px;
+  }
+}

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import paykudiLogo from "./assets/paykudi-logo.png";
 import logoDarkMode from "./assets/logodarkmode.png";
+import LoginPage from "./components/Auth/LoginPage.jsx";
 import DesktopActivity from "./components/DesktopActivity.jsx";
 import DesktopNewPayment from "./components/DesktopNewPayment.jsx";
 import DesktopPaymentRoom from "./components/DesktopPaymentRoom.jsx";
@@ -533,6 +534,7 @@ function MobileDashboard({
 
 export default function App() {
   const [dark, setDark] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [visible, setVisible] = useState(true);
   const [active, setActive] = useState("Activity");
   const [role, setRole] = useState("Buyer");
@@ -608,6 +610,14 @@ export default function App() {
   ];
 
   return (
+    <>
+      {!isLoggedIn ? (
+        <LoginPage
+          dark={dark}
+          onThemeToggle={() => setDark(!dark)}
+          onLogin={() => setIsLoggedIn(true)}
+        />
+      ) : (
     <div className="app" data-appearance={dark ? "dark" : "light"}>
       <header className="topbar">
         <BrandLogo dark={dark} className="brand" />
@@ -799,6 +809,8 @@ export default function App() {
         ongoingPaymentRoomsCount={ongoingPaymentRoomsCount}
       />
     </div>
+      )}
+    </>
   );
 }
 
