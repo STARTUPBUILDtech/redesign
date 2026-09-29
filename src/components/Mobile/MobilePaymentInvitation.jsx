@@ -9,6 +9,7 @@ export default function MobilePaymentInvitation({
   onCancel,
   onShare,
   onProceed,
+  isModal = false,
 }) {
   const [secondsLeft, setSecondsLeft] = useState(120); // 2:00
   const [counterpartyJoined, setCounterpartyJoined] = useState(false);
@@ -95,6 +96,7 @@ export default function MobilePaymentInvitation({
   const [specKey, setSpecKey] = useState("");
   const [specVal, setSpecVal] = useState("");
   const [showSpecError, setShowSpecError] = useState(false);
+  const [isProceedLoading, setIsProceedLoading] = useState(false);
 
   // Check if at least one valid specification exists AND all current specs have values
   const hasValidSpecs =
@@ -131,8 +133,13 @@ export default function MobilePaymentInvitation({
 
   const handleProceedClick = () => {
     setShowSpecError(false);
-    if (onProceed) onProceed();
-    else if (onCancel) onCancel();
+    if (isProceedLoading) return;
+    setIsProceedLoading(true);
+    setTimeout(() => {
+      setIsProceedLoading(false);
+      if (onProceed) onProceed();
+      else if (onCancel) onCancel();
+    }, 1200);
   };
 
   useEffect(() => {
@@ -147,8 +154,8 @@ export default function MobilePaymentInvitation({
   const secs = String(secondsLeft % 60).padStart(2, "0");
   const timeFormatted = `${mins}:${secs}`;
 
-  return (
-    <main className="flex pt-8 pr-5 pb-8 pl-5 flex-col flex-1 gap-6 w-full m-invite-wrapper">
+  const inviteContent = (
+    <>
       {/* Toast Notification: Counter party has joined room */}
       {showToast && (
         <div className="m-invite-toast" role="status" aria-live="polite">
@@ -169,25 +176,24 @@ export default function MobilePaymentInvitation({
         </div>
       )}
 
-      <div className="m-invite-title-wrap">
-        <h1 className="font-semibold text-2xl tracking-tight">
-          Payment invitation
-        </h1>
-        <p className="text-muted-foreground text-sm">
-          {counterpartyJoined ? (
-            <span className="text-emerald-500 font-medium inline-flex items-center gap-1.5">
-              <span className="inline-block w-2 h-2 rounded-full bg-emerald-500" />
-              Counter party has joined room.
-            </span>
-          ) : (
-            <>
-              Counterparty has{" "}
-              <span className="m-invite-red-timer">{timeFormatted}</span>{" "}
-              to accept invite.
-            </>
-          )}
-        </p>
-      </div>
+      {!isModal && (
+        <div className="m-invite-title-wrap">
+          <h1 className="font-semibold text-2xl tracking-tight">
+            Payment invitation
+          </h1>
+          <p className="text-muted-foreground text-sm">
+            {counterpartyJoined ? (
+              "Counter party has joined room."
+            ) : (
+              <>
+                Counterparty has{" "}
+                <span className="m-invite-red-timer">{timeFormatted}</span>{" "}
+                to accept invite.
+              </>
+            )}
+          </p>
+        </div>
+      )}
 
       {/* Item Reference Card */}
       <div className="m-invite-card-container">
@@ -285,6 +291,7 @@ export default function MobilePaymentInvitation({
                 <div
                   className="header-avatar-circle m-invite-profile-avatar m-invite-avatar-second"
                   aria-label="Counterparty avatar"
+                  style={{ backgroundColor: "#e5ebf3" }}
                 >
                   <img
                     src={avatarIllustration}
@@ -436,7 +443,7 @@ export default function MobilePaymentInvitation({
       </section>
 
       {/* Floating Action Button */}
-      <div className="m-invite-floating-actions">
+      <div className={`m-invite-floating-actions ${isModal ? "desktop-invite-modal-actions" : ""}`}>
         {showSpecError && !hasValidSpecs && (
           <div className="m-invite-spec-error-tip" role="alert">
             <span className="material-symbols-outlined spec-error-tip-icon">error</span>
@@ -450,11 +457,64 @@ export default function MobilePaymentInvitation({
         <button
           type="button"
           onClick={handleProceedClick}
-          className="m-invite-btn-proceed"
+          className={`m-invite-btn-proceed ${isProceedLoading ? "is-loading" : ""}`}
+          disabled={isProceedLoading}
+          aria-busy={isProceedLoading}
         >
-          Proceed to payment
+          {isProceedLoading ? (
+            <span className="btn-spinner" aria-hidden="true" />
+          ) : (
+            "Proceed to payment"
+          )}
         </button>
       </div>
-    </main>
+    </>
+  );
+
+  if (!isModal) {
+    return (
+      <main className="flex pt-8 pr-5 pb-8 pl-5 flex-col flex-1 gap-6 w-full m-invite-wrapper">
+        {inviteContent}
+      </main>
+    );
+  }
+
+  return (
+    <div className="desktop-np-modal-overlay">
+      <div
+        className="desktop-np-modal-container desktop-invite-modal-container"
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="desktop-invite-modal-title"
+      >
+        {/* ── Modal Header (Compulsory: No Cancel button, no outside dismissal) ── */}
+        <div className="desktop-np-modal-header">
+          <div className="desktop-np-header-left">
+            <div>
+              <h2 id="desktop-invite-modal-title" className="desktop-np-title">
+                Payment invitation
+              </h2>
+              <p className="desktop-np-subtitle">
+                {counterpartyJoined ? (
+                  "Counter party has joined room."
+                ) : (
+                  <>
+                    Counterparty has{" "}
+                    <span className="m-invite-red-timer">{timeFormatted}</span>{" "}
+                    to accept invite.
+                  </>
+                )}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Modal Body (scrollable) ── */}
+        <div className="desktop-np-modal-body desktop-invite-modal-body">
+          {inviteContent}
+        </div>
+      </div>
+    </div>
   );
 }

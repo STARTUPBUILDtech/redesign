@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import "../../styles/mobile-confirm-delivery.css";
 
@@ -13,6 +13,19 @@ export default function ReportIssueModal({
   const [images, setImages] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const fileInputRef = useRef(null);
+
+  const [isDesktop, setIsDesktop] = useState(() => {
+    return typeof window !== "undefined" && window.innerWidth > 700 && !document.querySelector(".mobile-dashboard");
+  });
+
+  useEffect(() => {
+    const checkDesktop = () => {
+      setIsDesktop(window.innerWidth > 700 && !document.querySelector(".mobile-dashboard"));
+    };
+    checkDesktop();
+    window.addEventListener("resize", checkDesktop);
+    return () => window.removeEventListener("resize", checkDesktop);
+  }, []);
 
   if (!isOpen) return null;
 
@@ -90,8 +103,8 @@ export default function ReportIssueModal({
     onClose();
   };
 
-  return createPortal(
-    <div className="ap-bottom-sheet-backdrop cd-issue-backdrop" onClick={onClose}>
+  const modalContent = (
+    <div className={`cd-issue-backdrop ${isDesktop ? "ap-bottom-sheet-backdrop" : ""}`} onClick={onClose}>
       <div
         className="ap-bottom-sheet cd-issue-sheet-container"
         onClick={(e) => e.stopPropagation()}
@@ -292,7 +305,8 @@ export default function ReportIssueModal({
           </button>
         </div>
       </div>
-    </div>,
-    document.body
+    </div>
   );
+
+  return isDesktop ? createPortal(modalContent, document.body) : modalContent;
 }

@@ -7,8 +7,9 @@ import {
 } from "lucide-react";
 import "../styles/desktop-new-payment.css";
 
-export default function DesktopNewPayment({ onCancel, onSuccess }) {
+export default function DesktopNewPayment({ onCancel, onSuccess, onOpenInvitation }) {
   const [step, setStep] = useState("form"); // "form" | "confirm" | "success"
+  const [createdRoomData, setCreatedRoomData] = useState(null);
 
   // 1. Counterparty (WhatsApp Number or Username) + 11-digit verification
   const [counterparty, setCounterparty] = useState("");
@@ -130,14 +131,13 @@ export default function DesktopNewPayment({ onCancel, onSuccess }) {
       return;
     }
 
-    // Skip confirm — go straight to creating the room
+    // Skip confirm — go straight to creating the room and navigating to invitation
     setErrors({});
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
       const generatedRoomId = "ORD-" + Math.floor(100000 + Math.random() * 900000);
       setRoomId(generatedRoomId);
-      setStep("success");
       const cleanAmt = amount.trim();
       const formattedAmount = cleanAmt.startsWith("₦") ? cleanAmt : `₦${cleanAmt}`;
       const newRoom = {
@@ -156,8 +156,13 @@ export default function DesktopNewPayment({ onCancel, onSuccess }) {
         status: "awaiting_payment",
         statusText: "Awaiting Payment",
       };
-      if (onSuccess) onSuccess(newRoom);
-    }, 900);
+      setCreatedRoomData(newRoom);
+      if (onSuccess) {
+        onSuccess(newRoom);
+      } else {
+        setStep("success");
+      }
+    }, 400);
   };
 
   const handleReset = () => {
@@ -431,7 +436,13 @@ export default function DesktopNewPayment({ onCancel, onSuccess }) {
           <div style={{ display: "flex", gap: 12, width: "100%", marginTop: 8 }}>
             <button
               type="button"
-              onClick={onCancel}
+              onClick={() => {
+                if (onOpenInvitation && createdRoomData) {
+                  onOpenInvitation(createdRoomData);
+                } else if (onCancel) {
+                  onCancel();
+                }
+              }}
               className="desktop-np-primary-btn"
               style={{ flex: 1.2 }}
             >

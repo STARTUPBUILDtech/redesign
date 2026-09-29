@@ -1,0 +1,774 @@
+/* ==========================================================================
+   AGREE TO TRANSACTION TERMS MODAL
+   Matches exact body color in light mode (#ffffff) and dark mode (#121316 / #131417)
+   ========================================================================== */
+
+.atm-backdrop {
+  position: fixed;
+  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.62);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  z-index: 99999;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  box-sizing: border-box;
+  animation: atmFadeIn 0.22s ease-out forwards;
+}
+
+@keyframes atmFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes atmSlideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0.9;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* ── Container matches body color in light and dark mode ── */
+.atm-sheet-container {
+  width: 100%;
+  max-width: 440px;
+  max-height: 90vh;
+  height: auto;
+  background-color: var(--page, #ffffff);
+  color: var(--ink, #161618);
+  border-top-left-radius: 28px;
+  border-top-right-radius: 28px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.25);
+  animation: atmSlideUp 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  overflow: hidden;
+  box-sizing: border-box;
+  position: relative;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+[data-appearance="dark"] .atm-sheet-container,
+.atm-sheet-container[data-appearance="dark"],
+.atm-backdrop[data-appearance="dark"] .atm-sheet-container,
+body[data-appearance="dark"] .atm-sheet-container,
+html[data-appearance="dark"] .atm-sheet-container {
+  background-color: var(--page, #121316) !important;
+  color: var(--ink, #f4f4f6) !important;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.7);
+}
+
+/* Drag handle */
+.atm-handle-bar {
+  width: 44px;
+  height: 5px;
+  border-radius: 9999px;
+  background-color: #e2e8f0;
+  margin: 12px auto 8px auto;
+  flex-shrink: 0;
+}
+
+[data-appearance="dark"] .atm-handle-bar,
+.atm-sheet-container[data-appearance="dark"] .atm-handle-bar,
+.atm-backdrop[data-appearance="dark"] .atm-handle-bar {
+  background-color: #2d3036;
+}
+
+/* Modal Title */
+.atm-title {
+  font-size: 19px;
+  font-weight: 800;
+  text-align: center;
+  color: var(--ink, #0c1a12);
+  margin: 4px 16px 16px 16px;
+  letter-spacing: -0.3px;
+  flex-shrink: 0;
+}
+
+[data-appearance="dark"] .atm-title,
+.atm-sheet-container[data-appearance="dark"] .atm-title,
+.atm-backdrop[data-appearance="dark"] .atm-title {
+  color: #f1f5f9;
+}
+
+/* Scrollable Content */
+.atm-content-scroll {
+  padding: 0 20px 24px 20px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.atm-content-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Delivery State Section ── */
+.atm-state-section {
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.atm-state-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 2px 10px 0;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--line, #e5e7eb);
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+[data-appearance="dark"] .atm-state-trigger,
+.atm-sheet-container[data-appearance="dark"] .atm-state-trigger,
+.atm-backdrop[data-appearance="dark"] .atm-state-trigger {
+  border-bottom-color: rgba(255, 255, 255, 0.12);
+}
+
+.atm-state-placeholder {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink, #111827);
+}
+
+[data-appearance="dark"] .atm-state-placeholder,
+.atm-sheet-container[data-appearance="dark"] .atm-state-placeholder,
+.atm-backdrop[data-appearance="dark"] .atm-state-placeholder {
+  color: #f1f5f9;
+}
+
+.atm-state-chevron {
+  color: #6b7280;
+  font-size: 22px !important;
+  transition: transform 0.2s;
+}
+
+.atm-state-chevron.open {
+  transform: rotate(180deg);
+}
+
+/* State Badge + City Row */
+.atm-selected-state-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.atm-state-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background-color: #dcece1;
+  color: #14532d;
+  font-size: 13.5px;
+  font-weight: 700;
+  padding: 5px 10px 5px 9px;
+  border-radius: 9999px;
+  cursor: pointer;
+  flex-shrink: 0;
+  border: none;
+  transition: background-color 0.15s;
+}
+
+.atm-state-badge:hover {
+  background-color: #cee5d5;
+}
+
+[data-appearance="dark"] .atm-state-badge,
+.atm-sheet-container[data-appearance="dark"] .atm-state-badge,
+.atm-backdrop[data-appearance="dark"] .atm-state-badge {
+  background-color: rgba(22, 163, 74, 0.2);
+  color: #4ade80;
+}
+
+.atm-badge-pin {
+  font-size: 16px !important;
+  color: #15803d;
+}
+
+[data-appearance="dark"] .atm-badge-pin,
+.atm-sheet-container[data-appearance="dark"] .atm-badge-pin,
+.atm-backdrop[data-appearance="dark"] .atm-badge-pin {
+  color: #4ade80;
+}
+
+.atm-badge-close {
+  font-size: 16px !important;
+  margin-left: 2px;
+  opacity: 0.7;
+}
+
+.atm-badge-close:hover {
+  opacity: 1;
+}
+
+.atm-city-input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid #16a34a;
+  border-radius: 0;
+  padding: 4px 6px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink, #111827);
+  text-transform: uppercase;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+[data-appearance="dark"] .atm-city-input,
+.atm-sheet-container[data-appearance="dark"] .atm-city-input,
+.atm-backdrop[data-appearance="dark"] .atm-city-input {
+  color: #f1f5f9;
+  border-bottom-color: #22c55e;
+}
+
+.atm-city-input::placeholder {
+  color: #9ca3af;
+  font-weight: 500;
+  text-transform: none;
+}
+
+.atm-state-helper {
+  font-size: 11.5px;
+  color: #6b7280;
+  margin-top: 6px;
+  padding-left: 2px;
+}
+
+[data-appearance="dark"] .atm-state-helper,
+.atm-sheet-container[data-appearance="dark"] .atm-state-helper,
+.atm-backdrop[data-appearance="dark"] .atm-state-helper {
+  color: #94a3b8;
+}
+
+/* State Picker Dropdown */
+.atm-state-dropdown {
+  margin-top: 8px;
+  background-color: var(--page, #ffffff);
+  border: 1px solid var(--line, #e5e7eb);
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  max-height: 220px;
+  display: flex;
+  flex-direction: column;
+}
+
+[data-appearance="dark"] .atm-state-dropdown,
+.atm-sheet-container[data-appearance="dark"] .atm-state-dropdown,
+.atm-backdrop[data-appearance="dark"] .atm-state-dropdown {
+  background-color: #1a1c20;
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+.atm-state-search-box {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--line, #e5e7eb);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+[data-appearance="dark"] .atm-state-search-box,
+.atm-sheet-container[data-appearance="dark"] .atm-state-search-box,
+.atm-backdrop[data-appearance="dark"] .atm-state-search-box {
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.atm-state-search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 13.5px;
+  color: inherit;
+  font-family: inherit;
+}
+
+.atm-state-list {
+  overflow-y: auto;
+  max-height: 180px;
+  padding: 4px 0;
+  margin: 0;
+  list-style: none;
+}
+
+.atm-state-option {
+  padding: 10px 14px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--ink, #1e293b);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background-color 0.12s;
+}
+
+[data-appearance="dark"] .atm-state-option,
+.atm-sheet-container[data-appearance="dark"] .atm-state-option,
+.atm-backdrop[data-appearance="dark"] .atm-state-option {
+  color: #f1f5f9;
+}
+
+.atm-state-option:hover,
+.atm-state-option.selected {
+  background-color: rgba(22, 163, 74, 0.12);
+  color: #16a34a;
+  font-weight: 600;
+}
+
+/* ── Info Cards (Inspection Window & Seller's Name) ── */
+.atm-info-cards-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 6px;
+  margin-bottom: 20px;
+}
+
+.atm-info-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.atm-info-icon-wrap {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.atm-info-icon-wrap.inspection {
+  background-color: #ede9fe;
+  color: #7c3aed;
+}
+
+[data-appearance="dark"] .atm-info-icon-wrap.inspection,
+.atm-sheet-container[data-appearance="dark"] .atm-info-icon-wrap.inspection,
+.atm-backdrop[data-appearance="dark"] .atm-info-icon-wrap.inspection {
+  background-color: rgba(124, 58, 237, 0.2);
+  color: #a78bfa;
+}
+
+.atm-info-icon-wrap.seller {
+  background-color: #dcfce7;
+  color: #16a34a;
+}
+
+[data-appearance="dark"] .atm-info-icon-wrap.seller,
+.atm-sheet-container[data-appearance="dark"] .atm-info-icon-wrap.seller,
+.atm-backdrop[data-appearance="dark"] .atm-info-icon-wrap.seller {
+  background-color: rgba(22, 163, 74, 0.2);
+  color: #4ade80;
+}
+
+.atm-info-icon-wrap .material-symbols-outlined {
+  font-size: 20px !important;
+}
+
+.atm-info-texts {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.atm-info-label {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: 500;
+}
+
+[data-appearance="dark"] .atm-info-label,
+.atm-sheet-container[data-appearance="dark"] .atm-info-label,
+.atm-backdrop[data-appearance="dark"] .atm-info-label {
+  color: #94a3b8;
+}
+
+.atm-info-val {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink, #111827);
+}
+
+[data-appearance="dark"] .atm-info-val,
+.atm-sheet-container[data-appearance="dark"] .atm-info-val,
+.atm-backdrop[data-appearance="dark"] .atm-info-val {
+  color: #f3f4f6;
+}
+
+.atm-info-val-sub {
+  font-weight: 400;
+  font-size: 12.5px;
+  color: #6b7280;
+  margin-left: 4px;
+}
+
+[data-appearance="dark"] .atm-info-val-sub,
+.atm-sheet-container[data-appearance="dark"] .atm-info-val-sub,
+.atm-backdrop[data-appearance="dark"] .atm-info-val-sub {
+  color: #94a3b8;
+}
+
+/* ── Terms Section Header ── */
+.atm-terms-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.atm-terms-title {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  color: #64748b;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+[data-appearance="dark"] .atm-terms-title,
+.atm-sheet-container[data-appearance="dark"] .atm-terms-title,
+.atm-backdrop[data-appearance="dark"] .atm-terms-title {
+  color: #94a3b8;
+}
+
+.atm-terms-policy-link {
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s;
+}
+
+.atm-terms-policy-link:hover {
+  color: #16a34a;
+  text-decoration: underline;
+}
+
+[data-appearance="dark"] .atm-terms-policy-link,
+.atm-sheet-container[data-appearance="dark"] .atm-terms-policy-link,
+.atm-backdrop[data-appearance="dark"] .atm-terms-policy-link {
+  color: #94a3b8;
+}
+
+/* ── Numbered Terms List ── */
+.atm-terms-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.atm-term-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: #4b5563;
+}
+
+[data-appearance="dark"] .atm-term-item,
+.atm-sheet-container[data-appearance="dark"] .atm-term-item,
+.atm-backdrop[data-appearance="dark"] .atm-term-item {
+  color: #cbd5e1;
+}
+
+.atm-term-num {
+  font-weight: 800;
+  font-size: 13.5px;
+  color: var(--ink, #111827);
+  min-width: 18px;
+  flex-shrink: 0;
+}
+
+[data-appearance="dark"] .atm-term-num,
+.atm-sheet-container[data-appearance="dark"] .atm-term-num,
+.atm-backdrop[data-appearance="dark"] .atm-term-num {
+  color: #f1f5f9;
+}
+
+.atm-term-text {
+  flex: 1;
+}
+
+.atm-term-strong {
+  font-weight: 700;
+  color: var(--ink, #111827);
+}
+
+[data-appearance="dark"] .atm-term-strong,
+.atm-sheet-container[data-appearance="dark"] .atm-term-strong,
+.atm-backdrop[data-appearance="dark"] .atm-term-strong {
+  color: #f1f5f9;
+}
+
+/* ── Agree Checkbox ── */
+.atm-checkbox-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 4px;
+  margin-bottom: 20px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.atm-checkbox-box {
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  border: 1.5px solid #9ca3af;
+  background-color: var(--page, #ffffff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+  transition: all 0.15s ease;
+}
+
+[data-appearance="dark"] .atm-checkbox-box,
+.atm-sheet-container[data-appearance="dark"] .atm-checkbox-box,
+.atm-backdrop[data-appearance="dark"] .atm-checkbox-box {
+  background-color: #1e2025;
+  border-color: #64748b;
+}
+
+.atm-checkbox-box.checked {
+  background-color: #0d3e28;
+  border-color: #0d3e28;
+  color: #ffffff;
+}
+
+[data-appearance="dark"] .atm-checkbox-box.checked,
+.atm-sheet-container[data-appearance="dark"] .atm-checkbox-box.checked,
+.atm-backdrop[data-appearance="dark"] .atm-checkbox-box.checked {
+  background-color: #16a34a;
+  border-color: #16a34a;
+}
+
+.atm-checkbox-box .material-symbols-outlined {
+  font-size: 15px !important;
+  font-weight: 800;
+}
+
+.atm-checkbox-label {
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: #374151;
+  font-weight: 500;
+}
+
+[data-appearance="dark"] .atm-checkbox-label,
+.atm-sheet-container[data-appearance="dark"] .atm-checkbox-label,
+.atm-backdrop[data-appearance="dark"] .atm-checkbox-label {
+  color: #e2e8f0;
+}
+
+.atm-checkbox-label strong {
+  color: var(--ink, #111827);
+  font-weight: 700;
+}
+
+[data-appearance="dark"] .atm-checkbox-label strong,
+.atm-sheet-container[data-appearance="dark"] .atm-checkbox-label strong,
+.atm-backdrop[data-appearance="dark"] .atm-checkbox-label strong {
+  color: #ffffff;
+}
+
+/* ── CTA Button: Black in light mode, White in dark mode ── */
+.atm-cta-btn {
+  width: 100%;
+  height: 50px;
+  min-height: 50px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+  flex-shrink: 0;
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif;
+  letter-spacing: -0.2px;
+}
+
+.atm-cta-btn:disabled {
+  background-color: #e5e7eb;
+  color: #9ca3af;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+[data-appearance="dark"] .atm-cta-btn:disabled,
+.atm-sheet-container[data-appearance="dark"] .atm-cta-btn:disabled,
+.atm-backdrop[data-appearance="dark"] .atm-cta-btn:disabled {
+  background-color: #26282e;
+  color: #5f6470;
+}
+
+/* Enabled: solid black in light mode */
+.atm-cta-btn:not(:disabled) {
+  background-color: #171717;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+}
+
+/* Enabled: solid white in dark mode */
+[data-appearance="dark"] .atm-cta-btn:not(:disabled),
+.atm-sheet-container[data-appearance="dark"] .atm-cta-btn:not(:disabled),
+.atm-backdrop[data-appearance="dark"] .atm-cta-btn:not(:disabled) {
+  background-color: #ffffff;
+  color: #111215;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+}
+
+.atm-cta-btn:not(:disabled):hover {
+  background-color: #2c2d33;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+}
+
+[data-appearance="dark"] .atm-cta-btn:not(:disabled):hover,
+.atm-sheet-container[data-appearance="dark"] .atm-cta-btn:not(:disabled):hover,
+.atm-backdrop[data-appearance="dark"] .atm-cta-btn:not(:disabled):hover {
+  background-color: #f0f1f4;
+  color: #111215;
+}
+
+.atm-cta-btn:not(:disabled):active {
+  transform: translateY(0);
+}
+
+/* Loading state */
+.atm-cta-btn.is-loading {
+  cursor: not-allowed;
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+/* ── Spinner: white on black (light), black on white (dark) ── */
+@keyframes atm-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.atm-btn-spinner {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  border: 2.5px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #ffffff;
+  animation: atm-spin 0.75s linear infinite;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+[data-appearance="dark"] .atm-btn-spinner,
+.atm-sheet-container[data-appearance="dark"] .atm-btn-spinner,
+.atm-backdrop[data-appearance="dark"] .atm-btn-spinner {
+  border-color: rgba(0, 0, 0, 0.2);
+  border-top-color: #111215;
+}
+
+/* ── Desktop Responsiveness ── */
+@keyframes npModalPopIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@media (min-width: 701px) {
+  .atm-backdrop {
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  .atm-handle-bar {
+    display: none !important;
+  }
+
+  .atm-sheet-container {
+    width: min(580px, calc(100vw - 32px)) !important;
+    max-width: min(580px, calc(100vw - 32px)) !important;
+    max-height: min(90vh, 840px) !important;
+    border-radius: 20px !important;
+    border: 1px solid var(--line) !important;
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.32), 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
+    animation: npModalPopIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  [data-appearance="dark"] .atm-sheet-container,
+  .atm-sheet-container[data-appearance="dark"],
+  .atm-backdrop[data-appearance="dark"] .atm-sheet-container,
+  body[data-appearance="dark"] .atm-sheet-container,
+  html[data-appearance="dark"] .atm-sheet-container {
+    background: #141518 !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.08) !important;
+  }
+
+  .atm-title {
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    text-align: left !important;
+    margin: 24px 28px 16px 28px !important;
+    letter-spacing: -0.4px !important;
+  }
+
+  .atm-content-scroll {
+    padding: 0 28px 24px 28px !important;
+  }
+}

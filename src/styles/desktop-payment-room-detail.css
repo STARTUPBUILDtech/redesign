@@ -174,27 +174,368 @@
   background: transparent;
 }
 
-/* Order Details Card Tile */
+/* Order Details Card Tile: Solid Black in light mode, Solid White in dark mode */
 .desktop-prd-details-card {
   width: 100%;
   height: 590px;
   min-height: 590px;
   max-height: 590px;
-  background: #ffffff;
-  border: 1px solid var(--line);
+  background: #000000;
+  color: #ffffff;
+  border: 1px solid #1f2024;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.22);
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
+/* ── Light Mode Inner Element Themes on Black Card ── */
+.desktop-prd-details-card .desktop-prd-field-label {
+  color: #9ca3af;
+}
+
+.desktop-prd-details-card .desktop-prd-field-val {
+  color: #ffffff;
+}
+
+.desktop-prd-details-card .desktop-prd-field-val .charges-sub {
+  color: #9ca3af;
+}
+
+.desktop-prd-details-card .desktop-prd-field-val.highlight-green {
+  color: #22c55e;
+}
+
+.desktop-prd-details-card .desktop-prd-copy-btn {
+  color: #9ca3af;
+}
+
+.desktop-prd-details-card .desktop-prd-copy-btn:hover {
+  color: #ffffff;
+}
+
+.desktop-prd-details-card .desktop-prd-copy-btn.copied {
+  color: #22c55e;
+}
+
+.desktop-prd-details-card .desktop-prd-change-btn {
+  color: #22c55e;
+}
+
+.desktop-prd-details-card .desktop-prd-accordion-trigger {
+  color: #22c55e;
+}
+
+.desktop-prd-details-card .desktop-prd-accordion-trigger.purple {
+  color: #c084fc;
+}
+
+.desktop-prd-details-card .desktop-prd-footer-note {
+  color: #9ca3af;
+}
+
+.desktop-prd-details-card .desktop-prd-footer-note strong {
+  color: #ffffff;
+}
+
+.desktop-prd-details-card .desktop-prd-footer-note .desktop-prd-info-icon {
+  color: #9ca3af;
+}
+
+.desktop-prd-details-card .desktop-prd-footer-note .desktop-prd-info-icon:hover {
+  color: #ffffff;
+}
+
+.desktop-prd-details-card .desktop-prd-details-body {
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.desktop-prd-details-card .desktop-prd-details-body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.desktop-prd-details-card .desktop-prd-details-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+/* Light mode Section Titles on Black Card */
+.desktop-prd-details-card .desktop-prd-section-title.payment-received {
+  color: #60a5fa;
+}
+
+.desktop-prd-details-card .desktop-prd-section-title.awaiting-payment {
+  color: #fb923c;
+}
+
+.desktop-prd-details-card .desktop-prd-section-title.in-transit {
+  color: #c084fc;
+}
+
+.desktop-prd-details-card .desktop-prd-section-title.delivered {
+  color: #2dd4bf;
+}
+
+.desktop-prd-details-card .desktop-prd-section-title.dispute-ongoing {
+  color: #f87171;
+}
+
+.desktop-prd-details-card .desktop-prd-section-title.completed {
+  color: #34d399;
+}
+
+/* Light mode dispute timeline on Black Card */
+.desktop-prd-details-card .mdo-trails-title {
+  color: #ffffff;
+}
+
+.desktop-prd-details-card .mdo-sender-name {
+  color: #ffffff;
+}
+
+.desktop-prd-details-card .mdo-sender-name.cs {
+  color: #4ade80;
+}
+
+.desktop-prd-details-card .mdo-message-text {
+  color: #e2e8f0;
+}
+
+.desktop-prd-details-card .mdo-reason-val {
+  color: #ffffff;
+}
+
+.desktop-prd-details-card .mdo-reason-label {
+  color: #9ca3af;
+}
+
+.desktop-prd-details-card .mdo-timestamp {
+  color: #9ca3af;
+}
+
+/* ── Dark Mode: Order Details Card Tile is Solid White (#ffffff) ── */
 [data-appearance="dark"] .desktop-prd-details-card,
-.app[data-appearance="dark"] .desktop-prd-details-card {
-  background: #181a20;
-  border-color: var(--line);
-  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.4);
+.app[data-appearance="dark"] .desktop-prd-details-card,
+body[data-appearance="dark"] .desktop-prd-details-card,
+html[data-appearance="dark"] .desktop-prd-details-card {
+  background: #ffffff !important;
+  color: #111215 !important;
+  border: 1px solid #e4e4e7 !important;
+  box-shadow: 0 6px 30px rgba(0, 0, 0, 0.45) !important;
+}
+
+[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-field-label,
+.app[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-field-label,
+body[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-field-label,
+html[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-field-label {
+  color: #64748b !important;
+}
+
+[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-field-val,
+.app[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-field-val,
+body[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-field-val,
+html[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-field-val {
+  color: #0f172a !important;
+}
+
+[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-field-val .charges-sub,
+.app[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-field-val .charges-sub,
+body[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-field-val .charges-sub,
+html[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-field-val .charges-sub {
+  color: #64748b !important;
+}
+
+[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-field-val.highlight-green,
+.app[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-field-val.highlight-green,
+body[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-field-val.highlight-green,
+html[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-field-val.highlight-green {
+  color: #15803d !important;
+}
+
+[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-copy-btn,
+.app[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-copy-btn,
+body[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-copy-btn,
+html[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-copy-btn {
+  color: #94a3b8 !important;
+}
+
+[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-copy-btn:hover,
+.app[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-copy-btn:hover,
+body[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-copy-btn:hover,
+html[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-copy-btn:hover {
+  color: #0f172a !important;
+}
+
+[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-copy-btn.copied,
+.app[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-copy-btn.copied,
+body[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-copy-btn.copied,
+html[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-copy-btn.copied {
+  color: #16a34a !important;
+}
+
+[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-change-btn,
+.app[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-change-btn,
+body[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-change-btn,
+html[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-change-btn {
+  color: #15803d !important;
+}
+
+[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-accordion-trigger,
+.app[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-accordion-trigger,
+body[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-accordion-trigger,
+html[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-accordion-trigger {
+  color: #15803d !important;
+}
+
+[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-accordion-trigger.purple,
+.app[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-accordion-trigger.purple,
+body[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-accordion-trigger.purple,
+html[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-accordion-trigger.purple {
+  color: #7c3aed !important;
+}
+
+[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-footer-note,
+.app[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-footer-note,
+body[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-footer-note,
+html[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-footer-note {
+  color: #64748b !important;
+}
+
+[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-footer-note strong,
+.app[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-footer-note strong,
+body[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-footer-note strong,
+html[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-footer-note strong {
+  color: #0f172a !important;
+}
+
+[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-footer-note .desktop-prd-info-icon,
+.app[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-footer-note .desktop-prd-info-icon,
+body[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-footer-note .desktop-prd-info-icon,
+html[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-footer-note .desktop-prd-info-icon {
+  color: #64748b !important;
+}
+
+[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-footer-note .desktop-prd-info-icon:hover,
+.app[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-footer-note .desktop-prd-info-icon:hover,
+body[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-footer-note .desktop-prd-info-icon:hover,
+html[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-footer-note .desktop-prd-info-icon:hover {
+  color: #0f172a !important;
+}
+
+[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-details-body,
+.app[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-details-body,
+body[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-details-body,
+html[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-details-body {
+  scrollbar-color: rgba(0, 0, 0, 0.15) transparent !important;
+}
+
+[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-details-body::-webkit-scrollbar-thumb,
+.app[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-details-body::-webkit-scrollbar-thumb,
+body[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-details-body::-webkit-scrollbar-thumb,
+html[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-details-body::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15) !important;
+}
+
+[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-details-body::-webkit-scrollbar-thumb:hover,
+.app[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-details-body::-webkit-scrollbar-thumb:hover,
+body[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-details-body::-webkit-scrollbar-thumb:hover,
+html[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-details-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.28) !important;
+}
+
+/* Dark mode Section Titles on White Card */
+[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-section-title.payment-received,
+.app[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-section-title.payment-received,
+body[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-section-title.payment-received,
+html[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-section-title.payment-received {
+  color: #1d4ed8 !important;
+}
+
+[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-section-title.awaiting-payment,
+.app[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-section-title.awaiting-payment,
+body[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-section-title.awaiting-payment,
+html[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-section-title.awaiting-payment {
+  color: #c45900 !important;
+}
+
+[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-section-title.in-transit,
+.app[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-section-title.in-transit,
+body[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-section-title.in-transit,
+html[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-section-title.in-transit {
+  color: #6d28d9 !important;
+}
+
+[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-section-title.delivered,
+.app[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-section-title.delivered,
+body[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-section-title.delivered,
+html[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-section-title.delivered {
+  color: #005f6d !important;
+}
+
+[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-section-title.dispute-ongoing,
+.app[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-section-title.dispute-ongoing,
+body[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-section-title.dispute-ongoing,
+html[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-section-title.dispute-ongoing {
+  color: #b91c1c !important;
+}
+
+[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-section-title.completed,
+.app[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-section-title.completed,
+body[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-section-title.completed,
+html[data-appearance="dark"] .desktop-prd-details-card .desktop-prd-section-title.completed {
+  color: #044e39 !important;
+}
+
+/* Dark mode dispute timeline on White Card */
+[data-appearance="dark"] .desktop-prd-details-card .mdo-trails-title,
+.app[data-appearance="dark"] .desktop-prd-details-card .mdo-trails-title,
+body[data-appearance="dark"] .desktop-prd-details-card .mdo-trails-title,
+html[data-appearance="dark"] .desktop-prd-details-card .mdo-trails-title {
+  color: #0f172a !important;
+}
+
+[data-appearance="dark"] .desktop-prd-details-card .mdo-sender-name,
+.app[data-appearance="dark"] .desktop-prd-details-card .mdo-sender-name,
+body[data-appearance="dark"] .desktop-prd-details-card .mdo-sender-name,
+html[data-appearance="dark"] .desktop-prd-details-card .mdo-sender-name {
+  color: #0f172a !important;
+}
+
+[data-appearance="dark"] .desktop-prd-details-card .mdo-sender-name.cs,
+.app[data-appearance="dark"] .desktop-prd-details-card .mdo-sender-name.cs,
+body[data-appearance="dark"] .desktop-prd-details-card .mdo-sender-name.cs,
+html[data-appearance="dark"] .desktop-prd-details-card .mdo-sender-name.cs {
+  color: #16a34a !important;
+}
+
+[data-appearance="dark"] .desktop-prd-details-card .mdo-message-text,
+.app[data-appearance="dark"] .desktop-prd-details-card .mdo-message-text,
+body[data-appearance="dark"] .desktop-prd-details-card .mdo-message-text,
+html[data-appearance="dark"] .desktop-prd-details-card .mdo-message-text {
+  color: #334155 !important;
+}
+
+[data-appearance="dark"] .desktop-prd-details-card .mdo-reason-val,
+.app[data-appearance="dark"] .desktop-prd-details-card .mdo-reason-val,
+body[data-appearance="dark"] .desktop-prd-details-card .mdo-reason-val,
+html[data-appearance="dark"] .desktop-prd-details-card .mdo-reason-val {
+  color: #0f172a !important;
+}
+
+[data-appearance="dark"] .desktop-prd-details-card .mdo-reason-label,
+.app[data-appearance="dark"] .desktop-prd-details-card .mdo-reason-label,
+body[data-appearance="dark"] .desktop-prd-details-card .mdo-reason-label,
+html[data-appearance="dark"] .desktop-prd-details-card .mdo-reason-label {
+  color: #64748b !important;
+}
+
+[data-appearance="dark"] .desktop-prd-details-card .mdo-timestamp,
+.app[data-appearance="dark"] .desktop-prd-details-card .mdo-timestamp,
+body[data-appearance="dark"] .desktop-prd-details-card .mdo-timestamp,
+html[data-appearance="dark"] .desktop-prd-details-card .mdo-timestamp {
+  color: #64748b !important;
 }
 
 .desktop-prd-header-left {
@@ -880,34 +1221,36 @@
   transform: rotate(180deg);
 }
 
-/* Primary Action Button (I Have Made Payment) */
+/* Primary Action Button (I Have Made Payment): White in light mode, Black in dark mode */
 .desktop-prd-primary-btn {
   width: 100%;
   height: 48px;
   min-height: 48px;
   padding: 12px 20px;
-  border-radius: 12px;
-  background-color: #22a659;
-  color: #ffffff;
-  font-family: 'Inter', sans-serif;
+  border-radius: 8px;
+  background-color: #ffffff;
+  color: #111215;
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif;
   font-size: 15px;
   font-weight: 800;
-  border: none;
+  border: 1px solid rgba(0, 0, 0, 0.1);
   cursor: pointer;
-  box-shadow: 0 3px 10px rgba(34, 166, 89, 0.28);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
   flex-shrink: 0;
   margin-top: 20px;
   transition: all 0.15s ease;
   box-sizing: border-box;
+  letter-spacing: -0.2px;
 }
 
-.desktop-prd-primary-btn:hover:not(:disabled) {
-  background-color: #1d914d;
+.desktop-prd-primary-btn:hover:not(:disabled):not(.confirmed) {
+  background-color: #f0f1f4;
   transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(34, 166, 89, 0.35);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.16);
 }
 
 .desktop-prd-primary-btn:active:not(:disabled) {
@@ -915,9 +1258,73 @@
 }
 
 .desktop-prd-primary-btn.confirmed {
-  background-color: #158b5a;
+  background-color: #e4e4e7;
+  color: #6b7280;
+  border-color: transparent;
   box-shadow: none;
   cursor: default;
+  opacity: 0.8;
+}
+
+/* Dark mode: solid black */
+[data-appearance="dark"] .desktop-prd-primary-btn,
+.app[data-appearance="dark"] .desktop-prd-primary-btn,
+body[data-appearance="dark"] .desktop-prd-primary-btn,
+html[data-appearance="dark"] .desktop-prd-primary-btn {
+  background-color: #171717 !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4) !important;
+}
+
+[data-appearance="dark"] .desktop-prd-primary-btn:hover:not(:disabled):not(.confirmed),
+.app[data-appearance="dark"] .desktop-prd-primary-btn:hover:not(:disabled):not(.confirmed),
+body[data-appearance="dark"] .desktop-prd-primary-btn:hover:not(:disabled):not(.confirmed),
+html[data-appearance="dark"] .desktop-prd-primary-btn:hover:not(:disabled):not(.confirmed) {
+  background-color: #2c2d33 !important;
+  color: #ffffff !important;
+}
+
+[data-appearance="dark"] .desktop-prd-primary-btn.confirmed,
+.app[data-appearance="dark"] .desktop-prd-primary-btn.confirmed,
+body[data-appearance="dark"] .desktop-prd-primary-btn.confirmed,
+html[data-appearance="dark"] .desktop-prd-primary-btn.confirmed {
+  background-color: #1f2024 !important;
+  color: #9ca3af !important;
+  opacity: 0.8 !important;
+}
+
+/* ── Desktop primary btn loading state ── */
+.desktop-prd-primary-btn.is-loading {
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+  opacity: 0.82 !important;
+}
+
+@keyframes desktop-prd-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Light mode: dark spinner on white button */
+.desktop-prd-btn-spinner {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2.5px solid rgba(0, 0, 0, 0.15);
+  border-top-color: #111215;
+  animation: desktop-prd-spin 0.75s linear infinite;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+/* Dark mode: white spinner on black button */
+[data-appearance="dark"] .desktop-prd-btn-spinner,
+.app[data-appearance="dark"] .desktop-prd-btn-spinner,
+body[data-appearance="dark"] .desktop-prd-btn-spinner,
+html[data-appearance="dark"] .desktop-prd-btn-spinner {
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  border-top-color: #ffffff !important;
 }
 
 /* Confirm Delivery Action Buttons */

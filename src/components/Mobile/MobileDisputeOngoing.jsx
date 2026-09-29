@@ -26,6 +26,16 @@ export default function MobileDisputeOngoing({
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [isProofModalOpen, setIsProofModalOpen] = useState(false);
   const [toastText, setToastText] = useState(null);
+  const screenRef = useRef(null);
+
+  useEffect(() => {
+    if (isChatOpen || isHelpOpen) {
+      if (screenRef.current) {
+        screenRef.current.scrollTop = 0;
+      }
+      window.scrollTo(0, 0);
+    }
+  }, [isChatOpen, isHelpOpen]);
 
   // Dynamic dispute trails list matching reference design with boxless appearance
   const [trails, setTrails] = useState([
@@ -161,9 +171,10 @@ export default function MobileDisputeOngoing({
 
   return (
     <div
+      ref={screenRef}
       className={`mobile-awaiting-payment-screen ${
         isChatOpen ? "chat-open" : ""
-      } ${isProofModalOpen || isHelpOpen || isDetailsOpen ? "modal-open" : ""}`}
+      } ${isHelpOpen ? "modal-open" : ""}`}
     >
       {/* ── Top Header (Hidden when chat or help is open) ── */}
       {!isChatOpen && !isHelpOpen && (

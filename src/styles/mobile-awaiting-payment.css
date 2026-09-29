@@ -25,16 +25,19 @@
   transform: translateZ(0);
 }
 
-.mobile-awaiting-payment-screen.chat-open {
+.mobile-awaiting-payment-screen.chat-open,
+.mobile-awaiting-payment-screen.modal-open {
   overflow: hidden !important;
   height: 100% !important;
 }
 
-.mobile-awaiting-payment-screen.chat-open .ap-top-header {
+.mobile-awaiting-payment-screen.chat-open .ap-top-header,
+.mobile-awaiting-payment-screen.modal-open .ap-top-header {
   display: none !important;
 }
 
-.mobile-awaiting-payment-screen.chat-open .ap-content-body {
+.mobile-awaiting-payment-screen.chat-open .ap-content-body,
+.mobile-awaiting-payment-screen.modal-open .ap-content-body {
   display: none !important;
 }
 
@@ -592,7 +595,7 @@
   pointer-events: none;
 }
 
-/* ── Order Details & Modals (Centered & Focused with Blurred Backdrop) ── */
+/* ── Order Details & Modals (Slides up from bottom on mobile, centered on desktop) ── */
 .ap-bottom-sheet-backdrop {
   position: fixed !important;
   inset: 0 !important;
@@ -605,9 +608,9 @@
   -webkit-backdrop-filter: blur(10px) !important;
   z-index: 100000 !important;
   display: flex !important;
-  align-items: center !important;
+  align-items: flex-end !important;
   justify-content: center !important;
-  padding: clamp(16px, 3vw, 24px) !important;
+  padding: 0 !important;
   box-sizing: border-box !important;
   animation: apFadeIn 0.22s ease-out;
 }
@@ -618,25 +621,31 @@
 
 .ap-bottom-sheet {
   width: 100% !important;
-  max-width: 560px !important;
+  max-width: 100% !important;
   background-color: var(--page, #ffffff);
   color: var(--ink, #161618);
-  border-radius: 20px !important;
-  padding: 18px 22px 24px 22px !important;
+  border-radius: 24px 24px 0 0 !important;
+  border-bottom: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-top: 1px solid var(--line, rgba(0, 0, 0, 0.08)) !important;
+  padding: 12px 20px calc(24px + env(safe-area-inset-bottom, 12px)) 20px !important;
   box-sizing: border-box !important;
-  animation: pkModalCenterIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  max-height: min(640px, 86vh) !important;
+  animation: apSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  max-height: 88vh !important;
   overflow-y: auto !important;
   -webkit-overflow-scrolling: touch;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45) !important;
-  border: 1px solid var(--line, rgba(0, 0, 0, 0.08));
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.3) !important;
 }
 
 [data-appearance="dark"] .ap-bottom-sheet {
   background-color: #121316;
   color: #f4f4f6;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.75);
+  border-top: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-bottom: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.7) !important;
 }
 
 @keyframes pkModalCenterIn {
@@ -652,17 +661,53 @@
 
 @keyframes apSlideUp {
   from {
-    transform: scale(0.95) translateY(12px);
-    opacity: 0;
+    transform: translateY(100%);
+    opacity: 0.8;
   }
   to {
-    transform: scale(1) translateY(0);
+    transform: translateY(0);
     opacity: 1;
   }
 }
 
 .ap-sheet-handle {
-  display: none !important;
+  display: block !important;
+  width: 42px !important;
+  height: 4.5px !important;
+  border-radius: 9999px !important;
+  background-color: rgba(0, 0, 0, 0.18) !important;
+  margin: 2px auto 14px auto !important;
+  flex-shrink: 0 !important;
+}
+
+[data-appearance="dark"] .ap-sheet-handle {
+  background-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+@media (min-width: 701px) {
+  .ap-bottom-sheet-backdrop {
+    align-items: center !important;
+    padding: clamp(16px, 3vw, 24px) !important;
+  }
+
+  .ap-bottom-sheet {
+    max-width: 560px !important;
+    border-radius: 20px !important;
+    border: 1px solid var(--line, rgba(0, 0, 0, 0.08)) !important;
+    padding: 18px 22px 24px 22px !important;
+    animation: pkModalCenterIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    max-height: min(640px, 86vh) !important;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45) !important;
+  }
+
+  [data-appearance="dark"] .ap-bottom-sheet {
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.75) !important;
+  }
+
+  .ap-sheet-handle {
+    display: none !important;
+  }
 }
 
 .ap-sheet-header {
@@ -1013,25 +1058,27 @@
   width: 100%;
   min-height: 48px;
   padding: 13px 20px;
-  border-radius: 12px;
-  background-color: #22a659;
+  border-radius: 8px;
+  background-color: #171717;
   color: #ffffff;
   font-weight: 800;
   font-size: 15px;
-  font-family: inherit;
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif;
   border: none;
   cursor: pointer;
-  box-shadow: 0 3px 10px rgba(34, 166, 89, 0.3);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
+  letter-spacing: -0.2px;
   transition: all 0.2s ease;
 }
 
-.ap-primary-payment-btn:hover:not(:disabled) {
-  background-color: #1d914d;
+.ap-primary-payment-btn:hover:not(:disabled):not(.confirmed) {
+  background-color: #2c2d33;
   transform: translateY(-1px);
-  box-shadow: 0 4px 14px rgba(34, 166, 89, 0.38);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
 }
 
 .ap-primary-payment-btn:active:not(:disabled) {
@@ -1039,9 +1086,71 @@
 }
 
 .ap-primary-payment-btn.confirmed {
-  background-color: #158b5a;
+  background-color: #2c2d33;
   box-shadow: none;
   cursor: default;
+  opacity: 0.75;
+}
+
+/* Dark mode: solid white */
+[data-appearance="dark"] .ap-primary-payment-btn,
+.app[data-appearance="dark"] .ap-primary-payment-btn,
+body[data-appearance="dark"] .ap-primary-payment-btn,
+html[data-appearance="dark"] .ap-primary-payment-btn {
+  background-color: #ffffff !important;
+  color: #111215 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45) !important;
+}
+
+[data-appearance="dark"] .ap-primary-payment-btn:hover:not(:disabled):not(.confirmed),
+.app[data-appearance="dark"] .ap-primary-payment-btn:hover:not(:disabled):not(.confirmed),
+body[data-appearance="dark"] .ap-primary-payment-btn:hover:not(:disabled):not(.confirmed),
+html[data-appearance="dark"] .ap-primary-payment-btn:hover:not(:disabled):not(.confirmed) {
+  background-color: #f0f1f4 !important;
+  color: #111215 !important;
+}
+
+[data-appearance="dark"] .ap-primary-payment-btn.confirmed,
+.app[data-appearance="dark"] .ap-primary-payment-btn.confirmed,
+body[data-appearance="dark"] .ap-primary-payment-btn.confirmed,
+html[data-appearance="dark"] .ap-primary-payment-btn.confirmed {
+  background-color: #e4e4e7 !important;
+  color: #6b7280 !important;
+  opacity: 0.8 !important;
+}
+
+/* ── Loading state (mobile only via .is-loading class) ── */
+.ap-primary-payment-btn.is-loading {
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+  opacity: 0.82 !important;
+}
+
+/* Spinner keyframe */
+@keyframes ap-btn-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Light mode: white spinner on dark button */
+.ap-btn-spinner {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2.5px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #ffffff;
+  animation: ap-btn-spin 0.75s linear infinite;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+/* Dark mode: dark spinner on white button */
+[data-appearance="dark"] .ap-btn-spinner,
+.app[data-appearance="dark"] .ap-btn-spinner,
+body[data-appearance="dark"] .ap-btn-spinner,
+html[data-appearance="dark"] .ap-btn-spinner {
+  border-color: rgba(0, 0, 0, 0.18) !important;
+  border-top-color: #111215 !important;
 }
 
 /* ── Footer: Protected by PayKudi ── */

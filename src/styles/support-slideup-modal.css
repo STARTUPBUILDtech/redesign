@@ -8,6 +8,7 @@
    ========================================================================== */
 
 /* ── Fixed Backdrop covering the screen, blurred and focused ── */
+/* ── Fixed Backdrop covering the screen, blurred and focused ── */
 .pk-slideup-backdrop {
   position: fixed;
   inset: 0 !important;
@@ -21,8 +22,8 @@
   -webkit-backdrop-filter: blur(10px) !important;
   display: flex !important;
   justify-content: center !important;
-  align-items: center !important;
-  padding: clamp(16px, 3vw, 24px) !important;
+  align-items: flex-end !important;
+  padding: 0 !important;
   overflow: hidden;
   box-sizing: border-box;
   animation: pkBackdropFade 0.2s ease-out;
@@ -49,40 +50,38 @@ body.modal-open .topbar {
   user-select: none !important;
 }
 
-/* ── Modal Container ── */
+/* ── Modal Container (Slides up from bottom on mobile screen, centered on desktop) ── */
 .pk-slideup-container {
   width: 100%;
-  max-width: 660px;
-  height: min(580px, 84vh);
-  min-height: 500px;
+  max-width: 100%;
+  height: 90vh;
+  max-height: 92vh;
+  min-height: unset;
   background-color: #f5f2eb;
   color: #16181d;
   display: flex;
   flex-direction: column;
-  border-radius: 20px !important;
-  animation: pkModalCenterIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 24px 24px 0 0 !important;
+  border-bottom: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-top: 1px solid var(--line, rgba(0, 0, 0, 0.08)) !important;
+  animation: pkSlideUpFromBottom 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
   overflow: hidden;
   position: relative;
   box-sizing: border-box;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
-}
-
-@media (max-width: 700px) {
-  .pk-slideup-container {
-    max-width: 100%;
-    width: 100%;
-    height: min(600px, 86vh);
-    min-height: 420px;
-    border-radius: 18px !important;
-  }
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.3) !important;
 }
 
 [data-appearance="dark"] .pk-slideup-container {
   background-color: #15161a;
   color: #f4f4f6;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7);
+  border-top: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-bottom: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.7) !important;
 }
 
 @keyframes pkModalCenterIn {
@@ -104,6 +103,28 @@ body.modal-open .topbar {
   to {
     transform: translateY(0);
     opacity: 1;
+  }
+}
+
+@media (min-width: 701px) {
+  .pk-slideup-backdrop {
+    align-items: center !important;
+    padding: clamp(16px, 3vw, 24px) !important;
+  }
+
+  .pk-slideup-container {
+    max-width: 660px !important;
+    height: min(580px, 84vh) !important;
+    min-height: 500px !important;
+    border-radius: 20px !important;
+    border: 1px solid var(--line, rgba(0, 0, 0, 0.08)) !important;
+    animation: pkModalCenterIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45) !important;
+  }
+
+  [data-appearance="dark"] .pk-slideup-container {
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7) !important;
   }
 }
 

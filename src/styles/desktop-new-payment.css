@@ -967,3 +967,87 @@
   background: color-mix(in srgb, var(--page) 96%, var(--line)) !important;
   border-color: color-mix(in srgb, var(--line) 65%, transparent) !important;
 }
+
+/* ── Desktop Payment Invitation Modal ── */
+.desktop-invite-modal-container {
+  width: min(580px, calc(100vw - 32px)) !important;
+  max-height: min(90vh, 840px) !important;
+}
+
+.desktop-invite-modal-container .desktop-np-modal-header {
+  padding: 24px 28px 6px 28px !important;
+  border-bottom: none !important;
+  display: flex !important;
+  align-items: flex-start !important;
+}
+
+.desktop-invite-modal-container .desktop-np-title {
+  font-size: 22px !important;
+  font-weight: 700 !important;
+  line-height: 1.3 !important;
+  color: var(--ink) !important;
+  letter-spacing: -0.5px !important;
+  margin: 0 !important;
+}
+
+.desktop-invite-modal-container .desktop-np-subtitle {
+  font-size: 13.5px !important;
+  color: var(--muted) !important;
+  font-weight: 500 !important;
+  margin: 6px 0 0 0 !important;
+  line-height: 1.4 !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.desktop-invite-modal-body {
+  padding: 22px 24px 24px 24px !important;
+  overflow-y: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+}
+
+.desktop-invite-modal-body .m-invite-content-wrapper {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: transparent !important;
+}
+
+.desktop-invite-modal-body .m-invite-card-container {
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+.desktop-invite-modal-body .m-invite-item-card {
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+.desktop-invite-modal-body .m-invite-specs-section {
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+.desktop-invite-modal-body .m-invite-floating-actions,
+.desktop-invite-modal-actions {
+  position: static !important;
+  transform: none !important;
+  width: 100% !important;
+  margin: 8px 0 0 0 !important;
+  padding: 0 !important;
+  z-index: 1 !important;
+}
+
+.desktop-invite-modal-body .m-invite-btn-proceed {
+  width: 100% !important;
+  height: 48px !important;
+  border-radius: 8px !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+}

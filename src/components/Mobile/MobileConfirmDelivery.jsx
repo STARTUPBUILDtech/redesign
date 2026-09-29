@@ -37,13 +37,13 @@ export default function MobileConfirmDelivery({
   const screenRef = useRef(null);
 
   useEffect(() => {
-    if (isChatOpen) {
+    if (isChatOpen || isHelpOpen || isReportOpen) {
       if (screenRef.current) {
         screenRef.current.scrollTop = 0;
       }
       window.scrollTo(0, 0);
     }
-  }, [isChatOpen]);
+  }, [isChatOpen, isHelpOpen, isReportOpen]);
 
   // Countdown timer effect (counting down every second)
   useEffect(() => {
@@ -160,8 +160,8 @@ export default function MobileConfirmDelivery({
       ref={screenRef}
       className={`mobile-awaiting-payment-screen ${isChatOpen ? "chat-open" : ""} ${isReportOpen || isHelpOpen ? "modal-open" : ""}`}
     >
-      {/* ── Top Header (Hidden when chat is up or help is up) ── */}
-      {!isChatOpen && !isHelpOpen && (
+      {/* ── Top Header (Hidden when chat is up, help is up, or report issue is up) ── */}
+      {!isChatOpen && !isHelpOpen && !isReportOpen && (
         <header className="ap-top-header">
           <div className="ap-header-left">
             <button

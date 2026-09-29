@@ -2,12 +2,25 @@ import { useState, useEffect, useRef } from "react";
 import "../../styles/mobile-awaiting-payment.css";
 import HelpDrawer from "../Shared/HelpDrawer";
 import ChatDrawer from "../Shared/ChatDrawer";
+import AgreeTermsModal from "../Shared/AgreeTermsModal";
 
 export default function MobileAwaitingPayment({
   room = {},
   onBack,
   onPaymentConfirmed,
 }) {
+  const roomId = room.id || room.orderNumber || "ORD-603607";
+  const storageKey = `pk_agreed_terms_${roomId}`;
+
+  const [hasAgreedTerms, setHasAgreedTerms] = useState(() => {
+    try {
+      return localStorage.getItem(storageKey) === "true" || !!room.hasAgreedTerms;
+    } catch {
+      return false;
+    }
+  });
+  const [isTermsModalOpen, setIsTermsModalOpen] = useState(!hasAgreedTerms);
+
   // 117s countdown timer as shown in reference image
   const [seconds, setSeconds] = useState(117);
   const [copiedKey, setCopiedKey] = useState(null);
@@ -18,26 +31,27 @@ export default function MobileAwaitingPayment({
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [isPaymentConfirmed, setIsPaymentConfirmed] = useState(false);
+  const [isPaymentLoading, setIsPaymentLoading] = useState(false);
   const [toastText, setToastText] = useState(null);
   const screenRef = useRef(null);
 
   useEffect(() => {
-    if (isChatOpen) {
+    if (isChatOpen || isHelpOpen) {
       if (screenRef.current) {
         screenRef.current.scrollTop = 0;
       }
       window.scrollTo(0, 0);
     }
-  }, [isChatOpen]);
+  }, [isChatOpen, isHelpOpen]);
 
-  // Countdown timer effect
+  // Countdown timer effect (starts when terms are agreed)
   useEffect(() => {
-    if (seconds <= 0) return;
+    if (!hasAgreedTerms || seconds <= 0) return;
     const timer = setInterval(() => {
       setSeconds((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
     return () => clearInterval(timer);
-  }, [seconds]);
+  }, [hasAgreedTerms, seconds]);
 
   // Order data matching reference image
   const orderNumber = room.id || room.orderNumber || "ORD-603607";
@@ -46,7 +60,7 @@ export default function MobileAwaitingPayment({
   const bankName = room.bank || "Guaranteed Trust Bank (GTBank)";
   const accountName = room.accountName || "PayKudi(08032001585)";
   const accountNumber = room.accountNumber || "903370574";
-  const sellerName = room.sellerName || "08032001585";
+  const sellerName = room.sellerName || "900000909099";
   const itemName = room.item || room.title || "Iphone 18 Pro Max";
   const variantText = room.variant || "Color, Ram size, Storage";
 
@@ -92,9 +106,38 @@ export default function MobileAwaitingPayment({
   };
 
   const handlePaymentClick = () => {
-    setIsPaymentConfirmed(true);
-    showToast("Payment confirmation submitted!");
-    if (onPaymentConfirmed) onPaymentConfirmed();
+    if (isPaymentLoading || isPaymentConfirmed) return;
+    setIsPaymentLoading(true);
+    setTimeout(() => {
+      setIsPaymentLoading(false);
+      setIsPaymentConfirmed(true);
+      showToast("Payment confirmation submitted!");
+      if (onPaymentConfirmed) onPaymentConfirmed();
+    }, 1200);
+  };
+
+  const handleAgreeTerms = ({ state, city, location }) => {
+    try {
+      localStorage.setItem(storageKey, "true");
+    } catch (e) {}
+    setHasAgreedTerms(true);
+    setIsTermsModalOpen(false);
+    if (room) {
+      room.deliveryState = state;
+      room.deliveryCity = city;
+      room.deliveryLocation = location;
+      room.hasAgreedTerms = true;
+    }
+    showToast(`Terms agreed. Delivery to ${location || state}`);
+  };
+
+  const handleCloseTermsModal = () => {
+    // Compulsory modal: closing without agreeing goes back
+    if (!hasAgreedTerms) {
+      if (onBack) onBack();
+    } else {
+      setIsTermsModalOpen(false);
+    }
   };
 
   return (
@@ -363,10 +406,18 @@ export default function MobileAwaitingPayment({
         <div className="ap-cta-container">
           <button
             type="button"
-            className={`ap-primary-payment-btn ${isPaymentConfirmed ? "confirmed" : ""}`}
+            className={`ap-primary-payment-btn ${isPaymentConfirmed ? "confirmed" : ""} ${isPaymentLoading ? "is-loading" : ""}`}
             onClick={handlePaymentClick}
+            disabled={isPaymentLoading || isPaymentConfirmed}
+            aria-busy={isPaymentLoading}
           >
-            {isPaymentConfirmed ? "Payment Confirmed" : "I Have Made Payment"}
+            {isPaymentLoading ? (
+              <span className="ap-btn-spinner" aria-hidden="true" />
+            ) : isPaymentConfirmed ? (
+              "Payment Confirmed"
+            ) : (
+              "I Have Made Payment"
+            )}
           </button>
         </div>
 
@@ -547,6 +598,15 @@ export default function MobileAwaitingPayment({
           </div>
         </div>
       )}
+
+      {/* ── Compulsory First-Time Agree to Transaction Terms Modal ── */}
+      <AgreeTermsModal
+        isOpen={isTermsModalOpen}
+        onClose={handleCloseTermsModal}
+        onAgree={handleAgreeTerms}
+        room={room}
+        sellerName={sellerName}
+      />
 
       {/* Toast */}
       {toastText && <div className="ap-toast">{toastText}</div>}

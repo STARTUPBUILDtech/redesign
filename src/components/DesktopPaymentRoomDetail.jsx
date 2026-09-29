@@ -7,6 +7,7 @@ import ReceiptModal from "./Shared/ReceiptModal";
 import ReportIssueModal from "./Shared/ReportIssueModal";
 import ProtectionInfoModal from "./Shared/ProtectionInfoModal";
 import ReceiptIcon from "./Shared/ReceiptIcon";
+import AgreeTermsModal from "./Shared/AgreeTermsModal";
 import {
   SendMessageSlideUpModal,
   FaqSlideUpModal,
@@ -95,6 +96,7 @@ export default function DesktopPaymentRoomDetail({
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [isDeliveryConfirmed, setIsDeliveryConfirmed] = useState(false);
   const [isPaymentConfirmed, setIsPaymentConfirmed] = useState(false);
+  const [isPaymentLoading, setIsPaymentLoading] = useState(false);
 
   // Dispute ongoing proof modal state
   const [isProofModalOpen, setIsProofModalOpen] = useState(false);
@@ -134,16 +136,54 @@ export default function DesktopPaymentRoomDetail({
       ? "Payment Received"
       : "Awaiting Payment");
 
+  const roomId = room.id || room.orderNumber || "ORD-603607";
+  const storageKey = `pk_agreed_terms_${roomId}`;
+
+  const [hasAgreedTerms, setHasAgreedTerms] = useState(() => {
+    try {
+      return localStorage.getItem(storageKey) === "true" || !!room.hasAgreedTerms;
+    } catch {
+      return false;
+    }
+  });
+
+  const [isTermsModalOpen, setIsTermsModalOpen] = useState(
+    (isAwaitingPayment || room.statusText === "Awaiting Payment") && !hasAgreedTerms
+  );
+
+  const handleAgreeTerms = ({ state, city, location }) => {
+    try {
+      localStorage.setItem(storageKey, "true");
+    } catch (e) {}
+    setHasAgreedTerms(true);
+    setIsTermsModalOpen(false);
+    if (room) {
+      room.deliveryState = state;
+      room.deliveryCity = city;
+      room.deliveryLocation = location;
+      room.hasAgreedTerms = true;
+    }
+    showToast(`Terms agreed. Delivery to ${location || state}`);
+  };
+
+  const handleCloseTermsModal = () => {
+    if (!hasAgreedTerms) {
+      if (onBack) onBack();
+    } else {
+      setIsTermsModalOpen(false);
+    }
+  };
+
   // Timers
   const [seconds, setSeconds] = useState(119); // 1m 59s for Awaiting Payment
   const [cdSeconds, setCdSeconds] = useState(3597); // 59m 57s for Confirm Delivery
   const [disputeSeconds, setDisputeSeconds] = useState(1060); // 17m 40s for Dispute Ongoing
 
   useEffect(() => {
-    if (!isAwaitingPayment || seconds <= 0) return;
+    if (!isAwaitingPayment || !hasAgreedTerms || seconds <= 0) return;
     const t = setInterval(() => setSeconds((prev) => (prev > 0 ? prev - 1 : 0)), 1000);
     return () => clearInterval(t);
-  }, [isAwaitingPayment, seconds]);
+  }, [isAwaitingPayment, hasAgreedTerms, seconds]);
 
   useEffect(() => {
     if (!isDelivered || cdSeconds <= 0) return;
@@ -361,9 +401,14 @@ export default function DesktopPaymentRoomDetail({
   };
 
   const handlePaymentClick = () => {
-    setIsPaymentConfirmed(true);
-    showToast("Payment confirmed.");
-    if (onPaymentConfirmed) onPaymentConfirmed();
+    if (isPaymentLoading || isPaymentConfirmed) return;
+    setIsPaymentLoading(true);
+    setTimeout(() => {
+      setIsPaymentLoading(false);
+      setIsPaymentConfirmed(true);
+      showToast("Payment confirmed.");
+      if (onPaymentConfirmed) onPaymentConfirmed();
+    }, 1200);
   };
 
   const handleConfirmDelivery = () => {
@@ -1131,10 +1176,18 @@ export default function DesktopPaymentRoomDetail({
             {isAwaitingPayment ? (
               <button
                 type="button"
-                className={`desktop-prd-primary-btn ${isPaymentConfirmed ? "confirmed" : ""}`}
+                className={`desktop-prd-primary-btn ${isPaymentConfirmed ? "confirmed" : ""} ${isPaymentLoading ? "is-loading" : ""}`}
                 onClick={handlePaymentClick}
+                disabled={isPaymentLoading || isPaymentConfirmed}
+                aria-busy={isPaymentLoading}
               >
-                {isPaymentConfirmed ? "Payment Confirmed" : "I Have Made Payment"}
+                {isPaymentLoading ? (
+                  <span className="desktop-prd-btn-spinner" aria-hidden="true" />
+                ) : isPaymentConfirmed ? (
+                  "Payment Confirmed"
+                ) : (
+                  "I Have Made Payment"
+                )}
               </button>
             ) : isDelivered ? (
               <div className="desktop-prd-cd-actions">
@@ -1480,6 +1533,15 @@ export default function DesktopPaymentRoomDetail({
       <HelpDrawer
         isOpen={isHelpOpen}
         onClose={() => setIsHelpOpen(false)}
+      />
+
+      {/* ── Compulsory First-Time Agree to Transaction Terms Modal ── */}
+      <AgreeTermsModal
+        isOpen={isTermsModalOpen}
+        onClose={handleCloseTermsModal}
+        onAgree={handleAgreeTerms}
+        room={room}
+        sellerName={sellerName}
       />
 
       <ReceiptModal

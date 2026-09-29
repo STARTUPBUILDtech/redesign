@@ -13,6 +13,7 @@ export default function DesktopProfile({
   userName = "Your Name",
   phoneNumber = "No phone number",
   onEditProfile = () => {},
+  onSignOut = () => {},
 }) {
   const [profileData, setProfileData] = useState({
     name: userName,
@@ -27,30 +28,42 @@ export default function DesktopProfile({
       <div className="desktop-profile-wrap">
         {/* ── Top Header: Avatar & Info ── */}
         <section className="desktop-profile-header">
-          <div className="desktop-profile-avatar-wrap">
-            <div className="desktop-profile-avatar-circle">
-              <span className="material-symbols-outlined desktop-profile-avatar-icon">
-                account_circle
-              </span>
+          <div className="desktop-profile-user-info-row">
+            <div className="desktop-profile-avatar-wrap">
+              <div className="desktop-profile-avatar-circle">
+                <span className="material-symbols-outlined desktop-profile-avatar-icon">
+                  account_circle
+                </span>
+              </div>
+              <button
+                type="button"
+                className="desktop-profile-avatar-edit"
+                onClick={onEditProfile}
+                aria-label="Edit profile picture"
+                title="Edit avatar"
+              >
+                <span className="material-symbols-outlined">edit</span>
+              </button>
             </div>
-            <button
-              type="button"
-              className="desktop-profile-avatar-edit"
-              onClick={onEditProfile}
-              aria-label="Edit profile picture"
-              title="Edit avatar"
-            >
-              <span className="material-symbols-outlined">edit</span>
-            </button>
+
+            <div className="desktop-profile-info">
+              <h1 className="desktop-profile-name">{profileData.name}</h1>
+              <div className="desktop-profile-phone-pill">
+                <WhatsAppIcon size={14} />
+                <span>{profileData.phone}</span>
+              </div>
+            </div>
           </div>
 
-          <div className="desktop-profile-info">
-            <h1 className="desktop-profile-name">{profileData.name}</h1>
-            <div className="desktop-profile-phone-pill">
-              <WhatsAppIcon size={14} />
-              <span>{profileData.phone}</span>
-            </div>
-          </div>
+          <button
+            type="button"
+            className="profile-signout-btn"
+            onClick={onSignOut}
+            aria-label="Sign out"
+          >
+            <span className="material-symbols-outlined profile-signout-icon">logout</span>
+            <span>Sign Out</span>
+          </button>
         </section>
 
         {/* ── Two-Column Layout ── */}

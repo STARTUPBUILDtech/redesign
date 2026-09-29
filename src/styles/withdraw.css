@@ -1200,9 +1200,9 @@ body.dark .payout-dropdown-item.is-selected .payout-account-num-val,
   -webkit-backdrop-filter: blur(10px);
   z-index: 99999;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   justify-content: center;
-  padding: clamp(16px, 3vw, 24px);
+  padding: 0;
   box-sizing: border-box;
   animation: payoutSheetFadeIn 0.2s ease-out;
 }
@@ -1214,26 +1214,32 @@ body.dark .payout-dropdown-item.is-selected .payout-account-num-val,
 
 .payout-confirm-sheet {
   width: 100%;
-  max-width: 480px;
+  max-width: 100%;
   background-color: var(--page, #ffffff);
   color: var(--ink);
-  border-radius: 20px;
-  padding: 20px 24px 24px;
+  border-radius: 24px 24px 0 0;
+  border-bottom: none;
+  border-left: none;
+  border-right: none;
+  border-top: 1px solid var(--line);
+  padding: 12px 20px calc(24px + env(safe-area-inset-bottom, 12px)) 20px;
   box-sizing: border-box;
-  animation: pkModalCenterIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
+  animation: payoutSheetSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
   gap: 14px;
-  border: 1px solid var(--line);
 }
 
 [data-appearance="dark"] .payout-confirm-sheet,
 .app[data-appearance="dark"] .payout-confirm-sheet,
 .mobile-dashboard[data-appearance="dark"] .payout-confirm-sheet {
   background-color: #141518;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.75);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  border-bottom: none;
+  border-left: none;
+  border-right: none;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.7);
 }
 
 @keyframes pkModalCenterIn {
@@ -1247,16 +1253,24 @@ body.dark .payout-dropdown-item.is-selected .payout-account-num-val,
   }
 }
 
-@media (min-width: 641px) {
+@media (min-width: 701px) {
   .payout-sheet-backdrop {
     align-items: center;
-    padding: 20px;
+    padding: clamp(16px, 3vw, 24px);
   }
   .payout-confirm-sheet {
-    border-radius: 16px;
-    border-bottom: 1px solid var(--line);
+    max-width: 480px;
+    border-radius: 20px;
+    border: 1px solid var(--line);
     padding: 20px 24px 24px;
-    animation: payoutDesktopModalIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: pkModalCenterIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
+  }
+  [data-appearance="dark"] .payout-confirm-sheet,
+  .app[data-appearance="dark"] .payout-confirm-sheet,
+  .mobile-dashboard[data-appearance="dark"] .payout-confirm-sheet {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.75);
   }
   .payout-sheet-handle-wrap {
     display: none !important;

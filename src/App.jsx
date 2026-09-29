@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect } from "react";
 import paykudiLogo from "./assets/paykudi-logo.png";
 import logoDarkMode from "./assets/logodarkmode.png";
+import avatarIllustration from "./assets/avatar-illustration.png";
 import LoginPage from "./components/Auth/LoginPage.jsx";
 import DesktopActivity from "./components/DesktopActivity.jsx";
 import DesktopNewPayment from "./components/DesktopNewPayment.jsx";
+import DesktopPaymentInvitationModal from "./components/DesktopPaymentInvitationModal.jsx";
 import DesktopPaymentRoom from "./components/DesktopPaymentRoom.jsx";
 import DesktopPaymentRoomDetail from "./components/DesktopPaymentRoomDetail.jsx";
 import MobileActivity from "./components/Mobile/MobileActivity.jsx";
@@ -21,6 +23,7 @@ import DesktopHelp from "./components/DesktopHelp.jsx";
 import DesktopProfile from "./components/DesktopProfile.jsx";
 import DesktopWithdrawModal from "./components/DesktopWithdrawModal.jsx";
 import MobileWithdraw from "./components/Mobile/MobileWithdraw.jsx";
+import AgreeTermsModal from "./components/Shared/AgreeTermsModal.jsx";
 import { ALL_PAYMENT_ROOMS } from "./data/paymentRooms.js";
 
 function BrandLogo({ dark, className }) {
@@ -49,7 +52,11 @@ function HeaderActions({ dark, onThemeToggle, onOpenProfile, isProfileActive }) 
           onClick={onOpenProfile}
           style={{ cursor: "pointer" }}
         >
-          <span className="material-symbols-outlined avatar-icon">account_circle</span>
+          <img
+            src={avatarIllustration}
+            alt="Profile avatar"
+            className="header-avatar-img"
+          />
         </div>
       )}
 
@@ -269,6 +276,7 @@ function MobileDashboard({
   paymentRooms,
   onAddPaymentRoom,
   ongoingPaymentRoomsCount,
+  onSignOut = () => {},
 }) {
   const contentScrollRef = useRef(null);
 
@@ -328,7 +336,7 @@ function MobileDashboard({
         <MobilePaymentInvitation
           room={activeRoom}
           onCancel={() => handleNavClick("Home")}
-          onProceed={() => handleNavClick("Home")}
+          onProceed={() => handleNavClick("Awaiting Payment")}
           onShare={() => {}}
         />
       ) : active === "Awaiting Payment" ? (
@@ -408,7 +416,7 @@ function MobileDashboard({
           ) : active === "Help" || active === "Help & support" ? (
             <MobileHelp onOpenChat={() => {}} />
           ) : active === "Profile" ? (
-            <DesktopProfile userName="Amaka" />
+            <DesktopProfile userName="Amaka" onSignOut={onSignOut} />
           ) : (
             <div className="mobile-home-content">
               <div className="mobile-main mobile-main-top">
@@ -586,6 +594,15 @@ export default function App() {
     return formattedRoom;
   };
 
+  const handleSignOut = () => {
+    setIsLoggedIn(false);
+    setActive("Home");
+    setIsPaymentModalOpen(false);
+    setIsInvitationModalOpen(false);
+    setIsTermsModalOpen(false);
+    setIsWithdrawModalOpen(false);
+  };
+
   useEffect(() => {
     document.documentElement.setAttribute("data-appearance", dark ? "dark" : "light");
     document.body.setAttribute("data-appearance", dark ? "dark" : "light");
@@ -599,6 +616,8 @@ export default function App() {
   }, [dark]);
 
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [isInvitationModalOpen, setIsInvitationModalOpen] = useState(false);
+  const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
 
   const nav = [
@@ -631,6 +650,8 @@ export default function App() {
               onClick={() => {
                 setActive(name);
                 setIsPaymentModalOpen(false);
+                setIsInvitationModalOpen(false);
+                setIsTermsModalOpen(false);
                 setIsWithdrawModalOpen(false);
                 window.scrollTo({ top: 0, behavior: "instant" });
               }}
@@ -671,24 +692,7 @@ export default function App() {
       ) : active === "Help" || active === "Help & support" ? (
         <DesktopHelp />
       ) : active === "Profile" ? (
-        <DesktopProfile userName="Amaka" />
-      ) : active === "Payment Invitation" ? (
-        <main id="payment-room" className="desktop-container desktop-payment-room">
-          <div className="desktop-payment-room-inner">
-            <MobilePaymentInvitation
-              room={{
-                id: "ORD-482910",
-                counterparty: "Alex Morgan",
-                item: "Iphone 18 Pro Max",
-                amount: "₦89,000",
-                role: role === "Buyer" ? "Seller" : "Buyer",
-              }}
-              onCancel={() => setActive("Home")}
-              onProceed={() => setActive("Home")}
-              onShare={() => {}}
-            />
-          </div>
-        </main>
+        <DesktopProfile userName="Amaka" onSignOut={handleSignOut} />
       ) : active === "Awaiting Payment" ||
          active === "Payment Received" ||
          active === "In Transit" ||
@@ -777,11 +781,65 @@ export default function App() {
           }}
           onSuccess={(created) => {
             if (created) {
-              handleAddPaymentRoom(created);
+              const added = handleAddPaymentRoom(created);
+              setActiveRoom(added || created);
             }
+            setIsPaymentModalOpen(false);
+            if (active === "New Payment") setActive("Home");
+            setIsInvitationModalOpen(true);
+          }}
+          onOpenInvitation={(created) => {
+            setIsPaymentModalOpen(false);
+            if (active === "New Payment") setActive("Home");
+            if (created) {
+              const added = handleAddPaymentRoom(created);
+              setActiveRoom(added || created);
+            }
+            setIsInvitationModalOpen(true);
           }}
         />
       )}
+
+      {/* Desktop Payment Invitation Modal (same modal size as New Payment modal, compulsory until Proceed) */}
+      {(isInvitationModalOpen || active === "Payment Invitation") && (
+        <DesktopPaymentInvitationModal
+          room={activeRoom}
+          onProceed={() => {
+            setIsInvitationModalOpen(false);
+            if (active === "Payment Invitation") setActive("Home");
+            setIsTermsModalOpen(true);
+          }}
+          onShare={() => {}}
+        />
+      )}
+
+      {/* Agree to Terms Modal (compulsory after Payment Invitation) */}
+      <AgreeTermsModal
+        isOpen={isTermsModalOpen}
+        onClose={() => {
+          setIsTermsModalOpen(false);
+          setIsInvitationModalOpen(true);
+        }}
+        onAgree={({ state, city, location }) => {
+          setIsTermsModalOpen(false);
+          if (activeRoom) {
+            const storageKey = `pk_agreed_terms_${activeRoom.id || activeRoom.orderNumber || "ORD-603607"}`;
+            try {
+              localStorage.setItem(storageKey, "true");
+            } catch (e) {}
+            activeRoom.deliveryState = state;
+            activeRoom.deliveryCity = city;
+            activeRoom.deliveryLocation = location;
+            activeRoom.hasAgreedTerms = true;
+          }
+          setActive("Awaiting Payment");
+        }}
+        room={activeRoom}
+        sellerName={
+          activeRoom?.sellerName ||
+          (activeRoom?.role === "Selling" ? "Amaka Obi" : (activeRoom?.counterparty || "Howard Ukah"))
+        }
+      />
 
       {/* Desktop Withdraw Modal (pops up in the middle of home screen) */}
       {(isWithdrawModalOpen || active === "Withdraw" || active === "Payout") && (
@@ -810,6 +868,7 @@ export default function App() {
         paymentRooms={paymentRooms}
         onAddPaymentRoom={handleAddPaymentRoom}
         ongoingPaymentRoomsCount={ongoingPaymentRoomsCount}
+        onSignOut={handleSignOut}
       />
     </div>
       )}

@@ -105,7 +105,7 @@ textarea,
   height: 32px;
   border-radius: 9999px;
   overflow: hidden;
-  border: 1px solid var(--line) !important;
+  border: 1px solid #b2bed0 !important;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   cursor: pointer;
   flex-shrink: 0;
@@ -121,6 +121,7 @@ textarea,
 .header-avatar-circle:hover {
   transform: scale(1.05);
   background-color: #dbe3ed !important;
+  border-color: #98a9c0 !important;
 }
 
 .header-avatar-circle:active {
@@ -135,19 +136,32 @@ textarea,
   transition: color 0.2s ease;
 }
 
+.header-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center bottom;
+  display: block;
+  user-select: none;
+  pointer-events: none;
+  border-radius: 9999px;
+  transform: translateY(1px) scale(1.06);
+  transform-origin: center bottom;
+}
+
 .app[data-appearance="dark"] .header-avatar-circle,
 .mobile-dashboard[data-appearance="dark"] .header-avatar-circle,
 [data-appearance="dark"] .header-avatar-circle {
-  background-color: #22262e !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background-color: #e5ebf3 !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
 }
 
 .app[data-appearance="dark"] .header-avatar-circle:hover,
 .mobile-dashboard[data-appearance="dark"] .header-avatar-circle:hover,
 [data-appearance="dark"] .header-avatar-circle:hover {
-  background-color: #2a2f39 !important;
-  border-color: rgba(255, 255, 255, 0.15) !important;
+  background-color: #dbe3ed !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
 }
 
 .app[data-appearance="dark"] .header-avatar-circle .avatar-icon,

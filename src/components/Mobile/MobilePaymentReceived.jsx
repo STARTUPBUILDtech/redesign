@@ -24,13 +24,13 @@ export default function MobilePaymentReceived({
   const screenRef = useRef(null);
 
   useEffect(() => {
-    if (isChatOpen) {
+    if (isChatOpen || isHelpOpen) {
       if (screenRef.current) {
         screenRef.current.scrollTop = 0;
       }
       window.scrollTo(0, 0);
     }
-  }, [isChatOpen]);
+  }, [isChatOpen, isHelpOpen]);
 
   const orderNumber = room.id || room.orderNumber || "ORD-533666";
   const orderAmount = room.amount || room.price || "₦2,345,680";

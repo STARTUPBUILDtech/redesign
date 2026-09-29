@@ -26,13 +26,13 @@ export default function MobileCompleted({
   const screenRef = useRef(null);
 
   useEffect(() => {
-    if (isChatOpen) {
+    if (isChatOpen || isHelpOpen) {
       if (screenRef.current) {
         screenRef.current.scrollTop = 0;
       }
       window.scrollTo(0, 0);
     }
-  }, [isChatOpen]);
+  }, [isChatOpen, isHelpOpen]);
 
   const showToast = (msg) => {
     setToastText(msg);

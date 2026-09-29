@@ -5,50 +5,50 @@
    ========================================================================== */
 
 .ap-order-help-backdrop {
-  position: fixed !important;
-  inset: 0 !important;
+  position: absolute !important;
   top: 0 !important;
   left: 0 !important;
   right: 0 !important;
   bottom: 0 !important;
-  z-index: 100000 !important;
-  background-color: rgba(0, 0, 0, 0.65) !important;
-  backdrop-filter: blur(10px) !important;
-  -webkit-backdrop-filter: blur(10px) !important;
+  width: 100% !important;
+  height: 100% !important;
+  background-color: transparent !important;
+  z-index: 60 !important;
   display: flex !important;
   justify-content: center !important;
-  align-items: center !important;
-  padding: clamp(16px, 3vw, 24px) !important;
-  animation: apOrderHelpFadeIn 0.2s ease-out;
+  align-items: stretch !important;
   overflow: hidden !important;
   box-sizing: border-box;
 }
 
 .ap-order-help-container {
   width: 100% !important;
-  max-width: 660px !important;
-  height: min(600px, 85vh) !important;
-  min-height: 500px !important;
+  max-width: 100% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  min-height: unset !important;
   background-color: var(--page, #ffffff);
   color: var(--ink, #161618);
-  display: flex;
-  flex-direction: column;
-  border-radius: 20px !important;
-  animation: pkModalCenterIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  overflow: hidden;
+  display: flex !important;
+  flex-direction: column !important;
+  border-radius: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+  animation: apChatSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  overflow: hidden !important;
+  overscroll-behavior: contain !important;
+  touch-action: pan-y !important;
   box-sizing: border-box;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   position: relative;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
-  border: 1px solid var(--line, rgba(0, 0, 0, 0.08));
 }
 
 [data-appearance="dark"] .ap-order-help-container,
 .mobile-dashboard[data-appearance="dark"] .ap-order-help-container {
   background-color: var(--page, #131417);
   color: var(--ink, #f4f4f6);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.75);
+  border: none !important;
+  box-shadow: none !important;
 }
 
 @keyframes pkModalCenterIn {
@@ -59,6 +59,63 @@
   to {
     transform: scale(1) translateY(0);
     opacity: 1;
+  }
+}
+
+@keyframes apChatSlideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0.8;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes apOrderHelpSlideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0.8;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@media (min-width: 701px) {
+  .ap-order-help-backdrop {
+    position: fixed !important;
+    inset: 0 !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    z-index: 100000 !important;
+    background-color: rgba(0, 0, 0, 0.65) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: clamp(16px, 3vw, 24px) !important;
+    animation: apOrderHelpFadeIn 0.2s ease-out;
+  }
+
+  .ap-order-help-container {
+    max-width: 660px !important;
+    height: min(600px, 85vh) !important;
+    min-height: 500px !important;
+    border-radius: 20px !important;
+    border: 1px solid var(--line, rgba(0, 0, 0, 0.08)) !important;
+    animation: pkModalCenterIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45) !important;
+  }
+
+  [data-appearance="dark"] .ap-order-help-container,
+  .mobile-dashboard[data-appearance="dark"] .ap-order-help-container {
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.75) !important;
   }
 }
 

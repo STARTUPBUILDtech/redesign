@@ -34,7 +34,7 @@
 .gap-1 { gap: 4px !important; }
 
 /* ── Padding & Sizing (20px left & right padding) ── */
-.pt-8 { padding-top: 14px !important; }
+.pt-8 { padding-top: 24px !important; }
 .pr-5 { padding-right: 20px !important; }
 .pb-8 { padding-bottom: 32px !important; }
 .pl-5 { padding-left: 20px !important; }
@@ -323,8 +323,8 @@
   min-height: 30px !important;
   border-radius: 9999px !important;
   border: none !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6), 0 0 0 1.5px rgba(255, 255, 255, 0.9) !important;
-  background-color: #1e1e24 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 0 0 2px #d4dbe5 !important;
+  background-color: #e5ebf3 !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -395,7 +395,7 @@
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  background-color: #1e1e24 !important;
+  background-color: #ffffff !important;
   border: none !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6), 0 0 0 1.5px rgba(255, 255, 255, 0.9) !important;
   padding: 0 !important;
@@ -410,7 +410,7 @@
   width: 100% !important;
   height: 100% !important;
   object-fit: cover !important;
-  object-position: center 20% !important;
+  object-position: center bottom !important;
   border-radius: 50% !important;
   display: block !important;
   user-select: none !important;
@@ -439,9 +439,22 @@
   z-index: 1 !important;
   position: relative !important;
   border: none !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6), 0 0 0 1.5px rgba(255, 255, 255, 0.9) !important;
-  background-color: #f1f5f9 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 0 0 2px #d4dbe5 !important;
+  background-color: #e5ebf3 !important; /* Default soft blue-gray background matching reference image */
+  display: flex !important;
+  align-items: flex-end !important;
+  justify-content: center !important;
+  overflow: hidden !important;
   animation: m-invite-avatar-pop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.m-invite-avatar-second .m-invite-avatar-img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center bottom !important;
+  transform: translateY(1.5px) scale(1.06) !important;
+  transform-origin: center bottom !important;
 }
 
 @keyframes m-invite-avatar-pop {
@@ -536,16 +549,16 @@
   color: #111215 !important;
 }
 
-/* Dark mode: Compact & noticeable presence on light tile */
+/* Dark mode: Inner background opposite (dark), matching card/body aesthetic with light outline */
 [data-appearance="dark"] .m-invite-item-card .m-invite-profile-avatar,
 .app[data-appearance="dark"] .m-invite-item-card .m-invite-profile-avatar,
 .mobile-dashboard[data-appearance="dark"] .m-invite-item-card .m-invite-profile-avatar,
 [data-appearance="dark"] .m-invite-avatar-second,
 .app[data-appearance="dark"] .m-invite-avatar-second,
 .mobile-dashboard[data-appearance="dark"] .m-invite-avatar-second {
-  background-color: #ffffff !important;
+  background-color: #121316 !important;
   border: none !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.16), 0 0 0 1.5px #18181b !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6), 0 0 0 1.5px rgba(255, 255, 255, 0.85) !important;
 }
 
 [data-appearance="dark"] .m-invite-item-card .m-invite-profile-avatar .avatar-icon,
@@ -1838,4 +1851,37 @@ body[data-appearance="dark"] .m-invite-add-spec-btn:hover,
     opacity: 1;
     transform: translate(-50%, 0) scale(1);
   }
+}
+
+/* ── Loading / Spinner state for Proceed button ── */
+.m-invite-btn-proceed.is-loading,
+.m-invite-btn-proceed:disabled {
+  opacity: 0.82 !important;
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+}
+
+@keyframes btn-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Spinner: white ring on black button (light mode) */
+.m-invite-btn-proceed .btn-spinner {
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  border: 2.5px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #ffffff;
+  animation: btn-spin 0.75s linear infinite;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+/* Spinner: dark ring on white button (dark mode) */
+[data-appearance="dark"] .m-invite-btn-proceed .btn-spinner,
+.app[data-appearance="dark"] .m-invite-btn-proceed .btn-spinner,
+.mobile-dashboard[data-appearance="dark"] .m-invite-btn-proceed .btn-spinner {
+  border-color: rgba(0, 0, 0, 0.2) !important;
+  border-top-color: #111215 !important;
 }

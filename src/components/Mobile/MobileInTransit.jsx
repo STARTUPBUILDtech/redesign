@@ -27,13 +27,13 @@ export default function MobileInTransit({
   const screenRef = useRef(null);
 
   useEffect(() => {
-    if (isChatOpen) {
+    if (isChatOpen || isHelpOpen) {
       if (screenRef.current) {
         screenRef.current.scrollTop = 0;
       }
       window.scrollTo(0, 0);
     }
-  }, [isChatOpen]);
+  }, [isChatOpen, isHelpOpen]);
 
   const orderNumber = room.id || room.orderNumber || "ORD-774120";
   const orderAmountRaw = room.amount || room.price || "₦385,000";

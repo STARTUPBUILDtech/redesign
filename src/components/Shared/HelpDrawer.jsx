@@ -40,35 +40,18 @@ export default function HelpDrawer({
   onReportIssue,
   faqs,
 }) {
-  const [headerBottom, setHeaderBottom] = useState(0);
+  const [isDesktop, setIsDesktop] = useState(() => {
+    return typeof window !== "undefined" && window.innerWidth > 700 && !document.querySelector(".mobile-dashboard");
+  });
 
   useEffect(() => {
-    if (!isOpen) return;
-
-    const updatePosition = () => {
-      // On mobile screens, the screen container already starts directly under the PayKudi header.
-      // Top 0 allows it to cover the screen sub-header (Confirm Delivery) and sit flush under PayKudi.
-      const isMobile =
-        window.innerWidth <= 700 ||
-        document.querySelector(".mobile-dashboard") ||
-        document.querySelector(".mobile-awaiting-payment-screen");
-
-      if (isMobile) {
-        setHeaderBottom(0);
-      } else {
-        const desktopHeader = document.querySelector(".topbar");
-        if (desktopHeader) {
-          setHeaderBottom(desktopHeader.getBoundingClientRect().bottom);
-        } else {
-          setHeaderBottom(0);
-        }
-      }
+    const checkDesktop = () => {
+      setIsDesktop(window.innerWidth > 700 && !document.querySelector(".mobile-dashboard"));
     };
-
-    updatePosition();
-    window.addEventListener("resize", updatePosition);
-    return () => window.removeEventListener("resize", updatePosition);
-  }, [isOpen]);
+    checkDesktop();
+    window.addEventListener("resize", checkDesktop);
+    return () => window.removeEventListener("resize", checkDesktop);
+  }, []);
 
   if (!isOpen) return null;
 
@@ -93,7 +76,7 @@ export default function HelpDrawer({
 
   const items = faqs && faqs.length > 0 ? faqs : defaultFaqs;
 
-  return createPortal(
+  const modalContent = (
     <div
       className="ap-order-help-backdrop"
       onClick={onClose}
@@ -194,7 +177,8 @@ export default function HelpDrawer({
           </button>
         </div>
       </div>
-    </div>,
-    document.body
+    </div>
   );
+
+  return isDesktop ? createPortal(modalContent, document.body) : modalContent;
 }
