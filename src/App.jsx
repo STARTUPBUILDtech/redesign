@@ -536,7 +536,7 @@ export default function App() {
   const [dark, setDark] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [visible, setVisible] = useState(true);
-  const [active, setActive] = useState("Activity");
+  const [active, setActive] = useState("Home");
   const [role, setRole] = useState("Buyer");
   const [activeRoom, setActiveRoom] = useState({
     id: "ORD-603607",
@@ -615,7 +615,10 @@ export default function App() {
         <LoginPage
           dark={dark}
           onThemeToggle={() => setDark(!dark)}
-          onLogin={() => setIsLoggedIn(true)}
+          onLogin={() => {
+            setIsLoggedIn(true);
+            setActive("Home");
+          }}
         />
       ) : (
     <div className="app" data-appearance={dark ? "dark" : "light"}>
