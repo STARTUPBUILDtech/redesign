@@ -342,14 +342,14 @@
   margin: 0 !important;
   padding: 12px 16px !important;
   min-height: 52px !important;
-  border-bottom: 1px solid var(--line, #e2e8f0) !important;
+  border-bottom: none !important;
   background-color: var(--page, #ffffff) !important;
   box-sizing: border-box !important;
 }
 
 [data-appearance="dark"] .cd-issue-header {
   background-color: #121316 !important;
-  border-bottom-color: rgba(255, 255, 255, 0.12) !important;
+  border-bottom: none !important;
 }
 
 .cd-issue-title-group {
@@ -846,3 +846,174 @@
 }
 
 
+
+/* -- Submit More Proof Modal: Mobile Spacing -- */
+@media (max-width: 700px) {
+  [aria-labelledby="proof-modal-title"] .cd-issue-modal {
+    gap: 22px;
+    padding-top: 18px;
+    padding-bottom: calc(32px + env(safe-area-inset-bottom, 16px));
+  }
+
+  [aria-labelledby="proof-modal-title"] .cd-issue-textarea {
+    height: 110px;
+    min-height: 110px;
+  }
+
+  [aria-labelledby="proof-modal-title"] .cd-issue-field-group {
+    gap: 10px;
+  }
+
+  [aria-labelledby="proof-modal-title"] .cd-issue-label {
+    font-size: 13px;
+  }
+
+  [aria-labelledby="proof-modal-title"] .cd-report-btn {
+    margin-top: 6px !important;
+    height: 52px !important;
+    font-size: 15px !important;
+    border-radius: 14px !important;
+  }
+
+  [aria-labelledby="proof-modal-title"] .cd-image-dropzone {
+    padding: 16px 18px;
+    gap: 16px;
+  }
+
+  [aria-labelledby="proof-modal-title"] .cd-dropzone-icon-wrap {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+  }
+
+  [aria-labelledby="proof-modal-title"] .cd-dropzone-icon-wrap .material-symbols-outlined {
+    font-size: 22px;
+  }
+
+  [aria-labelledby="proof-modal-title"] .cd-dropzone-main {
+    font-size: 13px;
+  }
+
+  [aria-labelledby="proof-modal-title"] .cd-dropzone-sub {
+    font-size: 11px;
+  }
+}
+
+/* -- Submit More Proof Modal: Sticky Bottom Button on Mobile -- */
+@media (max-width: 700px) {
+  /* Make the proof modal sheet use flex column so button can stick to bottom */
+  [aria-labelledby="proof-modal-title"].ap-bottom-sheet,
+  [aria-labelledby="proof-modal-title"] ~ * .ap-bottom-sheet,
+  .cd-issue-sheet-container:has([aria-labelledby="proof-modal-title"]) {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* The body scrolls but the button stays out of flow */
+  [aria-labelledby="proof-modal-title"] .cd-issue-modal {
+    padding-bottom: calc(72px + env(safe-area-inset-bottom, 16px));
+  }
+
+  /* Sticky submit button — floats at the bottom of the sheet */
+  [aria-labelledby="proof-modal-title"] .cd-report-btn {
+    position: sticky !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 10 !important;
+    margin-top: auto !important;
+    margin-left: -16px !important;
+    margin-right: -16px !important;
+    width: calc(100% + 32px) !important;
+    border-radius: 0 !important;
+    height: 56px !important;
+    font-size: 15px !important;
+    box-shadow: 0 -4px 16px rgba(220, 38, 38, 0.18) !important;
+  }
+}
+
+/* -- Submit More Proof Modal: Sticky Bottom Submit Button (Mobile Only) -- */
+@media (max-width: 700px) {
+  /* The sheet itself becomes a flex column container */
+  .cd-proof-sheet {
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+  }
+
+  /* Scrollable body — leaves room for the sticky button */
+  .cd-proof-sheet .cd-issue-modal {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding-bottom: 20px;
+  }
+
+  /* Sticky submit button pinned to the very bottom of the sheet */
+  .cd-proof-sheet .cd-report-btn {
+    position: sticky !important;
+    bottom: 0 !important;
+    flex-shrink: 0 !important;
+    width: 100% !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    height: 56px !important;
+    font-size: 15px !important;
+    box-shadow: 0 -4px 20px rgba(220, 38, 38, 0.2) !important;
+  }
+}
+
+/* -- Submit More Proof Modal: Layout & Sticky Button -- */
+
+/* Sheet is a flex column: header | scroll-body | cta-bar */
+.cd-proof-sheet {
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+/* Scrollable content area fills all available space */
+.cd-proof-sheet .cd-proof-body {
+  flex: 1 1 auto !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  margin-bottom: 0 !important;
+  /* keep scrollbar hidden */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.cd-proof-sheet .cd-proof-body::-webkit-scrollbar {
+  display: none;
+}
+
+/* CTA bar — always at the very bottom of the sheet */
+.cd-proof-cta-bar {
+  flex-shrink: 0;
+  padding: 12px 16px calc(16px + env(safe-area-inset-bottom, 0px)) 16px;
+  background: var(--page, #ffffff);
+  box-sizing: border-box;
+}
+
+[data-appearance="dark"] .cd-proof-cta-bar {
+  background: #121316;
+  }
+
+.cd-proof-cta-bar .cd-report-btn {
+  width: 100% !important;
+  height: 52px !important;
+  font-size: 15px !important;
+  border-radius: 14px !important;
+  margin: 0 !important;
+}
+
+/* On desktop, restore normal flow (no sticky needed) */
+@media (min-width: 701px) {
+  .cd-proof-sheet .cd-proof-body {
+    overflow-y: auto !important;
+  }
+
+  .cd-proof-cta-bar {
+    border-top: none;
+    padding: 0 0 4px 0;
+  }
+}

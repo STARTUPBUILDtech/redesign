@@ -40,11 +40,13 @@ function BrandLogo({ dark, className }) {
 }
 
 // Header Actions matching C:\Users\abc\OneDrive\Videos\dashboard.html
-function HeaderActions({ dark, onThemeToggle, onOpenProfile, isProfileActive }) {
+function HeaderActions({ dark, onThemeToggle, onOpenProfile, isProfileActive, hideAvatar }) {
+  const shouldHideAvatar = hideAvatar;
+
   return (
     <div className="header-actions">
-      {/* Profile Avatar (matching #m-profile-sticky-avatar from dashboard.html) - hidden when in Profile */}
-      {!isProfileActive && (
+      {/* Profile Avatar (matching #m-profile-sticky-avatar from dashboard.html) - hidden when in Profile or when modal is open */}
+      {!isProfileActive && !shouldHideAvatar && (
         <div
           className="header-avatar-circle"
           aria-label="Open profile"
@@ -620,6 +622,26 @@ export default function App() {
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
 
+  // Derive modal-open state directly from React state — no DOM polling needed.
+  // The MutationObserver approach caused a re-render loop that froze the UI.
+  const isModalOpenOnDesktop =
+    isPaymentModalOpen ||
+    isInvitationModalOpen ||
+    isTermsModalOpen ||
+    isWithdrawModalOpen;
+
+  // Sync body class for CSS selectors that need it
+  useEffect(() => {
+    if (isModalOpenOnDesktop) {
+      document.body.classList.add("modal-open-desktop");
+    } else {
+      document.body.classList.remove("modal-open-desktop");
+    }
+    return () => {
+      document.body.classList.remove("modal-open-desktop");
+    };
+  }, [isModalOpenOnDesktop]);
+
   const nav = [
     ["Home", HomeIcon],
     ["Activity", ActivityIcon],
@@ -641,30 +663,32 @@ export default function App() {
         />
       ) : (
     <div className="app" data-appearance={dark ? "dark" : "light"}>
-      <header className="topbar">
+      <header className={`topbar ${isModalOpenOnDesktop ? "modal-active-topbar" : ""}`}>
         <BrandLogo dark={dark} className="brand" />
-        <nav aria-label="Primary navigation">
-          {nav.map(([name, NavIcon]) => (
-            <button
-              key={name}
-              onClick={() => {
-                setActive(name);
-                setIsPaymentModalOpen(false);
-                setIsInvitationModalOpen(false);
-                setIsTermsModalOpen(false);
-                setIsWithdrawModalOpen(false);
-                window.scrollTo({ top: 0, behavior: "instant" });
-              }}
-              className={active === name ? "active" : ""}
-            >
-              <NavIcon
-                active={active === name}
-                count={name === "Payment room" ? ongoingPaymentRoomsCount : undefined}
-              />
-              <span>{name}</span>
-            </button>
-          ))}
-        </nav>
+        {!isModalOpenOnDesktop && (
+          <nav aria-label="Primary navigation">
+            {nav.map(([name, NavIcon]) => (
+              <button
+                key={name}
+                onClick={() => {
+                  setActive(name);
+                  setIsPaymentModalOpen(false);
+                  setIsInvitationModalOpen(false);
+                  setIsTermsModalOpen(false);
+                  setIsWithdrawModalOpen(false);
+                  window.scrollTo({ top: 0, behavior: "instant" });
+                }}
+                className={active === name ? "active" : ""}
+              >
+                <NavIcon
+                  active={active === name}
+                  count={name === "Payment room" ? ongoingPaymentRoomsCount : undefined}
+                />
+                <span>{name}</span>
+              </button>
+            ))}
+          </nav>
+        )}
         <div className="top-actions">
           <HeaderActions
             dark={dark}
@@ -676,6 +700,7 @@ export default function App() {
               window.scrollTo({ top: 0, behavior: "instant" });
             }}
             isProfileActive={active === "Profile"}
+            hideAvatar={isModalOpenOnDesktop}
           />
         </div>
       </header>

@@ -2,12 +2,24 @@ import { createPortal } from "react-dom";
 import "../../styles/mobile-awaiting-payment.css";
 import "../../styles/mobile-in-transit.css";
 
-/* ── Proof-of-shipping placeholder images (coloured blocks used as thumbnails) ── */
+/* ── Proof-of-shipping real images ── */
 const PROOF_IMAGES = [
-  { label: "Package Box",    color: "#e0e7ff", icon: "inventory_2" },
-  { label: "Waybill Slip",   color: "#fef9c3", icon: "receipt_long" },
-  { label: "Packaging",      color: "#dcfce7", icon: "category" },
-  { label: "Security Seal",  color: "#fce7f3", icon: "verified" },
+  {
+    label: "Package Box",
+    url: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=200&h=200&fit=crop&auto=format",
+  },
+  {
+    label: "Waybill Slip",
+    url: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=200&h=200&fit=crop&auto=format",
+  },
+  {
+    label: "Packaging",
+    url: "https://images.unsplash.com/photo-1530982011887-3cc11cc85693?w=200&h=200&fit=crop&auto=format",
+  },
+  {
+    label: "Security S...",
+    url: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&h=200&fit=crop&auto=format",
+  },
 ];
 
 export default function ShippingStatusModal({
@@ -19,11 +31,11 @@ export default function ShippingStatusModal({
 }) {
   if (!isOpen) return null;
 
-  const orderNumber     = room.id || room.orderNumber || "ORD-771920";
-  const courierService  = room.courier || "GIG Logistics";
-  const trackingNumber  = room.trackingNumber || "KMLMLMMO";
+  const orderNumber    = room.id || room.orderNumber || "ORD-771920";
+  const courierService = room.courier || "GIG Logistics";
+  const trackingNumber = room.trackingNumber || "KMLMLMMO";
 
-  /* ── Timeline steps matching the design ── */
+  /* ── Timeline steps ── */
   const steps = [
     {
       state: "completed",
@@ -79,7 +91,8 @@ export default function ShippingStatusModal({
         <div className="ap-sheet-header">
           <div className="ap-sheet-title-group">
             <h3 className="ap-sheet-title">Shipping Status</h3>
-            <span className="it-tracking-pill">{orderNumber}</span>
+            {/* Green pill matching Order Details modal */}
+            <span className="ap-sheet-ord-pill">{orderNumber}</span>
           </div>
           <button
             type="button"
@@ -126,7 +139,11 @@ export default function ShippingStatusModal({
                       {step.title}
                     </span>
                     {step.time && (
-                      <span className="ssm-step-time">{step.time}</span>
+                      <span
+                        className={`ssm-step-time${step.state === "completed" ? " ssm-step-time--completed" : ""}`}
+                      >
+                        {step.time}
+                      </span>
                     )}
                     {step.badge && (
                       <span className={`ssm-step-badge ssm-step-badge--${step.state}`}>
@@ -151,16 +168,19 @@ export default function ShippingStatusModal({
           <div className="ssm-proof-grid">
             {PROOF_IMAGES.map((img, i) => (
               <div key={i} className="ssm-proof-thumb">
-                <div
-                  className="ssm-proof-img"
-                  style={{ background: img.color }}
-                >
-                  <span
-                    className="material-symbols-outlined"
-                    style={{ fontSize: 24, color: "#6b7280", fontVariationSettings: "'FILL' 0" }}
-                  >
-                    {img.icon}
-                  </span>
+                <div className="ssm-proof-img">
+                  <img
+                    src={img.url}
+                    alt={img.label}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      borderRadius: 8,
+                      display: "block",
+                    }}
+                    loading="lazy"
+                  />
                 </div>
                 <span className="ssm-proof-label">{img.label}</span>
               </div>

@@ -7,7 +7,11 @@ export default function ReportIssueModal({
   onClose,
   orderNumber = "ORD-662819",
   onSubmitReport,
+  onSubmitIssue,
+  room,
 }) {
+  const effectiveOrderNumber = orderNumber || room?.orderNumber || room?.id || "ORD-662819";
+
   const [selectedReason, setSelectedReason] = useState("");
   const [description, setDescription] = useState("");
   const [images, setImages] = useState([]);
@@ -90,9 +94,10 @@ export default function ReportIssueModal({
       return;
     }
 
-    if (onSubmitReport) {
-      onSubmitReport({
-        orderNumber,
+    const submitFn = onSubmitReport || onSubmitIssue;
+    if (submitFn) {
+      submitFn({
+        orderNumber: effectiveOrderNumber,
         reason: selectedReason || "General issue",
         description,
         images,
@@ -121,8 +126,8 @@ export default function ReportIssueModal({
             <h3 id="cd-issue-title" className="ap-sheet-title" style={{ color: "#dc2626" }}>
               Report an Issue
             </h3>
-            <span className="ap-sheet-ord-pill cd-issue-order-pill" title={`Order ID: ${orderNumber}`}>
-              {orderNumber}
+            <span className="ap-sheet-ord-pill cd-issue-order-pill" title={`Order ID: ${effectiveOrderNumber}`}>
+              {effectiveOrderNumber}
             </span>
           </div>
           <button
@@ -310,3 +315,231 @@ export default function ReportIssueModal({
 
   return isDesktop ? createPortal(modalContent, document.body) : modalContent;
 }
+
+// ── Child Component: Submit More Proof Modal ──
+export function SubmitMoreProofModal({
+  isOpen,
+  onClose,
+  orderNumber = "ORD-662819",
+  onSubmitProof,
+  room,
+}) {
+  const [proofText, setProofText] = useState("");
+  const [proofPhotos, setProofPhotos] = useState([]);
+  const fileInputRef = useRef(null);
+
+  const [isDesktop, setIsDesktop] = useState(() => {
+    return (
+      typeof window !== "undefined" &&
+      window.innerWidth > 700 &&
+      !document.querySelector(".mobile-dashboard")
+    );
+  });
+
+  useEffect(() => {
+    const checkDesktop = () => {
+      setIsDesktop(
+        window.innerWidth > 700 && !document.querySelector(".mobile-dashboard")
+      );
+    };
+    checkDesktop();
+    window.addEventListener("resize", checkDesktop);
+    return () => window.removeEventListener("resize", checkDesktop);
+  }, []);
+
+  if (!isOpen) return null;
+
+  const effectiveOrderNumber =
+    orderNumber || room?.orderNumber || room?.id || "ORD-662819";
+
+  const handleProofPhotoUpload = (e) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    const remainingSlots = 4 - proofPhotos.length;
+    const toAdd = files.slice(0, remainingSlots).map((file) => ({
+      id: Math.random().toString(36).substring(2),
+      name: file.name,
+      url: URL.createObjectURL(file),
+    }));
+    setProofPhotos((prev) => [...prev, ...toAdd]);
+    e.target.value = "";
+  };
+
+  const handleRemovePhoto = (idToRemove) => {
+    setProofPhotos((prev) => prev.filter((p) => p.id !== idToRemove));
+  };
+
+  const handleSubmit = () => {
+    if (!proofText.trim() && proofPhotos.length === 0) return;
+    if (onSubmitProof) {
+      onSubmitProof({
+        text: proofText,
+        photos: proofPhotos,
+        orderNumber: effectiveOrderNumber,
+      });
+    }
+    setProofText("");
+    setProofPhotos([]);
+    onClose();
+  };
+
+  const content = (
+    <div
+      className={`cd-issue-backdrop ${isDesktop ? "ap-bottom-sheet-backdrop" : ""}`}
+      onClick={onClose}
+    >
+      <div
+        className="ap-bottom-sheet cd-issue-sheet-container cd-proof-sheet"
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="proof-modal-title"
+      >
+        <div className="ap-sheet-handle" />
+
+        {/* Header without bottom line */}
+        <div className="ap-sheet-header cd-issue-header" style={{ borderBottom: "none" }}>
+          <div className="ap-sheet-title-group cd-issue-title-group">
+            <h3 id="proof-modal-title" className="ap-sheet-title" style={{ color: "#dc2626" }}>
+              Submit More Proof
+            </h3>
+            <span
+              className="ap-sheet-ord-pill cd-issue-order-pill"
+              title={`Order ID: ${effectiveOrderNumber}`}
+            >
+              {effectiveOrderNumber}
+            </span>
+          </div>
+          <button
+            type="button"
+            className="ap-sheet-close-btn"
+            onClick={onClose}
+            aria-label="Close"
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
+              close
+            </span>
+          </button>
+        </div>
+
+        {/* Body — scrollable content area */}
+        <div className="cd-issue-modal cd-proof-body">
+          {/* Description Textarea */}
+          <div className="cd-issue-field-group cd-issue-desc-group">
+            <label className="cd-issue-label" htmlFor="proof-notes">
+              Additional Information/ Notes
+            </label>
+            <textarea
+              id="proof-notes"
+              className="cd-issue-textarea"
+              placeholder="Provide Further details"
+              value={proofText}
+              onChange={(e) => setProofText(e.target.value)}
+              rows={2}
+            />
+          </div>
+
+          {/* Photos Upload */}
+          <div className="cd-issue-field-group cd-issue-photo-group">
+            <div className="cd-issue-upload-header">
+              <label className="cd-issue-label">
+                Attach Evidence Photos <span className="cd-issue-label-sub">(optional)</span>
+              </label>
+              <span className="cd-issue-photo-counter">
+                {proofPhotos.length}/4 uploaded
+              </span>
+            </div>
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/png, image/jpeg, image/webp, image/heic"
+              multiple
+              style={{ display: "none" }}
+              onChange={handleProofPhotoUpload}
+            />
+
+            {proofPhotos.length === 0 && (
+              <div
+                className="cd-image-dropzone"
+                onClick={() => fileInputRef.current?.click()}
+                role="button"
+                tabIndex={0}
+                aria-label="Tap to upload photos"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    fileInputRef.current?.click();
+                  }
+                }}
+              >
+                <div className="cd-dropzone-icon-wrap">
+                  <span className="material-symbols-outlined">add_photo_alternate</span>
+                </div>
+                <div className="cd-dropzone-text">
+                  <span className="cd-dropzone-main">Tap to upload</span>
+                  <span className="cd-dropzone-sub">PNG, JPG, or WEBP up to 5MB</span>
+                </div>
+              </div>
+            )}
+
+            {proofPhotos.length > 0 && (
+              <div className="cd-image-previews-grid">
+                {proofPhotos.map((img) => (
+                  <div key={img.id} className="cd-preview-card">
+                    <img src={img.url} alt={img.name} className="cd-preview-img" />
+                    <button
+                      type="button"
+                      className="cd-preview-remove-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemovePhoto(img.id);
+                      }}
+                      title="Remove image"
+                      aria-label={`Remove ${img.name}`}
+                    >
+                      <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
+                        close
+                      </span>
+                    </button>
+                    <span className="cd-preview-name" title={img.name}>
+                      {img.name}
+                    </span>
+                  </div>
+                ))}
+
+                {proofPhotos.length < 4 && (
+                  <button
+                    type="button"
+                    className="cd-preview-add-more-btn"
+                    onClick={() => fileInputRef.current?.click()}
+                    title="Add another photo"
+                  >
+                    <span className="material-symbols-outlined">add</span>
+                    <span>Add</span>
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* ── Submit CTA: pinned outside scroll area so it always sits at the bottom ── */}
+        <div className="cd-proof-cta-bar">
+          <button
+            type="button"
+            onClick={handleSubmit}
+            className="cd-report-btn"
+          >
+            Submit Evidence
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  return isDesktop ? createPortal(content, document.body) : content;
+}
+
+ReportIssueModal.SubmitMoreProof = SubmitMoreProofModal;
+

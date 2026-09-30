@@ -3,6 +3,48 @@
    PayKudi Escrow Dispute Management Screen
    ========================================================================== */
 
+/* ── Top Header Back Button (Black in light theme, White in dark theme) ── */
+.mobile-dispute-ongoing-screen .ap-back-btn {
+  background-color: #000000 !important;
+  border: 1px solid #000000 !important;
+  color: #ffffff !important;
+}
+
+.mobile-dispute-ongoing-screen .ap-back-btn .material-symbols-outlined {
+  color: #ffffff !important;
+}
+
+.mobile-dispute-ongoing-screen .ap-back-btn:hover {
+  background-color: #222222 !important;
+  border-color: #222222 !important;
+  color: #ffffff !important;
+}
+
+[data-appearance="dark"] .mobile-dispute-ongoing-screen .ap-back-btn,
+.app[data-appearance="dark"] .mobile-dispute-ongoing-screen .ap-back-btn,
+body[data-appearance="dark"] .mobile-dispute-ongoing-screen .ap-back-btn,
+.mobile-dashboard[data-appearance="dark"] .mobile-dispute-ongoing-screen .ap-back-btn {
+  background-color: #ffffff !important;
+  border: 1px solid #ffffff !important;
+  color: #111827 !important;
+}
+
+[data-appearance="dark"] .mobile-dispute-ongoing-screen .ap-back-btn .material-symbols-outlined,
+.app[data-appearance="dark"] .mobile-dispute-ongoing-screen .ap-back-btn .material-symbols-outlined,
+body[data-appearance="dark"] .mobile-dispute-ongoing-screen .ap-back-btn .material-symbols-outlined,
+.mobile-dashboard[data-appearance="dark"] .mobile-dispute-ongoing-screen .ap-back-btn .material-symbols-outlined {
+  color: #111827 !important;
+}
+
+[data-appearance="dark"] .mobile-dispute-ongoing-screen .ap-back-btn:hover,
+.app[data-appearance="dark"] .mobile-dispute-ongoing-screen .ap-back-btn:hover,
+body[data-appearance="dark"] .mobile-dispute-ongoing-screen .ap-back-btn:hover,
+.mobile-dashboard[data-appearance="dark"] .mobile-dispute-ongoing-screen .ap-back-btn:hover {
+  background-color: #f1f2f4 !important;
+  border-color: #f1f2f4 !important;
+  color: #000000 !important;
+}
+
 /* ── Red Order Amount & Dispute Status Banner Card ── */
 .mdo-banner-card {
   background: linear-gradient(135deg, #c5221f 0%, #991b1b 100%) !important;
@@ -45,36 +87,36 @@
 
 /* Step 1: Yellow Checkmark Circle */
 .mdo-step-circle-checked {
-  width: 26px;
-  height: 26px;
+  width: 25px;
+  height: 25px;
   border-radius: 50%;
   background-color: #facc15;
   color: #1c1917;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: 11px;
   font-weight: 800;
   box-shadow: 0 0 10px rgba(250, 204, 21, 0.55);
   line-height: 1;
 }
 
 .mdo-step-circle-checked .material-symbols-outlined {
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 800;
 }
 
 /* Step 2: Active White Circle with Red Number */
 .mdo-step-circle-active {
-  width: 26px;
-  height: 26px;
+  width: 25px;
+  height: 25px;
   border-radius: 50%;
   background-color: #ffffff;
   color: #c5221f;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13.5px;
+  font-size: 11px;
   font-weight: 800;
   box-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
   line-height: 1;
@@ -82,8 +124,8 @@
 
 /* Step 3: Inactive Dark Red Translucent Circle */
 .mdo-step-circle-inactive {
-  width: 26px;
-  height: 26px;
+  width: 25px;
+  height: 25px;
   border-radius: 50%;
   background-color: rgba(0, 0, 0, 0.28);
   color: rgba(255, 255, 255, 0.65);
@@ -91,7 +133,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
+  font-size: 10.5px;
   font-weight: 700;
   line-height: 1;
 }
@@ -199,21 +241,16 @@
   flex-direction: column;
   position: relative;
   padding-left: 36px;
-  margin-bottom: 14px;
+  margin-bottom: 0;
 }
 
 /* Vertical Continuous Spine Line */
 .mdo-timeline-spine {
-  position: absolute;
-  top: 16px;
-  bottom: 0px;
-  left: 13px;
-  width: 2px;
-  background: var(--line, #e2e8f0);
+  display: none;
 }
 
 [data-appearance="dark"] .mdo-timeline-spine {
-  background: rgba(255, 255, 255, 0.12);
+  display: none;
 }
 
 /* Timeline Item (Completely Boxless) */
@@ -221,11 +258,11 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  padding-bottom: 22px;
+  padding-bottom: 20px;
 }
 
 .mdo-boxless-item:last-child {
-  padding-bottom: 24px;
+  padding-bottom: 0;
 }
 
 /* Timeline Node Icon Badge */
@@ -241,12 +278,11 @@
   justify-content: center;
   color: #ffffff;
   z-index: 2;
-  box-shadow: 0 0 0 3px var(--page, #ffffff);
   flex-shrink: 0;
 }
 
 [data-appearance="dark"] .mdo-timeline-node {
-  box-shadow: 0 0 0 3px var(--page, #121316);
+  box-shadow: none;
 }
 
 .mdo-timeline-node.node-buyer {
@@ -386,6 +422,10 @@
 }
 
 /* ── Order Details Accordion Button ── */
+.mobile-dispute-ongoing-screen .ap-accordion-wrap {
+  margin-top: 8px;
+}
+
 .mdo-order-details-trigger {
   display: inline-flex;
   align-items: center;
@@ -396,7 +436,7 @@
   font-size: 13.5px;
   font-weight: 700;
   cursor: pointer;
-  padding: 4px 0;
+  padding: 0;
   margin-top: 0;
   margin-bottom: 2px;
   font-family: inherit;

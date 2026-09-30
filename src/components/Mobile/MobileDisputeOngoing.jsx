@@ -9,6 +9,7 @@ import HelpDrawer from "../Shared/HelpDrawer";
 import ProtectionInfoModal from "../Shared/ProtectionInfoModal";
 import ChatDrawer from "../Shared/ChatDrawer";
 import ReceiptIcon from "../Shared/ReceiptIcon";
+import ReportIssueModal from "../Shared/ReportIssueModal";
 
 export default function MobileDisputeOngoing({
   room = {},
@@ -62,10 +63,6 @@ export default function MobileDisputeOngoing({
     },
   ]);
 
-  // Submit more proof state
-  const [proofText, setProofText] = useState("");
-  const [proofPhotos, setProofPhotos] = useState([]);
-  const fileInputRef = useRef(null);
 
   // Chat message state matching dispute context
   const [chatMessages, setChatMessages] = useState([
@@ -135,44 +132,11 @@ export default function MobileDisputeOngoing({
   const orderAmount = room.amount || room.price || "₦50,000";
   const counterpartyName = room.sellerName || room.counterparty || "Marcus Vance";
 
-  const handleProofPhotoUpload = (e) => {
-    const files = Array.from(e.target.files || []);
-    if (!files.length) return;
-    const newImgs = files.map((file) => ({
-      id: Math.random().toString(36).substring(2),
-      url: URL.createObjectURL(file),
-      name: file.name,
-    }));
-    setProofPhotos((prev) => [...prev, ...newImgs].slice(0, 4));
-  };
-
-  const handleSubmitProof = () => {
-    if (!proofText.trim() && proofPhotos.length === 0) {
-      showToast("Please enter a description or upload at least one photo.");
-      return;
-    }
-
-    const newTrailItem = {
-      id: Date.now(),
-      type: "buyer",
-      sender: room.buyerName || "Tunde Adeleke",
-      time: "Just now",
-      reason: null,
-      message: proofText.trim() || "Additional proof photos submitted.",
-      photos: proofPhotos.map((p) => p.url),
-    };
-
-    setTrails((prev) => [...prev, newTrailItem]);
-    setProofText("");
-    setProofPhotos([]);
-    setIsProofModalOpen(false);
-    showToast("Additional evidence submitted to PayKudi dispute team.");
-  };
 
   return (
     <div
       ref={screenRef}
-      className={`mobile-awaiting-payment-screen ${
+      className={`mobile-awaiting-payment-screen mobile-dispute-ongoing-screen ${
         isChatOpen ? "chat-open" : ""
       } ${isHelpOpen ? "modal-open" : ""}`}
     >
@@ -392,130 +356,32 @@ export default function MobileDisputeOngoing({
         </footer>
       </div>
 
-      {/* ── Submit More Proof Modal ── */}
-      {isProofModalOpen && (
-        <div
-          className="ap-bottom-sheet-backdrop"
-          onClick={() => setIsProofModalOpen(false)}
-        >
-          <div
-            className="ap-bottom-sheet"
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-          >
-            <div className="ap-sheet-handle" />
-            <div className="ap-sheet-header">
-              <div className="ap-sheet-title-group">
-                <h3 className="ap-sheet-title" style={{ color: "#dc2626" }}>
-                  Submit More Proof
-                </h3>
-                <span className="ap-sheet-ord-pill">{orderNumber}</span>
-              </div>
-              <button
-                type="button"
-                className="ap-sheet-close-btn"
-                onClick={() => setIsProofModalOpen(false)}
-                aria-label="Close"
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
-                  close
-                </span>
-              </button>
-            </div>
+      {/* ── Submit More Proof Modal (Child of Report an issue modal) ── */}
+      <ReportIssueModal.SubmitMoreProof
+        isOpen={isProofModalOpen}
+        onClose={() => setIsProofModalOpen(false)}
+        room={room}
+        orderNumber={orderNumber}
+        onSubmitProof={({ text, photos }) => {
+          setIsProofModalOpen(false);
+          if (text || (photos && photos.length)) {
+            setTrails((prev) => [
+              ...prev,
+              {
+                id: Date.now(),
+                type: "buyer",
+                sender: room.buyerName || "Tunde Adeleke",
+                time: "Just now",
+                reason: "Additional Proof Submitted",
+                message: text || "Uploaded additional evidence for dispute review.",
+                photos: (photos || []).map((p) => (typeof p === "string" ? p : p.url)),
+              },
+            ]);
+            showToast("Additional evidence submitted to PayKudi dispute team.");
+          }
+        }}
+      />
 
-            <div className="mdo-proof-modal-body">
-              <label className="cd-issue-label" htmlFor="proof-desc">
-                Additional Notes / Explanation
-              </label>
-              <textarea
-                id="proof-desc"
-                className="mdo-proof-textarea"
-                placeholder="Provide further details or context for the dispute resolution team..."
-                value={proofText}
-                onChange={(e) => setProofText(e.target.value)}
-              />
-
-              <div className="cd-issue-upload-header">
-                <label className="cd-issue-label">
-                  Attach Photos <span className="cd-issue-label-sub">(up to 4)</span>
-                </label>
-                <span className="cd-issue-photo-counter">
-                  {proofPhotos.length}/4 uploaded
-                </span>
-              </div>
-
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                multiple
-                style={{ display: "none" }}
-                onChange={handleProofPhotoUpload}
-              />
-
-              {proofPhotos.length === 0 && (
-                <div
-                  className="cd-image-dropzone"
-                  onClick={() => fileInputRef.current?.click()}
-                  role="button"
-                  tabIndex={0}
-                >
-                  <div className="cd-dropzone-icon-wrap">
-                    <span className="material-symbols-outlined">add_photo_alternate</span>
-                  </div>
-                  <div className="cd-dropzone-text">
-                    <span className="cd-dropzone-main">Tap to upload photos</span>
-                    <span className="cd-dropzone-sub">PNG, JPG up to 5MB</span>
-                  </div>
-                </div>
-              )}
-
-              {proofPhotos.length > 0 && (
-                <div className="cd-image-previews-grid">
-                  {proofPhotos.map((img) => (
-                    <div key={img.id} className="cd-preview-card">
-                      <img src={img.url} alt={img.name} className="cd-preview-img" />
-                      <button
-                        type="button"
-                        className="cd-preview-remove-btn"
-                        onClick={() =>
-                          setProofPhotos((prev) =>
-                            prev.filter((p) => p.id !== img.id)
-                          )
-                        }
-                      >
-                        <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
-                          close
-                        </span>
-                      </button>
-                    </div>
-                  ))}
-                  {proofPhotos.length < 4 && (
-                    <button
-                      type="button"
-                      className="cd-preview-add-more-btn"
-                      onClick={() => fileInputRef.current?.click()}
-                    >
-                      <span className="material-symbols-outlined">add</span>
-                      <span>Add</span>
-                    </button>
-                  )}
-                </div>
-              )}
-
-              <button
-                type="button"
-                className="cd-report-btn"
-                style={{ marginTop: 14 }}
-                onClick={handleSubmitProof}
-              >
-                Send Evidence
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* ── Order Details Slide-Up Modal ── */}
       <OrderDetailsModal

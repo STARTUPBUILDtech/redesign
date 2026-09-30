@@ -83,22 +83,23 @@
   width: clamp(30px, 8vw, 34px);
   height: clamp(30px, 8vw, 34px);
   border-radius: 50%;
-  background-color: #ffffff !important;
-  border: 1px solid var(--line) !important;
+  background-color: #000000 !important;
+  border: 1px solid #000000 !important;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--ink) !important;
+  color: #ffffff !important;
   cursor: pointer;
   flex-shrink: 0;
   transition: all 0.15s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   padding: 0;
 }
 
 .ap-back-btn:hover {
-  background-color: color-mix(in srgb, var(--ink) 4%, transparent) !important;
-  border-color: var(--ink) !important;
+  background-color: #222222 !important;
+  border-color: #222222 !important;
+  color: #ffffff !important;
 }
 
 .ap-back-btn:active {
@@ -106,26 +107,34 @@
 }
 
 .ap-back-btn .material-symbols-outlined {
-  color: var(--ink) !important;
+  color: #ffffff !important;
   font-size: 20px !important;
 }
 
 [data-appearance="dark"] .ap-back-btn,
+.app[data-appearance="dark"] .ap-back-btn,
+body[data-appearance="dark"] .ap-back-btn,
 .mobile-dashboard[data-appearance="dark"] .ap-back-btn {
-  background-color: #1e2026 !important;
-  border-color: var(--line) !important;
-  color: #ffffff !important;
+  background-color: #ffffff !important;
+  border: 1px solid #ffffff !important;
+  color: #111827 !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
 }
 
 [data-appearance="dark"] .ap-back-btn:hover,
+.app[data-appearance="dark"] .ap-back-btn:hover,
+body[data-appearance="dark"] .ap-back-btn:hover,
 .mobile-dashboard[data-appearance="dark"] .ap-back-btn:hover {
-  background-color: #282a32 !important;
-  border-color: #3f424b !important;
+  background-color: #f1f2f4 !important;
+  border-color: #f1f2f4 !important;
+  color: #000000 !important;
 }
 
 [data-appearance="dark"] .ap-back-btn .material-symbols-outlined,
+.app[data-appearance="dark"] .ap-back-btn .material-symbols-outlined,
+body[data-appearance="dark"] .ap-back-btn .material-symbols-outlined,
 .mobile-dashboard[data-appearance="dark"] .ap-back-btn .material-symbols-outlined {
-  color: #ffffff !important;
+  color: #111827 !important;
 }
 
 .ap-header-title {

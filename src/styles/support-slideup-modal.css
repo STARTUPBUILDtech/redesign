@@ -34,8 +34,10 @@
   to { opacity: 1; }
 }
 
-/* ── When any modal backdrop is active, make the top navigation bar unclickable ── */
-body:has(.pk-slideup-backdrop) .topbar,
+/* ── When any modal is active on desktop, only Logo and Theme Changer remain visible in the top navigation bar ── */
+body:has([role="dialog"]) .topbar,
+body:has([aria-modal="true"]) .topbar,
+body:has(.cd-issue-backdrop) .topbar,
 body:has(.ap-bottom-sheet-backdrop) .topbar,
 body:has(.desktop-prd-modal-backdrop) .topbar,
 body:has(.desktop-prd-chat-modal-backdrop) .topbar,
@@ -44,11 +46,87 @@ body:has(.pk-receipt-backdrop) .topbar,
 body:has(.ap-order-help-backdrop) .topbar,
 body:has(.payout-sheet-backdrop) .topbar,
 body:has(.new-payment-modal-backdrop) .topbar,
+body:has(.pk-slideup-backdrop) .topbar,
+body:has([class*="-backdrop"]) .topbar,
+body.modal-open-desktop .topbar,
 body.pk-modal-up .topbar,
-body.modal-open .topbar {
-  pointer-events: none !important;
-  user-select: none !important;
+body.modal-open .topbar,
+.topbar.modal-active-topbar {
+  z-index: 100001 !important;
+  pointer-events: auto !important;
 }
+
+body:has([role="dialog"]) .topbar nav,
+body:has([aria-modal="true"]) .topbar nav,
+body:has(.cd-issue-backdrop) .topbar nav,
+body:has(.ap-bottom-sheet-backdrop) .topbar nav,
+body:has(.desktop-prd-modal-backdrop) .topbar nav,
+body:has(.desktop-prd-chat-modal-backdrop) .topbar nav,
+body:has(.desktop-prd-call-modal-backdrop) .topbar nav,
+body:has(.pk-receipt-backdrop) .topbar nav,
+body:has(.ap-order-help-backdrop) .topbar nav,
+body:has(.payout-sheet-backdrop) .topbar nav,
+body:has(.new-payment-modal-backdrop) .topbar nav,
+body:has(.pk-slideup-backdrop) .topbar nav,
+body:has([class*="-backdrop"]) .topbar nav,
+body.modal-open-desktop .topbar nav,
+body.pk-modal-up .topbar nav,
+body.modal-open .topbar nav,
+.topbar.modal-active-topbar nav {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  opacity: 0 !important;
+}
+
+body:has([role="dialog"]) .topbar .header-avatar-circle,
+body:has([aria-modal="true"]) .topbar .header-avatar-circle,
+body:has(.cd-issue-backdrop) .topbar .header-avatar-circle,
+body:has(.ap-bottom-sheet-backdrop) .topbar .header-avatar-circle,
+body:has(.desktop-prd-modal-backdrop) .topbar .header-avatar-circle,
+body:has(.desktop-prd-chat-modal-backdrop) .topbar .header-avatar-circle,
+body:has(.desktop-prd-call-modal-backdrop) .topbar .header-avatar-circle,
+body:has(.pk-receipt-backdrop) .topbar .header-avatar-circle,
+body:has(.ap-order-help-backdrop) .topbar .header-avatar-circle,
+body:has(.payout-sheet-backdrop) .topbar .header-avatar-circle,
+body:has(.new-payment-modal-backdrop) .topbar .header-avatar-circle,
+body:has(.pk-slideup-backdrop) .topbar .header-avatar-circle,
+body:has([class*="-backdrop"]) .topbar .header-avatar-circle,
+body.modal-open-desktop .topbar .header-avatar-circle,
+body.pk-modal-up .topbar .header-avatar-circle,
+body.modal-open .topbar .header-avatar-circle,
+.topbar.modal-active-topbar .header-avatar-circle {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  opacity: 0 !important;
+}
+
+body:has([role="dialog"]) .topbar .brand,
+body:has([aria-modal="true"]) .topbar .brand,
+body:has(.cd-issue-backdrop) .topbar .brand,
+body:has(.ap-bottom-sheet-backdrop) .topbar .brand,
+body.modal-open-desktop .topbar .brand,
+.topbar.modal-active-topbar .brand {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+body:has([role="dialog"]) .topbar .header-theme-btn,
+body:has([aria-modal="true"]) .topbar .header-theme-btn,
+body:has(.cd-issue-backdrop) .topbar .header-theme-btn,
+body:has(.ap-bottom-sheet-backdrop) .topbar .header-theme-btn,
+body.modal-open-desktop .topbar .header-theme-btn,
+.topbar.modal-active-topbar .header-theme-btn {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
 
 /* ── Modal Container (Slides up from bottom on mobile screen, centered on desktop) ── */
 .pk-slideup-container {

@@ -100,9 +100,7 @@ export default function DesktopPaymentRoomDetail({
 
   // Dispute ongoing proof modal state
   const [isProofModalOpen, setIsProofModalOpen] = useState(false);
-  const [proofText, setProofText] = useState("");
-  const [proofPhotos, setProofPhotos] = useState([]);
-  const fileInputRef = useRef(null);
+
 
   // Status flags
   const status = room.status || "awaiting_payment";
@@ -355,26 +353,21 @@ export default function DesktopPaymentRoomDetail({
   };
 
   const handleToggleDetails = () => {
-    if (isDetailsLifting) return;
     if (!isDetailsOpen) {
-      setIsDetailsLifting(true);
+      setIsDetailsOpen(true);
       setIsDetailsArrowUp(true);
-      setTimeout(() => {
-        setIsDetailsOpen(true);
-      }, 300);
-      setTimeout(() => {
-        setIsDetailsLifting(false);
-      }, 950);
+      setIsDetailsLifting(false);
     } else {
       setIsDetailsOpen(false);
       setIsDetailsArrowUp(false);
+      setIsDetailsLifting(false);
     }
   };
 
   const handleCloseDetails = () => {
-    if (isDetailsLifting) return;
     setIsDetailsOpen(false);
     setIsDetailsArrowUp(false);
+    setIsDetailsLifting(false);
   };
 
   const handleToggleShipping = () => {
@@ -418,38 +411,6 @@ export default function DesktopPaymentRoomDetail({
     if (onDeliveryConfirmed) onDeliveryConfirmed();
   };
 
-  const handlePhotoUpload = (e) => {
-    const files = Array.from(e.target.files || []);
-    if (!files.length) return;
-    const remainingSlots = 4 - proofPhotos.length;
-    const toAdd = files.slice(0, remainingSlots).map((file) => ({
-      name: file.name,
-      url: URL.createObjectURL(file),
-    }));
-    setProofPhotos((prev) => [...prev, ...toAdd]);
-  };
-
-  const handleRemovePhoto = (index) => {
-    setProofPhotos((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  const handleSubmitProof = () => {
-    if (!proofText.trim() && proofPhotos.length === 0) return;
-    const newTrailItem = {
-      id: Date.now(),
-      type: "user",
-      author: role === "Seller" ? sellerName : buyerName,
-      time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      reason: null,
-      message: proofText.trim() || "Additional proof evidence submitted.",
-      photos: proofPhotos.map((p) => p.url),
-    };
-    setTrails((prev) => [...prev, newTrailItem]);
-    setProofText("");
-    setProofPhotos([]);
-    setIsProofModalOpen(false);
-    showToast("Additional evidence submitted to PayKudi dispute team.");
-  };
 
   const handleSendChat = (e) => {
     e.preventDefault();
@@ -1136,8 +1097,6 @@ export default function DesktopPaymentRoomDetail({
                 className={`desktop-prd-accordion-trigger ${isDetailsArrowUp ? "active" : ""}`}
                 onClick={handleToggleDetails}
                 aria-expanded={isDetailsArrowUp}
-                disabled={isDetailsLifting}
-                style={{ cursor: isDetailsLifting ? "default" : "pointer" }}
               >
                 <span>Order details</span>
                 <span
@@ -1660,117 +1619,28 @@ export default function DesktopPaymentRoomDetail({
         document.body
       )}
 
-      {/* ── Submit More Proof Modal ── */}
-      {isProofModalOpen &&
-        createPortal(
-          <div
-            className="ap-bottom-sheet-backdrop"
-            onClick={() => setIsProofModalOpen(false)}
-          >
-          <div
-            className="ap-bottom-sheet"
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-          >
-            <div className="ap-sheet-handle" />
-            <div className="ap-sheet-header">
-              <div className="ap-sheet-title-group">
-                <h3 className="ap-sheet-title" style={{ color: "#dc2626" }}>
-                  Submit More Proof
-                </h3>
-                <span className="ap-sheet-ord-pill">{orderNumber}</span>
-              </div>
-              <button
-                type="button"
-                className="ap-sheet-close-btn"
-                onClick={() => setIsProofModalOpen(false)}
-                aria-label="Close"
-              >
-                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
-                  close
-                </span>
-              </button>
-            </div>
+      {/* ── Submit More Proof Modal (Child of Report an issue modal) ── */}
+      <ReportIssueModal.SubmitMoreProof
+        isOpen={isProofModalOpen}
+        onClose={() => setIsProofModalOpen(false)}
+        room={room}
+        orderNumber={orderNumber}
+        onSubmitProof={({ text, photos }) => {
+          setIsProofModalOpen(false);
+          const newTrailItem = {
+            id: Date.now(),
+            type: "user",
+            author: role === "Seller" ? sellerName : buyerName,
+            time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+            reason: "Additional Proof Submitted",
+            message: text?.trim() || "Additional proof evidence submitted.",
+            photos: (photos || []).map((p) => (typeof p === "string" ? p : p.url)),
+          };
+          setTrails((prev) => [...prev, newTrailItem]);
+          showToast("Additional evidence submitted to PayKudi dispute team.");
+        }}
+      />
 
-            <div className="mdo-proof-modal-body">
-              <label className="cd-issue-label" htmlFor="proof-desc">
-                Additional Notes / Explanation
-              </label>
-              <textarea
-                id="proof-desc"
-                className="mdo-proof-textarea"
-                placeholder="Provide further details or context for the dispute resolution team..."
-                value={proofText}
-                onChange={(e) => setProofText(e.target.value)}
-              />
-
-              <div className="cd-issue-upload-header">
-                <label className="cd-issue-label">
-                  Attach Photos <span className="cd-issue-label-sub">(up to 4)</span>
-                </label>
-                <span className="cd-issue-photo-counter">
-                  {proofPhotos.length}/4 uploaded
-                </span>
-              </div>
-
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                multiple
-                style={{ display: "none" }}
-                onChange={handlePhotoUpload}
-              />
-
-              {proofPhotos.length < 4 && (
-                <div
-                  className="mdo-proof-upload-zone"
-                  onClick={() => fileInputRef.current?.click()}
-                  role="button"
-                  tabIndex={0}
-                >
-                  <span className="material-symbols-outlined" style={{ fontSize: 28, color: "#9ca3af" }}>
-                    photo_camera
-                  </span>
-                  <span style={{ fontSize: 12.5, color: "var(--muted)", fontWeight: 600 }}>
-                    Click to add image proof
-                  </span>
-                </div>
-              )}
-
-              {proofPhotos.length > 0 && (
-                <div className="mdo-proof-preview-row">
-                  {proofPhotos.map((photo, i) => (
-                    <div key={i} className="mdo-proof-preview-thumb">
-                      <img src={photo.url} alt={`Upload ${i + 1}`} />
-                      <button
-                        type="button"
-                        className="mdo-proof-remove-btn"
-                        onClick={() => handleRemovePhoto(i)}
-                        aria-label="Remove photo"
-                      >
-                        <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
-                          close
-                        </span>
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              <button
-                type="button"
-                className="mdo-proof-submit-btn"
-                onClick={handleSubmitProof}
-              >
-                Submit Evidence
-              </button>
-            </div>
-          </div>
-        </div>,
-        document.body
-      )}
 
       {/* Change Refund Bank Modal */}
       {isChangeBankOpen &&
