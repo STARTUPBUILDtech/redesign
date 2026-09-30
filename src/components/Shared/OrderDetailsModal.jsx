@@ -108,7 +108,6 @@ export default function OrderDetailsModal({
                 <span className="ap-sheet-row-label">Convenience fee</span>
                 <span className="ap-sheet-row-val">{convenienceFee}</span>
               </div>
-              <div className="ap-sheet-divider" />
               <div className="ap-sheet-row total-row">
                 <span className="ap-sheet-row-label">Total</span>
                 <span className="ap-sheet-row-val">{youPaidAmount}</span>

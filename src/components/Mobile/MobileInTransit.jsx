@@ -460,7 +460,6 @@ export default function MobileInTransit({
                   <span className="ap-sheet-row-label">Convenience fee</span>
                   <span className="ap-sheet-row-val">₦300</span>
                 </div>
-                <div className="ap-sheet-divider" />
                 <div className="ap-sheet-row total-row">
                   <span className="ap-sheet-row-label">Total</span>
                   <span className="ap-sheet-row-val">{totalAmount}</span>

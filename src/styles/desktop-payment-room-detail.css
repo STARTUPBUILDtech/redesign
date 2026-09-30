@@ -853,23 +853,9 @@ html[data-appearance="dark"] .desktop-prd-details-card .mdo-timestamp {
   position: relative;
 }
 
-/* ── Desktop Stepper 4-Dot Connectors with Color Blending ── */
+/* ── Desktop Stepper 4-Dot Connectors with Color Blending (Hidden) ── */
 .desktop-prd-stepper-dots {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  flex: 1;
-  margin-top: -16px;
-  position: relative;
-  z-index: 1;
-}
-
-.desktop-prd-stepper-dots span {
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  flex-shrink: 0;
+  display: none !important;
 }
 
 /* Inactive connector segments (active to inactive, or inactive to inactive): NO DOTS */

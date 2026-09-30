@@ -31,7 +31,7 @@
 }
 
 .new-payment-top-row-inner {
-  width: min(100% - clamp(20px, 5vw, 40px), 520px);
+  width: min(100% - 40px, 520px);
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -124,7 +124,7 @@
 .new-payment-timeline-form {
   display: flex;
   flex-direction: column;
-  width: min(100% - clamp(16px, 4vw, 40px), 520px);
+  width: min(100% - 40px, 520px);
   position: relative;
 }
 
@@ -946,7 +946,7 @@
 }
 
 .new-payment-floating-inner {
-  width: min(100% - clamp(20px, 5vw, 40px), 520px);
+  width: min(100% - 40px, 520px);
 }
 
 .new-payment-proceed-btn {

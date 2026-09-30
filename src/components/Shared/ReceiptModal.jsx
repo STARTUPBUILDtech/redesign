@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { createPortal } from "react-dom";
+import BankLogo from "../BankLogo.jsx";
 import "../../styles/receipt-modal.css";
 
 function PaperAirplaneIcon() {
@@ -53,11 +54,57 @@ function ShareIcon() {
   );
 }
 
-export default function ReceiptModal({ isOpen, onClose, room = {} }) {
+function getReceiptBadgeConfig(typeKey) {
+  const t = (typeKey || "").toLowerCase();
+  if (t.includes("refund")) {
+    return {
+      badgeClass: "refund",
+      badgeIcon: (
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M9 14L4 9l5-5" />
+          <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11" />
+        </svg>
+      ),
+    };
+  }
+  if (t.includes("payout") || t.includes("withdrawn") || t.includes("withdraw")) {
+    return {
+      badgeClass: "payout",
+      badgeIcon: (
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" style={{ transform: "translate(-0.5px, 0.5px)" }}>
+          <path d="M22 2L11 13M22 2L15 22L11 13L2 9L22 2Z" />
+        </svg>
+      ),
+    };
+  }
+  if (t.includes("received")) {
+    return {
+      badgeClass: "received",
+      badgeIcon: (
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 4v16m0 0l-6-6m6 6l6-6" />
+        </svg>
+      ),
+    };
+  }
+  return {
+    badgeClass: "sent",
+    badgeIcon: (
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" style={{ transform: "translate(-0.5px, 0.5px)" }}>
+        <path d="M22 2L11 13M22 2L15 22L11 13L2 9L22 2Z" />
+      </svg>
+    ),
+  };
+}
+
+export default function ReceiptModal({ isOpen, onClose, room = {}, item = null }) {
   const [downloaded, setDownloaded] = useState(false);
   const [shared, setShared] = useState(false);
 
   if (!isOpen) return null;
+
+  const target = item || room || {};
+  const tKey = (target.typeKey || target.type || "").toLowerCase();
 
   const formatNaira = (val) => {
     if (!val) return "";
@@ -71,30 +118,57 @@ export default function ReceiptModal({ isOpen, onClose, room = {} }) {
     return hasNaira ? `₦${res}` : `₦${res}`;
   };
 
-  const receiptTitle =
-    room.receiptTitle ||
-    (room.status === "completed" || room.statusText === "Completed"
-      ? "Payout sent"
-      : room.role === "Selling"
-      ? "Payout sent"
-      : "Payout sent");
+  let receiptTitle = target.receiptTitle;
+  if (!receiptTitle) {
+    if (tKey.includes("received")) receiptTitle = "Payment received";
+    else if (tKey.includes("refund")) receiptTitle = "Refund sent";
+    else if (tKey.includes("sent")) receiptTitle = "Payment sent";
+    else if (tKey.includes("payout") || tKey.includes("withdrawn")) receiptTitle = "Payout sent";
+    else if (target.status === "completed" || target.statusText === "Completed" || target.role === "Selling") {
+      receiptTitle = "Payout sent";
+    } else {
+      receiptTitle = "Payment receipt";
+    }
+  }
 
-  const rawAmount = room.amount || room.price || "₦50,000";
-  const orderAmount = formatNaira(rawAmount);
+  const rawAmount = target.amount || target.price || target.youPaid || "₦50,000";
+  const orderAmount = rawAmount.startsWith("+") || rawAmount.startsWith("−") || rawAmount.startsWith("-")
+    ? rawAmount
+    : formatNaira(rawAmount);
 
   const dateValue =
-    room.receiptDate ||
-    (room.date && room.date.includes("·") ? room.date.replace("·", ",") : room.date) ||
-    "10 Aug 2026, 01:15 PM";
+    target.time ||
+    target.receiptDate ||
+    (target.date && target.date.includes("·") ? target.date.replace("·", ",") : target.date) ||
+    "Today, 10:42 AM";
 
-  const paymentMethod = room.paymentMethod || "**** 4242";
+  // Counterparty mapping
+  let counterpartyLabel = "Beneficiary";
+  if (tKey.includes("received")) {
+    counterpartyLabel = "Sender";
+  } else if (tKey.includes("sent") || tKey.includes("refund")) {
+    counterpartyLabel = "Recipient";
+  } else if (tKey.includes("payout")) {
+    counterpartyLabel = "Beneficiary";
+  }
+  const counterpartyName = target.title || target.recipient || target.sellerName || target.accountName || null;
+
+  // Bank code resolution
+  const bankCode = target.bankCode || (target.bank ? target.bank.toLowerCase().replace(/\s+bank/g, "").trim() : null);
+  const bankName = target.bank || (bankCode ? bankCode.charAt(0).toUpperCase() + bankCode.slice(1) + " Bank" : null);
+
+  const paymentMethod = target.paymentMethod || (bankName ? `${bankName} Transfer` : "**** 4242");
 
   const paymentReference =
-    room.paymentReference ||
-    room.referenceNumber ||
-    (room.id && room.id.startsWith("ORD-")
-      ? `32349200${room.id.replace(/\D/g, "") || "93488840"}`
-      : "3234920093488840");
+    target.paymentReference ||
+    target.orderNumber ||
+    target.referenceNumber ||
+    target.txId ||
+    (target.id && String(target.id).startsWith("ORD-")
+      ? `32349200${target.id.replace(/\D/g, "") || "93488840"}`
+      : target.id ? `PK-${String(target.id).toUpperCase().replace(/[^A-Z0-9]/g, "")}-93488840` : "3234920093488840");
+
+  const badgeCfg = tKey ? getReceiptBadgeConfig(tKey) : null;
 
   const handleDownload = () => {
     setDownloaded(true);
@@ -135,11 +209,22 @@ export default function ReceiptModal({ isOpen, onClose, room = {} }) {
           </span>
         </button>
 
-        {/* Hero Section: Blue circle with white paper plane + Title */}
+        {/* Hero Section: Bank Logo or Paper Airplane Hero + Title */}
         <div className="pk-receipt-hero">
-          <div className="pk-receipt-hero-circle">
-            <PaperAirplaneIcon />
-          </div>
+          {bankCode ? (
+            <div className="pk-receipt-bank-circle-wrap">
+              <BankLogo bankCode={bankCode} size={64} />
+              {badgeCfg && (
+                <span className={`activity-direction-badge ${badgeCfg.badgeClass}`}>
+                  {badgeCfg.badgeIcon}
+                </span>
+              )}
+            </div>
+          ) : (
+            <div className="pk-receipt-hero-circle">
+              <PaperAirplaneIcon />
+            </div>
+          )}
           <h2 className="pk-receipt-title">{receiptTitle}</h2>
         </div>
 
@@ -160,16 +245,40 @@ export default function ReceiptModal({ isOpen, onClose, room = {} }) {
             <span className="pk-receipt-val">{dateValue}</span>
           </div>
 
-          {/* Row 2: Payment Method */}
+          {/* Row 2: Counterparty (if available) */}
+          {counterpartyName && (
+            <div className="pk-receipt-row">
+              <span className="pk-receipt-label">{counterpartyLabel}</span>
+              <span className="pk-receipt-val">{counterpartyName}</span>
+            </div>
+          )}
+
+          {/* Row 3: Bank (if available) */}
+          {bankName && (
+            <div className="pk-receipt-row">
+              <span className="pk-receipt-label">Bank</span>
+              <span className="pk-receipt-val">{bankName}</span>
+            </div>
+          )}
+
+          {/* Row 4: Payment Method */}
           <div className="pk-receipt-row">
             <span className="pk-receipt-label">Payment Method</span>
             <span className="pk-receipt-val">{paymentMethod}</span>
           </div>
 
-          {/* Row 3: Payment Reference */}
+          {/* Row 5: Payment Reference */}
           <div className="pk-receipt-row">
             <span className="pk-receipt-label">Payment Reference</span>
             <span className="pk-receipt-val">{paymentReference}</span>
+          </div>
+
+          {/* Row 6: Status */}
+          <div className="pk-receipt-row">
+            <span className="pk-receipt-label">Status</span>
+            <span className="pk-receipt-val" style={{ color: "#10b981", fontWeight: 700 }}>
+              Successful
+            </span>
           </div>
         </div>
 

@@ -24,6 +24,8 @@ import DesktopProfile from "./components/DesktopProfile.jsx";
 import DesktopWithdrawModal from "./components/DesktopWithdrawModal.jsx";
 import MobileWithdraw from "./components/Mobile/MobileWithdraw.jsx";
 import AgreeTermsModal from "./components/Shared/AgreeTermsModal.jsx";
+import BankLogo from "./components/BankLogo.jsx";
+import ReceiptModal from "./components/Shared/ReceiptModal.jsx";
 import { ALL_PAYMENT_ROOMS } from "./data/paymentRooms.js";
 
 function BrandLogo({ dark, className }) {
@@ -339,65 +341,85 @@ const ProfileIcon = ({ active }) => (
 );
 
 const transactions = [
-  { id: "tx-1", title: "Payment received", time: "Today, 10:42 AM", amount: "+₦145,000.00", type: "received" },
-  { id: "tx-2", title: "Payment sent", time: "Yesterday, 4:18 PM", amount: "−₦85,000.00", type: "sent" },
-  { id: "tx-3", title: "Payout sent", time: "Mon, 9:24 AM", amount: "₦24,000.00", type: "payout" },
-  { id: "tx-4", title: "Refund sent", time: "Sun, 2:15 PM", amount: "−₦12,500.00", type: "refund" },
+  { id: "tx-1", title: "Amaka Obi", time: "Today, 10:42 AM", amount: "+₦145,000.00", type: "received", bankCode: "access" },
+  { id: "tx-2", title: "Chidi Okeke", time: "Yesterday, 4:18 PM", amount: "−₦85,000.00", type: "sent", bankCode: "zenith" },
+  { id: "tx-3", title: "Howard Ukah-Columba", time: "Mon, 9:24 AM", amount: "₦24,000.00", type: "payout", bankCode: "firstbank" },
+  { id: "tx-4", title: "Marcus Vance", time: "Sun, 2:15 PM", amount: "−₦12,500.00", type: "refund", bankCode: "kuda" },
 ];
 
 function getActivityConfig(item) {
-  const t = (item.type || item.title || "").toLowerCase();
+  const t = (item.type || item.typeKey || item.title || "").toLowerCase();
+
   if (t.includes("refund")) {
     return {
-      iconClass: "act-icon-refund",
+      typeKey: "refund",
+      defaultBank: "kuda",
       amountClass: "act-val-refund",
-      icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M9 14L4 9l5-5"></path>
-          <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"></path>
+      badgeClass: "refund",
+      badgeIcon: (
+        <svg width="8.5" height="8.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M9 14L4 9l5-5" />
+          <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11" />
         </svg>
       ),
     };
   }
   if (t.includes("payout") || t.includes("withdrawn") || t.includes("withdraw")) {
     return {
-      iconClass: "act-icon-payout",
+      typeKey: "payout",
+      defaultBank: "firstbank",
       amountClass: "act-val-payout",
-      icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M22 2L11 13M22 2L15 22L11 13L2 9L22 2Z"></path>
+      badgeClass: "payout",
+      badgeIcon: (
+        <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" style={{ transform: "translate(-0.5px, 0.5px)" }}>
+          <path d="M22 2L11 13M22 2L15 22L11 13L2 9L22 2Z" />
         </svg>
       ),
     };
   }
   if (t.includes("received")) {
     return {
-      iconClass: "act-icon-received",
+      typeKey: "received",
+      defaultBank: "access",
       amountClass: "act-val-received",
-      icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 4v16m0 0l-6-6m6 6l6-6"></path>
+      badgeClass: "received",
+      badgeIcon: (
+        <svg width="8.5" height="8.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 4v16m0 0l-6-6m6 6l6-6" />
         </svg>
       ),
     };
   }
   return {
-    iconClass: "act-icon-sent",
+    typeKey: "sent",
+    defaultBank: "zenith",
     amountClass: "act-val-sent",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M22 2L11 13M22 2L15 22L11 13L2 9L22 2Z"></path>
+    badgeClass: "sent",
+    badgeIcon: (
+      <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" style={{ transform: "translate(-0.5px, 0.5px)" }}>
+        <path d="M22 2L11 13M22 2L15 22L11 13L2 9L22 2Z" />
       </svg>
     ),
   };
 }
 
-function ActivityRow({ item, isLast }) {
+function ActivityRow({ item, isLast, onSelect }) {
   const cfg = getActivityConfig(item);
+  const bank = item.bankCode || item.bank || cfg.defaultBank;
   return (
-    <div className="activity-item-row" role="button" tabIndex={0}>
-      <div className={`activity-item-icon ${cfg.iconClass}`}>
-        {cfg.icon}
+    <div
+      className="activity-item-row"
+      role="button"
+      tabIndex={0}
+      style={{ cursor: "pointer" }}
+      onClick={() => onSelect && onSelect(item)}
+      onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelect && onSelect(item)}
+    >
+      <div className="activity-item-icon">
+        <BankLogo bankCode={bank} size={40} className="activity-bank-badge" />
+        <span className={`activity-direction-badge ${cfg.badgeClass}`}>
+          {cfg.badgeIcon}
+        </span>
       </div>
       <div className={`activity-item-inner ${isLast ? "no-border" : ""}`}>
         <div className="activity-item-info">
@@ -489,6 +511,7 @@ function MobileDashboard({
   onSignOut = () => {},
 }) {
   const contentScrollRef = useRef(null);
+  const [selectedActivityReceipt, setSelectedActivityReceipt] = useState(null);
 
   const handleNavClick = (view) => {
     setActive(view);
@@ -681,6 +704,7 @@ function MobileDashboard({
                         key={tx.id || tx.title}
                         item={tx}
                         isLast={idx === transactions.length - 1}
+                        onSelect={setSelectedActivityReceipt}
                       />
                     ))}
                   </div>
@@ -747,12 +771,19 @@ function MobileDashboard({
           </nav>
         </>
       )}
+
+      <ReceiptModal
+        isOpen={!!selectedActivityReceipt}
+        onClose={() => setSelectedActivityReceipt(null)}
+        item={selectedActivityReceipt}
+      />
     </div>
   );
 }
 
 export default function App() {
   const [dark, setDark] = useState(false);
+  const [selectedDesktopActivityReceipt, setSelectedDesktopActivityReceipt] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [visible, setVisible] = useState(true);
   const [active, setActive] = useState("Home");
@@ -999,6 +1030,7 @@ export default function App() {
                     key={tx.id || tx.title}
                     item={tx}
                     isLast={idx === transactions.length - 1}
+                    onSelect={setSelectedDesktopActivityReceipt}
                   />
                 ))}
               </div>
@@ -1104,6 +1136,12 @@ export default function App() {
         onAddPaymentRoom={handleAddPaymentRoom}
         ongoingPaymentRoomsCount={ongoingPaymentRoomsCount}
         onSignOut={handleSignOut}
+      />
+
+      <ReceiptModal
+        isOpen={!!selectedDesktopActivityReceipt}
+        onClose={() => setSelectedDesktopActivityReceipt(null)}
+        item={selectedDesktopActivityReceipt}
       />
     </div>
       )}

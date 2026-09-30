@@ -7,61 +7,83 @@ import {
 } from "lucide-react";
 import { Select, SelectContent, SelectItem } from "../ui/select";
 import { ALL_TRANSACTIONS } from "../../data/transactions.js";
+import BankLogo from "../BankLogo.jsx";
+import ReceiptModal from "../Shared/ReceiptModal";
 import "../../styles/mobile-activity.css";
 
 function getActivityConfig(item) {
   const t = (item.typeKey || item.type || item.title || "").toLowerCase();
+
   if (t.includes("refund")) {
     return {
-      iconClass: "act-icon-refund",
+      typeKey: "refund",
+      defaultBank: "kuda",
       amountClass: "act-val-refund",
-      icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M9 14L4 9l5-5"></path>
-          <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"></path>
+      badgeClass: "refund",
+      badgeIcon: (
+        <svg width="8.5" height="8.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M9 14L4 9l5-5" />
+          <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11" />
         </svg>
       ),
     };
   }
   if (t.includes("payout") || t.includes("withdrawn") || t.includes("withdraw")) {
     return {
-      iconClass: "act-icon-payout",
+      typeKey: "payout",
+      defaultBank: "firstbank",
       amountClass: "act-val-payout",
-      icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M22 2L11 13M22 2L15 22L11 13L2 9L22 2Z"></path>
+      badgeClass: "payout",
+      badgeIcon: (
+        <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" style={{ transform: "translate(-0.5px, 0.5px)" }}>
+          <path d="M22 2L11 13M22 2L15 22L11 13L2 9L22 2Z" />
         </svg>
       ),
     };
   }
   if (t.includes("received")) {
     return {
-      iconClass: "act-icon-received",
+      typeKey: "received",
+      defaultBank: "access",
       amountClass: "act-val-received",
-      icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 4v16m0 0l-6-6m6 6l6-6"></path>
+      badgeClass: "received",
+      badgeIcon: (
+        <svg width="8.5" height="8.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 4v16m0 0l-6-6m6 6l6-6" />
         </svg>
       ),
     };
   }
   return {
-    iconClass: "act-icon-sent",
+    typeKey: "sent",
+    defaultBank: "zenith",
     amountClass: "act-val-sent",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M22 2L11 13M22 2L15 22L11 13L2 9L22 2Z"></path>
+    badgeClass: "sent",
+    badgeIcon: (
+      <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" style={{ transform: "translate(-0.5px, 0.5px)" }}>
+        <path d="M22 2L11 13M22 2L15 22L11 13L2 9L22 2Z" />
       </svg>
     ),
   };
 }
 
-function MobileActivityRow({ item, isLast }) {
+function MobileActivityRow({ item, isLast, onSelect }) {
   const cfg = getActivityConfig(item);
+  const bank = item.bankCode || item.bank || cfg.defaultBank;
   return (
-    <div className="activity-item-row" role="button" tabIndex={0}>
-      <div className={`activity-item-icon ${cfg.iconClass}`}>
-        {cfg.icon}
+    <div
+      className="activity-item-row"
+      role="button"
+      tabIndex={0}
+      style={{ cursor: "pointer" }}
+      onClick={() => onSelect && onSelect(item)}
+      onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelect && onSelect(item)}
+    >
+      <div className="activity-item-icon">
+        <BankLogo bankCode={bank} size={40} className="activity-bank-badge" />
+        <span className={`activity-direction-badge ${cfg.badgeClass}`}>
+          {cfg.badgeIcon}
+        </span>
       </div>
       <div className={`activity-item-inner ${isLast ? "no-border" : ""}`}>
         <div className="activity-item-info">
@@ -82,6 +104,7 @@ export default function MobileActivity() {
   const [selectedRange, setSelectedRange] = useState("all");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  const [selectedReceipt, setSelectedReceipt] = useState(null);
 
   const [contentFits, setContentFits] = useState(false);
   const filterRef = useRef(null);
@@ -514,10 +537,17 @@ export default function MobileActivity() {
               key={tx.id}
               item={tx}
               isLast={idx === filteredTransactions.length - 1}
+              onSelect={setSelectedReceipt}
             />
           ))}
         </div>
       )}
+
+      <ReceiptModal
+        isOpen={!!selectedReceipt}
+        onClose={() => setSelectedReceipt(null)}
+        item={selectedReceipt}
+      />
     </div>
   );
 }

@@ -184,6 +184,47 @@
   flex-shrink: 0;
 }
 
+.pk-receipt-bank-circle-wrap {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+  flex-shrink: 0;
+}
+
+.pk-receipt-bank-circle-wrap .payout-bank-badge {
+  border-radius: 16px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+}
+
+[data-appearance="dark"] .pk-receipt-bank-circle-wrap .payout-bank-badge {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
+}
+
+.pk-receipt-bank-circle-wrap .activity-direction-badge {
+  position: absolute !important;
+  bottom: -3px !important;
+  right: -3px !important;
+  width: 22px !important;
+  height: 22px !important;
+  line-height: 0 !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 2px solid var(--bg-surface, #faf8f5) !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.22) !important;
+  z-index: 3 !important;
+}
+
+[data-appearance="dark"] .pk-receipt-bank-circle-wrap .activity-direction-badge {
+  border-color: #18181b !important;
+}
+
 .pk-receipt-title {
   font-size: 19px;
   font-weight: 800;

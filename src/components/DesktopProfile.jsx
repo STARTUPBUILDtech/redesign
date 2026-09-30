@@ -108,7 +108,7 @@ export default function DesktopProfile({
                 aria-label="No phone number: Phone Number"
               >
                 <div className="desktop-profile-badge whatsapp">
-                  <WhatsAppIcon size={20} />
+                  <WhatsAppIcon size={16} />
                 </div>
                 <div className="desktop-profile-item-inner">
                   <div className="desktop-profile-item-text">
@@ -180,7 +180,7 @@ export default function DesktopProfile({
                 <div className="desktop-profile-item-inner">
                   <div className="desktop-profile-item-text">
                     <span className="desktop-profile-item-title">
-                      Become a Verified Seller{" "}
+                      <span>Become a Verified Seller</span>
                       <span className="desktop-profile-unverified-tag">(Unverified)</span>
                     </span>
                     <span className="desktop-profile-item-subtitle">

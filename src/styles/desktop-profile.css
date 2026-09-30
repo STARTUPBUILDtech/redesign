@@ -217,25 +217,109 @@ body.dark .profile-signout-btn:hover {
 }
 
 @media (max-width: 600px) {
+  .desktop-profile-wrap {
+    width: min(calc(100% - 28px), 1718px);
+    padding-top: 16px;
+  }
+
   .desktop-profile-header {
     gap: 12px;
-    margin-bottom: 28px;
+    margin-bottom: 24px;
+    align-items: center;
   }
 
   .desktop-profile-user-info-row {
     gap: 12px;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .desktop-profile-avatar-wrap {
+    width: 58px;
+    height: 58px;
+  }
+
+  .desktop-profile-avatar-icon {
+    font-size: 38px !important;
+  }
+
+  .desktop-profile-avatar-edit {
+    width: 20px;
+    height: 20px;
+    bottom: 0;
+    right: 0;
+  }
+
+  .desktop-profile-avatar-edit .material-symbols-outlined {
+    font-size: 11px !important;
+  }
+
+  .desktop-profile-name {
+    font-size: 20px;
+  }
+
+  .desktop-profile-phone-pill {
+    padding: 3px 10px;
+    font-size: 12px;
   }
 
   .profile-signout-btn {
-    padding: 7px 14px;
-    height: 36px;
-    font-size: 13px;
+    padding: 6px 12px;
+    height: 34px;
+    font-size: 12.5px;
     gap: 5px;
-    margin-top: 6px;
+    margin-top: 0;
+    align-self: center;
   }
 
   .profile-signout-icon {
+    font-size: 15px !important;
+  }
+
+  .desktop-profile-badge {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+  }
+
+  .desktop-profile-badge .material-symbols-outlined {
     font-size: 16px !important;
+  }
+
+  .desktop-profile-badge svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .desktop-profile-item {
+    gap: 11px;
+    padding: 0 2px;
+  }
+
+  .desktop-profile-item-inner {
+    padding: 11px 0;
+    gap: 8px;
+  }
+
+  .desktop-profile-item-title {
+    font-size: 13.5px;
+  }
+
+  .desktop-profile-unverified-tag {
+    font-size: 11.5px;
+  }
+
+  .desktop-profile-item-subtitle {
+    font-size: 11.5px;
+  }
+
+  .desktop-profile-item-chevron {
+    font-size: 18px !important;
+  }
+
+  .desktop-profile-section-title {
+    font-size: 11px;
+    margin-bottom: 8px;
   }
 }
 
@@ -310,22 +394,22 @@ body.dark .profile-signout-btn:hover {
 
 /* ── Circular Icon Badges: Matching activity-item-icon ── */
 .desktop-profile-badge {
-  width: 40px;
-  height: 40px;
-  min-width: 40px;
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  border: none;
+  box-shadow: none;
   transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.15s ease;
 }
 
 [data-appearance="dark"] .desktop-profile-badge {
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  border: none;
+  box-shadow: none;
 }
 
 .desktop-profile-item:hover .desktop-profile-badge {
@@ -333,12 +417,12 @@ body.dark .profile-signout-btn:hover {
 }
 
 .desktop-profile-badge .material-symbols-outlined {
-  font-size: 20px !important;
+  font-size: 18px !important;
 }
 
 .desktop-profile-badge svg {
-  width: 20px;
-  height: 20px;
+  width: 17px;
+  height: 17px;
 }
 
 /* ── Inner content row: border-bottom stops before icon matching activity-item-inner ── */
@@ -453,21 +537,23 @@ body.dark .profile-signout-btn:hover {
 
 .desktop-profile-item-title {
   margin: 0;
-  font-size: clamp(14px, 1.05vw, 15.5px);
+  font-size: clamp(13.5px, 1.05vw, 15px);
   font-weight: 600;
   color: var(--ink);
-  line-height: 1.25;
+  line-height: 1.3;
   letter-spacing: -0.15px;
   display: flex;
-  align-items: center;
-  gap: 6px;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 6px;
   font-family: 'Hanken Grotesk', 'Inter', sans-serif;
 }
 
 .desktop-profile-unverified-tag {
   color: #d97706;
   font-weight: 600;
-  font-size: clamp(13px, 0.95vw, 14px);
+  font-size: clamp(12px, 0.9vw, 13px);
+  white-space: nowrap;
 }
 
 [data-appearance="dark"] .desktop-profile-unverified-tag {
@@ -479,6 +565,7 @@ body.dark .profile-signout-btn:hover {
   font-size: clamp(11.5px, 0.85vw, 12.5px);
   color: var(--muted);
   line-height: 1.35;
+  word-break: normal;
 }
 
 /* Right Chevron */

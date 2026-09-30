@@ -3,272 +3,64 @@ import { Search, SlidersHorizontal } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Select, SelectContent, SelectItem } from "./ui/select";
 import DesktopActivityDetail from "./DesktopActivityDetail";
+import ReceiptModal from "./Shared/ReceiptModal";
+import BankLogo from "./BankLogo.jsx";
+import { ALL_TRANSACTIONS } from "../data/transactions.js";
 import "./desktop-activity.css";
 
-const INITIAL_TRANSACTIONS = [
-  {
-    id: "tx-1",
-    title: "Payment received",
-    time: "Today, 10:42 AM",
-    amount: "+₦145,000.00",
-    type: "received",
-    typeKey: "received",
-    orderNumber: "ORD-302914",
-    youPaid: "₦2,381,165",
-    refundBank: "Access Bank",
-    bank: "Access Bank",
-    accountName: "Marcus Vance",
-    accountNumber: "0123456789",
-    sellerName: "Amaka Obi",
-    itemName: 'MacBook Pro M3 Max 16"',
-    variant: "Space Black, 36GB RAM, 1TB SSD",
-  },
-  {
-    id: "tx-2",
-    title: "Payment sent",
-    time: "Yesterday, 4:18 PM",
-    amount: "−₦85,000.00",
-    type: "sent",
-    typeKey: "sent",
-  },
-  {
-    id: "tx-3",
-    title: "Payout sent",
-    time: "Mon, 9:24 AM",
-    amount: "₦24,000.00",
-    type: "payout",
-    typeKey: "payout",
-  },
-  {
-    id: "tx-4",
-    title: "Payment sent",
-    time: "Mar 14, 2025 at 6:31 PM",
-    amount: "−₦75,000.00",
-    type: "sent",
-    typeKey: "sent",
-  },
-  {
-    id: "tx-5",
-    title: "Refund sent",
-    time: "Sun, 2:15 PM",
-    amount: "−₦12,500.00",
-    type: "refund",
-    typeKey: "refund",
-  },
-  {
-    id: "tx-6",
-    title: "Payout sent",
-    time: "Mar 10, 2025 at 11:20 AM",
-    amount: "₦50,000.00",
-    type: "payout",
-    typeKey: "payout",
-  },
-  {
-    id: "tx-7",
-    title: "Payment received",
-    time: "Mar 08, 2025 at 4:44 PM",
-    amount: "+₦320,000.00",
-    type: "received",
-    typeKey: "received",
-    orderNumber: "ORD-889201",
-    youPaid: "₦324,800",
-    refundBank: "GTBank",
-    bank: "GTBank",
-    accountName: "Chidi Okeke",
-    accountNumber: "0098765432",
-    sellerName: "Emeka Tech Hub",
-    itemName: "Sony WH-1000XM5",
-    variant: "Midnight Black",
-  },
-  {
-    id: "tx-8",
-    title: "Payment received",
-    time: "Mar 06, 2025 at 1:15 PM",
-    amount: "+₦95,000.00",
-    type: "received",
-    typeKey: "received",
-    orderNumber: "ORD-441302",
-    youPaid: "₦96,425",
-    refundBank: "Access Bank",
-    bank: "Access Bank",
-    accountName: "Kemi Adeleke",
-    accountNumber: "3344556677",
-    sellerName: "Lagos Gadgets",
-    itemName: "iPhone 15 Pro",
-    variant: "Natural Titanium, 256GB",
-  },
-  {
-    id: "tx-9",
-    title: "Payment sent",
-    time: "Mar 04, 2025 at 8:30 AM",
-    amount: "−₦42,000.00",
-    type: "sent",
-    typeKey: "sent",
-  },
-  {
-    id: "tx-10",
-    title: "Payout sent",
-    time: "Mar 02, 2025 at 3:50 PM",
-    amount: "₦180,000.00",
-    type: "payout",
-    typeKey: "payout",
-  },
-  {
-    id: "tx-11",
-    title: "Refund sent",
-    time: "Feb 28, 2025 at 11:05 AM",
-    amount: "−₦8,750.00",
-    type: "refund",
-    typeKey: "refund",
-  },
-  {
-    id: "tx-12",
-    title: "Payment received",
-    time: "Feb 26, 2025 at 5:22 PM",
-    amount: "+₦210,000.00",
-    type: "received",
-    typeKey: "received",
-  },
-  {
-    id: "tx-13",
-    title: "Payment sent",
-    time: "Feb 24, 2025 at 9:14 AM",
-    amount: "−₦63,500.00",
-    type: "sent",
-    typeKey: "sent",
-  },
-  {
-    id: "tx-14",
-    title: "Payout sent",
-    time: "Feb 21, 2025 at 2:40 PM",
-    amount: "₦95,000.00",
-    type: "payout",
-    typeKey: "payout",
-  },
-  {
-    id: "tx-15",
-    title: "Payment received",
-    time: "Feb 19, 2025 at 12:10 PM",
-    amount: "+₦540,000.00",
-    type: "received",
-    typeKey: "received",
-  },
-  {
-    id: "tx-16",
-    title: "Refund sent",
-    time: "Feb 16, 2025 at 4:55 PM",
-    amount: "−₦15,000.00",
-    type: "refund",
-    typeKey: "refund",
-  },
-  {
-    id: "tx-17",
-    title: "Payment sent",
-    time: "Feb 14, 2025 at 10:30 AM",
-    amount: "−₦118,000.00",
-    type: "sent",
-    typeKey: "sent",
-  },
-  {
-    id: "tx-18",
-    title: "Payout sent",
-    time: "Feb 11, 2025 at 3:18 PM",
-    amount: "₦72,000.00",
-    type: "payout",
-    typeKey: "payout",
-  },
-  {
-    id: "tx-19",
-    title: "Payment received",
-    time: "Feb 08, 2025 at 11:45 AM",
-    amount: "+₦285,000.00",
-    type: "received",
-    typeKey: "received",
-  },
-  {
-    id: "tx-20",
-    title: "Payment sent",
-    time: "Feb 05, 2025 at 6:02 PM",
-    amount: "−₦34,000.00",
-    type: "sent",
-    typeKey: "sent",
-  },
-  {
-    id: "tx-21",
-    title: "Payout sent",
-    time: "Feb 02, 2025 at 1:20 PM",
-    amount: "₦150,000.00",
-    type: "payout",
-    typeKey: "payout",
-  },
-  {
-    id: "tx-22",
-    title: "Refund sent",
-    time: "Jan 29, 2025 at 4:12 PM",
-    amount: "−₦22,000.00",
-    type: "refund",
-    typeKey: "refund",
-  },
-  {
-    id: "tx-23",
-    title: "Payment received",
-    time: "Jan 25, 2025 at 10:15 AM",
-    amount: "+₦470,000.00",
-    type: "received",
-    typeKey: "received",
-  },
-  {
-    id: "tx-24",
-    title: "Payment sent",
-    time: "Jan 20, 2025 at 3:45 PM",
-    amount: "−₦90,000.00",
-    type: "sent",
-    typeKey: "sent",
-  },
-];
+const INITIAL_TRANSACTIONS = ALL_TRANSACTIONS;
 
 function getActivityConfig(item) {
   const t = (item.typeKey || item.type || item.title || "").toLowerCase();
+
   if (t.includes("refund")) {
     return {
-      iconClass: "act-icon-refund",
+      typeKey: "refund",
+      defaultBank: "kuda",
       amountClass: "act-val-refund",
-      icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M9 14L4 9l5-5"></path>
-          <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11"></path>
+      badgeClass: "refund",
+      badgeIcon: (
+        <svg width="8.5" height="8.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M9 14L4 9l5-5" />
+          <path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5v0a5.5 5.5 0 0 1-5.5 5.5H11" />
         </svg>
       ),
     };
   }
   if (t.includes("payout") || t.includes("withdrawn") || t.includes("withdraw")) {
     return {
-      iconClass: "act-icon-payout",
+      typeKey: "payout",
+      defaultBank: "firstbank",
       amountClass: "act-val-payout",
-      icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M22 2L11 13M22 2L15 22L11 13L2 9L22 2Z"></path>
+      badgeClass: "payout",
+      badgeIcon: (
+        <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" style={{ transform: "translate(-0.5px, 0.5px)" }}>
+          <path d="M22 2L11 13M22 2L15 22L11 13L2 9L22 2Z" />
         </svg>
       ),
     };
   }
   if (t.includes("received")) {
     return {
-      iconClass: "act-icon-received",
+      typeKey: "received",
+      defaultBank: "access",
       amountClass: "act-val-received",
-      icon: (
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M12 4v16m0 0l-6-6m6 6l6-6"></path>
+      badgeClass: "received",
+      badgeIcon: (
+        <svg width="8.5" height="8.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 4v16m0 0l-6-6m6 6l6-6" />
         </svg>
       ),
     };
   }
   return {
-    iconClass: "act-icon-sent",
+    typeKey: "sent",
+    defaultBank: "zenith",
     amountClass: "act-val-sent",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M22 2L11 13M22 2L15 22L11 13L2 9L22 2Z"></path>
+    badgeClass: "sent",
+    badgeIcon: (
+      <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" style={{ transform: "translate(-0.5px, 0.5px)" }}>
+        <path d="M22 2L11 13M22 2L15 22L11 13L2 9L22 2Z" />
       </svg>
     ),
   };
@@ -276,6 +68,7 @@ function getActivityConfig(item) {
 
 function ActivityRow({ item, isLast, onSelect }) {
   const cfg = getActivityConfig(item);
+  const bank = item.bankCode || item.bank || cfg.defaultBank;
   return (
     <div
       className="activity-item-row"
@@ -285,8 +78,11 @@ function ActivityRow({ item, isLast, onSelect }) {
       onClick={() => onSelect && onSelect(item)}
       onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onSelect && onSelect(item)}
     >
-      <div className={`activity-item-icon ${cfg.iconClass}`}>
-        {cfg.icon}
+      <div className="activity-item-icon">
+        <BankLogo bankCode={bank} size={40} className="activity-bank-badge" />
+        <span className={`activity-direction-badge ${cfg.badgeClass}`}>
+          {cfg.badgeIcon}
+        </span>
       </div>
       <div className={`activity-item-inner ${isLast ? "no-border" : ""}`}>
         <div className="activity-item-info">
@@ -484,16 +280,6 @@ export default function DesktopActivity() {
     };
   }, [isFilterOpen]);
 
-  // If a row is selected, show the detail view
-  if (selectedItem) {
-    return (
-      <DesktopActivityDetail
-        item={selectedItem}
-        onBack={() => setSelectedItem(null)}
-      />
-    );
-  }
-
   return (
     <div className="desktop-activity-wrapper">
       <main className="desktop-activity-main">
@@ -665,6 +451,12 @@ export default function DesktopActivity() {
           </div>
         </div>
       </main>
+
+      <ReceiptModal
+        isOpen={!!selectedItem}
+        onClose={() => setSelectedItem(null)}
+        item={selectedItem}
+      />
     </div>
   );
 }
