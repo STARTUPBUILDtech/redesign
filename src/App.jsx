@@ -96,8 +96,8 @@ function HeaderActions({
       >
         {dark ? (
           <svg
-            width="12"
-            height="12"
+            width="18"
+            height="18"
             viewBox="0 0 24 24"
             fill="currentColor"
             className="theme-moon-svg"
@@ -106,12 +106,12 @@ function HeaderActions({
           </svg>
         ) : (
           <svg
-            width="12"
-            height="12"
+            width="18"
+            height="18"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
-            strokeWidth="2.2"
+            strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
             className="theme-sun-svg"
@@ -142,8 +142,8 @@ function HeaderActions({
           >
             <div className="header-avatar-circle-h">H</div>
             <svg
-              width="9"
-              height="6"
+              width="13"
+              height="8"
               viewBox="4.5 7.5 15 9"
               fill="none"
               stroke="currentColor"

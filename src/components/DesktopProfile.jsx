@@ -54,16 +54,6 @@ export default function DesktopProfile({
               </div>
             </div>
           </div>
-
-          <button
-            type="button"
-            className="profile-signout-btn"
-            onClick={onSignOut}
-            aria-label="Sign out"
-          >
-            <span className="material-symbols-outlined profile-signout-icon">logout</span>
-            <span>Sign Out</span>
-          </button>
         </section>
 
         {/* ── Two-Column Layout ── */}

@@ -134,7 +134,15 @@
   font-size: clamp(12px, 0.9vw, 13.5px);
   font-weight: 500;
   width: fit-content;
+  max-width: 100%;
+  white-space: nowrap;
+  flex-shrink: 0;
   border: 1px solid color-mix(in srgb, var(--line) 60%, transparent);
+}
+
+.desktop-profile-phone-pill span {
+  white-space: nowrap;
+  line-height: 1;
 }
 
 .desktop-profile-phone-pill svg,
@@ -143,6 +151,7 @@
   font-size: 13px;
   width: 14px;
   height: 14px;
+  flex-shrink: 0;
 }
 
 /* ── Sign Out Button (black in light mode, white in dark mode) ── */
