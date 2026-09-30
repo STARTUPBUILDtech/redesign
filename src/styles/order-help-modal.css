@@ -106,7 +106,7 @@
     max-width: 660px !important;
     height: min(600px, 85vh) !important;
     min-height: 500px !important;
-    border-radius: 20px !important;
+    border-radius: 0 !important;
     border: 1px solid var(--line, rgba(0, 0, 0, 0.08)) !important;
     animation: pkModalCenterIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
     box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45) !important;

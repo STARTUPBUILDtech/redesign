@@ -183,9 +183,12 @@ function HeaderActions({
                 >
                   <div className="header-dropdown-item-left">
                     <span className="dropdown-item-icon">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                        <path fillRule="evenodd" clipRule="evenodd" d="M11.078 2.25c-.917 0-1.699.663-1.85 1.567L8.91 5.748a8.035 8.035 0 0 0-1.826 1.054l-1.83-1.056a1.875 1.875 0 0 0-2.28.385l-1.356 1.356a1.875 1.875 0 0 0-.385 2.28l1.056 1.83a8.034 8.034 0 0 0-1.054 1.826l-1.93.318A1.875 1.875 0 0 0 .5 12.922v1.918c0 .917.663 1.699 1.567 1.85l1.93.318c.28.66.634 1.274 1.054 1.826l-1.056 1.83a1.875 1.875 0 0 0 .385 2.28l1.356 1.356c.646.646 1.664.774 2.28.385l1.83-1.056c.552.42 1.166.774 1.826 1.054l.318 1.93c.151.904.933 1.567 1.85 1.567h1.918c.917 0 1.699-.663 1.85-1.567l.318-1.93a8.035 8.035 0 0 0 1.826-1.054l1.83 1.056a1.875 1.875 0 0 0 2.28-.385l1.356-1.356a1.875 1.875 0 0 0 .385-2.28l-1.056-1.83c.42-.552.774-1.166 1.054-1.826l1.93-.318c.904-.151 1.567-.933 1.567-1.85v-1.918c0-.917-.663-1.699-1.567-1.85l-1.93-.318a8.034 8.034 0 0 0-1.054-1.826l1.056-1.83a1.875 1.875 0 0 0-.385-2.28l-1.356-1.356a1.875 1.875 0 0 0-2.28-.385l-1.83 1.056a8.035 8.035 0 0 0-1.826-1.054l-.318-1.93A1.875 1.875 0 0 0 12.922 2.25h-1.844zM12 15.75a3.75 3.75 0 1 0 0-7.5 3.75 3.75 0 0 0 0 7.5z" />
-                      </svg>
+                      <span className="nav-profile-wrap" style={{ display: "inline-flex", alignItems: "center" }}>
+                        <span className="material-symbols-outlined nav-symbol" style={{ fontSize: 20 }}>
+                          person
+                        </span>
+                        <i className="fa-brands fa-whatsapp nav-whatsapp-icon"></i>
+                      </span>
                     </span>
                     <span className="dropdown-item-label">Account</span>
                   </div>
@@ -200,9 +203,32 @@ function HeaderActions({
                 >
                   <div className="header-dropdown-item-left">
                     <span className="dropdown-item-icon">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-                      </svg>
+                      {dark ? (
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                        </svg>
+                      ) : (
+                        <svg
+                          width="18"
+                          height="18"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <circle cx="12" cy="12" r="5" />
+                          <line x1="12" y1="1" x2="12" y2="3" />
+                          <line x1="12" y1="21" x2="12" y2="23" />
+                          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+                          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+                          <line x1="1" y1="12" x2="3" y2="12" />
+                          <line x1="21" y1="12" x2="23" y2="12" />
+                          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+                          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+                        </svg>
+                      )}
                     </span>
                     <span className="dropdown-item-label">Theme</span>
                   </div>

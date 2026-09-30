@@ -4,7 +4,27 @@ import "../../styles/support-slideup-modal.css";
 
 /* ── Calculate exact bottom of the PayKudi header ── */
 export function useHeaderBottom(isOpen) {
-  const [headerBottom, setHeaderBottom] = useState(44);
+  const [headerBottom, setHeaderBottom] = useState(() => {
+    if (typeof window === "undefined") return 72;
+    const isMobile =
+      window.innerWidth <= 700 ||
+      document.querySelector(".mobile-dashboard") ||
+      document.querySelector(".mobile-awaiting-payment-screen");
+    if (isMobile) {
+      const mobileHeader = document.querySelector(".mobile-header");
+      if (mobileHeader) {
+        const rect = mobileHeader.getBoundingClientRect();
+        return rect.bottom > 0 ? Math.round(rect.bottom) : 52;
+      }
+      return 52;
+    }
+    const topbar = document.querySelector(".topbar");
+    if (topbar) {
+      const rect = topbar.getBoundingClientRect();
+      return rect.bottom > 0 ? Math.round(rect.bottom) : 72;
+    }
+    return 72;
+  });
 
   useEffect(() => {
     if (!isOpen) return;
@@ -22,17 +42,17 @@ export function useHeaderBottom(isOpen) {
         const mobileHeader = document.querySelector(".mobile-header");
         if (mobileHeader) {
           const rect = mobileHeader.getBoundingClientRect();
-          setHeaderBottom(rect.bottom > 0 ? rect.bottom : 44);
+          setHeaderBottom(rect.bottom > 0 ? Math.round(rect.bottom) : 52);
         } else {
-          setHeaderBottom(44);
+          setHeaderBottom(52);
         }
       } else {
         const topbar = document.querySelector(".topbar");
         if (topbar) {
           const rect = topbar.getBoundingClientRect();
-          setHeaderBottom(rect.bottom > 0 ? rect.bottom : 96);
+          setHeaderBottom(rect.bottom > 0 ? Math.round(rect.bottom) : 72);
         } else {
-          setHeaderBottom(96);
+          setHeaderBottom(72);
         }
       }
     };
@@ -157,9 +177,18 @@ export function SendMessageSlideUpModal({ isOpen, onClose }) {
   return createPortal(
     <div
       className="pk-slideup-backdrop"
+      style={{ "--pk-header-bottom": `${headerBottom}px` }}
       onClick={onClose}
     >
-      <div className="pk-slideup-container" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="pk-slideup-container"
+        style={{
+          "--pk-header-bottom": `${headerBottom}px`,
+          height: `calc(100dvh - ${headerBottom}px)`,
+          maxHeight: `calc(100dvh - ${headerBottom}px)`,
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Navy Header */}
         <div className="pk-slideup-header header-message">
           <div className="pk-slideup-header-left">
@@ -287,9 +316,18 @@ export function BotAssistantSlideUpModal({ isOpen, onClose, room = {} }) {
   return createPortal(
     <div
       className="pk-slideup-backdrop"
+      style={{ "--pk-header-bottom": `${headerBottom}px` }}
       onClick={onClose}
     >
-      <div className="pk-slideup-container" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="pk-slideup-container"
+        style={{
+          "--pk-header-bottom": `${headerBottom}px`,
+          height: `calc(100dvh - ${headerBottom}px)`,
+          maxHeight: `calc(100dvh - ${headerBottom}px)`,
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Emerald Green Header */}
         <div className="pk-slideup-header header-bot">
           <div className="pk-slideup-header-left">
@@ -554,9 +592,18 @@ export function FaqSlideUpModal({ isOpen, onClose }) {
   return createPortal(
     <div
       className="pk-slideup-backdrop"
+      style={{ "--pk-header-bottom": `${headerBottom}px` }}
       onClick={onClose}
     >
-      <div className="pk-slideup-container" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="pk-slideup-container"
+        style={{
+          "--pk-header-bottom": `${headerBottom}px`,
+          height: `calc(100dvh - ${headerBottom}px)`,
+          maxHeight: `calc(100dvh - ${headerBottom}px)`,
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Warm Amber Orange Header matching Image 3 */}
         <div className="pk-slideup-header header-faq">
           <div className="pk-slideup-header-left">

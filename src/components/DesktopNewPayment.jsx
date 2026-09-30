@@ -257,7 +257,7 @@ export default function DesktopNewPayment({ onCancel, onSuccess, onOpenInvitatio
                       onChange={handleCounterpartyChange}
                       placeholder="WhatsApp number or username"
                       autoComplete="off"
-                      autoCapitalize="words"
+                      autoCapitalize="none"
                     />
                     <button
                       type="button"

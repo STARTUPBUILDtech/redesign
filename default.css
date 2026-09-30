@@ -265,22 +265,23 @@ textarea,
 
 .header-profile-trigger {
   height: 36px;
-  padding: 3px 6px 3px 4px;
+  min-width: 58px;
+  padding: 0 8px;
   border-radius: 8px;
   display: inline-flex;
   align-items: center;
-  gap: 2px;
+  justify-content: center;
+  gap: 5px;
   background-color: #f3f4f6;
   border: 1px solid #e5e7eb;
   cursor: pointer;
-  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
   user-select: none;
   flex-shrink: 0;
   box-sizing: border-box;
 }
 
-.header-profile-trigger:hover,
-.header-profile-trigger.active {
+.header-profile-trigger:hover {
   background-color: #e5e7eb;
 }
 
@@ -288,6 +289,25 @@ textarea,
   transform: scale(0.97);
 }
 
+/* Highlighted / Active / Tap State (Light Mode: Black Color) */
+.header-profile-trigger.active,
+.header-profile-trigger:active {
+  background-color: #111215 !important;
+  border-color: #111215 !important;
+  color: #ffffff !important;
+}
+
+.header-profile-trigger.active:hover {
+  background-color: #1a1b1e !important;
+  border-color: #1a1b1e !important;
+}
+
+.header-profile-trigger.active .header-chevron-icon,
+.header-profile-trigger:active .header-chevron-icon {
+  color: #ffffff !important;
+}
+
+/* ── Dark Mode Base ── */
 .app[data-appearance="dark"] .header-profile-trigger,
 .mobile-dashboard[data-appearance="dark"] .header-profile-trigger,
 [data-appearance="dark"] .header-profile-trigger {
@@ -297,13 +317,38 @@ textarea,
 }
 
 .app[data-appearance="dark"] .header-profile-trigger:hover,
-.app[data-appearance="dark"] .header-profile-trigger.active,
 .mobile-dashboard[data-appearance="dark"] .header-profile-trigger:hover,
-.mobile-dashboard[data-appearance="dark"] .header-profile-trigger.active,
-[data-appearance="dark"] .header-profile-trigger:hover,
-[data-appearance="dark"] .header-profile-trigger.active {
+[data-appearance="dark"] .header-profile-trigger:hover {
   background-color: #282333;
   border-color: rgba(255, 255, 255, 0.14);
+}
+
+/* Highlighted / Active / Tap State (Dark Mode: White Color) */
+.app[data-appearance="dark"] .header-profile-trigger.active,
+.app[data-appearance="dark"] .header-profile-trigger:active,
+.mobile-dashboard[data-appearance="dark"] .header-profile-trigger.active,
+.mobile-dashboard[data-appearance="dark"] .header-profile-trigger:active,
+[data-appearance="dark"] .header-profile-trigger.active,
+[data-appearance="dark"] .header-profile-trigger:active {
+  background-color: #ffffff !important;
+  border-color: #ffffff !important;
+  color: #111215 !important;
+}
+
+.app[data-appearance="dark"] .header-profile-trigger.active:hover,
+.mobile-dashboard[data-appearance="dark"] .header-profile-trigger.active:hover,
+[data-appearance="dark"] .header-profile-trigger.active:hover {
+  background-color: #f4f5f8 !important;
+  border-color: #f4f5f8 !important;
+}
+
+.app[data-appearance="dark"] .header-profile-trigger.active .header-chevron-icon,
+.app[data-appearance="dark"] .header-profile-trigger:active .header-chevron-icon,
+.mobile-dashboard[data-appearance="dark"] .header-profile-trigger.active .header-chevron-icon,
+.mobile-dashboard[data-appearance="dark"] .header-profile-trigger:active .header-chevron-icon,
+[data-appearance="dark"] .header-profile-trigger.active .header-chevron-icon,
+[data-appearance="dark"] .header-profile-trigger:active .header-chevron-icon {
+  color: #111215 !important;
 }
 
 /* Lilac Circle H Avatar */
@@ -350,8 +395,8 @@ textarea,
   top: calc(100% + 8px);
   right: 0;
   min-width: 286px;
-  background-color: #ffffff;
-  border: 1px solid #e5e7eb;
+  background-color: var(--page, #ffffff);
+  border: 1px solid var(--line, #e5e7eb);
   border-radius: 14px;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.06);
   z-index: 10000;
@@ -374,9 +419,9 @@ textarea,
 .app[data-appearance="dark"] .header-profile-dropdown,
 .mobile-dashboard[data-appearance="dark"] .header-profile-dropdown,
 [data-appearance="dark"] .header-profile-dropdown {
-  background-color: #17141f;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.65), 0 4px 16px rgba(0, 0, 0, 0.45);
+  background-color: var(--page, #131417) !important;
+  border: 1px solid var(--line, #26282e) !important;
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.75), 0 4px 16px rgba(0, 0, 0, 0.5);
 }
 
 /* Dropdown User Header */
@@ -444,14 +489,14 @@ textarea,
 /* Dropdown Divider */
 .header-dropdown-divider {
   height: 1px;
-  background-color: #e5e7eb;
+  background-color: var(--line, #e5e7eb);
   margin: 0;
 }
 
 .app[data-appearance="dark"] .header-dropdown-divider,
 .mobile-dashboard[data-appearance="dark"] .header-dropdown-divider,
 [data-appearance="dark"] .header-dropdown-divider {
-  background-color: rgba(255, 255, 255, 0.07);
+  background-color: var(--line, #26282e) !important;
 }
 
 /* Dropdown Menu Items */
@@ -509,6 +554,24 @@ textarea,
   height: 20px;
   color: #4b5563;
   flex-shrink: 0;
+}
+
+.dropdown-item-icon .nav-profile-wrap {
+  display: inline-flex;
+  align-items: center;
+}
+
+.dropdown-item-icon .nav-symbol {
+  font-size: 20px !important;
+  width: 20px !important;
+  height: 20px !important;
+  line-height: 1 !important;
+}
+
+.dropdown-item-icon .nav-whatsapp-icon {
+  color: #10b981 !important;
+  font-size: 9px !important;
+  margin-left: 1px;
 }
 
 .app[data-appearance="dark"] .dropdown-item-icon,

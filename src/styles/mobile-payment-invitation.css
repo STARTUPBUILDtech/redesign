@@ -607,37 +607,44 @@
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
-  gap: 8px !important;
+  gap: clamp(6px, 1.8vw, 10px) !important;
   width: 100% !important;
+  flex-wrap: nowrap !important;
 }
 
 .m-invite-specs-title-row {
   display: flex !important;
   align-items: center !important;
-  gap: 8px !important;
-  flex-wrap: wrap !important;
+  gap: 6px !important;
+  flex-wrap: nowrap !important;
+  white-space: nowrap !important;
+  min-width: 0 !important;
 }
 
 .m-invite-specs-title {
   margin: 0 !important;
-  font-size: 13.5px !important;
+  font-size: clamp(12.5px, 3.2vw, 13.5px) !important;
   font-weight: 600 !important;
   color: var(--ink, #18181b) !important;
   font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
   letter-spacing: -0.2px !important;
+  white-space: nowrap !important;
+  display: inline-flex !important;
+  align-items: center !important;
 }
 
 .m-invite-spec-required-badge {
   display: inline-flex !important;
   align-items: center !important;
-  font-size: 10.5px !important;
+  font-size: 10px !important;
   font-weight: 600 !important;
-  padding: 1px 7px !important;
+  padding: 1px 6px !important;
   border-radius: 9999px !important;
   background-color: rgba(239, 68, 68, 0.1) !important;
   color: #ef4444 !important;
   border: 1px solid rgba(239, 68, 68, 0.25) !important;
   letter-spacing: -0.1px !important;
+  white-space: nowrap !important;
   animation: m-invite-pulse 1.8s infinite ease-in-out;
 }
 
@@ -647,31 +654,38 @@
   justify-content: center !important;
   min-width: 18px !important;
   height: 18px !important;
-  padding: 0 6px !important;
+  padding: 0 5px !important;
   border-radius: 9999px !important;
   font-size: 11px !important;
   font-weight: 600 !important;
   background: color-mix(in srgb, var(--ink) 6%, transparent) !important;
   color: var(--muted, #71717a) !important;
   font-variant-numeric: tabular-nums !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
 }
 
 /* Add specification button: black in light mode, light in dark mode */
 .m-invite-add-spec-btn {
   display: inline-flex !important;
   align-items: center !important;
-  gap: 4px !important;
-  padding: 5px 11px !important;
+  justify-content: center !important;
+  gap: 5px !important;
+  height: 32px !important;
+  min-height: 32px !important;
+  padding: 0 clamp(8px, 2.2vw, 11px) !important;
   border-radius: 6px !important;
   border: none !important;
   background: #171717 !important;
   color: #ffffff !important;
-  font-size: 12px !important;
+  font-size: clamp(11px, 2.8vw, 12px) !important;
   font-weight: 600 !important;
   font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
   cursor: pointer !important;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12) !important;
   transition: all 0.15s ease !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
 }
 
 .m-invite-add-spec-btn svg {

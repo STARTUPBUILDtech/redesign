@@ -100,8 +100,10 @@
 
   .header-profile-trigger {
     height: clamp(30px, 2.2vw, 36px) !important;
-    gap: 2px !important;
-    padding: clamp(2px, 0.25vw, 3px) clamp(5px, 0.45vw, 6px) clamp(2px, 0.25vw, 3px) clamp(3px, 0.3vw, 4px) !important;
+    min-width: clamp(52px, 3.8vw, 60px) !important;
+    gap: 5px !important;
+    padding: 0 clamp(6px, 0.6vw, 9px) !important;
+    justify-content: center !important;
   }
 
   .header-avatar-circle-h {

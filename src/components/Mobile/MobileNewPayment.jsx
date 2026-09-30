@@ -232,7 +232,7 @@ export default function MobileNewPayment({ onCancel, onSuccess }) {
                       onChange={handleCounterpartyChange}
                       placeholder="WhatsApp number or username"
                       autoComplete="off"
-                      autoCapitalize="words"
+                      autoCapitalize="none"
                     />
                     <button
                       type="button"

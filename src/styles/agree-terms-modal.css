@@ -46,9 +46,9 @@
   max-height: 90vh;
   height: auto;
   background-color: var(--page, #ffffff);
-  color: var(--ink, #161618);
-  border-top-left-radius: 28px;
-  border-top-right-radius: 28px;
+  border-radius: 0 !important;
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
   display: flex;
   flex-direction: column;
   box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.25);
