@@ -9,6 +9,26 @@ import ReportIssueModal from "../Shared/ReportIssueModal";
 import ChatDrawer from "../Shared/ChatDrawer";
 import ReceiptIcon from "../Shared/ReceiptIcon";
 
+/* ── Proof-of-shipping real images ── */
+const PROOF_IMAGES = [
+  {
+    label: "Package Box",
+    url: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=200&h=200&fit=crop&auto=format",
+  },
+  {
+    label: "Waybill Slip",
+    url: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=200&h=200&fit=crop&auto=format",
+  },
+  {
+    label: "Packaging",
+    url: "https://images.unsplash.com/photo-1530982011887-3cc11cc85693?w=200&h=200&fit=crop&auto=format",
+  },
+  {
+    label: "Security S...",
+    url: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=200&h=200&fit=crop&auto=format",
+  },
+];
+
 export default function MobileConfirmDelivery({
   room = {},
   onBack,
@@ -574,7 +594,7 @@ export default function MobileConfirmDelivery({
             <div className="ap-sheet-header">
               <div className="ap-sheet-title-group">
                 <h3 className="ap-sheet-title">Shipping Status</h3>
-                <span className="it-tracking-pill">{orderNumber}</span>
+                <span className="ap-sheet-ord-pill">{orderNumber}</span>
               </div>
               <button
                 type="button"
@@ -670,15 +690,14 @@ export default function MobileConfirmDelivery({
               </div>
 
               <div className="ssm-proof-grid">
-                {[
-                  { label: "Package Box",   color: "#e0e7ff", icon: "inventory_2" },
-                  { label: "Waybill Slip",  color: "#fef9c3", icon: "receipt_long" },
-                  { label: "Packaging",     color: "#dcfce7", icon: "category" },
-                  { label: "Security Seal", color: "#fce7f3", icon: "verified" },
-                ].map((img, i) => (
+                {PROOF_IMAGES.map((img, i) => (
                   <div key={i} className="ssm-proof-thumb">
-                    <div className="ssm-proof-img" style={{ background: img.color }}>
-                      <span className="material-symbols-outlined" style={{ fontSize: 24, color: "#6b7280" }}>{img.icon}</span>
+                    <div className="ssm-proof-img">
+                      <img
+                        src={img.url}
+                        alt={img.label}
+                        loading="lazy"
+                      />
                     </div>
                     <span className="ssm-proof-label">{img.label}</span>
                   </div>
