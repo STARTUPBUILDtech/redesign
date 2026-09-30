@@ -39,30 +39,54 @@ function BrandLogo({ dark, className }) {
   );
 }
 
-// Header Actions matching C:\Users\abc\OneDrive\Videos\dashboard.html
-function HeaderActions({ dark, onThemeToggle, onOpenProfile, isProfileActive, hideAvatar }) {
+// Header Actions with Theme Toggle and Avatar Dropdown Menu (matching target redesign)
+function HeaderActions({
+  dark,
+  onThemeToggle,
+  onOpenProfile,
+  onSignOut,
+  isProfileActive,
+  hideAvatar,
+}) {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
   const shouldHideAvatar = hideAvatar;
+
+  // Close dropdown on outside click or touch
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    if (isDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("touchstart", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [isDropdownOpen]);
+
+  // Close dropdown on Escape key
+  useEffect(() => {
+    function handleKeyDown(e) {
+      if (e.key === "Escape") {
+        setIsDropdownOpen(false);
+      }
+    }
+    if (isDropdownOpen) {
+      window.addEventListener("keydown", handleKeyDown);
+    }
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isDropdownOpen]);
 
   return (
     <div className="header-actions">
-      {/* Profile Avatar (matching #m-profile-sticky-avatar from dashboard.html) - hidden when in Profile or when modal is open */}
-      {!isProfileActive && !shouldHideAvatar && (
-        <div
-          className="header-avatar-circle"
-          aria-label="Open profile"
-          title="Profile"
-          onClick={onOpenProfile}
-          style={{ cursor: "pointer" }}
-        >
-          <img
-            src={avatarIllustration}
-            alt="Profile avatar"
-            className="header-avatar-img"
-          />
-        </div>
-      )}
-
-      {/* Theme Toggle Button (matching dashboard.html) */}
+      {/* Theme Toggle Button */}
       <button
         type="button"
         onClick={onThemeToggle}
@@ -70,12 +94,170 @@ function HeaderActions({ dark, onThemeToggle, onOpenProfile, isProfileActive, hi
         title={dark ? "Switch to light mode" : "Switch to dark mode"}
         aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
       >
-        <span
-          className={`material-symbols-outlined theme-icon ${dark ? "dark-icon" : "light-icon"}`}
-        >
-          {dark ? "dark_mode" : "light_mode"}
-        </span>
+        {dark ? (
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className="theme-moon-svg"
+          >
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+          </svg>
+        ) : (
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="theme-sun-svg"
+          >
+            <circle cx="12" cy="12" r="5" />
+            <line x1="12" y1="1" x2="12" y2="3" />
+            <line x1="12" y1="21" x2="12" y2="23" />
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+            <line x1="1" y1="12" x2="3" y2="12" />
+            <line x1="21" y1="12" x2="23" y2="12" />
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+          </svg>
+        )}
       </button>
+
+      {/* Avatar Dropdown Trigger & Floating Menu */}
+      {!shouldHideAvatar && (
+        <div className="header-profile-container" ref={dropdownRef}>
+          <button
+            type="button"
+            className={`header-profile-trigger ${isDropdownOpen ? "active" : ""}`}
+            onClick={() => setIsDropdownOpen((prev) => !prev)}
+            aria-expanded={isDropdownOpen}
+            aria-haspopup="true"
+            title="Howard Ukah-Columba"
+          >
+            <div className="header-avatar-circle-h">H</div>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className={`header-chevron-icon ${isDropdownOpen ? "open" : ""}`}
+            >
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </button>
+
+          {isDropdownOpen && (
+            <div className="header-profile-dropdown" role="menu">
+              {/* User Identity Header */}
+              <div className="header-dropdown-user">
+                <div className="header-dropdown-avatar">H</div>
+                <div className="header-dropdown-user-info">
+                  <div className="header-dropdown-user-name">Howard Ukah-Columba</div>
+                  <div className="header-dropdown-user-id">2032614152 · T3</div>
+                </div>
+              </div>
+
+              <div className="header-dropdown-divider" />
+
+              {/* Action Rows */}
+              <div className="header-dropdown-menu">
+                {/* Account Item */}
+                <button
+                  type="button"
+                  className="header-dropdown-item"
+                  onClick={() => {
+                    setIsDropdownOpen(false);
+                    if (onOpenProfile) onOpenProfile();
+                  }}
+                  role="menuitem"
+                >
+                  <div className="header-dropdown-item-left">
+                    <span className="dropdown-item-icon">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path fillRule="evenodd" clipRule="evenodd" d="M11.078 2.25c-.917 0-1.699.663-1.85 1.567L8.91 5.748a8.035 8.035 0 0 0-1.826 1.054l-1.83-1.056a1.875 1.875 0 0 0-2.28.385l-1.356 1.356a1.875 1.875 0 0 0-.385 2.28l1.056 1.83a8.034 8.034 0 0 0-1.054 1.826l-1.93.318A1.875 1.875 0 0 0 .5 12.922v1.918c0 .917.663 1.699 1.567 1.85l1.93.318c.28.66.634 1.274 1.054 1.826l-1.056 1.83a1.875 1.875 0 0 0 .385 2.28l1.356 1.356c.646.646 1.664.774 2.28.385l1.83-1.056c.552.42 1.166.774 1.826 1.054l.318 1.93c.151.904.933 1.567 1.85 1.567h1.918c.917 0 1.699-.663 1.85-1.567l.318-1.93a8.035 8.035 0 0 0 1.826-1.054l1.83 1.056a1.875 1.875 0 0 0 2.28-.385l1.356-1.356a1.875 1.875 0 0 0 .385-2.28l-1.056-1.83c.42-.552.774-1.166 1.054-1.826l1.93-.318c.904-.151 1.567-.933 1.567-1.85v-1.918c0-.917-.663-1.699-1.567-1.85l-1.93-.318a8.034 8.034 0 0 0-1.054-1.826l1.056-1.83a1.875 1.875 0 0 0-.385-2.28l-1.356-1.356a1.875 1.875 0 0 0-2.28-.385l-1.83 1.056a8.035 8.035 0 0 0-1.826-1.054l-.318-1.93A1.875 1.875 0 0 0 12.922 2.25h-1.844zM12 15.75a3.75 3.75 0 1 0 0-7.5 3.75 3.75 0 0 0 0 7.5z" />
+                      </svg>
+                    </span>
+                    <span className="dropdown-item-label">Account</span>
+                  </div>
+                </button>
+
+                {/* Theme Item */}
+                <button
+                  type="button"
+                  className="header-dropdown-item"
+                  onClick={onThemeToggle}
+                  role="menuitem"
+                >
+                  <div className="header-dropdown-item-left">
+                    <span className="dropdown-item-icon">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+                      </svg>
+                    </span>
+                    <span className="dropdown-item-label">Theme</span>
+                  </div>
+                  <div className="header-dropdown-item-right">
+                    <span className="dropdown-theme-val">{dark ? "Dark" : "Light"}</span>
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                  </div>
+                </button>
+
+                {/* Log out Item */}
+                <button
+                  type="button"
+                  className="header-dropdown-item"
+                  onClick={() => {
+                    setIsDropdownOpen(false);
+                    if (onSignOut) onSignOut();
+                  }}
+                  role="menuitem"
+                >
+                  <div className="header-dropdown-item-left">
+                    <span className="dropdown-item-icon">
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                        <polyline points="16 17 21 12 16 7" />
+                        <line x1="21" y1="12" x2="9" y2="12" />
+                      </svg>
+                    </span>
+                    <span className="dropdown-item-label">Log out</span>
+                  </div>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -314,6 +496,7 @@ function MobileDashboard({
           role={role}
           onSwitchRole={() => setRole(role === "Buyer" ? "Seller" : "Buyer")}
           onOpenProfile={() => handleNavClick("Profile")}
+          onSignOut={onSignOut}
           isProfileActive={active === "Profile"}
         />
       </header>
@@ -699,6 +882,7 @@ export default function App() {
               setIsWithdrawModalOpen(false);
               window.scrollTo({ top: 0, behavior: "instant" });
             }}
+            onSignOut={handleSignOut}
             isProfileActive={active === "Profile"}
             hideAvatar={isModalOpenOnDesktop}
           />

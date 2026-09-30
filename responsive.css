@@ -94,12 +94,18 @@
   }
 
   .header-theme-btn {
-    width: clamp(26px, 1.9vw, 32px) !important;
-    height: clamp(26px, 1.9vw, 32px) !important;
+    width: clamp(30px, 2.2vw, 36px) !important;
+    height: clamp(30px, 2.2vw, 36px) !important;
   }
 
-  .header-theme-btn .theme-icon {
-    font-size: clamp(14px, 0.95vw, 18px) !important;
+  .header-profile-trigger {
+    height: clamp(30px, 2.2vw, 36px) !important;
+  }
+
+  .header-avatar-circle-h {
+    width: clamp(22px, 1.7vw, 28px) !important;
+    height: clamp(22px, 1.7vw, 28px) !important;
+    font-size: clamp(12px, 0.9vw, 14.5px) !important;
   }
 
   .icon-button {
