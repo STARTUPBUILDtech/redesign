@@ -971,3 +971,38 @@ body[data-appearance="dark"] .m-invite-add-spec-btn:hover,
   color: #111215 !important;
 }
 
+/* ── Unified Order Number Pill (Matching Order Details modal across the app) ── */
+.ap-sheet-ord-pill,
+.it-tracking-pill,
+.cd-issue-order-pill,
+.order-number-pill {
+  background-color: #e8f7ee !important;
+  color: #15803d !important;
+  font-size: 11.5px !important;
+  font-weight: 700 !important;
+  padding: 3px 10px !important;
+  border-radius: 9999px !important;
+  font-family: monospace, inherit !important;
+  border: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1.2 !important;
+  letter-spacing: 0.2px !important;
+  text-decoration: none !important;
+}
+
+[data-appearance="dark"] .ap-sheet-ord-pill,
+[data-appearance="dark"] .it-tracking-pill,
+[data-appearance="dark"] .cd-issue-order-pill,
+[data-appearance="dark"] .order-number-pill,
+.dark .ap-sheet-ord-pill,
+.dark .it-tracking-pill,
+.dark .cd-issue-order-pill,
+.dark .order-number-pill {
+  background-color: rgba(22, 163, 74, 0.2) !important;
+  color: #4ade80 !important;
+  border: none !important;
+}
+
+
