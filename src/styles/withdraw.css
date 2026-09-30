@@ -1107,7 +1107,8 @@ body.dark .payout-dropdown-item.is-selected .payout-account-num-val,
   background: color-mix(in srgb, var(--page) 92%, transparent);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border-top: 1px solid color-mix(in srgb, var(--line) 60%, transparent);
+  border-top: none !important;
+  box-shadow: none !important;
   z-index: 40;
   display: flex;
   justify-content: center;
@@ -1218,15 +1219,15 @@ body.dark .payout-dropdown-item.is-selected .payout-account-num-val,
   max-width: 100%;
   background-color: var(--page, #ffffff);
   color: var(--ink);
-  border-radius: 24px 24px 0 0;
-  border-bottom: none;
-  border-left: none;
-  border-right: none;
-  border-top: 1px solid var(--line);
+  border-radius: 0 !important;
+  border-bottom: none !important;
+  border-left: none !important;
+  border-right: none !important;
+  border-top: none !important;
   padding: 12px 20px calc(24px + env(safe-area-inset-bottom, 12px)) 20px;
   box-sizing: border-box;
   animation: payoutSheetSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.25);
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -1236,10 +1237,11 @@ body.dark .payout-dropdown-item.is-selected .payout-account-num-val,
 .app[data-appearance="dark"] .payout-confirm-sheet,
 .mobile-dashboard[data-appearance="dark"] .payout-confirm-sheet {
   background-color: #141518;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
-  border-bottom: none;
-  border-left: none;
-  border-right: none;
+  border-radius: 0 !important;
+  border-top: none !important;
+  border-bottom: none !important;
+  border-left: none !important;
+  border-right: none !important;
   box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.7);
 }
 

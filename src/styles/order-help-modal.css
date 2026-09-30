@@ -362,13 +362,13 @@
   background-color: var(--page, #ffffff);
   flex-shrink: 0;
   box-sizing: border-box;
-  border-top: 1px solid var(--line, #edf0f4);
+  border-top: none !important;
 }
 
 [data-appearance="dark"] .ap-order-help-footer,
 .mobile-dashboard[data-appearance="dark"] .ap-order-help-footer {
   background-color: var(--page, #131417);
-  border-top-color: var(--line, #26282e);
+  border-top: none !important;
 }
 
 .ap-order-help-btn-report {

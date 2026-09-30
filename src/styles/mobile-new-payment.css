@@ -929,19 +929,20 @@
   background: color-mix(in srgb, var(--page) 92%, transparent);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border-top: 1px solid color-mix(in srgb, var(--line) 60%, transparent);
+  border-top: none !important;
   padding-top: 10px;
   padding-bottom: max(14px, env(safe-area-inset-bottom, 14px));
   display: flex;
   justify-content: center;
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+  box-shadow: none !important;
   pointer-events: auto;
 }
 
 [data-appearance="dark"] .new-payment-floating-dock,
 .app[data-appearance="dark"] .new-payment-floating-dock,
 .mobile-dashboard[data-appearance="dark"] .new-payment-floating-dock {
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+  border-top: none !important;
+  box-shadow: none !important;
 }
 
 .new-payment-floating-inner {
