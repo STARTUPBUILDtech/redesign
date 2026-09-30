@@ -209,11 +209,11 @@ textarea,
   color: #94a3b8 !important;
 }
 
-/* ── Theme Toggle Button (matching target redesign) ── */
+/* ── Theme Toggle Button (matching target redesign, same height as PayKudi logo: 22px) ── */
 .header-theme-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -256,7 +256,7 @@ textarea,
   border-color: rgba(255, 255, 255, 0.14);
 }
 
-/* ── Avatar Dropdown & Container (matching target redesign) ── */
+/* ── Avatar Dropdown & Container (matching target redesign, same height as PayKudi logo: 22px) ── */
 .header-profile-container {
   position: relative;
   display: inline-flex;
@@ -264,9 +264,9 @@ textarea,
 }
 
 .header-profile-trigger {
-  height: 36px;
-  padding: 3px 6px 3px 4px;
-  border-radius: 8px;
+  height: 22px;
+  padding: 2px 4px 2px 2px;
+  border-radius: 5px;
   display: inline-flex;
   align-items: center;
   gap: 2px;
@@ -308,13 +308,13 @@ textarea,
 
 /* Lilac Circle H Avatar */
 .header-avatar-circle-h {
-  width: 28px;
-  height: 28px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
   background-color: #b875ea;
   color: #ffffff;
   font-family: 'Hanken Grotesk', 'Inter', -apple-system, sans-serif;
-  font-size: 14.5px;
+  font-size: 10px;
   font-weight: 700;
   display: flex;
   align-items: center;
