@@ -142,9 +142,9 @@ function HeaderActions({
           >
             <div className="header-avatar-circle-h">H</div>
             <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
+              width="13"
+              height="8"
+              viewBox="4.5 7.5 15 9"
               fill="none"
               stroke="currentColor"
               strokeWidth="2.5"
