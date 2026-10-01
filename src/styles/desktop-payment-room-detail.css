@@ -1138,9 +1138,10 @@ html[data-appearance="dark"] .desktop-prd-details-card .mdo-timestamp {
 .desktop-prd-accordion-trigger {
   background: transparent;
   border: none;
-  font-family: 'Inter', sans-serif;
-  font-size: 13px !important;
-  font-weight: 700 !important;
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif;
+  font-size: 13.5px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.15px;
   line-height: 1.2 !important;
   color: #19a66c;
   cursor: pointer;
@@ -1152,8 +1153,8 @@ html[data-appearance="dark"] .desktop-prd-details-card .mdo-timestamp {
 }
 
 .desktop-prd-accordion-trigger span:first-child {
-  font-size: 13px !important;
-  font-weight: 700 !important;
+  font-size: 13.5px !important;
+  font-weight: 800 !important;
   line-height: 1.2 !important;
 }
 
@@ -1167,19 +1168,21 @@ html[data-appearance="dark"] .desktop-prd-details-card .mdo-timestamp {
 
 .desktop-prd-accordion-trigger.purple {
   color: #7c3aed;
-  font-size: 13px !important;
-  font-weight: 700 !important;
+  font-size: 13.5px !important;
+  font-weight: 800 !important;
 }
 
 .desktop-prd-accordion-trigger.purple span:first-child {
-  font-size: 13px !important;
-  font-weight: 700 !important;
+  font-size: 13.5px !important;
+  font-weight: 800 !important;
   line-height: 1.2 !important;
 }
 
 /* Chevron arrow rotation */
 .desktop-prd-trigger-chevron {
-  font-size: 18px !important;
+  font-size: 19px !important;
+  font-variation-settings: 'wght' 700, 'opsz' 20 !important;
+  font-weight: 700 !important;
   line-height: 1;
   display: inline-flex;
   align-items: center;

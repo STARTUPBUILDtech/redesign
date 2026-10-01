@@ -1103,7 +1103,6 @@ export default function DesktopPaymentRoomDetail({
                   className={`material-symbols-outlined desktop-prd-trigger-chevron ${
                     isDetailsArrowUp ? "expanded" : ""
                   }`}
-                  style={{ fontSize: 18 }}
                 >
                   expand_more
                 </span>
@@ -1123,7 +1122,6 @@ export default function DesktopPaymentRoomDetail({
                     className={`material-symbols-outlined desktop-prd-trigger-chevron ${
                       isShippingArrowUp ? "expanded" : ""
                     }`}
-                    style={{ fontSize: 18 }}
                   >
                     expand_more
                   </span>

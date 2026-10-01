@@ -551,8 +551,10 @@ body[data-appearance="dark"] .ap-back-btn .material-symbols-outlined,
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 13px !important;
-  font-weight: 700 !important;
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif;
+  font-size: 13.5px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.15px;
   line-height: 1.2 !important;
   color: #19a66c;
   background: transparent;
@@ -565,8 +567,8 @@ body[data-appearance="dark"] .ap-back-btn .material-symbols-outlined,
 }
 
 .ap-order-details-trigger span:first-child {
-  font-size: 13px !important;
-  font-weight: 700 !important;
+  font-size: 13.5px !important;
+  font-weight: 800 !important;
   line-height: 1.2 !important;
 }
 
@@ -575,7 +577,9 @@ body[data-appearance="dark"] .ap-back-btn .material-symbols-outlined,
 }
 
 .ap-details-chevron {
-  font-size: 17px !important;
+  font-size: 19px !important;
+  font-variation-settings: 'wght' 700, 'opsz' 20 !important;
+  font-weight: 700 !important;
   line-height: 1;
   display: inline-flex;
   align-items: center;

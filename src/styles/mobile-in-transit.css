@@ -109,9 +109,10 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 700;
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif;
+  font-size: 13.5px;
+  font-weight: 800 !important;
+  letter-spacing: -0.15px;
   line-height: 1.2;
   background: transparent;
   border: none;
@@ -131,13 +132,13 @@
 
 .it-order-details-trigger {
   color: #16a34a;
-  font-size: 13px !important;
-  font-weight: 700 !important;
+  font-size: 13.5px !important;
+  font-weight: 800 !important;
 }
 
 .it-order-details-trigger span:first-child {
-  font-size: 13px !important;
-  font-weight: 700 !important;
+  font-size: 13.5px !important;
+  font-weight: 800 !important;
   line-height: 1.2 !important;
 }
 
@@ -147,13 +148,13 @@
 
 .it-shipping-status-trigger {
   color: #7c3aed;
-  font-size: 13px !important;
-  font-weight: 700 !important;
+  font-size: 13.5px !important;
+  font-weight: 800 !important;
 }
 
 .it-shipping-status-trigger span:first-child {
-  font-size: 13px !important;
-  font-weight: 700 !important;
+  font-size: 13.5px !important;
+  font-weight: 800 !important;
   line-height: 1.2 !important;
 }
 
@@ -162,7 +163,9 @@
 }
 
 .it-trigger-arrow {
-  font-size: 18px !important;
+  font-size: 19px !important;
+  font-variation-settings: 'wght' 700, 'opsz' 20 !important;
+  font-weight: 700 !important;
   line-height: 1 !important;
   transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   display: inline-flex;
