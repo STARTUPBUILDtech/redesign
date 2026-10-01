@@ -12,6 +12,7 @@ import {
   SendMessageSlideUpModal,
   FaqSlideUpModal,
 } from "./Shared/SupportSlideUpModals";
+import { PayoutAccountModal } from "./Shared/ProfileModals.jsx";
 import "../styles/mobile-awaiting-payment.css";
 import "../styles/mobile-in-transit.css";
 import "../styles/mobile-confirm-delivery.css";
@@ -232,7 +233,6 @@ export default function DesktopPaymentRoomDetail({
   const [selectedBank, setSelectedBank] = useState(
     room.refundBank || (isPaymentReceived ? "Access Bank" : room.bank) || "Access Bank"
   );
-
   const sellerName =
     room.sellerName ||
     (isPaymentReceived
@@ -257,10 +257,23 @@ export default function DesktopPaymentRoomDetail({
       ? "iPhone 15 Pro Max (1TB)"
       : "Sony WH-1000XM5");
 
-  const accountName =
-    room.accountName || (isPaymentReceived ? "Marcus Vance" : `PayKudi(${sellerName})`);
-  const accountNumber =
-    room.accountNumber || (isPaymentReceived ? "0123456789" : "903370574");
+  const [accountName, setAccountName] = useState(
+    room.accountName || (isPaymentReceived ? "Marcus Vance" : `PayKudi(${sellerName})`)
+  );
+  const [accountNumber, setAccountNumber] = useState(
+    room.accountNumber || (isPaymentReceived ? "0123456789" : "903370574")
+  );
+
+  const handleSavePayoutAccount = (updated) => {
+    if (updated) {
+      if (updated.bank) setSelectedBank(updated.bank);
+      if (updated.accountName) setAccountName(updated.accountName);
+      if (updated.accountNumber) setAccountNumber(updated.accountNumber);
+      setToastText(`Payout account updated to ${updated.bank}`);
+      setTimeout(() => setToastText(null), 3000);
+    }
+    setIsChangeBankOpen(false);
+  };
 
   const isBuying = role === "Buyer" || role === "Buying";
   const counterpartyLabel = isBuying ? "Seller's Name" : "Buyer's Name";
@@ -1766,6 +1779,18 @@ export default function DesktopPaymentRoomDetail({
       <FaqSlideUpModal
         isOpen={isFaqModalOpen}
         onClose={() => setIsFaqModalOpen(false)}
+      />
+
+      {/* ── Change Payout / Refund Account Modal ── */}
+      <PayoutAccountModal
+        isOpen={isChangeBankOpen}
+        onClose={() => setIsChangeBankOpen(false)}
+        currentData={{
+          bank: selectedBank,
+          accountNumber,
+          accountName,
+        }}
+        onSave={handleSavePayoutAccount}
       />
 
       {/* Toast Feedback */}

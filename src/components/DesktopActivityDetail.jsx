@@ -1,11 +1,15 @@
 import { useState } from "react";
 import { ArrowLeft, Copy, Check, ChevronDown, ChevronUp } from "lucide-react";
+import { PayoutAccountModal } from "./Shared/ProfileModals.jsx";
 import "../styles/desktop-activity-detail.css";
 
 export default function DesktopActivityDetail({ item = {}, onBack }) {
   const [copiedKey, setCopiedKey] = useState(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [isChangePayoutOpen, setIsChangePayoutOpen] = useState(false);
   const [selectedBank, setSelectedBank] = useState(item.refundBank || "Access Bank");
+  const [accountName, setAccountName] = useState(item.accountName || "Marcus Vance");
+  const [accountNumber, setAccountNumber] = useState(item.accountNumber || "0123456789");
 
   const handleCopy = (text, key) => {
     try { navigator.clipboard?.writeText(String(text)); } catch {}
@@ -34,8 +38,8 @@ export default function DesktopActivityDetail({ item = {}, onBack }) {
     { label: "Order Number",       value: item.orderNumber  || "ORD-302914",    key: "orderNumber" },
     { label: "You Paid",           value: item.youPaid      || item.amount,     key: "youPaid",   highlight: true, inclCharges: true },
     { label: "Bank (Refund Account)", value: selectedBank,                      key: "bank",      hasChange: true },
-    { label: "Account Name",       value: item.accountName  || "Marcus Vance",  key: "accountName" },
-    { label: "Account Number",     value: item.accountNumber|| "0123456789",    key: "accountNumber" },
+    { label: "Account Name",       value: accountName,                          key: "accountName" },
+    { label: "Account Number",     value: accountNumber,                        key: "accountNumber" },
     { label: "Seller's Name",      value: item.sellerName   || "Amaka Obi",     key: "sellerName" },
   ];
 
@@ -78,7 +82,13 @@ export default function DesktopActivityDetail({ item = {}, onBack }) {
               </div>
 
               {field.hasChange ? (
-                <button className="dact-change-btn">Change</button>
+                <button
+                  type="button"
+                  className="dact-change-btn"
+                  onClick={() => setIsChangePayoutOpen(true)}
+                >
+                  Change
+                </button>
               ) : (
                 <button
                   className="dact-copy-btn"
@@ -128,6 +138,25 @@ export default function DesktopActivityDetail({ item = {}, onBack }) {
           )}
         </div>
       </div>
+
+      {/* ── Change Payout / Refund Account Modal ── */}
+      <PayoutAccountModal
+        isOpen={isChangePayoutOpen}
+        onClose={() => setIsChangePayoutOpen(false)}
+        currentData={{
+          bank: selectedBank,
+          accountNumber,
+          accountName,
+        }}
+        onSave={(updated) => {
+          if (updated) {
+            if (updated.bank) setSelectedBank(updated.bank);
+            if (updated.accountName) setAccountName(updated.accountName);
+            if (updated.accountNumber) setAccountNumber(updated.accountNumber);
+          }
+          setIsChangePayoutOpen(false);
+        }}
+      />
     </div>
   );
 }

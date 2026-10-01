@@ -5,6 +5,7 @@ import HelpDrawer from "../Shared/HelpDrawer";
 import ChatDrawer from "../Shared/ChatDrawer";
 import ReceiptIcon from "../Shared/ReceiptIcon";
 import ReceiptModal from "../Shared/ReceiptModal";
+import { PayoutAccountModal } from "../Shared/ProfileModals.jsx";
 
 export default function MobilePaymentReceived({
   room = {},
@@ -35,12 +36,22 @@ export default function MobilePaymentReceived({
   const orderNumber = room.id || room.orderNumber || "ORD-533666";
   const orderAmount = room.amount || room.price || "₦2,345,680";
   const youPaidAmount = room.youPaid || "₦2,381,165";
-  const accountName = room.accountName || "Marcus Vance";
-  const accountNumber = room.accountNumber || "0123456789";
+  const [accountName, setAccountName] = useState(room.accountName || "Marcus Vance");
+  const [accountNumber, setAccountNumber] = useState(room.accountNumber || "0123456789");
   const sellerName = room.sellerName || "07012345678";
   const buyerName = room.buyerName || "Marcus Vance";
   const itemName = room.item || room.title || 'MacBook Pro M3 Max 16"';
   const variantText = room.variant || "Space Black, 36GB RAM, 1TB SSD";
+
+  const handleSavePayoutAccount = (updated) => {
+    if (updated) {
+      if (updated.bank) setSelectedBank(updated.bank);
+      if (updated.accountName) setAccountName(updated.accountName);
+      if (updated.accountNumber) setAccountNumber(updated.accountNumber);
+      showToast(`Payout account updated to ${updated.bank}`);
+    }
+    setIsChangeBankOpen(false);
+  };
 
   const handleCopy = (text, label) => {
     try {
@@ -516,42 +527,17 @@ export default function MobilePaymentReceived({
         onOpenChat={() => setIsChatOpen(true)}
       />
 
-      {/* ── Change Bank Modal ── */}
-      {isChangeBankOpen && (
-        <div className="ap-modal-backdrop" onClick={() => setIsChangeBankOpen(false)}>
-          <div className="pr-change-bank-modal" onClick={(e) => e.stopPropagation()}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700 }}>Select Refund Bank</h3>
-              <button
-                type="button"
-                onClick={() => setIsChangeBankOpen(false)}
-                style={{ background: "transparent", border: "none", cursor: "pointer", color: "inherit" }}
-              >
-                <span className="material-symbols-outlined">close</span>
-              </button>
-            </div>
-            <div className="pr-bank-list">
-              {banksList.map((b) => (
-                <button
-                  key={b}
-                  type="button"
-                  className={`pr-bank-option ${selectedBank === b ? "selected" : ""}`}
-                  onClick={() => {
-                    setSelectedBank(b);
-                    setIsChangeBankOpen(false);
-                    showToast(`Refund bank updated to ${b}`);
-                  }}
-                >
-                  <span>{b}</span>
-                  {selectedBank === b && (
-                    <span className="material-symbols-outlined" style={{ color: "#19a66c", fontSize: 18 }}>check</span>
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+      {/* ── Change Payout / Refund Account Modal ── */}
+      <PayoutAccountModal
+        isOpen={isChangeBankOpen}
+        onClose={() => setIsChangeBankOpen(false)}
+        currentData={{
+          bank: selectedBank,
+          accountNumber,
+          accountName,
+        }}
+        onSave={handleSavePayoutAccount}
+      />
 
       {/* ── Protection Info Modal ── */}
       {isInfoOpen && (
