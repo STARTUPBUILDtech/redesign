@@ -392,6 +392,16 @@ body.dark .profile-signout-btn:hover {
   background-color: color-mix(in srgb, var(--ink) 6%, transparent);
 }
 
+.desktop-profile-item.readonly {
+  cursor: default !important;
+  pointer-events: auto !important;
+}
+
+.desktop-profile-item.readonly:hover,
+.desktop-profile-item.readonly:active {
+  background-color: transparent !important;
+}
+
 /* ── Circular Icon Badges: Matching activity-item-icon ── */
 .desktop-profile-badge {
   width: 34px;

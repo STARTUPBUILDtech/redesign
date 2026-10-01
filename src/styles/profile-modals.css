@@ -1,0 +1,1545 @@
+/* ==========================================================================
+   PROFILE EDIT MODALS & SLIDE-UPS
+   Supports Desktop and Mobile layouts with Light / Dark appearance
+   ========================================================================== */
+
+/* ── Modal Backdrop & Portal Overlay ── */
+.profile-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background-color: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: profileModalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  box-sizing: border-box;
+}
+
+@keyframes profileModalFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ── Modal Card Container ── */
+.profile-modal-card {
+  --page: #ffffff;
+  --ink: #0f172a;
+  --muted: #64748b;
+  --line: #e2e8f0;
+  --panel: #f8fafc;
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  background-color: var(--page, #ffffff);
+  border: 1px solid var(--line, #e2e8f0);
+  border-radius: 20px;
+  box-shadow:
+    0 24px 48px -12px rgba(0, 0, 0, 0.22),
+    0 4px 12px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  color: var(--ink, #0f172a);
+  font-family: 'Hanken Grotesk', 'Inter', -apple-system, sans-serif;
+  animation: profileModalPopIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  box-sizing: border-box;
+}
+
+.profile-modal-overlay[data-appearance="dark"],
+.profile-modal-card[data-appearance="dark"],
+[data-appearance="dark"] .profile-modal-card,
+body[data-appearance="dark"] .profile-modal-card,
+html[data-appearance="dark"] .profile-modal-card,
+body.dark .profile-modal-card,
+html.dark .profile-modal-card {
+  --page: #171920 !important;
+  --ink: #f4f4f6 !important;
+  --muted: #9ca3af !important;
+  --line: rgba(255, 255, 255, 0.12) !important;
+  --panel: #1e2029 !important;
+  color-scheme: dark !important;
+  background-color: #171920 !important;
+  color: #f4f4f6 !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  box-shadow:
+    0 28px 56px -12px rgba(0, 0, 0, 0.55),
+    0 4px 16px rgba(0, 0, 0, 0.4) !important;
+}
+
+@keyframes profileModalPopIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ── Modal Header ── */
+.profile-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--line, #e2e8f0);
+  gap: 16px;
+}
+
+[data-appearance="dark"] .profile-modal-header,
+.profile-modal-card[data-appearance="dark"] .profile-modal-header,
+.profile-modal-overlay[data-appearance="dark"] .profile-modal-header,
+body[data-appearance="dark"] .profile-modal-header,
+html[data-appearance="dark"] .profile-modal-header,
+body.dark .profile-modal-header,
+html.dark .profile-modal-header {
+  border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.profile-modal-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.profile-modal-icon-badge {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.profile-modal-icon-badge .material-symbols-outlined {
+  font-size: 22px;
+}
+
+.profile-modal-header-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.profile-modal-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--ink, #0f172a);
+  line-height: 1.25;
+}
+
+[data-appearance="dark"] .profile-modal-title,
+.profile-modal-card[data-appearance="dark"] .profile-modal-title,
+.profile-modal-overlay[data-appearance="dark"] .profile-modal-title,
+body[data-appearance="dark"] .profile-modal-title,
+html[data-appearance="dark"] .profile-modal-title,
+body.dark .profile-modal-title,
+html.dark .profile-modal-title,
+.profile-modal-card[data-appearance="dark"] h2,
+.profile-modal-card[data-appearance="dark"] h3 {
+  color: #f4f4f6 !important;
+  -webkit-text-fill-color: #f4f4f6 !important;
+}
+
+.profile-modal-subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted, #64748b);
+  line-height: 1.35;
+}
+
+[data-appearance="dark"] .profile-modal-subtitle,
+.profile-modal-card[data-appearance="dark"] .profile-modal-subtitle,
+.profile-modal-overlay[data-appearance="dark"] .profile-modal-subtitle,
+body[data-appearance="dark"] .profile-modal-subtitle,
+html[data-appearance="dark"] .profile-modal-subtitle,
+body.dark .profile-modal-subtitle,
+html.dark .profile-modal-subtitle {
+  color: #94a3b8 !important;
+}
+
+.profile-modal-close-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.06);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4b5563;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.profile-modal-close-btn:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.profile-modal-close-btn .material-symbols-outlined {
+  font-size: 18px !important;
+  line-height: 1;
+}
+
+[data-appearance="dark"] .profile-modal-close-btn,
+.profile-modal-card[data-appearance="dark"] .profile-modal-close-btn,
+.profile-modal-overlay[data-appearance="dark"] .profile-modal-close-btn,
+body[data-appearance="dark"] .profile-modal-close-btn,
+html[data-appearance="dark"] .profile-modal-close-btn,
+body.dark .profile-modal-close-btn,
+html.dark .profile-modal-close-btn {
+  background-color: rgba(255, 255, 255, 0.12) !important;
+  color: #f4f4f6 !important;
+}
+
+[data-appearance="dark"] .profile-modal-close-btn:hover,
+.profile-modal-card[data-appearance="dark"] .profile-modal-close-btn:hover,
+.profile-modal-overlay[data-appearance="dark"] .profile-modal-close-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* ── Modal Body / Form ── */
+.profile-modal-body {
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: calc(85vh - 150px);
+  overflow-y: auto;
+}
+
+.profile-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.profile-form-label {
+  font-size: clamp(12.5px, 3.2vw, 13.5px) !important;
+  font-weight: 500 !important;
+  color: var(--ink, #0f172a) !important;
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif !important;
+  letter-spacing: -0.1px !important;
+  display: flex !important;
+  align-items: center !important;
+  margin-bottom: 4px !important;
+  user-select: none !important;
+}
+
+[data-appearance="dark"] .profile-form-label,
+.profile-modal-card[data-appearance="dark"] .profile-form-label,
+.profile-modal-overlay[data-appearance="dark"] .profile-form-label,
+body[data-appearance="dark"] .profile-form-label,
+html[data-appearance="dark"] .profile-form-label,
+body.dark .profile-form-label,
+html.dark .profile-form-label,
+.profile-modal-card[data-appearance="dark"] label,
+.profile-modal-card[data-appearance="dark"] .profile-form-label span,
+.profile-modal-overlay[data-appearance="dark"] .profile-form-label span {
+  color: #f4f4f6 !important;
+  -webkit-text-fill-color: #f4f4f6 !important;
+}
+
+/* ── Input Box: Matching new-payment-field-box exactly ── */
+.profile-input-wrap {
+  display: flex !important;
+  align-items: center !important;
+  height: clamp(40px, 10vw, 44px) !important;
+  min-height: clamp(40px, 10vw, 44px) !important;
+  width: 100% !important;
+  border-radius: 6px !important;
+  border: 1px solid var(--line) !important;
+  background: var(--page, #ffffff) !important;
+  position: relative !important;
+  box-sizing: border-box !important;
+  padding: 0 clamp(8px, 2.5vw, 12px) !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+[data-appearance="dark"] .profile-input-wrap {
+  background: #141518 !important;
+  border-color: var(--line) !important;
+}
+
+.profile-input-wrap:focus-within {
+  border-color: var(--ink) !important;
+  box-shadow: 0 0 0 1px var(--ink) !important;
+}
+
+[data-appearance="dark"] .profile-input-wrap:focus-within {
+  border-color: #ffffff !important;
+  box-shadow: 0 0 0 1px #ffffff !important;
+}
+
+.profile-input-icon {
+  position: static !important;
+  color: var(--muted) !important;
+  margin-right: 10px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  pointer-events: none !important;
+}
+
+.profile-input-icon .material-symbols-outlined {
+  font-size: 18px !important;
+}
+
+/* ── Constant Country Code Prefix inside Phone Input ── */
+.profile-country-code-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  font-size: clamp(12.5px, 3.2vw, 13.5px) !important;
+  font-weight: 600 !important;
+  color: var(--ink, #0f172a) !important;
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif !important;
+  letter-spacing: -0.1px !important;
+  user-select: none !important;
+  pointer-events: none !important;
+  flex-shrink: 0 !important;
+  line-height: 1 !important;
+}
+
+.profile-country-code-badge svg {
+  display: inline-block !important;
+  flex-shrink: 0 !important;
+  border-radius: 2px !important;
+}
+
+.profile-country-code-text {
+  font-variant-numeric: tabular-nums lining-nums !important;
+  font-feature-settings: 'tnum', 'lnum' !important;
+}
+
+.profile-phone-divider {
+  width: 1px !important;
+  height: 18px !important;
+  background-color: var(--line, #e2e8f0) !important;
+  margin: 0 10px 0 8px !important;
+  flex-shrink: 0 !important;
+}
+
+[data-appearance="dark"] .profile-country-code-badge,
+.profile-modal-card[data-appearance="dark"] .profile-country-code-badge,
+.profile-modal-overlay[data-appearance="dark"] .profile-country-code-badge,
+body.dark .profile-country-code-badge,
+html.dark .profile-country-code-badge {
+  color: #f4f4f6 !important;
+  -webkit-text-fill-color: #f4f4f6 !important;
+}
+
+[data-appearance="dark"] .profile-phone-divider,
+.profile-modal-card[data-appearance="dark"] .profile-phone-divider,
+.profile-modal-overlay[data-appearance="dark"] .profile-phone-divider,
+body.dark .profile-phone-divider,
+html.dark .profile-phone-divider {
+  background-color: rgba(255, 255, 255, 0.16) !important;
+}
+
+.profile-input-field {
+  flex: 1 !important;
+  min-width: 0 !important;
+  height: 100% !important;
+  border: none !important;
+  outline: none !important;
+  background: transparent !important;
+  font-size: clamp(12.5px, 3.2vw, 13.5px) !important;
+  font-weight: 400 !important;
+  color: var(--ink, #0f172a) !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif !important;
+}
+
+[data-appearance="dark"] .profile-input-field,
+.profile-modal-card[data-appearance="dark"] .profile-input-field,
+.profile-modal-overlay[data-appearance="dark"] .profile-input-field,
+body[data-appearance="dark"] .profile-input-field,
+html[data-appearance="dark"] .profile-input-field,
+body.dark .profile-input-field,
+html.dark .profile-input-field,
+.profile-modal-card[data-appearance="dark"] input {
+  color: #f4f4f6 !important;
+  -webkit-text-fill-color: #f4f4f6 !important;
+}
+
+/* Standalone input when not inside .profile-input-wrap */
+input.profile-input-field:not(.profile-input-wrap input) {
+  display: flex !important;
+  align-items: center !important;
+  height: clamp(40px, 10vw, 44px) !important;
+  width: 100% !important;
+  border-radius: 6px !important;
+  border: 1px solid var(--line) !important;
+  background: var(--page, #ffffff) !important;
+  padding: 0 clamp(8px, 2.5vw, 12px) !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+input.profile-input-field:not(.profile-input-wrap input):focus {
+  border-color: var(--ink) !important;
+  box-shadow: 0 0 0 1px var(--ink) !important;
+}
+
+[data-appearance="dark"] input.profile-input-field:not(.profile-input-wrap input),
+.profile-modal-card[data-appearance="dark"] input.profile-input-field:not(.profile-input-wrap input) {
+  background: #141518 !important;
+  border-color: var(--line) !important;
+  color: #f4f4f6 !important;
+  -webkit-text-fill-color: #f4f4f6 !important;
+}
+
+[data-appearance="dark"] input.profile-input-field:not(.profile-input-wrap input):focus,
+.profile-modal-card[data-appearance="dark"] input.profile-input-field:not(.profile-input-wrap input):focus {
+  border-color: #ffffff !important;
+  box-shadow: 0 0 0 1px #ffffff !important;
+}
+
+.profile-input-field::placeholder,
+.profile-textarea-field::placeholder {
+  color: var(--muted) !important;
+  opacity: 0.75 !important;
+  font-size: clamp(12px, 3vw, 13px) !important;
+  font-weight: 400 !important;
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif !important;
+  letter-spacing: -0.15px !important;
+  text-transform: none !important;
+}
+
+[data-appearance="dark"] .profile-input-field::placeholder,
+[data-appearance="dark"] .profile-textarea-field::placeholder,
+.profile-modal-card[data-appearance="dark"] .profile-input-field::placeholder,
+.profile-modal-card[data-appearance="dark"] .profile-textarea-field::placeholder,
+.profile-modal-overlay[data-appearance="dark"] .profile-input-field::placeholder,
+.profile-modal-overlay[data-appearance="dark"] .profile-textarea-field::placeholder,
+body.dark .profile-input-field::placeholder,
+body.dark .profile-textarea-field::placeholder {
+  color: #94a3b8 !important;
+  -webkit-text-fill-color: #94a3b8 !important;
+  opacity: 0.8 !important;
+}
+
+/* ── Textarea matching New Payment style ── */
+.profile-textarea-field {
+  width: 100% !important;
+  min-height: 80px !important;
+  border-radius: 6px !important;
+  border: 1px solid var(--line) !important;
+  background: var(--page, #ffffff) !important;
+  padding: 10px clamp(8px, 2.5vw, 12px) !important;
+  color: var(--ink, #0f172a) !important;
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif !important;
+  font-size: clamp(12.5px, 3.2vw, 13.5px) !important;
+  line-height: 1.45 !important;
+  font-weight: 400 !important;
+  outline: none !important;
+  box-sizing: border-box !important;
+  resize: vertical !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+.profile-textarea-field:focus {
+  border-color: var(--ink) !important;
+  box-shadow: 0 0 0 1px var(--ink) !important;
+}
+
+[data-appearance="dark"] .profile-textarea-field,
+.profile-modal-card[data-appearance="dark"] .profile-textarea-field,
+.profile-modal-overlay[data-appearance="dark"] .profile-textarea-field,
+body[data-appearance="dark"] .profile-textarea-field,
+html[data-appearance="dark"] .profile-textarea-field,
+body.dark .profile-textarea-field,
+html.dark .profile-textarea-field,
+.profile-modal-card[data-appearance="dark"] textarea {
+  background: #141518 !important;
+  border-color: var(--line) !important;
+  color: #f4f4f6 !important;
+  -webkit-text-fill-color: #f4f4f6 !important;
+}
+
+[data-appearance="dark"] .profile-textarea-field:focus,
+.profile-modal-card[data-appearance="dark"] .profile-textarea-field:focus,
+.profile-modal-overlay[data-appearance="dark"] .profile-textarea-field:focus {
+  border-color: #ffffff !important;
+  box-shadow: 0 0 0 1px #ffffff !important;
+}
+
+/* ── Select field matching New Payment style ── */
+.profile-select-field {
+  width: 100% !important;
+  height: clamp(40px, 10vw, 44px) !important;
+  min-height: clamp(40px, 10vw, 44px) !important;
+  border-radius: 6px !important;
+  border: 1px solid var(--line) !important;
+  background: var(--page, #ffffff) !important;
+  padding: 0 clamp(8px, 2.5vw, 12px) !important;
+  color: var(--ink) !important;
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif !important;
+  font-size: clamp(12.5px, 3.2vw, 13.5px) !important;
+  outline: none !important;
+  cursor: pointer !important;
+  box-sizing: border-box !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+.profile-select-field:focus {
+  border-color: var(--ink) !important;
+  box-shadow: 0 0 0 1px var(--ink) !important;
+}
+
+[data-appearance="dark"] .profile-select-field,
+.profile-modal-card[data-appearance="dark"] .profile-select-field,
+.profile-modal-overlay[data-appearance="dark"] .profile-select-field,
+body[data-appearance="dark"] .profile-select-field,
+html[data-appearance="dark"] .profile-select-field,
+body.dark .profile-select-field,
+html.dark .profile-select-field,
+.profile-modal-card[data-appearance="dark"] select {
+  background: #141518 !important;
+  border-color: var(--line) !important;
+  color: #f4f4f6 !important;
+  -webkit-text-fill-color: #f4f4f6 !important;
+}
+
+[data-appearance="dark"] .profile-select-field option,
+.profile-modal-card[data-appearance="dark"] .profile-select-field option,
+.profile-modal-overlay[data-appearance="dark"] .profile-select-field option {
+  background-color: #171920 !important;
+  color: #f4f4f6 !important;
+}
+
+[data-appearance="dark"] .profile-select-field:focus {
+  border-color: #ffffff !important;
+  box-shadow: 0 0 0 1px #ffffff !important;
+}
+
+/* ── Validation Error ── */
+.profile-form-error {
+  font-size: 12px;
+  color: #ef4444;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ── Modal Footer ── */
+.profile-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 4px 24px 22px 24px;
+  border-top: none;
+}
+
+[data-appearance="dark"] .profile-modal-footer {
+  border-top: none;
+}
+
+.profile-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 20px;
+  height: 42px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+  white-space: nowrap;
+}
+
+.profile-btn-secondary {
+  background-color: transparent;
+  border: 1.5px solid var(--line, #e2e8f0);
+  color: var(--ink, #0f172a);
+}
+
+[data-appearance="dark"] .profile-btn-secondary,
+.profile-modal-card[data-appearance="dark"] .profile-btn-secondary,
+.profile-modal-overlay[data-appearance="dark"] .profile-btn-secondary,
+body[data-appearance="dark"] .profile-btn-secondary,
+html[data-appearance="dark"] .profile-btn-secondary,
+body.dark .profile-btn-secondary,
+html.dark .profile-btn-secondary {
+  border-color: rgba(255, 255, 255, 0.16) !important;
+  color: #f4f4f6 !important;
+  background-color: transparent !important;
+}
+
+.profile-btn-secondary:hover {
+  background-color: color-mix(in srgb, var(--ink) 5%, transparent);
+}
+
+[data-appearance="dark"] .profile-btn-secondary:hover,
+.profile-modal-card[data-appearance="dark"] .profile-btn-secondary:hover,
+.profile-modal-overlay[data-appearance="dark"] .profile-btn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.profile-btn-primary {
+  background-color: #171717;
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.14);
+}
+
+.profile-btn-primary:hover {
+  background-color: #2b2d35;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+[data-appearance="dark"] .profile-btn-primary,
+.profile-modal-card[data-appearance="dark"] .profile-btn-primary,
+.profile-modal-overlay[data-appearance="dark"] .profile-btn-primary,
+body[data-appearance="dark"] .profile-btn-primary,
+html[data-appearance="dark"] .profile-btn-primary,
+body.dark .profile-btn-primary,
+html.dark .profile-btn-primary {
+  background-color: #ffffff !important;
+  color: #111215 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35) !important;
+}
+
+[data-appearance="dark"] .profile-btn-primary:hover,
+.profile-modal-card[data-appearance="dark"] .profile-btn-primary:hover,
+.profile-modal-overlay[data-appearance="dark"] .profile-btn-primary:hover {
+  background-color: #f1f3f7 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45) !important;
+}
+
+.profile-btn:active {
+  transform: translateY(0);
+}
+
+/* ── Category / Info Pills ── */
+.profile-modal-info-box {
+  background-color: color-mix(in srgb, var(--ink) 4%, transparent);
+  border: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--muted, #64748b);
+}
+
+.profile-modal-info-box .material-symbols-outlined {
+  font-size: 18px;
+  color: #2563eb;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* ── Rewards Stat Grid ── */
+.rewards-stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.rewards-stat-card {
+  padding: 14px;
+  border-radius: 12px;
+  background-color: color-mix(in srgb, var(--ink) 3%, transparent);
+  border: 1px solid var(--line, #e2e8f0);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+[data-appearance="dark"] .rewards-stat-card {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.rewards-stat-label {
+  font-size: 12px;
+  color: var(--muted, #64748b);
+  font-weight: 500;
+}
+
+.rewards-stat-value {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--ink, #0f172a);
+  letter-spacing: -0.5px;
+}
+
+[data-appearance="dark"] .rewards-stat-value,
+.profile-modal-card[data-appearance="dark"] .rewards-stat-value,
+.profile-modal-overlay[data-appearance="dark"] .rewards-stat-value {
+  color: #f4f4f6 !important;
+  -webkit-text-fill-color: #f4f4f6 !important;
+}
+
+.rewards-copy-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background-color: var(--card, #f8fafc);
+  border: 1.5px solid var(--line, #e2e8f0);
+  font-family: monospace;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink, #0f172a);
+}
+
+[data-appearance="dark"] .rewards-copy-box,
+.profile-modal-card[data-appearance="dark"] .rewards-copy-box,
+.profile-modal-overlay[data-appearance="dark"] .rewards-copy-box {
+  background-color: #21242d !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: #f4f4f6 !important;
+  -webkit-text-fill-color: #f4f4f6 !important;
+}
+
+/* ── Toast Notification ── */
+.profile-toast-container {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10001;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background-color: #0f172a;
+  color: #ffffff;
+  padding: 12px 20px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.35);
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif;
+  font-size: 13.5px;
+  font-weight: 600;
+  animation: profileToastIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+[data-appearance="dark"] .profile-toast-container {
+  background-color: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+}
+
+.profile-toast-container .material-symbols-outlined {
+  color: #10b981;
+  font-size: 20px;
+}
+
+@keyframes profileToastIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 14px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+/* ── Mobile Slide-Up Adaptation ── */
+@media (max-width: 600px) {
+  .profile-modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+    overscroll-behavior: contain;
+  }
+
+  .profile-modal-card {
+    max-width: 100%;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    animation: profileModalSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    max-height: 90vh;
+    overscroll-behavior: contain;
+  }
+
+  @keyframes profileModalSlideUp {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  .profile-modal-header {
+    padding: 18px 20px 14px 20px;
+  }
+
+  .profile-modal-body {
+    padding: 16px 20px;
+  }
+
+  .profile-modal-footer {
+    padding: 4px 20px 24px 20px;
+    border-top: none;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   PAYOUT BANK ACCOUNT MODAL ENHANCEMENT
+   List view with default selector & Add view with suggested banks & matching
+   ══════════════════════════════════════════════════════════════════════════ */
+.payout-dialog-card {
+  max-width: 480px;
+  min-height: 520px;
+  display: flex;
+  flex-direction: column;
+}
+
+.payout-dialog-card > form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 100%;
+}
+
+.payout-dialog-card .payout-modal-scrollable {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px 24px 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.payout-dialog-card .profile-modal-footer {
+  margin-top: auto;
+}
+
+.payout-single-footer {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+}
+
+.payout-full-btn {
+  width: 100% !important;
+  justify-content: center;
+  padding: 14px 20px !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  border-radius: 12px !important;
+}
+
+@media (max-width: 600px) {
+  .profile-modal-card.payout-dialog-card {
+    min-height: 520px;
+  }
+}
+
+.payout-modal-desc {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--muted, #64748b);
+}
+
+/* Back button in Add view */
+.payout-back-arrow-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid var(--line, #e2e8f0);
+  background: var(--panel, #f8fafc);
+  color: var(--ink, #0f172a);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  padding: 0;
+}
+
+.payout-back-arrow-btn:hover {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: #10b981;
+  color: #10b981;
+}
+
+/* Added Payout Accounts List */
+.payout-accounts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.payout-account-select-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 15px;
+  border-radius: 14px;
+  background-color: var(--panel, #f8fafc);
+  border: 1.5px solid var(--line, #e2e8f0);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.payout-account-select-card:hover {
+  border-color: #10b981;
+  transform: translateY(-1px);
+}
+
+.payout-account-select-card.is-default-selected {
+  border-color: #10b981;
+  background-color: rgba(16, 185, 129, 0.06);
+  box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.35);
+}
+
+.payout-account-card-left {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  min-width: 0;
+  flex: 1;
+}
+
+.payout-account-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.payout-account-bank-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.payout-account-bank-name {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--ink, #0f172a);
+}
+
+.payout-default-pill {
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.16);
+  color: #059669;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.payout-account-number-mono {
+  font-size: 13px;
+  font-family: 'Inter', monospace;
+  font-weight: 600;
+  color: var(--muted, #64748b);
+  letter-spacing: 0.5px;
+}
+
+.payout-account-holder {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--muted, #64748b);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.payout-account-card-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.payout-radio-selector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted, #94a3b8);
+  transition: all 0.15s ease;
+}
+
+.payout-radio-selector.is-checked {
+  color: #10b981;
+}
+
+.payout-radio-icon {
+  font-size: 22px;
+}
+
+.payout-delete-acc-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  padding: 4px;
+  border-radius: 6px;
+  color: var(--muted, #94a3b8);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.payout-delete-acc-btn:hover {
+  color: #ef4444;
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+/* Add Trigger Button in List View */
+.payout-add-trigger-btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 13px 16px;
+  border-radius: 14px;
+  border: 1.5px dashed var(--line, #cbd5e1);
+  background: transparent;
+  color: var(--ink, #0f172a);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.payout-add-trigger-btn:hover {
+  border-color: #10b981;
+  background-color: rgba(16, 185, 129, 0.05);
+}
+
+.payout-add-trigger-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.payout-add-trigger-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.payout-add-trigger-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink, #0f172a);
+}
+
+.payout-add-trigger-sub {
+  font-size: 12px;
+  color: var(--muted, #64748b);
+}
+
+/* Account Number in Add flow */
+.payout-acc-counter {
+  font-size: 11px;
+  color: var(--muted, #64748b);
+  font-weight: 600;
+}
+
+.payout-acc-num-input {
+  font-size: 16px !important;
+  font-family: 'Inter', monospace !important;
+  letter-spacing: 0.8px;
+  font-weight: 600 !important;
+}
+
+.payout-acc-valid-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+/* Suggested Banks Grid */
+.payout-suggested-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.payout-suggested-sub {
+  font-size: 12px;
+  color: var(--muted, #64748b);
+}
+
+.payout-suggested-banks-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 9px;
+}
+
+@media (max-width: 480px) {
+  .payout-suggested-banks-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.payout-suggested-bank-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 6px 9px 6px;
+  border-radius: 12px;
+  border: 1.5px solid var(--line, #e2e8f0);
+  background-color: var(--panel, #f8fafc);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  gap: 6px;
+}
+
+.payout-suggested-bank-tile:hover {
+  border-color: #10b981;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+}
+
+.payout-suggested-bank-tile.is-selected {
+  border-color: #10b981;
+  background-color: rgba(16, 185, 129, 0.08);
+  box-shadow: 0 0 0 1px #10b981;
+}
+
+.payout-suggested-tile-name {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--ink, #0f172a);
+  text-align: center;
+  line-height: 1.2;
+}
+
+.payout-suggested-tile-check {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: #10b981;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Matching Account Card */
+.payout-match-result-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  animation: payoutFadeInUp 0.22s ease-out forwards;
+}
+
+@keyframes payoutFadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.payout-match-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #059669;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.payout-match-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 15px;
+  border-radius: 14px;
+  background: rgba(16, 185, 129, 0.06);
+  border: 1.5px solid rgba(16, 185, 129, 0.3);
+  gap: 12px;
+}
+
+.payout-match-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.payout-match-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.payout-match-bank-line {
+  font-size: 12px;
+  color: var(--muted, #64748b);
+  font-weight: 500;
+}
+
+.payout-match-num {
+  font-family: 'Inter', monospace;
+  font-weight: 600;
+  color: var(--ink, #0f172a);
+}
+
+.payout-match-name-row {
+  display: flex;
+  align-items: center;
+}
+
+.payout-matched-name-text {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--ink, #0f172a);
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.payout-match-resolving {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  color: var(--muted, #64748b);
+}
+
+.payout-match-pending {
+  font-size: 12.5px;
+  color: var(--muted, #64748b);
+  font-style: italic;
+}
+
+.payout-match-verified-tag {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #10b981;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  flex-shrink: 0;
+}
+
+.payout-spinner-sm {
+  width: 13px;
+  height: 13px;
+  border: 2px solid rgba(16, 185, 129, 0.3);
+  border-top-color: #10b981;
+  border-radius: 50%;
+  animation: payoutSpin 0.7s linear infinite;
+  display: inline-block;
+}
+
+@keyframes payoutSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Set as default checkbox */
+.payout-set-default-wrap {
+  padding: 4px 0 2px 0;
+}
+
+.payout-default-checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.payout-default-checkbox {
+  width: 17px;
+  height: 17px;
+  accent-color: #10b981;
+  cursor: pointer;
+}
+
+.payout-default-checkbox-text {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--ink, #0f172a);
+}
+
+/* ── Dark Mode Overrides for Payout Modal ── */
+[data-appearance="dark"] .payout-account-select-card,
+.profile-modal-card[data-appearance="dark"] .payout-account-select-card {
+  background-color: #1e2029;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-appearance="dark"] .payout-account-select-card:hover,
+.profile-modal-card[data-appearance="dark"] .payout-account-select-card:hover {
+  border-color: #10b981;
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+[data-appearance="dark"] .payout-account-select-card.is-default-selected,
+.profile-modal-card[data-appearance="dark"] .payout-account-select-card.is-default-selected {
+  background-color: rgba(16, 185, 129, 0.1);
+  border-color: #10b981;
+}
+
+[data-appearance="dark"] .payout-default-pill,
+.profile-modal-card[data-appearance="dark"] .payout-default-pill {
+  background: rgba(16, 185, 129, 0.22);
+  color: #34d399;
+}
+
+[data-appearance="dark"] .payout-add-trigger-btn,
+.profile-modal-card[data-appearance="dark"] .payout-add-trigger-btn {
+  border-color: rgba(255, 255, 255, 0.18);
+  color: #f4f4f6;
+}
+
+[data-appearance="dark"] .payout-add-trigger-btn:hover,
+.profile-modal-card[data-appearance="dark"] .payout-add-trigger-btn:hover {
+  border-color: #10b981;
+  background-color: rgba(16, 185, 129, 0.08);
+}
+
+[data-appearance="dark"] .payout-add-trigger-title,
+.profile-modal-card[data-appearance="dark"] .payout-add-trigger-title {
+  color: #f4f4f6;
+}
+
+[data-appearance="dark"] .payout-suggested-bank-tile,
+.profile-modal-card[data-appearance="dark"] .payout-suggested-bank-tile {
+  background-color: #1e2029;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-appearance="dark"] .payout-suggested-bank-tile:hover,
+.profile-modal-card[data-appearance="dark"] .payout-suggested-bank-tile:hover {
+  border-color: #10b981;
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+[data-appearance="dark"] .payout-suggested-bank-tile.is-selected,
+.profile-modal-card[data-appearance="dark"] .payout-suggested-bank-tile.is-selected {
+  background-color: rgba(16, 185, 129, 0.12);
+  border-color: #10b981;
+}
+
+[data-appearance="dark"] .payout-suggested-tile-name,
+.profile-modal-card[data-appearance="dark"] .payout-suggested-tile-name {
+  color: #f4f4f6;
+}
+
+[data-appearance="dark"] .payout-back-arrow-btn,
+.profile-modal-card[data-appearance="dark"] .payout-back-arrow-btn {
+  background-color: #1e2029;
+  border-color: rgba(255, 255, 255, 0.12);
+  color: #f4f4f6;
+}
+
+[data-appearance="dark"] .payout-match-card,
+.profile-modal-card[data-appearance="dark"] .payout-match-card {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.35);
+}
+
+[data-appearance="dark"] .payout-match-num,
+.profile-modal-card[data-appearance="dark"] .payout-match-num {
+  color: #f4f4f6;
+}
+
+[data-appearance="dark"] .payout-matched-name-text,
+.profile-modal-card[data-appearance="dark"] .payout-matched-name-text {
+  color: #f4f4f6;
+}
+
+[data-appearance="dark"] .payout-default-checkbox-text,
+.profile-modal-card[data-appearance="dark"] .payout-default-checkbox-text {
+  color: #f4f4f6;
+}
+
+/* ── Suggested Banks List of 3 & Inline Loading States ── */
+.payout-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 6px;
+}
+
+.payout-matching-bank-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #10b981;
+  animation: payoutFadeInUp 0.18s ease-out;
+}
+
+.payout-suggested-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  animation: payoutFadeInUp 0.22s ease-out;
+}
+
+.payout-suggested-list-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.payout-suggested-row-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1.5px solid var(--line, #e2e8f0);
+  background-color: var(--panel, #f8fafc);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.payout-suggested-row-item:hover {
+  border-color: #10b981;
+  background-color: rgba(16, 185, 129, 0.04);
+  transform: translateY(-1px);
+}
+
+.payout-suggested-row-item.is-selected {
+  border-color: #10b981;
+  background-color: rgba(16, 185, 129, 0.08);
+  box-shadow: 0 0 0 1px #10b981;
+}
+
+.payout-suggested-row-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.payout-suggested-row-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink, #0f172a);
+}
+
+.payout-suggested-row-radio {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted, #94a3b8);
+  transition: color 0.15s ease;
+}
+
+.payout-suggested-row-item.is-selected .payout-suggested-row-radio {
+  color: #10b981;
+}
+
+.payout-more-banks-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 7px 10px;
+  background: transparent;
+  border: none;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted, #64748b);
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.payout-more-banks-btn:hover {
+  color: #10b981;
+}
+
+[data-appearance="dark"] .payout-suggested-row-item,
+.profile-modal-card[data-appearance="dark"] .payout-suggested-row-item {
+  background-color: #1e2029;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-appearance="dark"] .payout-suggested-row-item:hover,
+.profile-modal-card[data-appearance="dark"] .payout-suggested-row-item:hover {
+  border-color: #10b981;
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+[data-appearance="dark"] .payout-suggested-row-item.is-selected,
+.profile-modal-card[data-appearance="dark"] .payout-suggested-row-item.is-selected {
+  background-color: rgba(16, 185, 129, 0.12);
+  border-color: #10b981;
+}
+
+[data-appearance="dark"] .payout-suggested-row-name,
+.profile-modal-card[data-appearance="dark"] .payout-suggested-row-name {
+  color: #f4f4f6;
+}
+
+[data-appearance="dark"] .payout-more-banks-btn,
+.profile-modal-card[data-appearance="dark"] .payout-more-banks-btn {
+  color: #9ca3af;
+}
+
+[data-appearance="dark"] .payout-more-banks-btn:hover,
+.profile-modal-card[data-appearance="dark"] .payout-more-banks-btn:hover {
+  color: #10b981;
+}

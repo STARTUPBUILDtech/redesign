@@ -1,0 +1,1620 @@
+import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
+import BankLogo from "../BankLogo.jsx";
+import "../../styles/profile-modals.css";
+
+function WhatsAppIcon({ size = 18 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.456 5.71 1.457h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.414z" />
+    </svg>
+  );
+}
+
+export function useModalAppearance(darkProp) {
+  const [appearance, setAppearance] = useState(() => {
+    if (typeof darkProp === "boolean") return darkProp ? "dark" : "light";
+    if (typeof document === "undefined") return "light";
+    const bodyAttr = document.body.getAttribute("data-appearance");
+    const docAttr = document.documentElement.getAttribute("data-appearance");
+    const hasDarkClass =
+      document.body.classList.contains("dark") ||
+      document.documentElement.classList.contains("dark");
+    const dashDark = document.querySelector('[data-appearance="dark"]') !== null;
+    return (bodyAttr === "dark" || docAttr === "dark" || hasDarkClass || dashDark) ? "dark" : "light";
+  });
+
+  useEffect(() => {
+    if (typeof darkProp === "boolean") {
+      setAppearance(darkProp ? "dark" : "light");
+      return;
+    }
+    if (typeof document === "undefined") return;
+    const checkDark = () => {
+      const isDark =
+        document.body.getAttribute("data-appearance") === "dark" ||
+        document.documentElement.getAttribute("data-appearance") === "dark" ||
+        document.body.classList.contains("dark") ||
+        document.documentElement.classList.contains("dark") ||
+        document.querySelector('.mobile-dashboard[data-appearance="dark"]') !== null ||
+        document.querySelector('.app[data-appearance="dark"]') !== null;
+      setAppearance(isDark ? "dark" : "light");
+    };
+
+    checkDark();
+    const observer = new MutationObserver(checkDark);
+    observer.observe(document.body, { attributes: true, attributeFilter: ["data-appearance", "class"] });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-appearance", "class"] });
+    return () => observer.disconnect();
+  }, [darkProp]);
+
+  return appearance;
+}
+
+function extractLocalPhone(phoneStr) {
+  if (!phoneStr) return "";
+  let cleaned = phoneStr.trim();
+  if (cleaned.startsWith("+234")) {
+    cleaned = cleaned.substring(4).trim();
+  } else if (cleaned.startsWith("234")) {
+    cleaned = cleaned.substring(3).trim();
+  }
+  if (cleaned.startsWith("0") && cleaned.length > 1) {
+    cleaned = cleaned.substring(1).trim();
+  }
+  return cleaned;
+}
+
+// ── 1. Edit Field Modal (Email, Name, Address, Phone, or Full Profile) ──
+export function EditFieldModal({
+  isOpen,
+  onClose,
+  fieldType = "email", // 'email' | 'name' | 'address' | 'phone' | 'profile'
+  currentData,
+  onSave,
+  dark,
+}) {
+  const appearance = useModalAppearance(dark);
+  const isDark = appearance === "dark";
+
+  const [formData, setFormData] = useState({
+    name: currentData?.name || "",
+    email: currentData?.email || "",
+    phone: extractLocalPhone(currentData?.phone || ""),
+    address: currentData?.address || "",
+  });
+  const [error, setError] = useState("");
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      setFormData({
+        name: currentData?.name || "",
+        email: currentData?.email || "",
+        phone: extractLocalPhone(currentData?.phone || ""),
+        address: currentData?.address || "",
+      });
+      setError("");
+      // Intentionally do not auto-focus input so keyboard is not prompted on mobile until user taps
+    }
+  }, [isOpen, currentData, fieldType]);
+
+  const handlePhoneChange = (e) => {
+    let val = e.target.value;
+    if (val.startsWith("+234")) val = val.substring(4).trim();
+    else if (val.startsWith("234")) val = val.substring(3).trim();
+    else if (val.startsWith("0") && val.length > 1) val = val.substring(1).trim();
+    setFormData((prev) => ({ ...prev, phone: val }));
+  };
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
+
+  if (!isOpen) return null;
+
+  const handleSubmit = (e) => {
+    if (e) e.preventDefault();
+    setError("");
+
+    if (fieldType === "email") {
+      const emailVal = formData.email.trim();
+      if (!emailVal) {
+        setError("Please enter an email address.");
+        return;
+      }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
+        setError("Please enter a valid email address (e.g. name@example.com).");
+        return;
+      }
+      onSave({ email: emailVal });
+    } else if (fieldType === "name") {
+      const nameVal = formData.name.trim();
+      if (!nameVal) {
+        setError("Please enter your name.");
+        return;
+      }
+      onSave({ name: nameVal });
+    } else if (fieldType === "phone") {
+      const rawDigits = formData.phone.trim();
+      if (!rawDigits) {
+        setError("Please enter your phone number.");
+        return;
+      }
+      const cleanNumber = rawDigits.replace(/^\+?234\s*/, "").replace(/^0/, "");
+      onSave({ phone: `+234 ${cleanNumber}` });
+    } else if (fieldType === "address") {
+      const addrVal = formData.address.trim();
+      if (!addrVal) {
+        setError("Please enter your address.");
+        return;
+      }
+      onSave({ address: addrVal });
+    } else if (fieldType === "profile") {
+      if (!formData.name.trim()) {
+        setError("Name cannot be empty.");
+        return;
+      }
+      const rawDigits = formData.phone.trim();
+      const fullPhone = rawDigits ? `+234 ${rawDigits.replace(/^\+?234\s*/, "").replace(/^0/, "")}` : "";
+      onSave({
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        phone: fullPhone,
+        address: formData.address.trim(),
+      });
+    }
+    onClose();
+  };
+
+  const getHeaderConfig = () => {
+    switch (fieldType) {
+      case "email":
+        return {
+          title: "Edit Email Address",
+          icon: "mail",
+          badgeClass: "email",
+          badgeBg: isDark ? "rgba(168, 85, 247, 0.22)" : "#eedffe",
+          badgeColor: isDark ? "#c084fc" : "#7e22ce",
+        };
+      case "address":
+        return {
+          title: "Edit Address",
+          icon: "location_on",
+          badgeClass: "address",
+          badgeBg: isDark ? "rgba(249, 115, 22, 0.22)" : "#fce8d3",
+          badgeColor: isDark ? "#fb923c" : "#c76016",
+        };
+      case "phone":
+        return {
+          title: "Edit Phone Number",
+          icon: "phone",
+          badgeClass: "whatsapp",
+          badgeBg: isDark ? "rgba(34, 197, 94, 0.22)" : "#dcf2e4",
+          badgeColor: isDark ? "#4ade80" : "#1b7347",
+        };
+      case "name":
+        return {
+          title: "Edit Account Name",
+          icon: "person",
+          badgeClass: "user",
+          badgeBg: isDark ? "rgba(59, 130, 246, 0.22)" : "#dde7f2",
+          badgeColor: isDark ? "#60a5fa" : "#234872",
+        };
+      case "profile":
+      default:
+        return {
+          title: "Edit Profile Details",
+          icon: "manage_accounts",
+          badgeClass: "user",
+          badgeBg: isDark ? "rgba(59, 130, 246, 0.22)" : "#dde7f2",
+          badgeColor: isDark ? "#60a5fa" : "#234872",
+        };
+    }
+  };
+
+  const cfg = getHeaderConfig();
+
+  return createPortal(
+    <div
+      className="profile-modal-overlay"
+      data-appearance={appearance}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="profile-modal-title"
+    >
+      <div className="profile-modal-card" data-appearance={appearance}>
+        {/* Header without subtitle */}
+        <div className="profile-modal-header">
+          <div className="profile-modal-header-left">
+            <div
+              className={`profile-modal-icon-badge ${cfg.badgeClass}`}
+              style={{ backgroundColor: cfg.badgeBg, color: cfg.badgeColor }}
+            >
+              {fieldType === "phone" ? (
+                <WhatsAppIcon size={20} />
+              ) : (
+                <span className="material-symbols-outlined">{cfg.icon}</span>
+              )}
+            </div>
+            <div className="profile-modal-header-titles">
+              <h2 id="profile-modal-title" className="profile-modal-title">
+                {cfg.title}
+              </h2>
+            </div>
+          </div>
+          <button
+            type="button"
+            className="profile-modal-close-btn"
+            onClick={onClose}
+            aria-label="Close dialog"
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>close</span>
+          </button>
+        </div>
+
+        {/* Form Body */}
+        <form onSubmit={handleSubmit}>
+          <div className="profile-modal-body">
+            {error && (
+              <div className="profile-form-error">
+                <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
+                  error
+                </span>
+                <span>{error}</span>
+              </div>
+            )}
+
+            {fieldType === "email" && (
+              <div className="profile-form-group">
+                <label className="profile-form-label" htmlFor="profile-email-input">
+                  <span>Email Address</span>
+                </label>
+                <div className="profile-input-wrap has-icon">
+                  <span className="profile-input-icon">
+                    <span className="material-symbols-outlined">mail</span>
+                  </span>
+                  <input
+                    ref={inputRef}
+                    id="profile-email-input"
+                    type="email"
+                    className="profile-input-field"
+                    placeholder="e.g. amaka.obi@example.com"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    autoComplete="email"
+                  />
+                </div>
+              </div>
+            )}
+
+            {fieldType === "name" && (
+              <div className="profile-form-group">
+                <label className="profile-form-label" htmlFor="profile-name-input">
+                  <span>Account Name</span>
+                </label>
+                <div className="profile-input-wrap has-icon">
+                  <span className="profile-input-icon">
+                    <span className="material-symbols-outlined">person</span>
+                  </span>
+                  <input
+                    ref={inputRef}
+                    id="profile-name-input"
+                    type="text"
+                    className="profile-input-field"
+                    placeholder="e.g. Amaka Obi"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    autoComplete="name"
+                  />
+                </div>
+              </div>
+            )}
+
+            {fieldType === "phone" && (
+              <div className="profile-form-group">
+                <label className="profile-form-label" htmlFor="profile-phone-input">
+                  <span>WhatsApp Phone Number</span>
+                </label>
+                <div className="profile-input-wrap profile-phone-wrap has-icon">
+                  <span className="profile-input-icon" style={{ color: "#10b981" }}>
+                    <WhatsAppIcon size={18} />
+                  </span>
+                  <span className="profile-country-code-badge" title="Constant Country Code">
+                    <svg
+                      width="18"
+                      height="13"
+                      viewBox="0 0 20 14"
+                      style={{ borderRadius: "2px", display: "inline-block", flexShrink: 0 }}
+                    >
+                      <rect width="20" height="14" fill="#008751" />
+                      <rect x="6.67" width="6.66" height="14" fill="#ffffff" />
+                    </svg>
+                    <span className="profile-country-code-text">+234</span>
+                  </span>
+                  <span className="profile-phone-divider" />
+                  <input
+                    ref={inputRef}
+                    id="profile-phone-input"
+                    type="tel"
+                    className="profile-input-field profile-phone-input-field"
+                    placeholder="803 200 1585"
+                    value={formData.phone}
+                    onChange={handlePhoneChange}
+                    autoComplete="tel-national"
+                  />
+                </div>
+              </div>
+            )}
+
+            {fieldType === "address" && (
+              <div className="profile-form-group">
+                <label className="profile-form-label" htmlFor="profile-address-input">
+                  <span>Enter your address</span>
+                </label>
+                <textarea
+                  ref={inputRef}
+                  id="profile-address-input"
+                  className="profile-textarea-field"
+                  placeholder="Street, city and state"
+                  rows={3}
+                  value={formData.address}
+                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                />
+              </div>
+            )}
+
+            {fieldType === "profile" && (
+              <>
+                <div className="profile-form-group">
+                  <label className="profile-form-label" htmlFor="profile-all-name">
+                    Account Name
+                  </label>
+                  <div className="profile-input-wrap has-icon">
+                    <span className="profile-input-icon">
+                      <span className="material-symbols-outlined">person</span>
+                    </span>
+                    <input
+                      ref={inputRef}
+                      id="profile-all-name"
+                      type="text"
+                      className="profile-input-field"
+                      placeholder="e.g. Amaka Obi"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    />
+                  </div>
+                </div>
+
+                <div className="profile-form-group">
+                  <label className="profile-form-label" htmlFor="profile-all-email">
+                    Email Address
+                  </label>
+                  <div className="profile-input-wrap has-icon">
+                    <span className="profile-input-icon">
+                      <span className="material-symbols-outlined">mail</span>
+                    </span>
+                    <input
+                      id="profile-all-email"
+                      type="email"
+                      className="profile-input-field"
+                      placeholder="e.g. amaka@example.com"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    />
+                  </div>
+                </div>
+
+                <div className="profile-form-group">
+                  <label className="profile-form-label" htmlFor="profile-all-phone">
+                    WhatsApp Phone
+                  </label>
+                  <div className="profile-input-wrap profile-phone-wrap has-icon">
+                    <span className="profile-input-icon" style={{ color: "#10b981" }}>
+                      <WhatsAppIcon size={18} />
+                    </span>
+                    <span className="profile-country-code-badge" title="Constant Country Code">
+                      <svg
+                        width="18"
+                        height="13"
+                        viewBox="0 0 20 14"
+                        style={{ borderRadius: "2px", display: "inline-block", flexShrink: 0 }}
+                      >
+                        <rect width="20" height="14" fill="#008751" />
+                        <rect x="6.67" width="6.66" height="14" fill="#ffffff" />
+                      </svg>
+                      <span className="profile-country-code-text">+234</span>
+                    </span>
+                    <span className="profile-phone-divider" />
+                    <input
+                      id="profile-all-phone"
+                      type="tel"
+                      className="profile-input-field profile-phone-input-field"
+                      placeholder="803 200 1585"
+                      value={formData.phone}
+                      onChange={handlePhoneChange}
+                    />
+                  </div>
+                </div>
+
+                <div className="profile-form-group">
+                  <label className="profile-form-label" htmlFor="profile-all-address">
+                    Enter your address
+                  </label>
+                  <textarea
+                    id="profile-all-address"
+                    className="profile-textarea-field"
+                    placeholder="Street, city and state"
+                    rows={2}
+                    value={formData.address}
+                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                  />
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Footer Actions */}
+          <div className="profile-modal-footer">
+            <button
+              type="button"
+              className="profile-btn profile-btn-secondary"
+              onClick={onClose}
+            >
+              Cancel
+            </button>
+            <button type="submit" className="profile-btn profile-btn-primary">
+              Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>,
+    document.body
+  );
+}
+
+// ── 2. Payout Account Modal ──
+const PRIMARY_SUGGESTED_BANKS = [
+  { code: "kuda", name: "Kuda Bank" },
+  { code: "gtbank", name: "GTBank" },
+  { code: "access", name: "Access Bank" },
+];
+
+const OTHER_BANKS = [
+  { code: "zenith", name: "Zenith Bank" },
+  { code: "firstbank", name: "First Bank" },
+  { code: "uba", name: "UBA" },
+  { code: "palmpay", name: "PalmPay" },
+];
+
+export function PayoutAccountModal({ isOpen, onClose, currentData, onSave, dark }) {
+  const appearance = useModalAppearance(dark);
+  const isDark = appearance === "dark";
+
+  // Modal view: 'list' (default view showing added accounts) | 'add' (add new account flow)
+  const [view, setView] = useState("list");
+
+  // Initial accounts seed helper
+  const getInitialAccounts = () => {
+    try {
+      const saved = localStorage.getItem("paykudi_payout_accounts");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {}
+
+    const curBank = currentData?.bank || "Kuda Bank";
+    const curBankCode =
+      currentData?.bankCode ||
+      (curBank.toLowerCase().includes("kuda")
+        ? "kuda"
+        : curBank.toLowerCase().includes("gt")
+        ? "gtbank"
+        : curBank.toLowerCase().includes("access")
+        ? "access"
+        : curBank.toLowerCase().includes("zenith")
+        ? "zenith"
+        : "kuda");
+
+    return [
+      {
+        id: "payout-acc-1",
+        bank: curBank,
+        bankCode: curBankCode,
+        accountNumber: currentData?.accountNumber || "2001948291",
+        accountName: currentData?.accountName || currentData?.name || "Amaka Obi",
+        isDefault: true,
+      },
+      {
+        id: "payout-acc-2",
+        bank: "GTBank",
+        bankCode: "gtbank",
+        accountNumber: "0234567891",
+        accountName: "Amaka Jennifer Obi",
+        isDefault: false,
+      },
+      {
+        id: "payout-acc-3",
+        bank: "Access Bank",
+        bankCode: "access",
+        accountNumber: "0123456789",
+        accountName: "Amaka Obi",
+        isDefault: false,
+      },
+    ];
+  };
+
+  const [accounts, setAccounts] = useState(getInitialAccounts);
+  const [selectedDefaultId, setSelectedDefaultId] = useState(() => {
+    const initial = getInitialAccounts();
+    const def = initial.find((a) => a.isDefault);
+    return def ? def.id : initial[0]?.id || "";
+  });
+
+  // State for Add Account flow
+  const [newAccountNumber, setNewAccountNumber] = useState("");
+  const [isMatchingBank, setIsMatchingBank] = useState(false);
+  const [showSuggestedBanks, setShowSuggestedBanks] = useState(false);
+  const [showAllBanks, setShowAllBanks] = useState(false);
+  const [selectedBank, setSelectedBank] = useState(null);
+  const [isMatchingName, setIsMatchingName] = useState(false);
+  const [matchedAccountName, setMatchedAccountName] = useState("");
+  const [setAsDefaultNew, setSetAsDefaultNew] = useState(true);
+  const [error, setError] = useState("");
+  const accountInputRef = useRef(null);
+
+  // Sync state whenever modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setView("list");
+      setError("");
+      setNewAccountNumber("");
+      setIsMatchingBank(false);
+      setShowSuggestedBanks(false);
+      setShowAllBanks(false);
+      setSelectedBank(null);
+      setIsMatchingName(false);
+      setMatchedAccountName("");
+      try {
+        const saved = localStorage.getItem("paykudi_payout_accounts");
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setAccounts(parsed);
+            const def = parsed.find((a) => a.isDefault);
+            if (def) setSelectedDefaultId(def.id);
+            return;
+          }
+        }
+      } catch (e) {}
+    }
+  }, [isOpen]);
+
+  // Intentionally do not auto-focus input so keyboard is not prompted until user taps the input box
+
+  // When user enters 10 digits: show small loading state under field matching bank, then show list of 3
+  useEffect(() => {
+    if (newAccountNumber.length === 10) {
+      setIsMatchingBank(true);
+      setShowSuggestedBanks(false);
+      setSelectedBank(null);
+      setIsMatchingName(false);
+      setMatchedAccountName("");
+
+      const timer = setTimeout(() => {
+        setIsMatchingBank(false);
+        setShowSuggestedBanks(true);
+      }, 450);
+
+      return () => clearTimeout(timer);
+    } else {
+      setIsMatchingBank(false);
+      setShowSuggestedBanks(false);
+      setShowAllBanks(false);
+      setSelectedBank(null);
+      setIsMatchingName(false);
+      setMatchedAccountName("");
+    }
+  }, [newAccountNumber]);
+
+  if (!isOpen) return null;
+
+  // Handle selecting an account as default
+  const handleSelectDefault = (id) => {
+    setSelectedDefaultId(id);
+    const updated = accounts.map((acc) => ({
+      ...acc,
+      isDefault: acc.id === id,
+    }));
+    setAccounts(updated);
+    try {
+      localStorage.setItem("paykudi_payout_accounts", JSON.stringify(updated));
+    } catch (e) {}
+
+    const chosen = updated.find((a) => a.id === id);
+    if (chosen && onSave) {
+      onSave({
+        bank: chosen.bank,
+        accountNumber: chosen.accountNumber,
+        accountName: chosen.accountName,
+        bankCode: chosen.bankCode,
+      });
+    }
+  };
+
+  const handleConfirmDefaultAndClose = () => {
+    const chosen = accounts.find((a) => a.id === selectedDefaultId) || accounts[0];
+    if (chosen && onSave) {
+      onSave({
+        bank: chosen.bank,
+        accountNumber: chosen.accountNumber,
+        accountName: chosen.accountName,
+        bankCode: chosen.bankCode,
+      });
+    }
+    onClose();
+  };
+
+  // Handle account number input (taking only account number)
+  const handleAccountNumberChange = (e) => {
+    const val = e.target.value.replace(/\D/g, "").slice(0, 10);
+    setNewAccountNumber(val);
+    setError("");
+
+    if (val.length < 10) {
+      setIsMatchingBank(false);
+      setShowSuggestedBanks(false);
+      setShowAllBanks(false);
+      setSelectedBank(null);
+      setIsMatchingName(false);
+      setMatchedAccountName("");
+    }
+  };
+
+  // Handle selecting a suggested bank -> triggers name matching
+  const handleBankSelect = (bankObj) => {
+    setSelectedBank(bankObj);
+    setError("");
+    setIsMatchingName(true);
+    setMatchedAccountName("");
+
+    const timer = setTimeout(() => {
+      const baseName = currentData?.name ? currentData.name.toUpperCase() : "AMAKA";
+      const fullName = `${baseName} JENNIFER OBI`;
+      setMatchedAccountName(fullName);
+      setIsMatchingName(false);
+    }, 400);
+  };
+
+  // Handle adding the new account
+  const handleSaveNewAccount = (e) => {
+    e.preventDefault();
+    if (newAccountNumber.length !== 10) {
+      setError("Please enter a valid 10-digit account number.");
+      return;
+    }
+    if (!selectedBank) {
+      setError("Please choose a suggested bank for this account.");
+      return;
+    }
+    if (!matchedAccountName || isMatchingName) {
+      setError("Waiting for account name verification.");
+      return;
+    }
+
+    const newAcc = {
+      id: "payout-acc-" + Date.now(),
+      bank: selectedBank.name,
+      bankCode: selectedBank.code,
+      accountNumber: newAccountNumber,
+      accountName: matchedAccountName,
+      isDefault: setAsDefaultNew,
+    };
+
+    let updatedList;
+    if (setAsDefaultNew) {
+      updatedList = [
+        newAcc,
+        ...accounts.map((a) => ({ ...a, isDefault: false })),
+      ];
+      setSelectedDefaultId(newAcc.id);
+      if (onSave) {
+        onSave({
+          bank: newAcc.bank,
+          accountNumber: newAcc.accountNumber,
+          accountName: newAcc.accountName,
+          bankCode: newAcc.bankCode,
+        });
+      }
+    } else {
+      updatedList = [...accounts, newAcc];
+    }
+
+    setAccounts(updatedList);
+    try {
+      localStorage.setItem("paykudi_payout_accounts", JSON.stringify(updatedList));
+    } catch (e) {}
+
+    // Reset and return to list view
+    setNewAccountNumber("");
+    setSelectedBank(null);
+    setMatchedAccountName("");
+    setIsMatchingBank(false);
+    setShowSuggestedBanks(false);
+    setShowAllBanks(false);
+    setView("list");
+  };
+
+  // Delete an account (if not the default and more than 1)
+  const handleDeleteAccount = (e, accId) => {
+    e.stopPropagation();
+    if (accounts.length <= 1) return;
+    const filtered = accounts.filter((a) => a.id !== accId);
+    setAccounts(filtered);
+    try {
+      localStorage.setItem("paykudi_payout_accounts", JSON.stringify(filtered));
+    } catch (e) {}
+    if (selectedDefaultId === accId) {
+      const nextDef = filtered[0];
+      setSelectedDefaultId(nextDef.id);
+      if (onSave) {
+        onSave({
+          bank: nextDef.bank,
+          accountNumber: nextDef.accountNumber,
+          accountName: nextDef.accountName,
+          bankCode: nextDef.bankCode,
+        });
+      }
+    }
+  };
+
+  return createPortal(
+    <div
+      className="profile-modal-overlay"
+      data-appearance={appearance}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+      role="dialog"
+      aria-modal="true"
+    >
+      <div className="profile-modal-card payout-dialog-card" data-appearance={appearance}>
+        {/* ════ VIEW 1: Added Payout Banks List (Default) ════ */}
+        {view === "list" && (
+          <>
+            <div className="profile-modal-header">
+              <div className="profile-modal-header-left">
+                <div
+                  className="profile-modal-icon-badge payout"
+                  style={{
+                    backgroundColor: isDark ? "rgba(34, 197, 94, 0.22)" : "#dcf2e4",
+                    color: isDark ? "#4ade80" : "#1b7347",
+                  }}
+                >
+                  <span className="material-symbols-outlined">account_balance</span>
+                </div>
+                <div className="profile-modal-header-titles">
+                  <h2 className="profile-modal-title">Payout Bank Accounts</h2>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="profile-modal-close-btn"
+                onClick={onClose}
+                aria-label="Close"
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>close</span>
+              </button>
+            </div>
+
+            <div className="profile-modal-body payout-modal-scrollable">
+              <p className="payout-modal-desc">
+                Select your default Payout Bank Account.
+              </p>
+
+              {/* Added Payout Banks List */}
+              <div className="payout-accounts-list">
+                {accounts.map((acc) => {
+                  const isDefaultSelected = acc.id === selectedDefaultId;
+                  return (
+                    <div
+                      key={acc.id}
+                      className={`payout-account-select-card ${
+                        isDefaultSelected ? "is-default-selected" : ""
+                      }`}
+                      onClick={() => handleSelectDefault(acc.id)}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          handleSelectDefault(acc.id);
+                        }
+                      }}
+                    >
+                      <div className="payout-account-card-left">
+                        <BankLogo bankCode={acc.bankCode} bankName={acc.bank} size={40} />
+                        <div className="payout-account-details">
+                          <div className="payout-account-bank-row">
+                            <span className="payout-account-bank-name">{acc.bank}</span>
+                            {isDefaultSelected && (
+                              <span className="payout-default-pill">Default</span>
+                            )}
+                          </div>
+                          <span className="payout-account-number-mono">
+                            {acc.accountNumber}
+                          </span>
+                          <span className="payout-account-holder">
+                            {acc.accountName}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="payout-account-card-right">
+                        {/* Selector for default payout account */}
+                        <div
+                          className={`payout-radio-selector ${
+                            isDefaultSelected ? "is-checked" : ""
+                          }`}
+                          title={isDefaultSelected ? "Default Payout Account" : "Click to set as default"}
+                        >
+                          <span className="material-symbols-outlined payout-radio-icon">
+                            {isDefaultSelected ? "radio_button_checked" : "radio_button_unchecked"}
+                          </span>
+                        </div>
+
+                        {accounts.length > 1 && !isDefaultSelected && (
+                          <button
+                            type="button"
+                            className="payout-delete-acc-btn"
+                            title="Remove account"
+                            onClick={(e) => handleDeleteAccount(e, acc.id)}
+                          >
+                            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
+                              delete
+                            </span>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Add Bank Account Trigger Button */}
+              <button
+                type="button"
+                className="payout-add-trigger-btn"
+                onClick={() => {
+                  setView("add");
+                  setNewAccountNumber("");
+                  setSelectedBank(null);
+                  setMatchedAccountName("");
+                  setError("");
+                }}
+              >
+                <div className="payout-add-trigger-icon">
+                  <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
+                    add
+                  </span>
+                </div>
+                <div className="payout-add-trigger-text">
+                  <span className="payout-add-trigger-title">Add Bank Account</span>
+                  <span className="payout-add-trigger-sub">Enter account number to link payout bank</span>
+                </div>
+              </button>
+            </div>
+          </>
+        )}
+
+        {/* ════ VIEW 2: Add Payout Bank Account Flow ════ */}
+        {view === "add" && (
+          <form onSubmit={handleSaveNewAccount}>
+            <div className="profile-modal-header">
+              <div className="profile-modal-header-left">
+                <button
+                  type="button"
+                  className="payout-back-arrow-btn"
+                  onClick={() => setView("list")}
+                  aria-label="Back to payout accounts list"
+                  title="Back to accounts"
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
+                    arrow_back
+                  </span>
+                </button>
+                <div className="profile-modal-header-titles">
+                  <h2 className="profile-modal-title">Add Payout Account</h2>
+                </div>
+              </div>
+              <button
+                type="button"
+                className="profile-modal-close-btn"
+                onClick={onClose}
+                aria-label="Close"
+              >
+                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>close</span>
+              </button>
+            </div>
+
+            <div
+              className="profile-modal-body payout-modal-scrollable"
+              onClick={(e) => {
+                if (
+                  accountInputRef.current &&
+                  e.target !== accountInputRef.current &&
+                  !e.target.closest("button") &&
+                  !e.target.closest("input")
+                ) {
+                  accountInputRef.current.focus({ preventScroll: true });
+                }
+              }}
+            >
+              {error && (
+                <div className="profile-form-error">
+                  <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
+                    error
+                  </span>
+                  <span>{error}</span>
+                </div>
+              )}
+
+              {/* 1. Account Number input - takes ONLY the account number */}
+              <div className="profile-form-group">
+                <label className="profile-form-label" htmlFor="payout-new-acc-number">
+                  Account Number
+                </label>
+                <div
+                  className="profile-input-wrap"
+                  onClick={() => accountInputRef.current?.focus({ preventScroll: true })}
+                >
+                  <input
+                    id="payout-new-acc-number"
+                    ref={accountInputRef}
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    maxLength={10}
+                    className="profile-input-field payout-acc-num-input"
+                    value={newAccountNumber}
+                    onChange={handleAccountNumberChange}
+                    onFocus={() => {
+                      if (typeof window !== "undefined") {
+                        window.scrollTo(0, 0);
+                      }
+                    }}
+                    autoComplete="off"
+                  />
+                  {newAccountNumber.length === 10 && !isMatchingBank && (
+                    <span className="payout-acc-valid-badge">
+                      <span className="material-symbols-outlined" style={{ fontSize: 18, color: "#10b981" }}>
+                        check_circle
+                      </span>
+                    </span>
+                  )}
+                </div>
+
+                {/* Small loading state right under the field matching bank */}
+                {isMatchingBank && (
+                  <div className="payout-matching-bank-loading">
+                    <span className="payout-spinner-sm"></span>
+                    <span>Matching bank...</span>
+                  </div>
+                )}
+              </div>
+
+              {/* 2. Suggested banks like a list of 3 */}
+              {showSuggestedBanks && (
+                <div className="payout-suggested-section">
+                  <div className="payout-suggested-header">
+                    <span className="profile-form-label">Suggested Banks</span>
+                    <span className="payout-suggested-sub">Choose your bank</span>
+                  </div>
+
+                  <div className="payout-suggested-list-items">
+                    {PRIMARY_SUGGESTED_BANKS.map((b) => {
+                      const isChosen = selectedBank?.code === b.code;
+                      return (
+                        <button
+                          key={b.code}
+                          type="button"
+                          className={`payout-suggested-row-item ${isChosen ? "is-selected" : ""}`}
+                          onClick={() => handleBankSelect(b)}
+                        >
+                          <div className="payout-suggested-row-left">
+                            <BankLogo bankCode={b.code} bankName={b.name} size={36} />
+                            <span className="payout-suggested-row-name">{b.name}</span>
+                          </div>
+                          <div className="payout-suggested-row-radio">
+                            <span className="material-symbols-outlined">
+                              {isChosen ? "radio_button_checked" : "radio_button_unchecked"}
+                            </span>
+                          </div>
+                        </button>
+                      );
+                    })}
+
+                    {!showAllBanks ? (
+                      <button
+                        type="button"
+                        className="payout-more-banks-btn"
+                        onClick={() => setShowAllBanks(true)}
+                      >
+                        <span>Other banks</span>
+                        <span className="material-symbols-outlined" style={{ fontSize: 16 }}>expand_more</span>
+                      </button>
+                    ) : (
+                      OTHER_BANKS.map((b) => {
+                        const isChosen = selectedBank?.code === b.code;
+                        return (
+                          <button
+                            key={b.code}
+                            type="button"
+                            className={`payout-suggested-row-item ${isChosen ? "is-selected" : ""}`}
+                            onClick={() => handleBankSelect(b)}
+                          >
+                            <div className="payout-suggested-row-left">
+                              <BankLogo bankCode={b.code} bankName={b.name} size={36} />
+                              <span className="payout-suggested-row-name">{b.name}</span>
+                            </div>
+                            <div className="payout-suggested-row-radio">
+                              <span className="material-symbols-outlined">
+                                {isChosen ? "radio_button_checked" : "radio_button_unchecked"}
+                              </span>
+                            </div>
+                          </button>
+                        );
+                      })
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* 3. Small loading state when user chooses a bank matching name */}
+              {isMatchingName && (
+                <div className="payout-matching-bank-loading" style={{ marginTop: 2 }}>
+                  <span className="payout-spinner-sm"></span>
+                  <span>Matching account name...</span>
+                </div>
+              )}
+
+              {/* 4. Matched name result */}
+              {selectedBank && matchedAccountName && !isMatchingName && (
+                <div className="payout-match-result-container">
+                  <div className="payout-match-card">
+                    <div className="payout-match-left">
+                      <BankLogo bankCode={selectedBank.code} bankName={selectedBank.name} size={38} />
+                      <div className="payout-match-info">
+                        <span className="payout-match-bank-line">
+                          {selectedBank.name} · <strong className="payout-match-num">{newAccountNumber}</strong>
+                        </span>
+                        <span className="payout-matched-name-text">
+                          {matchedAccountName}
+                        </span>
+                      </div>
+                    </div>
+                    <span className="payout-match-verified-tag">
+                      <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
+                        verified
+                      </span>
+                      <span>Matched</span>
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {/* 5. Set as default checkbox (only after bank selected and name verified) */}
+              {selectedBank && matchedAccountName && !isMatchingName && (
+                <div className="payout-set-default-wrap">
+                  <label className="payout-default-checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={setAsDefaultNew}
+                      onChange={(e) => setSetAsDefaultNew(e.target.checked)}
+                      className="payout-default-checkbox"
+                    />
+                    <span className="payout-default-checkbox-text">
+                      Set this as my default payout account
+                    </span>
+                  </label>
+                </div>
+              )}
+            </div>
+
+            <div className="profile-modal-footer payout-single-footer">
+              <button
+                type="submit"
+                className="profile-btn profile-btn-primary payout-full-btn"
+                disabled={newAccountNumber.length !== 10 || !selectedBank || !matchedAccountName || isMatchingName || isMatchingBank}
+              >
+                Save Payout Account
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
+    </div>,
+    document.body
+  );
+}
+
+// ── 3. Seller Verification Modal ──
+export function VerifiedSellerModal({ isOpen, onClose, currentStatus, onVerified, dark }) {
+  const appearance = useModalAppearance(dark);
+  const isDark = appearance === "dark";
+
+  const [legalName, setLegalName] = useState("");
+  const [storeName, setStoreName] = useState("");
+  const [idType, setIdType] = useState("National Identification Number (NIN)");
+  const [idNumber, setIdNumber] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(currentStatus === "verified" || currentStatus === "pending");
+
+  useEffect(() => {
+    if (isOpen) {
+      setSubmitted(currentStatus === "verified" || currentStatus === "pending");
+    }
+  }, [isOpen, currentStatus]);
+
+  if (!isOpen) return null;
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setTimeout(() => {
+      setIsSubmitting(false);
+      setSubmitted(true);
+      if (onVerified) onVerified("verified");
+    }, 900);
+  };
+
+  return createPortal(
+    <div
+      className="profile-modal-overlay"
+      data-appearance={appearance}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+      role="dialog"
+      aria-modal="true"
+    >
+      <div className="profile-modal-card" data-appearance={appearance}>
+        <div className="profile-modal-header">
+          <div className="profile-modal-header-left">
+            <div
+              className="profile-modal-icon-badge verified"
+              style={{
+                backgroundColor: isDark ? "rgba(59, 130, 246, 0.22)" : "#e0ebf5",
+                color: isDark ? "#60a5fa" : "#275b8a",
+              }}
+            >
+              <span className="material-symbols-outlined">verified</span>
+            </div>
+            <div className="profile-modal-header-titles">
+              <h2 className="profile-modal-title">Become a Verified Seller</h2>
+            </div>
+          </div>
+          <button
+            type="button"
+            className="profile-modal-close-btn"
+            onClick={onClose}
+            aria-label="Close"
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>close</span>
+          </button>
+        </div>
+
+        {submitted ? (
+          <div className="profile-modal-body" style={{ textAlign: "center", padding: "32px 24px" }}>
+            <div
+              style={{
+                width: 56,
+                height: 56,
+                borderRadius: "50%",
+                backgroundColor: isDark ? "rgba(22, 163, 74, 0.22)" : "#dcf2e4",
+                color: isDark ? "#4ade80" : "#16a34a",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                margin: "0 auto 16px auto",
+              }}
+            >
+              <span className="material-symbols-outlined" style={{ fontSize: 32 }}>
+                check_circle
+              </span>
+            </div>
+            <h3 style={{ margin: "0 0 8px 0", fontSize: 18, fontWeight: 700 }}>
+              Verification Approved!
+            </h3>
+            <p style={{ margin: "0 0 20px 0", fontSize: 13.5, color: "var(--muted)" }}>
+              Your account is now a Verified Seller. Your profile badge and payment room trust indicators are active.
+            </p>
+            <button
+              type="button"
+              className="profile-btn profile-btn-primary"
+              style={{ width: "100%" }}
+              onClick={onClose}
+            >
+              Done
+            </button>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit}>
+            <div className="profile-modal-body">
+              <div className="profile-form-group">
+                <label className="profile-form-label" htmlFor="verify-legal-name">
+                  Legal Full Name
+                </label>
+                <div className="profile-input-wrap">
+                  <input
+                    id="verify-legal-name"
+                    type="text"
+                    required
+                    className="profile-input-field"
+                    placeholder="As shown on official ID"
+                    value={legalName}
+                    onChange={(e) => setLegalName(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="profile-form-group">
+                <label className="profile-form-label" htmlFor="verify-store-name">
+                  Store or Brand Name
+                </label>
+                <div className="profile-input-wrap">
+                  <input
+                    id="verify-store-name"
+                    type="text"
+                    required
+                    className="profile-input-field"
+                    placeholder="e.g. Amaka Fashion Hub"
+                    value={storeName}
+                    onChange={(e) => setStoreName(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="profile-form-group">
+                <label className="profile-form-label" htmlFor="verify-id-type">
+                  Identity Document Type
+                </label>
+                <select
+                  id="verify-id-type"
+                  className="profile-select-field"
+                  value={idType}
+                  onChange={(e) => setIdType(e.target.value)}
+                >
+                  <option value="National Identification Number (NIN)">
+                    National Identification Number (NIN)
+                  </option>
+                  <option value="Voter's Card">Permanent Voter's Card (PVC)</option>
+                  <option value="Driver's License">Driver's License</option>
+                  <option value="International Passport">International Passport</option>
+                </select>
+              </div>
+
+              <div className="profile-form-group">
+                <label className="profile-form-label" htmlFor="verify-id-number">
+                  ID Number
+                </label>
+                <div className="profile-input-wrap">
+                  <input
+                    id="verify-id-number"
+                    type="text"
+                    required
+                    className="profile-input-field"
+                    placeholder="Enter 11-digit NIN or ID number"
+                    value={idNumber}
+                    onChange={(e) => setIdNumber(e.target.value)}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="profile-modal-footer">
+              <button
+                type="button"
+                className="profile-btn profile-btn-secondary"
+                onClick={onClose}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="profile-btn profile-btn-primary"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Submitting..." : "Submit Verification"}
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
+    </div>,
+    document.body
+  );
+}
+
+// ── 4. Statements & Reports Modal ──
+export function StatementsModal({ isOpen, onClose, userEmail, onSend, dark }) {
+  const appearance = useModalAppearance(dark);
+  const isDark = appearance === "dark";
+
+  const [range, setRange] = useState("Last 30 Days");
+  const [format, setFormat] = useState("PDF Document");
+  const [email, setEmail] = useState(userEmail || "amaka.obi@gmail.com");
+  const [sent, setSent] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setEmail(userEmail || "amaka.obi@gmail.com");
+      setSent(false);
+    }
+  }, [isOpen, userEmail]);
+
+  if (!isOpen) return null;
+
+  const handleDownload = () => {
+    setSent(true);
+    if (onSend) onSend("Statement generated and sent to " + email);
+    setTimeout(() => {
+      onClose();
+    }, 1200);
+  };
+
+  return createPortal(
+    <div
+      className="profile-modal-overlay"
+      data-appearance={appearance}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+      role="dialog"
+      aria-modal="true"
+    >
+      <div className="profile-modal-card" data-appearance={appearance}>
+        <div className="profile-modal-header">
+          <div className="profile-modal-header-left">
+            <div
+              className="profile-modal-icon-badge statements"
+              style={{
+                backgroundColor: isDark ? "rgba(20, 184, 166, 0.22)" : "#dcf4f2",
+                color: isDark ? "#5eead4" : "#0f766e",
+              }}
+            >
+              <span className="material-symbols-outlined">receipt_long</span>
+            </div>
+            <div className="profile-modal-header-titles">
+              <h2 className="profile-modal-title">Statements & Reports</h2>
+            </div>
+          </div>
+          <button
+            type="button"
+            className="profile-modal-close-btn"
+            onClick={onClose}
+            aria-label="Close"
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>close</span>
+          </button>
+        </div>
+
+        <div className="profile-modal-body">
+          {sent ? (
+            <div style={{ textAlign: "center", padding: "20px 0" }}>
+              <span
+                className="material-symbols-outlined"
+                style={{ fontSize: 44, color: "#10b981", marginBottom: 8 }}
+              >
+                check_circle
+              </span>
+              <h3 style={{ margin: 0, fontSize: 16 }}>Statement Sent Successfully!</h3>
+              <p style={{ margin: "6px 0 0 0", fontSize: 13, color: "var(--muted)" }}>
+                Check your inbox at {email} for the report.
+              </p>
+            </div>
+          ) : (
+            <>
+              <div className="profile-form-group">
+                <label className="profile-form-label" htmlFor="statement-range">
+                  Time Period
+                </label>
+                <select
+                  id="statement-range"
+                  className="profile-select-field"
+                  value={range}
+                  onChange={(e) => setRange(e.target.value)}
+                >
+                  <option value="Last 30 Days">Last 30 Days</option>
+                  <option value="Last 90 Days">Last 90 Days</option>
+                  <option value="This Year (2026)">This Year (2026)</option>
+                  <option value="All Time">All Time</option>
+                </select>
+              </div>
+
+              <div className="profile-form-group">
+                <label className="profile-form-label" htmlFor="statement-format">
+                  File Format
+                </label>
+                <select
+                  id="statement-format"
+                  className="profile-select-field"
+                  value={format}
+                  onChange={(e) => setFormat(e.target.value)}
+                >
+                  <option value="PDF Document">PDF Document (.pdf)</option>
+                  <option value="CSV / Excel Spreadsheet">CSV / Excel Spreadsheet (.csv)</option>
+                </select>
+              </div>
+
+              <div className="profile-form-group">
+                <label className="profile-form-label" htmlFor="statement-email">
+                  Send to Email
+                </label>
+                <div className="profile-input-wrap has-icon">
+                  <span className="profile-input-icon">
+                    <span className="material-symbols-outlined">mail</span>
+                  </span>
+                  <input
+                    id="statement-email"
+                    type="email"
+                    className="profile-input-field"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+
+        {!sent && (
+          <div className="profile-modal-footer">
+            <button
+              type="button"
+              className="profile-btn profile-btn-secondary"
+              onClick={onClose}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              className="profile-btn profile-btn-primary"
+              onClick={handleDownload}
+            >
+              Export Statement
+            </button>
+          </div>
+        )}
+      </div>
+    </div>,
+    document.body
+  );
+}
+
+// ── 5. Cashback & Referral Rewards Modal ──
+export function RewardsModal({ isOpen, onClose, onCopy, dark }) {
+  const appearance = useModalAppearance(dark);
+  const isDark = appearance === "dark";
+
+  const [copied, setCopied] = useState(false);
+  const referralCode = "PAYKUDI-AMAKA-82";
+
+  if (!isOpen) return null;
+
+  const handleCopyCode = () => {
+    navigator.clipboard?.writeText(referralCode);
+    setCopied(true);
+    if (onCopy) onCopy("Referral code copied to clipboard!");
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return createPortal(
+    <div
+      className="profile-modal-overlay"
+      data-appearance={appearance}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+      role="dialog"
+      aria-modal="true"
+    >
+      <div className="profile-modal-card" data-appearance={appearance}>
+        <div className="profile-modal-header">
+          <div className="profile-modal-header-left">
+            <div
+              className="profile-modal-icon-badge rewards"
+              style={{
+                backgroundColor: isDark ? "rgba(245, 158, 11, 0.22)" : "#fef0d9",
+                color: isDark ? "#fcd34d" : "#b45309",
+              }}
+            >
+              <span className="material-symbols-outlined">card_giftcard</span>
+            </div>
+            <div className="profile-modal-header-titles">
+              <h2 className="profile-modal-title">Cashback & Rewards</h2>
+            </div>
+          </div>
+          <button
+            type="button"
+            className="profile-modal-close-btn"
+            onClick={onClose}
+            aria-label="Close"
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>close</span>
+          </button>
+        </div>
+
+        <div className="profile-modal-body">
+          <div className="rewards-stat-grid">
+            <div className="rewards-stat-card">
+              <span className="rewards-stat-label">Total Earned</span>
+              <span className="rewards-stat-value">₦15,000</span>
+            </div>
+            <div className="rewards-stat-card">
+              <span className="rewards-stat-label">Successful Referrals</span>
+              <span className="rewards-stat-value">6 Users</span>
+            </div>
+          </div>
+
+          <div className="profile-form-group">
+            <label className="profile-form-label">Your Referral Code</label>
+            <div className="rewards-copy-box">
+              <span>{referralCode}</span>
+              <button
+                type="button"
+                className="profile-btn profile-btn-secondary"
+                style={{ height: 32, padding: "0 10px", fontSize: 12.5 }}
+                onClick={handleCopyCode}
+              >
+                {copied ? "Copied!" : "Copy"}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="profile-modal-footer">
+          <button
+            type="button"
+            className="profile-btn profile-btn-primary"
+            style={{ width: "100%" }}
+            onClick={onClose}
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+}
+
+// ── 6. Profile Toast ──
+export function ProfileToast({ message, isVisible, dark }) {
+  const appearance = useModalAppearance(dark);
+
+  if (!isVisible || !message) return null;
+
+  return createPortal(
+    <div
+      className="profile-toast-container"
+      data-appearance={appearance}
+      role="status"
+      aria-live="polite"
+    >
+      <span className="material-symbols-outlined">check_circle</span>
+      <span>{message}</span>
+    </div>,
+    document.body
+  );
+}

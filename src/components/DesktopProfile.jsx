@@ -1,5 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "../styles/desktop-profile.css";
+import {
+  EditFieldModal,
+  PayoutAccountModal,
+  VerifiedSellerModal,
+  StatementsModal,
+  RewardsModal,
+  ProfileToast,
+} from "./Shared/ProfileModals.jsx";
 
 function WhatsAppIcon({ size = 20 }) {
   return (
@@ -10,18 +18,76 @@ function WhatsAppIcon({ size = 20 }) {
 }
 
 export default function DesktopProfile({
-  userName = "Your Name",
-  phoneNumber = "No phone number",
-  onEditProfile = () => {},
+  userName = "Amaka",
+  phoneNumber = "+234 803 200 1585",
+  onEditProfile,
   onSignOut = () => {},
+  dark,
 }) {
-  const [profileData, setProfileData] = useState({
-    name: userName,
-    address: "",
-    phone: phoneNumber,
-    email: "",
-    isVerified: false,
+  // Initialize state with stored details or fallbacks
+  const [profileData, setProfileData] = useState(() => {
+    try {
+      const stored = localStorage.getItem("paykudi_user_profile");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        return {
+          name: parsed.name || userName || "Amaka",
+          address: parsed.address || "",
+          phone: parsed.phone || (phoneNumber !== "No phone number" ? phoneNumber : "+234 803 200 1585"),
+          email: parsed.email || "",
+          isVerified: parsed.isVerified || false,
+          verificationStatus: parsed.verificationStatus || "unverified",
+          bank: parsed.bank || "Kuda Bank",
+          accountNumber: parsed.accountNumber || "2001948291",
+          accountName: parsed.accountName || "Amaka",
+        };
+      }
+    } catch (e) {
+      // Local storage fallback
+    }
+    return {
+      name: userName || "Amaka",
+      address: "",
+      phone: phoneNumber !== "No phone number" ? phoneNumber : "+234 803 200 1585",
+      email: "",
+      isVerified: false,
+      verificationStatus: "unverified",
+      bank: "Kuda Bank",
+      accountNumber: "2001948291",
+      accountName: "Amaka",
+    };
   });
+
+  // Modal display state: null | 'email' | 'name' | 'address' | 'phone' | 'profile' | 'payout' | 'verification' | 'statements' | 'rewards'
+  const [activeModal, setActiveModal] = useState(null);
+
+  // Toast feedback state
+  const [toastMessage, setToastMessage] = useState("");
+  const [isToastVisible, setIsToastVisible] = useState(false);
+
+  const showToast = (message) => {
+    setToastMessage(message);
+    setIsToastVisible(true);
+    setTimeout(() => {
+      setIsToastVisible(false);
+    }, 2800);
+  };
+
+  // Helper to persist updates
+  const updateProfile = (updates, message = "Details updated successfully") => {
+    setProfileData((prev) => {
+      const next = { ...prev, ...updates };
+      try {
+        localStorage.setItem("paykudi_user_profile", JSON.stringify(next));
+      } catch (e) {}
+      return next;
+    });
+    showToast(message);
+  };
+
+  const handleEditClick = (field) => {
+    setActiveModal(field);
+  };
 
   return (
     <main id="profile-section" className="desktop-container desktop-profile-main">
@@ -30,7 +96,12 @@ export default function DesktopProfile({
         <section className="desktop-profile-header">
           <div className="desktop-profile-user-info-row">
             <div className="desktop-profile-avatar-wrap">
-              <div className="desktop-profile-avatar-circle">
+              <div
+                className="desktop-profile-avatar-circle"
+                style={{ cursor: "pointer" }}
+                onClick={() => handleEditClick("profile")}
+                title="Click to edit profile"
+              >
                 <span className="material-symbols-outlined desktop-profile-avatar-icon">
                   account_circle
                 </span>
@@ -38,22 +109,31 @@ export default function DesktopProfile({
               <button
                 type="button"
                 className="desktop-profile-avatar-edit"
-                onClick={onEditProfile}
+                onClick={() => {
+                  if (onEditProfile) {
+                    onEditProfile();
+                  } else {
+                    handleEditClick("profile");
+                  }
+                }}
                 aria-label="Edit profile picture"
-                title="Edit avatar"
+                title="Edit avatar and profile"
               >
                 <span className="material-symbols-outlined">edit</span>
               </button>
             </div>
 
             <div className="desktop-profile-info">
-              <h1 className="desktop-profile-name">{profileData.name}</h1>
+              <h1 className="desktop-profile-name">
+                {profileData.name}
+              </h1>
               <div className="desktop-profile-phone-pill">
                 <WhatsAppIcon size={14} />
                 <span>{profileData.phone}</span>
               </div>
             </div>
           </div>
+
         </section>
 
         {/* ── Two-Column Layout ── */}
@@ -62,11 +142,10 @@ export default function DesktopProfile({
           <div className="desktop-profile-column">
             <h2 className="desktop-profile-section-title">PERSONAL DETAILS</h2>
             <div className="desktop-profile-list">
-              {/* Item 1: Name */}
-              <button
-                type="button"
-                className="desktop-profile-item"
-                aria-label="Your Name: Account Name"
+              {/* Item 1: Name (Non-editable) */}
+              <div
+                className="desktop-profile-item readonly"
+                aria-label={`Account Name: ${profileData.name}`}
               >
                 <div className="desktop-profile-badge user">
                   <span className="material-symbols-outlined">person</span>
@@ -77,13 +156,15 @@ export default function DesktopProfile({
                     <span className="desktop-profile-item-subtitle">Account Name</span>
                   </div>
                 </div>
-              </button>
+              </div>
 
               {/* Item 2: Address */}
               <button
                 type="button"
                 className="desktop-profile-item"
-                aria-label="Add your address: Address"
+                aria-label={`Address: ${profileData.address || "Add your address"}. Tap to edit.`}
+                onClick={() => handleEditClick("address")}
+                title="Click to edit address"
               >
                 <div className="desktop-profile-badge address">
                   <span className="material-symbols-outlined">location_on</span>
@@ -101,11 +182,10 @@ export default function DesktopProfile({
                 </div>
               </button>
 
-              {/* Item 3: Phone */}
-              <button
-                type="button"
-                className="desktop-profile-item"
-                aria-label="No phone number: Phone Number"
+              {/* Item 3: Phone (Non-editable) */}
+              <div
+                className="desktop-profile-item readonly"
+                aria-label={`Phone Number: ${profileData.phone}`}
               >
                 <div className="desktop-profile-badge whatsapp">
                   <WhatsAppIcon size={16} />
@@ -116,13 +196,15 @@ export default function DesktopProfile({
                     <span className="desktop-profile-item-subtitle">Phone Number</span>
                   </div>
                 </div>
-              </button>
+              </div>
 
               {/* Item 4: Email */}
               <button
                 type="button"
                 className="desktop-profile-item"
-                aria-label="Add your email: Email Address"
+                aria-label={`Email Address: ${profileData.email || "Add your email"}. Tap to edit.`}
+                onClick={() => handleEditClick("email")}
+                title="Click to edit email address"
               >
                 <div className="desktop-profile-badge email">
                   <span className="material-symbols-outlined">mail</span>
@@ -150,7 +232,9 @@ export default function DesktopProfile({
               <button
                 type="button"
                 className="desktop-profile-item"
-                aria-label="Payout Accounts: Add, change, or set primary bank accounts for payouts."
+                aria-label="Payout Accounts: Tap to manage bank account."
+                onClick={() => handleEditClick("payout")}
+                title="Click to manage payout accounts"
               >
                 <div className="desktop-profile-badge payout">
                   <span className="material-symbols-outlined">account_balance</span>
@@ -159,7 +243,9 @@ export default function DesktopProfile({
                   <div className="desktop-profile-item-text">
                     <span className="desktop-profile-item-title">Payout Accounts</span>
                     <span className="desktop-profile-item-subtitle">
-                      Add, change, or set primary bank accounts for payouts.
+                      {profileData.bank && profileData.accountNumber
+                        ? `${profileData.bank} · ${profileData.accountNumber}`
+                        : "Add, change, or set primary bank accounts for payouts."}
                     </span>
                   </div>
                   <span className="material-symbols-outlined desktop-profile-item-chevron">
@@ -172,7 +258,9 @@ export default function DesktopProfile({
               <button
                 type="button"
                 className="desktop-profile-item"
-                aria-label="Become a Verified Seller (Unverified): Complete verification to enjoy Verified Seller benefits."
+                aria-label="Become a Verified Seller: Tap to complete verification."
+                onClick={() => handleEditClick("verification")}
+                title="Click to view seller verification"
               >
                 <div className="desktop-profile-badge verified">
                   <span className="material-symbols-outlined">verified</span>
@@ -181,10 +269,21 @@ export default function DesktopProfile({
                   <div className="desktop-profile-item-text">
                     <span className="desktop-profile-item-title">
                       <span>Become a Verified Seller</span>
-                      <span className="desktop-profile-unverified-tag">(Unverified)</span>
+                      {profileData.isVerified ? (
+                        <span
+                          className="desktop-profile-unverified-tag"
+                          style={{ color: "#10b981", fontWeight: 700 }}
+                        >
+                          (Verified)
+                        </span>
+                      ) : (
+                        <span className="desktop-profile-unverified-tag">(Unverified)</span>
+                      )}
                     </span>
                     <span className="desktop-profile-item-subtitle">
-                      Complete verification to enjoy Verified Seller benefits.
+                      {profileData.isVerified
+                        ? "Verification approved. Enjoy Verified Seller escrow benefits."
+                        : "Complete verification to enjoy Verified Seller benefits."}
                     </span>
                   </div>
                   <span className="material-symbols-outlined desktop-profile-item-chevron chevron-down">
@@ -197,7 +296,9 @@ export default function DesktopProfile({
               <button
                 type="button"
                 className="desktop-profile-item"
-                aria-label="Statements & Reports: Get a statement and report for your activities and orders."
+                aria-label="Statements & Reports: Tap to generate statement."
+                onClick={() => handleEditClick("statements")}
+                title="Click to generate statements and reports"
               >
                 <div className="desktop-profile-badge statements">
                   <span className="material-symbols-outlined">receipt_long</span>
@@ -219,7 +320,9 @@ export default function DesktopProfile({
               <button
                 type="button"
                 className="desktop-profile-item"
-                aria-label="Cashback & Referral Rewards: See how much you've earned from referrals."
+                aria-label="Cashback & Referral Rewards: Tap to view earnings."
+                onClick={() => handleEditClick("rewards")}
+                title="Click to view cashback and rewards"
               >
                 <div className="desktop-profile-badge rewards">
                   <span className="material-symbols-outlined">card_giftcard</span>
@@ -242,6 +345,71 @@ export default function DesktopProfile({
           </div>
         </div>
       </div>
+
+      {/* ── Modals ── */}
+      {/* 1. Field Edit Modal (Email, Address, or Full Profile) */}
+      <EditFieldModal
+        isOpen={
+          activeModal === "email" ||
+          activeModal === "address" ||
+          activeModal === "profile"
+        }
+        fieldType={activeModal || "email"}
+        currentData={profileData}
+        dark={dark}
+        onClose={() => setActiveModal(null)}
+        onSave={(updates) => {
+          let msg = "Details updated successfully";
+          if (updates.email) msg = "Email address updated successfully";
+          else if (updates.address) msg = "Address updated successfully";
+          updateProfile(updates, msg);
+        }}
+      />
+
+      {/* 2. Payout Account Modal */}
+      <PayoutAccountModal
+        isOpen={activeModal === "payout"}
+        currentData={profileData}
+        dark={dark}
+        onClose={() => setActiveModal(null)}
+        onSave={(payoutUpdates) => {
+          updateProfile(payoutUpdates, "Payout bank account updated successfully");
+        }}
+      />
+
+      {/* 3. Seller Verification Modal */}
+      <VerifiedSellerModal
+        isOpen={activeModal === "verification"}
+        currentStatus={profileData.verificationStatus}
+        dark={dark}
+        onClose={() => setActiveModal(null)}
+        onVerified={() => {
+          updateProfile(
+            { isVerified: true, verificationStatus: "verified" },
+            "Congratulations! Seller verification approved"
+          );
+        }}
+      />
+
+      {/* 4. Statements & Reports Modal */}
+      <StatementsModal
+        isOpen={activeModal === "statements"}
+        userEmail={profileData.email}
+        dark={dark}
+        onClose={() => setActiveModal(null)}
+        onSend={(msg) => showToast(msg)}
+      />
+
+      {/* 5. Cashback & Referral Rewards Modal */}
+      <RewardsModal
+        isOpen={activeModal === "rewards"}
+        dark={dark}
+        onClose={() => setActiveModal(null)}
+        onCopy={(msg) => showToast(msg)}
+      />
+
+      {/* ── Floating Toast Feedback ── */}
+      <ProfileToast message={toastMessage} isVisible={isToastVisible} dark={dark} />
     </main>
   );
 }

@@ -650,7 +650,7 @@ function MobileDashboard({
           ) : active === "Help" || active === "Help & support" ? (
             <MobileHelp onOpenChat={() => {}} />
           ) : active === "Profile" ? (
-            <DesktopProfile userName="Amaka" onSignOut={onSignOut} />
+            <DesktopProfile userName="Amaka" dark={dark} onSignOut={onSignOut} />
           ) : (
             <div className="mobile-home-content">
               <div className="mobile-main mobile-main-top">
@@ -958,7 +958,7 @@ export default function App() {
       ) : active === "Help" || active === "Help & support" ? (
         <DesktopHelp />
       ) : active === "Profile" ? (
-        <DesktopProfile userName="Amaka" onSignOut={handleSignOut} />
+        <DesktopProfile userName="Amaka" dark={dark} onSignOut={handleSignOut} />
       ) : active === "Awaiting Payment" ||
          active === "Payment Received" ||
          active === "In Transit" ||
