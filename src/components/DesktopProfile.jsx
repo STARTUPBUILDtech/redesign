@@ -7,6 +7,9 @@ import {
   StatementsModal,
   RewardsModal,
   ProfileToast,
+  SellerStepModal,
+  BvnIcon,
+  NinIcon,
 } from "./Shared/ProfileModals.jsx";
 
 function WhatsAppIcon({ size = 20 }) {
@@ -61,6 +64,21 @@ export default function DesktopProfile({
   // Modal display state: null | 'email' | 'name' | 'address' | 'phone' | 'profile' | 'payout' | 'verification' | 'statements' | 'rewards'
   const [activeModal, setActiveModal] = useState(null);
 
+  // Seller verification dropdown and steps
+  const [isSellerExpanded, setIsSellerExpanded] = useState(false);
+  const [activeSellerStep, setActiveSellerStep] = useState(null);
+  const [sellerSteps, setSellerSteps] = useState(() => {
+    try {
+      const saved = localStorage.getItem("paykudi_seller_steps");
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return {
+      bvn: false,
+      nin: false,
+      business: false,
+    };
+  });
+
   // Toast feedback state
   const [toastMessage, setToastMessage] = useState("");
   const [isToastVisible, setIsToastVisible] = useState(false);
@@ -89,8 +107,45 @@ export default function DesktopProfile({
     setActiveModal(field);
   };
 
+  const handleSaveSellerStep = (step, data) => {
+    setSellerSteps((prev) => {
+      const next = { ...prev, [step]: true, ...data };
+      try {
+        localStorage.setItem("paykudi_seller_steps", JSON.stringify(next));
+      } catch (e) {}
+      return next;
+    });
+    showToast(
+      step === "bvn"
+        ? "BVN verified successfully"
+        : step === "nin"
+        ? "NIN verified successfully"
+        : "Business details saved"
+    );
+  };
+
+  const handleFinalSubmitVerification = () => {
+    if (profileData.isVerified) {
+      showToast("Your seller verification is already approved!");
+      return;
+    }
+    const nextSteps = { ...sellerSteps, bvn: true, nin: true, business: true };
+    setSellerSteps(nextSteps);
+    try {
+      localStorage.setItem("paykudi_seller_steps", JSON.stringify(nextSteps));
+    } catch (e) {}
+    updateProfile(
+      { isVerified: true, verificationStatus: "verified" },
+      "Congratulations! Seller verification submitted and approved"
+    );
+  };
+
   return (
-    <main id="profile-section" className="desktop-container desktop-profile-main">
+    <main
+      id="profile-section"
+      className={`desktop-container desktop-profile-main ${dark ? "dark" : ""}`}
+      data-appearance={dark ? "dark" : "light"}
+    >
       <div className="desktop-profile-wrap">
         {/* ── Top Header: Avatar & Info ── */}
         <section className="desktop-profile-header">
@@ -254,43 +309,149 @@ export default function DesktopProfile({
                 </div>
               </button>
 
-              {/* Item 2: Become a Verified Seller */}
-              <button
-                type="button"
-                className="desktop-profile-item"
-                aria-label="Become a Verified Seller: Tap to complete verification."
-                onClick={() => handleEditClick("verification")}
-                title="Click to view seller verification"
-              >
-                <div className="desktop-profile-badge verified">
-                  <span className="material-symbols-outlined">verified</span>
-                </div>
-                <div className="desktop-profile-item-inner">
-                  <div className="desktop-profile-item-text">
-                    <span className="desktop-profile-item-title">
-                      <span>Become a Verified Seller</span>
-                      {profileData.isVerified ? (
-                        <span
-                          className="desktop-profile-unverified-tag"
-                          style={{ color: "#10b981", fontWeight: 700 }}
-                        >
-                          (Verified)
-                        </span>
-                      ) : (
-                        <span className="desktop-profile-unverified-tag">(Unverified)</span>
-                      )}
-                    </span>
-                    <span className="desktop-profile-item-subtitle">
-                      {profileData.isVerified
-                        ? "Verification approved. Enjoy Verified Seller escrow benefits."
-                        : "Complete verification to enjoy Verified Seller benefits."}
+              {/* Item 2: Become a Verified Seller (Expandable Dropdown) */}
+              <div className={`desktop-profile-seller-accordion ${isSellerExpanded ? "is-expanded" : ""}`}>
+                <button
+                  type="button"
+                  className={`desktop-profile-item ${isSellerExpanded ? "is-expanded" : ""}`}
+                  aria-label="Become a Verified Seller: Tap to complete verification."
+                  onClick={() => setIsSellerExpanded((prev) => !prev)}
+                  title="Click to toggle seller verification options"
+                  aria-expanded={isSellerExpanded}
+                >
+                  <div className="desktop-profile-badge verified">
+                    <span className="material-symbols-outlined">verified</span>
+                  </div>
+                  <div className={`desktop-profile-item-inner ${isSellerExpanded ? "no-border" : ""}`}>
+                    <div className="desktop-profile-item-text">
+                      <span className="desktop-profile-item-title">
+                        <span>Become a Verified Seller</span>
+                        {profileData.isVerified ? (
+                          <span
+                            className="desktop-profile-unverified-tag"
+                            style={{ color: "#10b981", fontWeight: 700 }}
+                          >
+                            (Verified)
+                          </span>
+                        ) : (
+                          <span className="desktop-profile-unverified-tag">(Unverified)</span>
+                        )}
+                      </span>
+                      <span className="desktop-profile-item-subtitle">
+                        {profileData.isVerified
+                          ? "Verification approved. Enjoy Verified Seller escrow benefits."
+                          : "Complete verification to enjoy Verified Seller benefits."}
+                      </span>
+                    </div>
+                    <span className="material-symbols-outlined desktop-profile-item-chevron chevron-down">
+                      {isSellerExpanded ? "keyboard_arrow_up" : "keyboard_arrow_down"}
                     </span>
                   </div>
-                  <span className="material-symbols-outlined desktop-profile-item-chevron chevron-down">
-                    keyboard_arrow_down
-                  </span>
-                </div>
-              </button>
+                </button>
+
+                {/* Dropdown Content */}
+                {isSellerExpanded && (
+                  <div className="desktop-profile-seller-dropdown">
+                    {/* Card 1: BVN */}
+                    <div className="seller-sub-card">
+                      <div className="seller-sub-card-left">
+                        <div className="seller-sub-card-badge bvn">
+                          <BvnIcon size={20} />
+                        </div>
+                        <div className="seller-sub-card-info">
+                          <span className="seller-sub-card-title">BVN Verification</span>
+                          <span className="seller-sub-card-sub">Bank Verification Number</span>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        className={`seller-sub-card-btn ${sellerSteps.bvn ? "is-done" : ""}`}
+                        onClick={() => setActiveSellerStep("bvn")}
+                        title={sellerSteps.bvn ? "BVN Verified" : "Verify BVN"}
+                        aria-label={sellerSteps.bvn ? "BVN Verified" : "Verify BVN"}
+                      >
+                        {sellerSteps.bvn ? (
+                          <span className="material-symbols-outlined seller-verified-tick-icon">
+                            verified
+                          </span>
+                        ) : (
+                          "Verify BVN"
+                        )}
+                      </button>
+                    </div>
+
+                    {/* Card 2: NIN */}
+                    <div className="seller-sub-card">
+                      <div className="seller-sub-card-left">
+                        <div className="seller-sub-card-badge nin">
+                          <NinIcon size={20} />
+                        </div>
+                        <div className="seller-sub-card-info">
+                          <span className="seller-sub-card-title">NIN Verification</span>
+                          <span className="seller-sub-card-sub">National Identity Number</span>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        className={`seller-sub-card-btn ${sellerSteps.nin ? "is-done" : ""}`}
+                        onClick={() => setActiveSellerStep("nin")}
+                        title={sellerSteps.nin ? "NIN Verified" : "Verify NIN"}
+                        aria-label={sellerSteps.nin ? "NIN Verified" : "Verify NIN"}
+                      >
+                        {sellerSteps.nin ? (
+                          <span className="material-symbols-outlined seller-verified-tick-icon">
+                            verified
+                          </span>
+                        ) : (
+                          "Verify NIN"
+                        )}
+                      </button>
+                    </div>
+
+                    {/* Card 3: Business Info */}
+                    <div className="seller-sub-card">
+                      <div className="seller-sub-card-left">
+                        <div className="seller-sub-card-badge business">
+                          <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
+                            storefront
+                          </span>
+                        </div>
+                        <div className="seller-sub-card-info">
+                          <span className="seller-sub-card-title">Business Info</span>
+                          <span className="seller-sub-card-sub">Store Name & Category</span>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        className={`seller-sub-card-btn ${sellerSteps.business ? "is-done" : ""}`}
+                        onClick={() => setActiveSellerStep("business")}
+                        title={sellerSteps.business ? "Business Info Added" : "Add Business"}
+                        aria-label={sellerSteps.business ? "Business Info Added" : "Add Business"}
+                      >
+                        {sellerSteps.business ? (
+                          <span className="material-symbols-outlined seller-verified-tick-icon">
+                            verified
+                          </span>
+                        ) : (
+                          "Add Business"
+                        )}
+                      </button>
+                    </div>
+
+                    {/* Bottom CTA Submit Button */}
+                    <button
+                      type="button"
+                      className="seller-verify-submit-btn"
+                      onClick={handleFinalSubmitVerification}
+                    >
+                      <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
+                        verified
+                      </span>
+                      <span>Submit Seller Verification</span>
+                    </button>
+                  </div>
+                )}
+              </div>
 
               {/* Item 3: Statements & Reports */}
               <button
@@ -406,6 +567,15 @@ export default function DesktopProfile({
         dark={dark}
         onClose={() => setActiveModal(null)}
         onCopy={(msg) => showToast(msg)}
+      />
+
+      {/* 6. Step-specific Verification Modal */}
+      <SellerStepModal
+        isOpen={Boolean(activeSellerStep)}
+        step={activeSellerStep}
+        dark={dark}
+        onClose={() => setActiveSellerStep(null)}
+        onSave={handleSaveSellerStep}
       />
 
       {/* ── Floating Toast Feedback ── */}

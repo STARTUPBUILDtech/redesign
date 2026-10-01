@@ -123,26 +123,30 @@
   font-family: 'Hanken Grotesk', 'Inter', sans-serif;
 }
 
+/* ── WhatsApp Phone Pill (black in light mode, white in dark mode) ── */
 .desktop-profile-phone-pill {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   padding: 4px 12px;
   border-radius: 9999px;
-  background-color: color-mix(in srgb, var(--ink) 4%, transparent);
-  color: var(--muted);
+  background-color: #171717;
+  color: #ffffff;
   font-size: clamp(12px, 0.9vw, 13.5px);
   font-weight: 500;
   width: fit-content;
   max-width: 100%;
   white-space: nowrap;
   flex-shrink: 0;
-  border: 1px solid color-mix(in srgb, var(--line) 60%, transparent);
+  border: 1px solid #171717;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .desktop-profile-phone-pill span {
   white-space: nowrap;
   line-height: 1;
+  color: #ffffff;
 }
 
 .desktop-profile-phone-pill svg,
@@ -152,6 +156,47 @@
   width: 14px;
   height: 14px;
   flex-shrink: 0;
+}
+
+/* White pill in dark mode */
+[data-appearance="dark"] .desktop-profile-phone-pill,
+.app[data-appearance="dark"] .desktop-profile-phone-pill,
+.mobile-dashboard[data-appearance="dark"] .desktop-profile-phone-pill,
+body[data-appearance="dark"] .desktop-profile-phone-pill,
+body.dark .desktop-profile-phone-pill,
+.desktop-profile-main[data-appearance="dark"] .desktop-profile-phone-pill,
+.desktop-profile-main.dark .desktop-profile-phone-pill {
+  background-color: #ffffff;
+  color: #111215;
+  border-color: #ffffff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+[data-appearance="dark"] .desktop-profile-phone-pill span,
+.app[data-appearance="dark"] .desktop-profile-phone-pill span,
+.mobile-dashboard[data-appearance="dark"] .desktop-profile-phone-pill span,
+body[data-appearance="dark"] .desktop-profile-phone-pill span,
+body.dark .desktop-profile-phone-pill span,
+.desktop-profile-main[data-appearance="dark"] .desktop-profile-phone-pill span,
+.desktop-profile-main.dark .desktop-profile-phone-pill span {
+  color: #111215;
+}
+
+[data-appearance="dark"] .desktop-profile-phone-pill svg,
+[data-appearance="dark"] .desktop-profile-phone-pill i,
+.app[data-appearance="dark"] .desktop-profile-phone-pill svg,
+.app[data-appearance="dark"] .desktop-profile-phone-pill i,
+.mobile-dashboard[data-appearance="dark"] .desktop-profile-phone-pill svg,
+.mobile-dashboard[data-appearance="dark"] .desktop-profile-phone-pill i,
+body[data-appearance="dark"] .desktop-profile-phone-pill svg,
+body[data-appearance="dark"] .desktop-profile-phone-pill i,
+body.dark .desktop-profile-phone-pill svg,
+body.dark .desktop-profile-phone-pill i,
+.desktop-profile-main[data-appearance="dark"] .desktop-profile-phone-pill svg,
+.desktop-profile-main[data-appearance="dark"] .desktop-profile-phone-pill i,
+.desktop-profile-main.dark .desktop-profile-phone-pill svg,
+.desktop-profile-main.dark .desktop-profile-phone-pill i {
+  color: #10b981;
 }
 
 /* ── Sign Out Button (black in light mode, white in dark mode) ── */
@@ -601,4 +646,232 @@ body.dark .profile-signout-btn:hover {
 
 [data-appearance="dark"] .desktop-profile-item:hover .desktop-profile-item-chevron {
   color: #f4f4f6;
+}
+
+/* ── Become a Verified Seller Dropdown Section ── */
+.desktop-profile-seller-accordion {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.desktop-profile-seller-dropdown {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px 4px 18px 4px;
+  animation: sellerDropdownSlide 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  border-bottom: 1px solid var(--line);
+}
+
+@keyframes sellerDropdownSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.seller-sub-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 14px;
+  border-radius: 14px;
+  background-color: #edeef2;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  transition: all 0.15s ease;
+}
+
+[data-appearance="dark"] .seller-sub-card,
+.desktop-profile-main[data-appearance="dark"] .seller-sub-card,
+.desktop-profile-main.dark .seller-sub-card,
+body.dark .seller-sub-card {
+  background-color: #1a1c23;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.seller-sub-card-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  flex: 1;
+}
+
+.seller-sub-card-badge {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.seller-sub-card-badge.bvn,
+.seller-sub-card-badge.nin {
+  background-color: #dde6f0;
+  color: #2b496e;
+}
+
+[data-appearance="dark"] .seller-sub-card-badge.bvn,
+[data-appearance="dark"] .seller-sub-card-badge.nin,
+.desktop-profile-main[data-appearance="dark"] .seller-sub-card-badge.bvn,
+.desktop-profile-main[data-appearance="dark"] .seller-sub-card-badge.nin,
+.desktop-profile-main.dark .seller-sub-card-badge.bvn,
+.desktop-profile-main.dark .seller-sub-card-badge.nin {
+  background-color: rgba(66, 126, 196, 0.22);
+  color: #93c5fd;
+}
+
+.seller-sub-card-badge.business {
+  background-color: #dcf2e4;
+  color: #15803d;
+}
+
+[data-appearance="dark"] .seller-sub-card-badge.business,
+.desktop-profile-main[data-appearance="dark"] .seller-sub-card-badge.business,
+.desktop-profile-main.dark .seller-sub-card-badge.business {
+  background-color: rgba(34, 197, 94, 0.2);
+  color: #86efac;
+}
+
+.seller-sub-card-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.seller-sub-card-title {
+  margin: 0;
+  font-size: clamp(13px, 1vw, 14px);
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.25;
+  letter-spacing: -0.15px;
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif;
+}
+
+.seller-sub-card-sub {
+  margin: 0;
+  font-size: clamp(11.5px, 0.85vw, 12px);
+  color: var(--muted);
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.seller-sub-card-btn {
+  padding: 6px 14px;
+  height: 32px;
+  border-radius: 9999px;
+  border: none;
+  font-size: 12.5px;
+  font-weight: 600;
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif;
+  letter-spacing: -0.1px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+  background-color: #d7e0ea;
+  color: #264567;
+}
+
+.seller-sub-card-btn:hover {
+  background-color: #c9d5e3;
+  transform: translateY(-0.5px);
+}
+
+.seller-sub-card-btn.is-done {
+  background: transparent !important;
+  color: #16a34a !important;
+  padding: 0 !important;
+  height: 28px !important;
+  width: 28px !important;
+  min-width: 28px !important;
+  border-radius: 9999px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: none !important;
+}
+
+.seller-sub-card-btn.is-done:hover {
+  background: transparent !important;
+  transform: scale(1.12);
+}
+
+.seller-verified-tick-icon {
+  font-size: 24px !important;
+  color: #16a34a !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+}
+
+[data-appearance="dark"] .seller-sub-card-btn,
+.desktop-profile-main[data-appearance="dark"] .seller-sub-card-btn,
+.desktop-profile-main.dark .seller-sub-card-btn {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+}
+
+[data-appearance="dark"] .seller-sub-card-btn:hover,
+.desktop-profile-main[data-appearance="dark"] .seller-sub-card-btn:hover,
+.desktop-profile-main.dark .seller-sub-card-btn:hover {
+  background-color: rgba(255, 255, 255, 0.16);
+}
+
+[data-appearance="dark"] .seller-sub-card-btn.is-done,
+.desktop-profile-main[data-appearance="dark"] .seller-sub-card-btn.is-done,
+.desktop-profile-main.dark .seller-sub-card-btn.is-done {
+  background: transparent !important;
+  color: #22c55e !important;
+}
+
+[data-appearance="dark"] .seller-verified-tick-icon,
+.desktop-profile-main[data-appearance="dark"] .seller-verified-tick-icon,
+.desktop-profile-main.dark .seller-verified-tick-icon {
+  color: #22c55e !important;
+}
+
+.seller-verify-submit-btn {
+  width: 100%;
+  height: 48px;
+  border-radius: 9999px;
+  background-color: #22c55e;
+  color: #ffffff;
+  font-size: 14.5px;
+  font-weight: 700;
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif;
+  letter-spacing: -0.2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(34, 197, 94, 0.3);
+  margin-top: 4px;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.seller-verify-submit-btn:hover {
+  background-color: #16a34a;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(22, 163, 74, 0.4);
+}
+
+.seller-verify-submit-btn:active {
+  transform: translateY(0);
 }
