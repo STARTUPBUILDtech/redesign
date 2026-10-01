@@ -571,6 +571,7 @@ export function PayoutAccountModal({ isOpen, onClose, currentData, onSave, dark 
   const [matchedAccountName, setMatchedAccountName] = useState("");
   const [setAsDefaultNew, setSetAsDefaultNew] = useState(true);
   const [error, setError] = useState("");
+  const [listError, setListError] = useState("");
   const accountInputRef = useRef(null);
 
   // Sync state whenever modal opens
@@ -578,6 +579,7 @@ export function PayoutAccountModal({ isOpen, onClose, currentData, onSave, dark 
     if (isOpen) {
       setView("list");
       setError("");
+      setListError("");
       setNewAccountNumber("");
       setIsMatchingBank(false);
       setShowSuggestedBanks(false);
@@ -665,6 +667,20 @@ export function PayoutAccountModal({ isOpen, onClose, currentData, onSave, dark 
     onClose();
   };
 
+  // Handle attempting to open Add Bank Account flow
+  const handleOpenAddFlow = () => {
+    if (accounts.length >= 3) {
+      setListError("Maximum limit of 3 payout accounts reached.");
+      return;
+    }
+    setListError("");
+    setView("add");
+    setNewAccountNumber("");
+    setSelectedBank(null);
+    setMatchedAccountName("");
+    setError("");
+  };
+
   // Handle account number input (taking only account number)
   const handleAccountNumberChange = (e) => {
     const val = e.target.value.replace(/\D/g, "").slice(0, 10);
@@ -699,6 +715,10 @@ export function PayoutAccountModal({ isOpen, onClose, currentData, onSave, dark 
   // Handle adding the new account
   const handleSaveNewAccount = (e) => {
     e.preventDefault();
+    if (accounts.length >= 3) {
+      setError("Maximum limit of 3 payout accounts reached.");
+      return;
+    }
     if (newAccountNumber.length !== 10) {
       setError("Please enter a valid 10-digit account number.");
       return;
@@ -761,6 +781,7 @@ export function PayoutAccountModal({ isOpen, onClose, currentData, onSave, dark 
     if (accounts.length <= 1) return;
     const filtered = accounts.filter((a) => a.id !== accId);
     setAccounts(filtered);
+    setListError("");
     try {
       localStorage.setItem("paykudi_payout_accounts", JSON.stringify(filtered));
     } catch (e) {}
@@ -843,14 +864,9 @@ export function PayoutAccountModal({ isOpen, onClose, currentData, onSave, dark 
                       }}
                     >
                       <div className="payout-account-card-left">
-                        <BankLogo bankCode={acc.bankCode} bankName={acc.bank} size={40} />
+                        <BankLogo bankCode={acc.bankCode} bankName={acc.bank} size={48} />
                         <div className="payout-account-details">
-                          <div className="payout-account-bank-row">
-                            <span className="payout-account-bank-name">{acc.bank}</span>
-                            {isDefaultSelected && (
-                              <span className="payout-default-pill">Default</span>
-                            )}
-                          </div>
+                          <span className="payout-account-bank-name">{acc.bank}</span>
                           <span className="payout-account-number-mono">
                             {acc.accountNumber}
                           </span>
@@ -861,6 +877,10 @@ export function PayoutAccountModal({ isOpen, onClose, currentData, onSave, dark 
                       </div>
 
                       <div className="payout-account-card-right">
+                        {isDefaultSelected && (
+                          <span className="payout-default-pill">Default</span>
+                        )}
+
                         {/* Selector for default payout account */}
                         <div
                           className={`payout-radio-selector ${
@@ -891,17 +911,21 @@ export function PayoutAccountModal({ isOpen, onClose, currentData, onSave, dark 
                 })}
               </div>
 
+              {/* Error warning if user tries adding and 3 accounts are already saved */}
+              {listError && (
+                <div className="payout-list-inline-error">
+                  <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
+                    error
+                  </span>
+                  <span>{listError}</span>
+                </div>
+              )}
+
               {/* Add Bank Account Trigger Button */}
               <button
                 type="button"
                 className="payout-add-trigger-btn"
-                onClick={() => {
-                  setView("add");
-                  setNewAccountNumber("");
-                  setSelectedBank(null);
-                  setMatchedAccountName("");
-                  setError("");
-                }}
+                onClick={handleOpenAddFlow}
               >
                 <div className="payout-add-trigger-icon">
                   <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
@@ -969,13 +993,13 @@ export function PayoutAccountModal({ isOpen, onClose, currentData, onSave, dark 
                 </div>
               )}
 
-              {/* 1. Account Number input - takes ONLY the account number */}
-              <div className="profile-form-group">
-                <label className="profile-form-label" htmlFor="payout-new-acc-number">
+              {/* 1. Account Number input - text box with exact properties from New Payment screen */}
+              <div className="new-payment-field-group">
+                <label className="new-payment-label" htmlFor="payout-new-acc-number">
                   Account Number
                 </label>
                 <div
-                  className="profile-input-wrap"
+                  className={`new-payment-field-box ${error ? "error" : ""}`}
                   onClick={() => accountInputRef.current?.focus({ preventScroll: true })}
                 >
                   <input
@@ -985,7 +1009,7 @@ export function PayoutAccountModal({ isOpen, onClose, currentData, onSave, dark 
                     inputMode="numeric"
                     pattern="[0-9]*"
                     maxLength={10}
-                    className="profile-input-field payout-acc-num-input"
+                    placeholder="1234567890"
                     value={newAccountNumber}
                     onChange={handleAccountNumberChange}
                     onFocus={() => {
@@ -1013,8 +1037,8 @@ export function PayoutAccountModal({ isOpen, onClose, currentData, onSave, dark 
                 )}
               </div>
 
-              {/* 2. Suggested banks like a list of 3 */}
-              {showSuggestedBanks && (
+              {/* 2. Suggested banks like a list of 3 - hidden once bank is selected */}
+              {showSuggestedBanks && !selectedBank && (
                 <div className="payout-suggested-section">
                   <div className="payout-suggested-header">
                     <span className="profile-form-label">Suggested Banks</span>
@@ -1092,46 +1116,48 @@ export function PayoutAccountModal({ isOpen, onClose, currentData, onSave, dark 
               {selectedBank && matchedAccountName && !isMatchingName && (
                 <div className="payout-match-result-container">
                   <div className="payout-match-card">
-                    <div className="payout-match-left">
-                      <BankLogo bankCode={selectedBank.code} bankName={selectedBank.name} size={38} />
-                      <div className="payout-match-info">
-                        <span className="payout-match-bank-line">
-                          {selectedBank.name} · <strong className="payout-match-num">{newAccountNumber}</strong>
-                        </span>
-                        <span className="payout-matched-name-text">
-                          {matchedAccountName}
-                        </span>
+                    <div className="payout-account-card-left">
+                      <BankLogo bankCode={selectedBank.code} bankName={selectedBank.name} size={48} />
+                      <div className="payout-account-details">
+                        <span className="payout-account-bank-name">{selectedBank.name}</span>
+                        <span className="payout-account-number-mono">{newAccountNumber}</span>
+                        <span className="payout-account-holder">{matchedAccountName}</span>
                       </div>
                     </div>
-                    <span className="payout-match-verified-tag">
-                      <span className="material-symbols-outlined" style={{ fontSize: 14 }}>
-                        verified
-                      </span>
-                      <span>Matched</span>
-                    </span>
+                    <div className="payout-match-right-group">
+                      <button
+                        type="button"
+                        className="payout-change-bank-btn"
+                        onClick={() => {
+                          setSelectedBank(null);
+                          setMatchedAccountName("");
+                        }}
+                        title="Choose another bank"
+                      >
+                        Change
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
 
-              {/* 5. Set as default checkbox (only after bank selected and name verified) */}
-              {selectedBank && matchedAccountName && !isMatchingName && (
-                <div className="payout-set-default-wrap">
-                  <label className="payout-default-checkbox-label">
-                    <input
-                      type="checkbox"
-                      checked={setAsDefaultNew}
-                      onChange={(e) => setSetAsDefaultNew(e.target.checked)}
-                      className="payout-default-checkbox"
-                    />
-                    <span className="payout-default-checkbox-text">
-                      Set this as my default payout account
-                    </span>
-                  </label>
-                </div>
-              )}
             </div>
 
             <div className="profile-modal-footer payout-single-footer">
+              <div className="payout-set-default-wrap">
+                <label className="payout-default-checkbox-label">
+                  <input
+                    type="checkbox"
+                    checked={setAsDefaultNew}
+                    onChange={(e) => setSetAsDefaultNew(e.target.checked)}
+                    className="payout-default-checkbox"
+                  />
+                  <span className="payout-default-checkbox-text">
+                    Set this as my default payout account
+                  </span>
+                </label>
+              </div>
+
               <button
                 type="submit"
                 className="profile-btn profile-btn-primary payout-full-btn"
