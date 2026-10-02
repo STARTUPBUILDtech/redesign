@@ -1818,9 +1818,7 @@ body.dark .desktop-pr-empty-watermark,
 @media (min-width: 701px) {
   body:has(.desktop-payment-room-wrapper) .ap-bottom-sheet-backdrop,
   body:has(.desktop-payment-room-wrapper) .pk-receipt-backdrop,
-  body:has(.desktop-payment-room-wrapper) .ap-order-help-backdrop,
   body:has(.desktop-payment-room-wrapper) .atm-backdrop,
-  body:has(.desktop-payment-room-wrapper) .cd-issue-backdrop,
   body:has(.desktop-payment-room-wrapper) .ap-modal-backdrop,
   body:has(.desktop-payment-room-wrapper) .profile-modal-overlay:has(.payout-dialog-card) {
     align-items: flex-end !important;
@@ -1830,9 +1828,7 @@ body.dark .desktop-pr-empty-watermark,
 
   body:has(.desktop-payment-room-wrapper) .ap-bottom-sheet:not(.ap-chat-slide-modal):not([class*="chat"]),
   body:has(.desktop-payment-room-wrapper) .pk-receipt-sheet,
-  body:has(.desktop-payment-room-wrapper) .ap-order-help-container,
   body:has(.desktop-payment-room-wrapper) .atm-sheet-container,
-  body:has(.desktop-payment-room-wrapper) .cd-issue-sheet-container,
   body:has(.desktop-payment-room-wrapper) .ssm-sheet,
   body:has(.desktop-payment-room-wrapper) .ap-modal-card,
   body:has(.desktop-payment-room-wrapper) .pr-change-bank-modal,
