@@ -15,6 +15,7 @@ export default function MobileDisputeOngoing({
   room = {},
   onBack,
   role = "Buying",
+  isPaymentRoomWhite,
 }) {
   // Countdown timer for dispute response (starts at 29m 30s as in reference design)
   const [seconds, setSeconds] = useState(1770);
@@ -138,10 +139,10 @@ export default function MobileDisputeOngoing({
       ref={screenRef}
       className={`mobile-awaiting-payment-screen mobile-dispute-ongoing-screen ${
         isChatOpen ? "chat-open" : ""
-      } ${isHelpOpen ? "modal-open" : ""}`}
+      } ${isHelpOpen || isProofModalOpen ? "modal-open" : ""}`}
     >
-      {/* ── Top Header (Hidden when chat or help is open) ── */}
-      {!isChatOpen && !isHelpOpen && (
+      {/* ── Top Header (Hidden when chat, help, or proof modal is open) ── */}
+      {!isChatOpen && !isHelpOpen && !isProofModalOpen && (
         <header className="ap-top-header">
           <div className="ap-header-left">
             <button
@@ -394,6 +395,7 @@ export default function MobileDisputeOngoing({
       <ReceiptModal
         isOpen={isReceiptOpen}
         onClose={() => setIsReceiptOpen(false)}
+        isPaymentRoomWhite={isPaymentRoomWhite}
         room={{ ...room, id: orderNumber, amount: orderAmount }}
       />
 

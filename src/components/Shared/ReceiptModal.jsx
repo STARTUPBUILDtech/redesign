@@ -97,9 +97,35 @@ function getReceiptBadgeConfig(typeKey) {
   };
 }
 
-export default function ReceiptModal({ isOpen, onClose, room = {}, item = null }) {
+export default function ReceiptModal({
+  isOpen,
+  onClose,
+  room = {},
+  item = null,
+  appearance: propAppearance,
+  isPaymentRoomWhite,
+}) {
   const [downloaded, setDownloaded] = useState(false);
   const [shared, setShared] = useState(false);
+
+  // Sync appearance with the current payment room color:
+  // If payment room is white -> "light". If payment room is black -> "dark".
+  const resolvePaymentRoomAppearance = () => {
+    if (typeof isPaymentRoomWhite === "boolean") {
+      return isPaymentRoomWhite ? "light" : "dark";
+    }
+    if (propAppearance) return propAppearance;
+    if (typeof document !== "undefined") {
+      const appEl = document.querySelector(".app[data-appearance='dark']");
+      const bodyApp = document.body.getAttribute("data-appearance");
+      const docApp = document.documentElement.getAttribute("data-appearance");
+      return (appEl || bodyApp === "dark" || docApp === "dark") ? "dark" : "light";
+    }
+    return "light";
+  };
+
+  const effectiveAppearance = resolvePaymentRoomAppearance();
+  const isWhite = effectiveAppearance === "light";
 
   if (!isOpen) return null;
 
@@ -191,8 +217,18 @@ export default function ReceiptModal({ isOpen, onClose, room = {}, item = null }
   };
 
   return createPortal(
-    <div className="pk-receipt-backdrop" onClick={onClose} role="dialog" aria-modal="true">
-      <div className="pk-receipt-sheet" onClick={(e) => e.stopPropagation()}>
+    <div
+      className={`pk-receipt-backdrop ${isWhite ? "receipt-white-mode" : "receipt-dark-mode"}`}
+      data-appearance={effectiveAppearance}
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+    >
+      <div
+        className={`pk-receipt-sheet ${isWhite ? "receipt-white-mode" : "receipt-dark-mode"}`}
+        data-appearance={effectiveAppearance}
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Floating Top Drag Handle */}
         <div className="pk-receipt-handle" />
 

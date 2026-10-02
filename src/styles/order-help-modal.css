@@ -13,7 +13,7 @@
   width: 100% !important;
   height: 100% !important;
   background-color: transparent !important;
-  z-index: 60 !important;
+  z-index: 50 !important;
   display: flex !important;
   justify-content: center !important;
   align-items: stretch !important;
@@ -51,6 +51,30 @@
   box-shadow: none !important;
 }
 
+/* In White/Light Mode: Pure White when payment room or app is light */
+.desktop-pr-right-pane .ap-order-help-container,
+body:not([data-appearance="dark"]) .ap-order-help-container,
+body[data-appearance="light"] .ap-order-help-container,
+[data-appearance="light"] .ap-order-help-container {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.22) !important;
+}
+
+.desktop-pr-right-pane .ap-order-help-header,
+body:not([data-appearance="dark"]) .ap-order-help-header,
+body[data-appearance="light"] .ap-order-help-header {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+  border-bottom: none !important;
+}
+
+.desktop-pr-right-pane .ap-order-help-title,
+body:not([data-appearance="dark"]) .ap-order-help-title,
+body[data-appearance="light"] .ap-order-help-title {
+  color: #111827 !important;
+}
+
 @keyframes pkModalCenterIn {
   from {
     transform: scale(0.95) translateY(12px);
@@ -85,7 +109,9 @@
 }
 
 @media (min-width: 701px) {
-  .ap-order-help-backdrop {
+  :not(.mobile-dashboard):not(.mobile-awaiting-payment-screen) > .ap-order-help-backdrop,
+  .desktop-payment-room-wrapper .ap-order-help-backdrop,
+  .desktop-pr-right-pane .ap-order-help-backdrop {
     position: fixed !important;
     inset: 0 !important;
     top: 0 !important;
@@ -96,27 +122,82 @@
     background-color: rgba(0, 0, 0, 0.65) !important;
     backdrop-filter: blur(10px) !important;
     -webkit-backdrop-filter: blur(10px) !important;
-    align-items: center !important;
+    align-items: flex-end !important;
     justify-content: center !important;
-    padding: clamp(16px, 3vw, 24px) !important;
+    padding: 0 !important;
     animation: apOrderHelpFadeIn 0.2s ease-out;
   }
 
-  .ap-order-help-container {
-    max-width: 660px !important;
-    height: min(600px, 85vh) !important;
-    min-height: 500px !important;
-    border-radius: 0 !important;
-    border: 1px solid var(--line, rgba(0, 0, 0, 0.08)) !important;
-    animation: pkModalCenterIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
-    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45) !important;
+  :not(.mobile-dashboard):not(.mobile-awaiting-payment-screen) > .ap-order-help-backdrop .ap-order-help-container,
+  .desktop-payment-room-wrapper .ap-order-help-container,
+  .desktop-pr-right-pane .ap-order-help-container {
+    width: 100% !important;
+    max-width: 620px !important;
+    height: min(680px, 88vh) !important;
+    max-height: 88vh !important;
+    min-height: 480px !important;
+    border-radius: 24px 24px 0 0 !important;
+    border-top: 1px solid var(--line, rgba(0, 0, 0, 0.08)) !important;
+    border-left: 1px solid var(--line, rgba(0, 0, 0, 0.08)) !important;
+    border-right: 1px solid var(--line, rgba(0, 0, 0, 0.08)) !important;
+    border-bottom: none !important;
+    animation: apOrderHelpSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    box-shadow: 0 -12px 50px rgba(0, 0, 0, 0.4) !important;
   }
 
-  [data-appearance="dark"] .ap-order-help-container,
-  .mobile-dashboard[data-appearance="dark"] .ap-order-help-container {
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
-    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.75) !important;
+  [data-appearance="dark"] .desktop-payment-room-wrapper .ap-order-help-container,
+  [data-appearance="dark"] .desktop-pr-right-pane .ap-order-help-container {
+    border-top: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-left: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-bottom: none !important;
+    box-shadow: 0 -12px 50px rgba(0, 0, 0, 0.75) !important;
   }
+}
+
+/* In Mobile View: Stops directly at the bottom of the PayKudi header, identical to the chat modal */
+.mobile-dashboard .ap-order-help-backdrop,
+.mobile-awaiting-payment-screen .ap-order-help-backdrop {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  background-color: transparent !important;
+  z-index: 50 !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: stretch !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.mobile-dashboard .ap-order-help-container,
+.mobile-awaiting-payment-screen .ap-order-help-container {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  min-height: 100% !important;
+  border-radius: 0 !important;
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+  display: flex !important;
+  flex-direction: column !important;
+  border-bottom: none !important;
+  margin: 0 !important;
+  animation: apChatSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.mobile-dashboard .ap-order-help-container .ap-sheet-handle,
+.mobile-awaiting-payment-screen .ap-order-help-container .ap-sheet-handle {
+  display: none !important;
 }
 
 /* ── Header ── */
@@ -127,6 +208,7 @@
   padding: 14px 16px 10px 16px;
   flex-shrink: 0;
   background-color: var(--page, #ffffff);
+  border-bottom: none !important;
 }
 
 [data-appearance="dark"] .ap-order-help-header,

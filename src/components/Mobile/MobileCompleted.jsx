@@ -12,6 +12,7 @@ export default function MobileCompleted({
   room = {},
   onBack,
   role = "Buying",
+  isPaymentRoomWhite,
 }) {
   const [copiedKey, setCopiedKey] = useState(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
@@ -345,6 +346,7 @@ export default function MobileCompleted({
       <ReceiptModal
         isOpen={isReceiptOpen}
         onClose={() => setIsReceiptOpen(false)}
+        isPaymentRoomWhite={isPaymentRoomWhite}
         room={{
           ...room,
           id: orderNumber,

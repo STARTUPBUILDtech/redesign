@@ -1,4 +1,3 @@
-import { createPortal } from "react-dom";
 import "../../styles/mobile-awaiting-payment.css";
 
 export default function OrderDetailsModal({
@@ -42,7 +41,7 @@ export default function OrderDetailsModal({
       ? "MACBOOK"
       : itemName.split(" ")[0]?.toUpperCase() || "ITEM");
 
-  return createPortal(
+  return (
     <div
       className={`ap-bottom-sheet-backdrop ${isLifting ? "lifting" : ""}`}
       onClick={onClose}
@@ -74,10 +73,8 @@ export default function OrderDetailsModal({
           </button>
         </div>
 
-        {/* Scrollable Body */}
-        <div className="ap-sheet-body">
-          {/* Product Info Card */}
-          <div className="ap-sheet-item-card">
+        {/* Product Info Card */}
+        <div className="ap-sheet-item-card">
             <div className="ap-sheet-item-avatar">
               {room.image ? (
                 <img src={room.image} alt={itemName} className="ap-sheet-item-img" />
@@ -159,9 +156,7 @@ export default function OrderDetailsModal({
               </div>
             </div>
           </div>
-        </div>
       </div>
-    </div>,
-    document.body
+    </div>
   );
 }

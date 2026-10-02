@@ -680,6 +680,11 @@
 }
 
 /* Empty State */
+.mobile-pr-list:has(.mobile-pr-empty) {
+  justify-content: center;
+  min-height: 280px;
+}
+
 .mobile-pr-empty {
   display: flex;
   flex-direction: column;
@@ -687,8 +692,10 @@
   justify-content: center;
   padding: 48px 16px;
   text-align: center;
-  gap: 10px;
+  gap: 12px;
   color: var(--muted);
+  flex: 1;
+  margin: auto 0;
 }
 
 .mobile-pr-empty-icon {
@@ -702,4 +709,6 @@
   font-weight: 600;
   color: var(--ink);
   margin: 0;
+  max-width: 320px;
+  line-height: 1.45;
 }

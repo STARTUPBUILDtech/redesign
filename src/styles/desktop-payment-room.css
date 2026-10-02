@@ -1,11 +1,15 @@
-/* ── Desktop Payment Room Screen Styles ── */
+/* ── Desktop Payment Room Screen Styles (WhatsApp Web Split-Pane Layout) ── */
 
 .desktop-payment-room-wrapper {
   width: 100%;
-  min-height: auto;
+  height: calc(100vh - clamp(64px, 3.8vw, 80px));
+  min-height: 580px;
   background: var(--page);
   color: var(--ink);
-  display: block;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 @media (max-width: 700px) {
@@ -14,77 +18,115 @@
   }
 }
 
-/* Matching exact width and padding from Desktop Activity (.desktop-activity-main) */
+/* Matching width & margins from Desktop Activity */
 .desktop-payment-room-main {
-  width: min(calc(100% - clamp(48px, 4.3vw, 98px)), 1718px);
-  margin: 0 auto;
-  padding-top: 0;
-  padding-bottom: clamp(24px, 2.5vw, 36px);
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  height: 100%;
+  padding-top: 0 !important;
+  padding-bottom: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ── Split Layout Container: Flat & Seamless (No Outer Tile Box or Top Border) ── */
+.desktop-pr-split-layout {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 0;
+  background: var(--page);
+  overflow: hidden;
+  box-sizing: border-box;
+  box-shadow: none;
+}
+
+.app[data-appearance="dark"] .desktop-pr-split-layout {
+  border: none;
+  box-shadow: none;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   LEFT PANE: 50% HALF-WIDTH SEAMLESS LIST
+   ══════════════════════════════════════════════════════════════ */
+.desktop-pr-left-pane {
+  width: 50% !important;
+  flex: 0 0 50% !important;
+  max-width: 50% !important;
+  min-width: 0 !important;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #e2e4e9 !important;
+  background: #ffffff !important;
+  height: 100%;
+  overflow: hidden;
   box-sizing: border-box;
 }
 
-/* Matching exact gap and flow from Desktop Activity (.desktop-activity-content) */
-.desktop-payment-room-content {
-  display: flex;
-  flex-direction: column;
-  gap: clamp(16px, 1.6vw, 24px);
-  padding-top: clamp(8px, 0.8vw, 14px);
-  padding-bottom: clamp(16px, 1.6vw, 24px);
+.app[data-appearance="dark"] .desktop-pr-left-pane {
+  border-right: 1px solid #272a31 !important;
+  background: #121316 !important;
 }
 
-/* Toolbar with Tabs on Left & Unified Search Bar on Right */
-.desktop-pr-toolbar {
-  position: fixed;
-  top: clamp(64px, 3.8vw, 80px);
-  left: 0;
-  right: 0;
-  z-index: 20;
-  background: var(--page);
+/* Header inside Left Pane: Tabs & Search (Aligned with App Left Padding - No bottom divider line above cards) */
+.desktop-pr-left-header {
+  padding: clamp(24px, 2.4vw, 40px) clamp(12px, 1.2vw, 24px) 14px clamp(16px, 1.8vw, 49px);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  border-bottom: none !important;
+  background: #ffffff !important;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.app[data-appearance="dark"] .desktop-pr-left-header {
+  border-bottom: none !important;
+  background: #121316 !important;
+}
+
+/* Collapsed Header Row: Ongoing/Fulfilled Tabs on Left, Search Trigger on Far Right */
+.desktop-pr-collapsed-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: clamp(12px, 1.1vw, 16px);
-  flex-wrap: wrap;
-  padding-top: clamp(8px, 0.7vw, 12px) !important;
-  padding-bottom: clamp(6px, 0.6vw, 10px) !important;
-  padding-left: max(calc((100% - min(calc(100% - clamp(48px, 4.3vw, 98px)), 1718px)) / 2), clamp(24px, 2.15vw, 49px)) !important;
-  padding-right: max(calc((100% - min(calc(100% - clamp(48px, 4.3vw, 98px)), 1718px)) / 2), clamp(24px, 2.15vw, 49px)) !important;
-  box-sizing: border-box;
-  transition: background-color 0.2s ease;
+  width: 100%;
+  gap: 12px;
 }
 
-/* Spacer = toolbar padding-top + button height + toolbar padding-bottom */
-.desktop-pr-toolbar-spacer {
-  height: calc(clamp(8px, 0.7vw, 12px) + clamp(36px, 2.6vw, 42px) + clamp(6px, 0.6vw, 10px));
-  flex-shrink: 0;
-}
-
-/* Left: Tabs Bar */
+/* Tabs Bar */
 .desktop-pr-tabs {
   display: inline-flex;
   align-items: center;
   background: transparent;
   border: none;
-  border-radius: 0;
   padding: 0;
   gap: clamp(6px, 0.55vw, 10px);
 }
 
 .desktop-pr-tab-btn {
-  height: clamp(34px, 2.4vw, 38px);
-  padding: 0 clamp(12px, 1.1vw, 18px);
-  border-radius: clamp(10px, 0.8vw, 12px);
+  height: clamp(32px, 2.3vw, 36px);
+  padding: 0 clamp(12px, 1vw, 16px);
+  border-radius: clamp(8px, 0.7vw, 10px);
   font-family: 'Inter', sans-serif;
-  font-size: clamp(12px, 0.85vw, 13.5px);
+  font-size: clamp(12px, 0.82vw, 13px);
   font-weight: 700;
   display: inline-flex;
   align-items: center;
-  gap: clamp(4px, 0.4vw, 6px);
+  gap: 6px;
   border: 1px solid var(--line);
   background: transparent;
   color: var(--muted);
   cursor: pointer;
   transition: all 0.15s ease;
+  user-select: none;
 }
 
 .desktop-pr-tab-btn:hover {
@@ -106,29 +148,101 @@
 }
 
 .desktop-pr-tab-badge {
-  font-size: clamp(10.5px, 0.75vw, 12px);
+  font-size: clamp(10.5px, 0.72vw, 11.5px);
   font-weight: 700;
-  opacity: 0.9;
+  opacity: 0.85;
 }
 
-.desktop-pr-tab-btn.active .desktop-pr-tab-badge {
-  opacity: 1;
+/* Expandable Search Trigger Button (Identical to Mobile) */
+.desktop-pr-search-trigger-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--ink);
+  cursor: pointer;
+  position: relative;
+  transition: all 0.15s ease;
+  margin-left: auto;
+  flex-shrink: 0;
 }
 
-/* Right Controls: Unified Search Bar (copied from DesktopActivity) */
+.app[data-appearance="dark"] .desktop-pr-search-trigger-btn {
+  border-color: #2b2e36;
+  color: #f4f4f6;
+}
+
+.desktop-pr-search-trigger-btn:hover {
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
+  border-color: var(--ink);
+}
+
+.app[data-appearance="dark"] .desktop-pr-search-trigger-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: #ffffff;
+}
+
+.desktop-pr-search-trigger-btn:active {
+  transform: scale(0.95);
+}
+
+.desktop-pr-search-trigger-btn.has-active-query {
+  border-color: var(--ink);
+  background: color-mix(in srgb, var(--ink) 4%, transparent);
+}
+
+.app[data-appearance="dark"] .desktop-pr-search-trigger-btn.has-active-query {
+  border-color: #ffffff;
+}
+
+.desktop-pr-trigger-filter-dot {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #10b981;
+  border: 1.5px solid var(--page);
+}
+
+/* Expanded Search Row */
+.desktop-pr-search-expanded-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 38px;
+  animation: prSearchExpandIn 0.18s ease-out;
+}
+
+@keyframes prSearchExpandIn {
+  from {
+    opacity: 0;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Search Bar & Filter Container */
 .desktop-pr-controls {
   display: flex;
   align-items: center;
-  gap: clamp(8px, 0.8vw, 14px);
+  width: 100%;
 }
 
 .desktop-pr-search-container {
   display: flex;
   align-items: center;
-  height: clamp(36px, 2.6vw, 42px);
-  width: clamp(360px, 28vw, 460px);
-  min-width: 320px;
-  border-radius: clamp(6px, 0.55vw, 9px);
+  height: clamp(34px, 2.4vw, 38px);
+  width: 100%;
+  border-radius: clamp(6px, 0.5vw, 8px);
   border: 1px solid var(--line);
   background: #ffffff;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
@@ -138,7 +252,7 @@
 
 .app[data-appearance="dark"] .desktop-pr-search-container {
   background: #1a1c22;
-  border-color: var(--line);
+  border-color: #2b2e36;
 }
 
 .desktop-pr-search-container:hover {
@@ -160,10 +274,10 @@
 }
 
 .desktop-pr-search-icon {
-  margin-left: clamp(8px, 0.7vw, 14px);
+  margin-left: clamp(8px, 0.7vw, 12px);
   color: var(--muted);
-  width: clamp(14px, 1.1vw, 17px);
-  height: clamp(14px, 1.1vw, 17px);
+  width: 15px;
+  height: 15px;
   flex-shrink: 0;
   pointer-events: none;
 }
@@ -177,15 +291,15 @@
   background: transparent !important;
   color: var(--ink);
   font-family: 'Inter', sans-serif;
-  font-size: clamp(10.5px, 0.78vw, 13.5px) !important;
-  padding: 0 clamp(6px, 0.5vw, 12px) 0 clamp(4px, 0.4vw, 8px);
+  font-size: clamp(11.5px, 0.8vw, 13px) !important;
+  padding: 0 clamp(6px, 0.5vw, 10px) 0 clamp(4px, 0.4vw, 8px);
   box-shadow: none !important;
 }
 
 .desktop-pr-search-input::placeholder {
   color: var(--muted);
   opacity: 0.85;
-  font-size: clamp(10px, 0.75vw, 13px) !important;
+  font-size: clamp(11px, 0.75vw, 12.5px) !important;
   text-overflow: ellipsis;
 }
 
@@ -194,37 +308,44 @@
   border: none;
   color: var(--muted);
   cursor: pointer;
-  padding: clamp(3px, 0.25vw, 5px) clamp(6px, 0.5vw, 8px);
+  padding: 4px 6px;
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: 4px;
 }
 
 .desktop-pr-clear-btn:hover {
   color: var(--ink);
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
 }
 
 .desktop-pr-search-divider {
   width: 1px;
-  height: clamp(16px, 1.3vw, 22px);
+  height: 16px;
   background: var(--line);
+  margin: 0 4px;
   flex-shrink: 0;
 }
 
+.app[data-appearance="dark"] .desktop-pr-search-divider {
+  background: #2b2e36;
+}
+
 .desktop-pr-filter-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(4px, 0.4vw, 6px);
-  height: 100%;
-  padding: 0 clamp(8px, 0.75vw, 14px);
   background: transparent;
   border: none;
   color: var(--muted);
   cursor: pointer;
-  border-radius: 0 clamp(6px, 0.5vw, 8px) clamp(6px, 0.5vw, 8px) 0;
-  transition: all 0.15s ease;
-  flex-shrink: 0;
+  padding: 0 10px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: 0 7px 7px 0;
+  transition: color 0.15s ease, background-color 0.15s ease;
+  position: relative;
 }
 
 .desktop-pr-filter-btn:hover {
@@ -233,7 +354,7 @@
 }
 
 .desktop-pr-filter-btn.active {
-  background: #000000;
+  background: var(--ink);
   color: #ffffff;
 }
 
@@ -242,19 +363,13 @@
   color: #000000;
 }
 
-.desktop-pr-filter-text {
-  font-size: clamp(10px, 0.75vw, 13px);
-  font-family: 'Inter', sans-serif;
-  font-weight: 500;
-}
-
 .desktop-pr-filter-badge {
   background: #10b981;
   color: #ffffff;
-  font-size: clamp(9px, 0.65vw, 10.5px);
+  font-size: 10px;
   font-weight: 700;
-  width: clamp(14px, 1.05vw, 17px);
-  height: clamp(14px, 1.05vw, 17px);
+  width: 15px;
+  height: 15px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -265,18 +380,18 @@
 /* Filter Popover */
 .desktop-pr-filter-popover {
   position: absolute;
-  top: calc(100% + clamp(6px, 0.5vw, 10px));
+  top: calc(100% + 8px);
   right: 0;
-  width: clamp(240px, 18vw, 280px);
+  width: 260px;
   background: #ffffff;
   border: 1px solid var(--line);
-  border-radius: clamp(10px, 0.8vw, 14px);
+  border-radius: 12px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
   z-index: 50;
-  padding: clamp(12px, 0.95vw, 16px);
+  padding: 14px;
   display: flex;
   flex-direction: column;
-  gap: clamp(10px, 0.8vw, 14px);
+  gap: 12px;
 }
 
 .app[data-appearance="dark"] .desktop-pr-filter-popover {
@@ -290,12 +405,12 @@
   align-items: center;
   justify-content: space-between;
   border-bottom: 1px solid var(--line);
-  padding-bottom: clamp(6px, 0.5vw, 9px);
+  padding-bottom: 8px;
 }
 
 .desktop-pr-popover-title {
   font-family: 'Inter', sans-serif;
-  font-size: clamp(12px, 0.85vw, 13.5px);
+  font-size: 13px;
   font-weight: 700;
   color: var(--ink);
 }
@@ -304,7 +419,7 @@
   background: transparent;
   border: none;
   color: #2563eb;
-  font-size: clamp(11px, 0.8vw, 12.5px);
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   padding: 0;
@@ -317,7 +432,15 @@
 .desktop-pr-filter-group {
   display: flex;
   flex-direction: column;
-  gap: clamp(5px, 0.4vw, 7px);
+  gap: 6px;
+}
+
+.desktop-pr-filter-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
 }
 
 .desktop-pr-filter-popover .filter-popover-select {
@@ -327,120 +450,38 @@
 
 .desktop-pr-filter-popover .filter-popover-select .custom-select-trigger {
   width: 100%;
-  height: clamp(35px, 2.5vw, 39px);
-  padding: 0 clamp(10px, 0.8vw, 13px);
-  border-radius: clamp(5px, 0.4vw, 7px);
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 6px;
   border: 1px solid var(--line);
   background: #ffffff;
   color: var(--ink);
   font-family: 'Inter', sans-serif;
-  font-size: clamp(12px, 0.85vw, 13.5px);
+  font-size: 13px;
   font-weight: 500;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  cursor: pointer;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-  box-sizing: border-box;
 }
 
 .app[data-appearance="dark"] .desktop-pr-filter-popover .filter-popover-select .custom-select-trigger {
   background: #14161b;
   border-color: rgba(255, 255, 255, 0.12);
-  color: #ffffff;
-}
-
-.desktop-pr-filter-popover .filter-popover-select .custom-select-trigger:hover {
-  border-color: var(--ink);
-}
-
-.app[data-appearance="dark"] .desktop-pr-filter-popover .filter-popover-select .custom-select-trigger:hover {
-  border-color: #ffffff;
-}
-
-.desktop-pr-filter-popover .filter-popover-select .custom-select-trigger.open,
-.desktop-pr-filter-popover .filter-popover-select .custom-select-trigger:focus {
-  border-color: #000000;
-  box-shadow: 0 0 0 1px #000000;
-}
-
-.app[data-appearance="dark"] .desktop-pr-filter-popover .filter-popover-select .custom-select-trigger.open,
-.app[data-appearance="dark"] .desktop-pr-filter-popover .filter-popover-select .custom-select-trigger:focus {
-  border-color: #ffffff;
-  box-shadow: 0 0 0 1px #ffffff;
-}
-
-.desktop-pr-filter-popover .filter-popover-select .custom-select-dropdown {
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
-  right: 0;
-  width: 100%;
-  background: #ffffff;
-  border: 1px solid var(--line);
-  border-radius: clamp(5px, 0.4vw, 7px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
-  z-index: 95;
-  overflow: hidden;
-  box-sizing: border-box;
-}
-
-.app[data-appearance="dark"] .desktop-pr-filter-popover .filter-popover-select .custom-select-dropdown {
-  background: #14161b;
-  border-color: rgba(255, 255, 255, 0.14);
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.65);
-}
-
-.desktop-pr-filter-popover .filter-popover-select .custom-select-item {
-  padding: clamp(7px, 0.55vw, 9px) clamp(10px, 0.8vw, 13px);
-  font-size: clamp(12px, 0.85vw, 13.5px);
-  cursor: pointer;
-  color: var(--ink);
-  transition: background-color 0.1s ease;
-}
-
-.desktop-pr-filter-popover .filter-popover-select .custom-select-item:hover {
-  background: color-mix(in srgb, var(--ink) 5%, transparent);
-}
-
-.desktop-pr-filter-popover .filter-popover-select .custom-select-item.selected {
-  background: color-mix(in srgb, var(--ink) 9%, transparent);
-  font-weight: 600;
-}
-
-.app[data-appearance="dark"] .desktop-pr-filter-popover .filter-popover-select .custom-select-item {
   color: #f4f4f6;
-}
-
-.app[data-appearance="dark"] .desktop-pr-filter-popover .filter-popover-select .custom-select-item:hover {
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.app[data-appearance="dark"] .desktop-pr-filter-popover .filter-popover-select .custom-select-item.selected {
-  background: rgba(255, 255, 255, 0.14);
-}
-
-.desktop-pr-filter-label {
-  font-size: clamp(10px, 0.72vw, 11.5px);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--muted);
 }
 
 .desktop-pr-role-options {
   display: flex;
-  gap: clamp(4px, 0.4vw, 7px);
+  gap: 6px;
 }
 
 .desktop-pr-role-btn {
   flex: 1;
-  padding: clamp(5px, 0.4vw, 7px) clamp(8px, 0.65vw, 12px);
-  border-radius: clamp(5px, 0.4vw, 7px);
+  padding: 6px 10px;
+  border-radius: 6px;
   border: 1px solid var(--line);
   background: transparent;
   font-family: 'Inter', sans-serif;
-  font-size: clamp(11.5px, 0.8vw, 12.5px);
+  font-size: 12px;
   font-weight: 600;
   color: var(--muted);
   cursor: pointer;
@@ -459,70 +500,188 @@
   border-color: #ffffff;
 }
 
-/* Payment Room Cards Grid: 3-Column Responsive Grid matching Image 2 */
-.desktop-pr-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: clamp(14px, 1.2vw, 18px);
-  background: transparent;
-  border: none;
-  border-radius: 0;
-  overflow: visible;
-}
-
-@media (max-width: 1100px) {
-  .desktop-pr-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 768px) {
-  .desktop-pr-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.app[data-appearance="dark"] .desktop-pr-grid {
-  background: transparent;
-}
-
-.desktop-pr-card {
-  background: var(--page);
-  border: 1px solid var(--line);
-  border-radius: clamp(10px, 0.8vw, 12px);
-  padding: clamp(14px, 1.1vw, 18px);
+/* ── Vertical Scrollable List of Cards (Boxed Cards Similar to Mobile) ── */
+.desktop-pr-cards-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px clamp(12px, 1.2vw, 24px) 24px clamp(16px, 1.8vw, 49px);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: clamp(8px, 0.65vw, 10px);
-  min-height: 128px;
+  gap: 10px;
+  box-sizing: border-box;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(155, 155, 155, 0.35) transparent;
+  scroll-padding-top: 8px;
+}
+
+.desktop-pr-cards-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.desktop-pr-cards-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.desktop-pr-cards-list::-webkit-scrollbar-thumb {
+  background: rgba(155, 155, 155, 0.35);
+  border-radius: 6px;
+}
+
+.desktop-pr-cards-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(155, 155, 155, 0.6);
+}
+
+/* Payment Room Card: Enclosed Card (Similar to Mobile) */
+.desktop-pr-card {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 13px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
   cursor: pointer;
   text-align: left;
-  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   outline: none;
   user-select: none;
   -webkit-user-select: none;
-  -webkit-tap-highlight-color: transparent;
   box-sizing: border-box;
+  position: relative;
+  width: 100%;
+  flex-shrink: 0;
 }
 
-.desktop-pr-card:focus,
-.desktop-pr-card:focus-visible {
-  outline: none;
+.app[data-appearance="dark"] .desktop-pr-card {
+  background: #15171c;
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 
 .desktop-pr-card:hover {
-  background: color-mix(in srgb, var(--ink) 3%, transparent);
-  border-color: color-mix(in srgb, var(--ink) 20%, transparent);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-  transform: translateY(-1px);
+  border-color: var(--ink);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
 }
 
 .app[data-appearance="dark"] .desktop-pr-card:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.18);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3);
+}
+
+.desktop-pr-card:active {
+  transform: scale(0.99);
+}
+
+/* ── Payment Room Card Selected State: Black in white theme, White in dark mode ── */
+.desktop-pr-card.selected {
+  background: #000000 !important;
+  border-color: #000000 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18) !important;
+  border-radius: 12px !important;
+}
+
+.desktop-pr-card.selected::before {
+  display: none !important;
+}
+
+/* White Theme (Light Mode): Invert text to white / light tones on black card */
+.desktop-pr-card.selected .desktop-pr-card-title,
+.desktop-pr-card.selected .desktop-pr-card-price,
+.desktop-pr-card.selected .desktop-pr-counterparty-name,
+.desktop-pr-card.selected .desktop-pr-card-counterparty strong {
+  color: #ffffff !important;
+}
+
+.desktop-pr-card.selected .desktop-pr-room-id,
+.desktop-pr-card.selected .desktop-pr-card-date,
+.desktop-pr-card.selected .desktop-pr-counterparty-label,
+.desktop-pr-card.selected .desktop-pr-card-counterparty span {
+  color: rgba(255, 255, 255, 0.72) !important;
+}
+
+.desktop-pr-card.selected .desktop-pr-role-tag.buying {
+  color: #34d399 !important;
+}
+
+.desktop-pr-card.selected .desktop-pr-role-tag.selling {
+  color: #f87171 !important;
+}
+
+.desktop-pr-card.selected .desktop-pr-status-badge.status-awaiting_payment {
+  color: #fbbf24 !important;
+}
+
+.desktop-pr-card.selected .desktop-pr-status-badge.status-payment_received {
+  color: #60a5fa !important;
+}
+
+.desktop-pr-card.selected .desktop-pr-status-badge.status-in_transit {
+  color: #c084fc !important;
+}
+
+.desktop-pr-card.selected .desktop-pr-status-badge.status-delivered,
+.desktop-pr-card.selected .desktop-pr-status-badge.status-completed {
+  color: #34d399 !important;
+}
+
+.desktop-pr-card.selected .desktop-pr-status-badge.status-dispute_ongoing {
+  color: #f87171 !important;
+}
+
+/* ── Dark Mode: Selected Card is SOLID WHITE with dark/black text ── */
+.app[data-appearance="dark"] .desktop-pr-card.selected {
+  background: #ffffff !important;
+  border-color: #ffffff !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-card.selected::before {
+  display: none !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-card.selected .desktop-pr-card-title,
+.app[data-appearance="dark"] .desktop-pr-card.selected .desktop-pr-card-price,
+.app[data-appearance="dark"] .desktop-pr-card.selected .desktop-pr-counterparty-name,
+.app[data-appearance="dark"] .desktop-pr-card.selected .desktop-pr-card-counterparty strong {
+  color: #000000 !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-card.selected .desktop-pr-room-id,
+.app[data-appearance="dark"] .desktop-pr-card.selected .desktop-pr-card-date,
+.app[data-appearance="dark"] .desktop-pr-card.selected .desktop-pr-counterparty-label,
+.app[data-appearance="dark"] .desktop-pr-card.selected .desktop-pr-card-counterparty span {
+  color: rgba(0, 0, 0, 0.65) !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-card.selected .desktop-pr-role-tag.buying {
+  color: #047857 !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-card.selected .desktop-pr-role-tag.selling {
+  color: #b91c1c !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-card.selected .desktop-pr-status-badge.status-awaiting_payment {
+  color: #b45309 !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-card.selected .desktop-pr-status-badge.status-payment_received {
+  color: #1d4ed8 !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-card.selected .desktop-pr-status-badge.status-in_transit {
+  color: #7e22ce !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-card.selected .desktop-pr-status-badge.status-delivered,
+.app[data-appearance="dark"] .desktop-pr-card.selected .desktop-pr-status-badge.status-completed {
+  color: #047857 !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-card.selected .desktop-pr-status-badge.status-dispute_ongoing {
+  color: #b91c1c !important;
 }
 
 .desktop-pr-card-top {
@@ -533,7 +692,7 @@
 
 .desktop-pr-role-tag {
   font-family: 'Inter', sans-serif;
-  font-size: clamp(11.5px, 0.8vw, 13px);
+  font-size: clamp(11.5px, 0.78vw, 13px);
   font-weight: 700;
 }
 
@@ -547,7 +706,7 @@
 
 .desktop-pr-room-id {
   font-family: 'Inter', monospace;
-  font-size: clamp(10.5px, 0.72vw, 12px);
+  font-size: clamp(11px, 0.72vw, 12px);
   font-weight: 600;
   color: var(--muted);
 }
@@ -557,15 +716,16 @@
   align-items: baseline;
   justify-content: space-between;
   gap: 12px;
+  margin-top: 2px;
 }
 
 .desktop-pr-card-title {
   font-family: 'Hanken Grotesk', 'Inter', sans-serif;
-  font-size: clamp(13.5px, 0.95vw, 15px);
+  font-size: clamp(14px, 0.95vw, 16px);
   font-weight: 700;
   color: var(--ink);
   margin: 0;
-  line-height: 1.3;
+  line-height: 1.35;
   flex: 1;
   min-width: 0;
   white-space: nowrap;
@@ -575,7 +735,7 @@
 
 .desktop-pr-card-price {
   font-family: 'Hanken Grotesk', 'Inter', sans-serif;
-  font-size: clamp(14px, 1vw, 16px);
+  font-size: clamp(14.5px, 1vw, 16.5px);
   font-weight: 800;
   color: var(--ink);
   white-space: nowrap;
@@ -583,17 +743,34 @@
 }
 
 .desktop-pr-card-counterparty {
-  font-size: clamp(11.5px, 0.78vw, 12.5px);
+  font-size: clamp(12px, 0.8vw, 13px);
   color: var(--muted);
   margin: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.4;
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  flex-shrink: 0 !important;
+  overflow: visible !important;
 }
 
+.desktop-pr-card-counterparty .desktop-pr-counterparty-label {
+  color: var(--muted);
+  font-weight: 500;
+  display: inline-block;
+  flex-shrink: 0;
+  line-height: 1.4;
+}
+
+.desktop-pr-card-counterparty .desktop-pr-counterparty-name,
 .desktop-pr-card-counterparty strong {
   color: var(--ink);
   font-weight: 600;
+  display: inline-block;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .desktop-pr-card-bottom {
@@ -601,19 +778,19 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding-top: clamp(6px, 0.5vw, 8px);
-  border-top: none;
-  margin-top: auto;
+  padding-top: 2px;
+  margin-top: 0;
+  flex-shrink: 0;
 }
 
 .desktop-pr-card-date {
-  font-size: clamp(11px, 0.75vw, 12px);
+  font-size: clamp(11px, 0.74vw, 12px);
   color: var(--muted);
   white-space: nowrap;
 }
 
 .desktop-pr-status-badge {
-  font-size: clamp(11px, 0.75vw, 12px);
+  font-size: clamp(11px, 0.74vw, 12px);
   font-weight: 700;
   white-space: nowrap;
   text-align: right;
@@ -643,56 +820,1038 @@
   color: #dc2626;
 }
 
-/* Empty State */
+/* Empty Left List State */
+.desktop-pr-cards-list:has(.desktop-pr-empty) {
+  justify-content: center;
+}
+
 .desktop-pr-empty {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: clamp(48px, 4.5vw, 72px) clamp(16px, 1.5vw, 28px);
+  padding: 40px 16px;
   text-align: center;
-  gap: clamp(10px, 0.8vw, 14px);
+  gap: 12px;
   color: var(--muted);
-  grid-column: 1 / -1;
+  flex: 1;
+  width: 100%;
+  margin: auto 0;
+  box-sizing: border-box;
 }
 
 .desktop-pr-empty-icon {
-  font-size: clamp(40px, 3.2vw, 52px);
+  font-size: 38px;
   color: var(--muted);
   opacity: 0.5;
 }
 
 .desktop-pr-empty-text {
-  font-size: clamp(13.5px, 1vw, 16px);
+  font-size: 13.5px;
   font-weight: 600;
+  color: var(--ink);
+  margin: 0;
+  max-width: 320px;
+  line-height: 1.45;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RIGHT PANE: 50% HALF-WIDTH PAYMENT ROOM TILES
+   ══════════════════════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════════════════════
+   RIGHT PANE: 50% HALF-WIDTH PAYMENT ROOM TILES
+   - White/Light Mode: Ashy White (#f6f7f9)
+   - Dark Mode: Black (#16171b)
+   ══════════════════════════════════════════════════════════════ */
+.desktop-pr-right-pane {
+  width: 50% !important;
+  flex: 0 0 50% !important;
+  max-width: 50% !important;
+  min-width: 0 !important;
+  height: 100%;
+  background: #f6f7f9 !important;
+  color: #111827 !important;
+  border-left: 1px solid var(--line) !important;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: stretch;
+  overflow: hidden;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.app[data-appearance="dark"] .desktop-pr-right-pane {
+  background: #16171b !important;
+  color: #f4f4f6 !important;
+  border-left: 1px solid #23252c !important;
+}
+
+/* Inner Mobile Viewport inside Right Pane: Expanded 100% full width */
+.desktop-pr-mobile-viewport {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 100%;
+  background: #f6f7f9 !important;
+  color: #111827 !important;
+  border: none !important;
+  box-shadow: none !important;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.app[data-appearance="dark"] .desktop-pr-mobile-viewport {
+  background: #16171b !important;
+  color: #f4f4f6 !important;
+}
+
+/* Ensure mobile screen root elements fit cleanly inside desktop viewport without unnecessary scrolling */
+.desktop-pr-mobile-viewport .mobile-awaiting-payment-screen,
+.desktop-pr-mobile-viewport .mobile-dispute-ongoing-screen,
+.desktop-pr-mobile-viewport .mobile-payment-received-screen,
+.desktop-pr-mobile-viewport .mobile-in-transit-screen,
+.desktop-pr-mobile-viewport .mobile-confirm-delivery-screen,
+.desktop-pr-mobile-viewport .mobile-completed-screen {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  flex: 1 1 auto !important;
+  background-color: #f6f7f9 !important;
+  background: #f6f7f9 !important;
+  color: #111827 !important;
+  box-shadow: none !important;
+  border: none !important;
+  overflow-y: auto !important;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-mobile-viewport .mobile-awaiting-payment-screen,
+.app[data-appearance="dark"] .desktop-pr-mobile-viewport .mobile-dispute-ongoing-screen,
+.app[data-appearance="dark"] .desktop-pr-mobile-viewport .mobile-payment-received-screen,
+.app[data-appearance="dark"] .desktop-pr-mobile-viewport .mobile-in-transit-screen,
+.app[data-appearance="dark"] .desktop-pr-mobile-viewport .mobile-confirm-delivery-screen,
+.app[data-appearance="dark"] .desktop-pr-mobile-viewport .mobile-completed-screen {
+  background-color: #16171b !important;
+  background: #16171b !important;
+  color: #f4f4f6 !important;
+}
+
+.desktop-pr-mobile-viewport .mobile-awaiting-payment-screen::-webkit-scrollbar,
+.desktop-pr-mobile-viewport .mobile-dispute-ongoing-screen::-webkit-scrollbar,
+.desktop-pr-mobile-viewport .mobile-payment-received-screen::-webkit-scrollbar,
+.desktop-pr-mobile-viewport .mobile-in-transit-screen::-webkit-scrollbar,
+.desktop-pr-mobile-viewport .mobile-confirm-delivery-screen::-webkit-scrollbar,
+.desktop-pr-mobile-viewport .mobile-completed-screen::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* Compact Content Body inside Right Viewport: Eliminating vertical overflow & scroll */
+.desktop-pr-mobile-viewport .ap-content-body {
+  padding: 10px clamp(20px, 2.4vw, 36px) 14px clamp(20px, 2.4vw, 36px) !important;
+  gap: 7px !important;
+  max-width: 100% !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  flex: 1 1 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  height: auto !important;
+  min-height: 0 !important;
+}
+
+/* Compact Top Header inside Right Viewport (Seamless, no divider line below header) */
+.desktop-pr-mobile-viewport .ap-top-header {
+  padding: clamp(28px, 2.4vw, 40px) clamp(20px, 2.4vw, 36px) 6px clamp(20px, 2.4vw, 36px) !important;
+  height: auto !important;
+  min-height: calc(clamp(28px, 2.4vw, 40px) + 36px) !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  border-bottom: none !important;
+  background: #f6f7f9 !important;
+  color: #111827 !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-mobile-viewport .ap-top-header {
+  border-bottom: none !important;
+  background: #16171b !important;
+  color: #f4f4f6 !important;
+}
+
+/* Compact Banner Cards across all payment room types */
+.desktop-pr-mobile-viewport .ap-banner-card,
+.desktop-pr-mobile-viewport .cd-banner-card,
+.desktop-pr-mobile-viewport .pr-banner-card,
+.desktop-pr-mobile-viewport .it-banner-card,
+.desktop-pr-mobile-viewport .comp-banner-card {
+  padding: 8px 14px 7px 14px !important;
+  margin: 0 !important;
+  gap: 4px !important;
+  border-radius: 8px !important;
+}
+
+.desktop-pr-mobile-viewport .ap-banner-top-row {
+  margin-bottom: 2px !important;
+}
+
+.desktop-pr-mobile-viewport .ap-sublabel {
+  font-size: 10.5px !important;
+  margin-bottom: 1px !important;
+}
+
+.desktop-pr-mobile-viewport .ap-amount-value {
+  font-size: 20px !important;
+  line-height: 1.15 !important;
+}
+
+.desktop-pr-mobile-viewport .ap-banner-divider {
+  margin: 4px 0 !important;
+}
+
+.desktop-pr-mobile-viewport .ap-stepper-wrap {
+  gap: 3px !important;
+}
+
+.desktop-pr-mobile-viewport .ap-stepper-row,
+.desktop-pr-mobile-viewport .cd-stepper-row,
+.desktop-pr-mobile-viewport .it-stepper-row {
+  padding-top: 1px !important;
+  width: 100% !important;
+}
+
+.desktop-pr-mobile-viewport .ap-step-col {
+  min-width: 0 !important;
+}
+
+.desktop-pr-mobile-viewport .ap-step-name {
+  font-size: clamp(8.5px, 0.72vw, 10px) !important;
+  margin-top: 2px !important;
+  letter-spacing: -0.2px !important;
+}
+
+.desktop-pr-mobile-viewport .ap-step-circle,
+.desktop-pr-mobile-viewport .cd-step-circle-checked-orange,
+.desktop-pr-mobile-viewport .cd-step-circle-checked-blue {
+  width: 22px !important;
+  height: 22px !important;
+  font-size: 11px !important;
+}
+
+/* Compact Rows for Details & Bank Transfer */
+.desktop-pr-mobile-viewport .ap-bank-transfer-card,
+.desktop-pr-mobile-viewport .cd-order-info,
+.desktop-pr-mobile-viewport .pr-order-details-card,
+.desktop-pr-mobile-viewport .it-status-card {
+  padding: 4px 0 !important;
+  gap: 4px !important;
+  margin: 0 !important;
+}
+
+.desktop-pr-mobile-viewport .ap-proceed-label {
+  margin: 2px 0 !important;
+  font-size: 11px !important;
+}
+
+.desktop-pr-mobile-viewport .ap-detail-row,
+.desktop-pr-mobile-viewport .cd-info-row,
+.desktop-pr-mobile-viewport .pr-detail-row {
+  padding: 2px 0 !important;
+  font-size: 12.5px !important;
+}
+
+.desktop-pr-mobile-viewport .ap-detail-label,
+.desktop-pr-mobile-viewport .cd-info-label {
+  font-size: 11.5px !important;
+}
+
+.desktop-pr-mobile-viewport .ap-detail-value,
+.desktop-pr-mobile-viewport .cd-info-value {
+  font-size: 13px !important;
+}
+
+.desktop-pr-mobile-viewport .ap-accordion-wrap,
+.desktop-pr-mobile-viewport .cd-accordion-wrap {
+  margin: 2px 0 !important;
+  padding: 0 !important;
+}
+
+/* ── Bottom Section & CTA Actions: Absorb remaining space so bottom elements dock consistently ── */
+.desktop-pr-mobile-viewport .ap-cta-container,
+.desktop-pr-mobile-viewport .cd-actions-container,
+.desktop-pr-mobile-viewport .cd-actions,
+.desktop-pr-mobile-viewport .ap-payment-actions {
+  display: flex !important;
+  width: 100% !important;
+  margin-top: auto !important;
+  padding-top: 6px !important;
+  margin-bottom: 0 !important;
+  flex-shrink: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.desktop-pr-mobile-viewport .cd-actions-container {
+  flex-direction: column !important;
+  gap: 8px !important;
+}
+
+/* ── All Action Buttons Across ALL Payment Rooms: EXACT Same Size as 'I Have Made Payment' ── */
+.desktop-pr-mobile-viewport .ap-primary-payment-btn,
+.desktop-pr-mobile-viewport .ap-confirm-btn,
+.desktop-pr-mobile-viewport .cd-confirm-btn,
+.desktop-pr-mobile-viewport .cd-report-btn,
+.desktop-pr-mobile-viewport .it-confirm-btn,
+.desktop-pr-mobile-viewport .mdo-submit-proof-btn,
+.desktop-pr-mobile-viewport .dispute-submit-btn {
+  width: 100% !important;
+  height: 48px !important;
+  min-height: 48px !important;
+  max-height: 48px !important;
+  border-radius: 8px !important;
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif !important;
+  font-size: 15px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.2px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 20px !important;
+  box-sizing: border-box !important;
+  flex-shrink: 0 !important;
+}
+
+/* Confirm Delivery Timer Badge positioning */
+.desktop-pr-mobile-viewport .cd-confirm-btn {
+  position: relative !important;
+}
+
+.desktop-pr-mobile-viewport .cd-confirm-btn .cd-timer-badge {
+  position: absolute !important;
+  right: 16px !important;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RIGHT PANE CONTRAST & THEMING
+   - Light Mode: Ashy White (#f6f7f9) right pane with crisp dark text, white cards, solid black button
+   - Dark Mode: Black (#16171b) right pane with crisp light text, dark cards, white button
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── 1. LIGHT MODE (Ashy White Right Pane) ── */
+.desktop-pr-right-pane .ap-header-title {
+  color: #111827 !important;
+}
+
+.desktop-pr-right-pane .ap-back-btn {
+  background-color: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  color: #111827 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+}
+
+.desktop-pr-right-pane .ap-back-btn:hover {
+  background-color: #f3f4f6 !important;
+  border-color: #d1d5db !important;
+  color: #000000 !important;
+}
+
+.desktop-pr-right-pane .ap-back-btn .material-symbols-outlined {
+  color: #111827 !important;
+}
+
+.desktop-pr-right-pane .ap-help-btn {
+  background-color: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  color: #111827 !important;
+}
+
+.desktop-pr-right-pane .ap-help-btn:hover {
+  background-color: #f3f4f6 !important;
+  color: #000000 !important;
+}
+
+.desktop-pr-right-pane .ap-help-btn .material-symbols-outlined {
+  color: #111827 !important;
+}
+
+/* Section titles */
+.desktop-pr-right-pane .ap-section-title {
+  color: #b45309 !important;
+}
+.desktop-pr-right-pane .ap-section-title.pr-title {
+  color: #0b57d0 !important;
+}
+.desktop-pr-right-pane .ap-section-title.it-title {
+  color: #0284c7 !important;
+}
+.desktop-pr-right-pane .cd-section-title {
+  color: #0f766e !important;
+}
+
+/* Field values */
+.desktop-pr-right-pane .ap-field-val,
+.desktop-pr-right-pane .ap-detail-value,
+.desktop-pr-right-pane .cd-info-value,
+.desktop-pr-right-pane .it-field-val,
+.desktop-pr-right-pane .pr-account-val,
+.desktop-pr-right-pane .pr-order-value,
+.desktop-pr-right-pane .ap-sheet-row-val,
+.desktop-pr-right-pane .ap-sheet-term-val,
+.desktop-pr-right-pane .ap-sheet-item-name,
+.desktop-pr-right-pane .ap-sheet-title,
+.desktop-pr-right-pane .ap-sheet-section-title,
+.desktop-pr-right-pane .mdo-sender-name,
+.desktop-pr-right-pane .mdo-message-text {
+  color: #111827 !important;
+}
+
+/* Field labels */
+.desktop-pr-right-pane .ap-field-label,
+.desktop-pr-right-pane .ap-detail-label,
+.desktop-pr-right-pane .cd-info-label,
+.desktop-pr-right-pane .it-field-label,
+.desktop-pr-right-pane .ap-proceed-label,
+.desktop-pr-right-pane .pr-account-label,
+.desktop-pr-right-pane .pr-order-label,
+.desktop-pr-right-pane .ap-sheet-row-label,
+.desktop-pr-right-pane .ap-sheet-term-label {
+  color: #4b5563 !important;
+}
+
+.desktop-pr-right-pane .ap-charges-note,
+.desktop-pr-right-pane .ap-sheet-term-sub,
+.desktop-pr-right-pane .ap-sheet-item-sub,
+.desktop-pr-right-pane .mdo-timestamp {
+  color: #6b7280 !important;
+}
+
+/* Copy buttons */
+.desktop-pr-right-pane .ap-copy-btn {
+  color: #6b7280 !important;
+}
+.desktop-pr-right-pane .ap-copy-btn:hover {
+  color: #111827 !important;
+}
+.desktop-pr-right-pane .ap-copy-btn.copied {
+  color: #16a34a !important;
+}
+
+/* Cards */
+.desktop-pr-right-pane .ap-bank-transfer-card,
+.desktop-pr-right-pane .cd-order-info,
+.desktop-pr-right-pane .pr-order-details-card,
+.desktop-pr-right-pane .it-status-card {
+  background: #ffffff !important;
+  border: 1px solid #e2e4e9 !important;
+  color: #111827 !important;
+}
+
+/* Primary buttons in Light Mode: Solid Black (#000000), no color change on hover */
+.desktop-pr-right-pane .ap-primary-payment-btn,
+.desktop-pr-right-pane .ap-confirm-btn,
+.desktop-pr-right-pane .it-confirm-btn,
+.desktop-pr-right-pane .mdo-submit-proof-btn,
+.desktop-pr-right-pane .dispute-submit-btn {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+.desktop-pr-right-pane .ap-primary-payment-btn:hover,
+.desktop-pr-right-pane .ap-primary-payment-btn:hover:not(:disabled):not(.confirmed),
+.desktop-pr-right-pane .ap-primary-payment-btn:active,
+.desktop-pr-right-pane .ap-primary-payment-btn:focus,
+.desktop-pr-right-pane .ap-confirm-btn:hover,
+.desktop-pr-right-pane .ap-confirm-btn:active,
+.desktop-pr-right-pane .it-confirm-btn:hover,
+.desktop-pr-right-pane .it-confirm-btn:active {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Confirm Delivery button in Desktop View: Green (#16a34a) matching mobile view in both light & dark mode */
+.desktop-pr-right-pane .cd-confirm-btn,
+.desktop-pr-mobile-viewport .cd-confirm-btn,
+.desktop-prd-confirm-btn {
+  background-color: #16a34a !important;
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 4px 14px rgba(22, 163, 74, 0.28) !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+
+.desktop-pr-right-pane .cd-confirm-btn:hover:not(:disabled):not(.confirmed),
+.desktop-pr-mobile-viewport .cd-confirm-btn:hover:not(:disabled):not(.confirmed),
+.desktop-prd-confirm-btn:hover:not(:disabled):not(.confirmed) {
+  background-color: #15803d !important;
+  color: #ffffff !important;
+  box-shadow: 0 6px 18px rgba(22, 163, 74, 0.35) !important;
+  transform: translateY(-1px) !important;
+}
+
+.desktop-pr-right-pane .cd-confirm-btn:active:not(:disabled),
+.desktop-pr-mobile-viewport .cd-confirm-btn:active:not(:disabled),
+.desktop-prd-confirm-btn:active:not(:disabled) {
+  transform: scale(0.98) !important;
+}
+
+.desktop-pr-right-pane .cd-confirm-btn.confirmed,
+.desktop-pr-mobile-viewport .cd-confirm-btn.confirmed,
+.desktop-prd-confirm-btn.confirmed {
+  background-color: #15803d !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+  cursor: default !important;
+}
+
+/* Light Mode: Modals match white/ashy room */
+.desktop-pr-right-pane .ap-bottom-sheet,
+.desktop-pr-right-pane .desktop-pr-mobile-viewport .ap-bottom-sheet {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+  border-top: 1px solid #e5e7eb !important;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.22) !important;
+}
+
+.desktop-pr-right-pane .ap-sheet-handle {
+  background-color: rgba(0, 0, 0, 0.18) !important;
+}
+
+.desktop-pr-right-pane .ap-sheet-close-btn {
+  background-color: rgba(0, 0, 0, 0.06) !important;
+  color: #374151 !important;
+}
+
+.desktop-pr-right-pane .ap-sheet-item-avatar {
+  background-color: #f3f4f6 !important;
+  border-color: #e5e7eb !important;
+  color: #1f2937 !important;
+}
+
+.desktop-pr-right-pane .ap-sheet-title {
+  color: #111827 !important;
+}
+
+.desktop-pr-right-pane .ap-sheet-row.total-row .ap-sheet-row-label,
+.desktop-pr-right-pane .ap-sheet-row.total-row .ap-sheet-row-val {
+  color: #111827 !important;
+}
+
+.desktop-pr-right-pane .ap-order-help-container,
+.desktop-pr-right-pane .desktop-pr-mobile-viewport .ap-order-help-container {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+  border-top: 1px solid #e5e7eb !important;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.25) !important;
+}
+
+.desktop-pr-right-pane .ap-order-help-header {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+  border-bottom: 1px solid #e5e7eb !important;
+}
+
+.desktop-pr-right-pane .ap-order-help-title {
+  color: #111827 !important;
+}
+
+.desktop-pr-right-pane .ap-order-help-faq-card {
+  background-color: #f7f8fa !important;
+  border: 1px solid #edf0f4 !important;
+}
+
+.desktop-pr-right-pane .ap-order-help-faq-q,
+.desktop-pr-right-pane .ap-order-help-faq-question {
+  color: #0d3862 !important;
+}
+
+.desktop-pr-right-pane .ap-order-help-faq-answer {
+  background-color: #ffffff !important;
+  color: #334155 !important;
+  border-top: 1px solid #f1f5f9 !important;
+}
+
+.desktop-pr-right-pane .ap-modal-card,
+.desktop-pr-right-pane .desktop-pr-mobile-viewport .ap-modal-card {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+  border-top: 1px solid #e5e7eb !important;
+  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.25) !important;
+}
+
+.desktop-pr-right-pane .ap-modal-card h3 {
+  color: #111827 !important;
+}
+
+.desktop-pr-right-pane .ap-modal-card p,
+.desktop-pr-right-pane .ap-modal-card li {
+  color: #374151 !important;
+}
+
+.desktop-pr-right-pane .pr-change-bank-modal,
+.desktop-pr-right-pane .ssm-sheet,
+.desktop-pr-right-pane .cd-issue-sheet-container {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+.desktop-pr-right-pane .pr-bank-option {
+  background-color: #f8fafc !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #111827 !important;
+}
+
+/* ── 2. DARK MODE (Black Right Pane #16171b) ── */
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-header-title {
+  color: #f4f4f6 !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-back-btn {
+  background-color: #1a1c22 !important;
+  border: 1px solid #272a31 !important;
+  color: #f4f4f6 !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-back-btn:hover {
+  background-color: #242730 !important;
+  border-color: #32353e !important;
+  color: #ffffff !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-back-btn .material-symbols-outlined {
+  color: #f4f4f6 !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-help-btn {
+  background-color: #1a1c22 !important;
+  border: 1px solid #272a31 !important;
+  color: #f4f4f6 !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-help-btn .material-symbols-outlined {
+  color: #f4f4f6 !important;
+}
+
+/* Dark Mode: Section titles */
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-section-title {
+  color: #fbbf24 !important;
+}
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-section-title.pr-title {
+  color: #60a5fa !important;
+}
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-section-title.it-title {
+  color: #38bdf8 !important;
+}
+.app[data-appearance="dark"] .desktop-pr-right-pane .cd-section-title {
+  color: #2dd4bf !important;
+}
+
+/* Dark Mode: Field values */
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-field-val,
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-detail-value,
+.app[data-appearance="dark"] .desktop-pr-right-pane .cd-info-value,
+.app[data-appearance="dark"] .desktop-pr-right-pane .it-field-val,
+.app[data-appearance="dark"] .desktop-pr-right-pane .pr-account-val,
+.app[data-appearance="dark"] .desktop-pr-right-pane .pr-order-value,
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-sheet-row-val,
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-sheet-term-val,
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-sheet-item-name,
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-sheet-title,
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-sheet-section-title,
+.app[data-appearance="dark"] .desktop-pr-right-pane .mdo-sender-name,
+.app[data-appearance="dark"] .desktop-pr-right-pane .mdo-message-text {
+  color: #f4f4f6 !important;
+}
+
+/* Dark Mode: Field labels */
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-field-label,
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-detail-label,
+.app[data-appearance="dark"] .desktop-pr-right-pane .cd-info-label,
+.app[data-appearance="dark"] .desktop-pr-right-pane .it-field-label,
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-proceed-label,
+.app[data-appearance="dark"] .desktop-pr-right-pane .pr-account-label,
+.app[data-appearance="dark"] .desktop-pr-right-pane .pr-order-label,
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-sheet-row-label,
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-sheet-term-label {
+  color: #9ca3af !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-charges-note,
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-sheet-term-sub,
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-sheet-item-sub,
+.app[data-appearance="dark"] .desktop-pr-right-pane .mdo-timestamp {
+  color: #9ca3af !important;
+}
+
+/* Dark Mode: Copy buttons */
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-copy-btn {
+  color: #9ca3af !important;
+}
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-copy-btn:hover {
+  color: #ffffff !important;
+}
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-copy-btn.copied {
+  color: #4ade80 !important;
+}
+
+/* Dark Mode: Cards */
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-bank-transfer-card,
+.app[data-appearance="dark"] .desktop-pr-right-pane .cd-order-info,
+.app[data-appearance="dark"] .desktop-pr-right-pane .pr-order-details-card,
+.app[data-appearance="dark"] .desktop-pr-right-pane .it-status-card {
+  background: #15161b !important;
+  border: 1px solid #23252c !important;
+  color: #f4f4f6 !important;
+}
+
+/* Dark Mode: Buttons are White (#ffffff) */
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-primary-payment-btn,
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-confirm-btn,
+.app[data-appearance="dark"] .desktop-pr-right-pane .it-confirm-btn,
+.app[data-appearance="dark"] .desktop-pr-right-pane .mdo-submit-proof-btn,
+.app[data-appearance="dark"] .desktop-pr-right-pane .dispute-submit-btn {
+  background-color: #ffffff !important;
+  color: #111215 !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-primary-payment-btn:hover,
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-primary-payment-btn:hover:not(:disabled):not(.confirmed),
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-confirm-btn:hover,
+.app[data-appearance="dark"] .desktop-pr-right-pane .it-confirm-btn:hover {
+  background-color: #f0f1f4 !important;
+  color: #111215 !important;
+}
+
+/* Dark Mode: Modals match black room */
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-bottom-sheet,
+.app[data-appearance="dark"] .desktop-pr-right-pane .desktop-pr-mobile-viewport .ap-bottom-sheet {
+  background-color: #121316 !important;
+  color: #f4f4f6 !important;
+  border-top: 1px solid #272a31 !important;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.7) !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-sheet-handle {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-sheet-close-btn {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: #d1d5db !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-sheet-item-avatar {
+  background-color: #1a1c22 !important;
+  border-color: #272a31 !important;
+  color: #f4f4f6 !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-sheet-title {
+  color: #f4f4f6 !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-sheet-item-card {
+  background-color: #1a1c22 !important;
+  border: 1px solid #272a31 !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-sheet-row.total-row .ap-sheet-row-label,
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-sheet-row.total-row .ap-sheet-row-val {
+  color: #ffffff !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-order-help-container,
+.app[data-appearance="dark"] .desktop-pr-right-pane .desktop-pr-mobile-viewport .ap-order-help-container {
+  background-color: #121316 !important;
+  color: #f4f4f6 !important;
+  border-top: 1px solid #272a31 !important;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.7) !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-order-help-header {
+  background-color: #121316 !important;
+  color: #f4f4f6 !important;
+  border-bottom: 1px solid #272a31 !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-order-help-title {
+  color: #f4f4f6 !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-order-help-close-btn {
+  background-color: #1a1c22 !important;
+  color: #d1d5db !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-order-help-faq-card {
+  background-color: #1a1c22 !important;
+  border: 1px solid #272a31 !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-order-help-faq-q,
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-order-help-faq-question {
+  color: #93c5fd !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-order-help-faq-answer {
+  background-color: #15171d !important;
+  color: #cbd5e1 !important;
+  border-top: 1px solid #272a31 !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-modal-card,
+.app[data-appearance="dark"] .desktop-pr-right-pane .desktop-pr-mobile-viewport .ap-modal-card {
+  background-color: #121316 !important;
+  color: #f4f4f6 !important;
+  border: 1px solid #272a31 !important;
+  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.7) !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-modal-card h3 {
+  color: #f4f4f6 !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-modal-card p,
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-modal-card li {
+  color: #9ca3af !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-right-pane .pr-change-bank-modal,
+.app[data-appearance="dark"] .desktop-pr-right-pane .ssm-sheet,
+.app[data-appearance="dark"] .desktop-pr-right-pane .cd-issue-sheet-container {
+  background-color: #121316 !important;
+  color: #f4f4f6 !important;
+  border: 1px solid #272a31 !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-right-pane .pr-bank-option {
+  background-color: #1a1c22 !important;
+  border: 1px solid #272a31 !important;
+  color: #f4f4f6 !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-right-pane .cd-reason-card,
+.app[data-appearance="dark"] .desktop-pr-right-pane .cd-textarea,
+.app[data-appearance="dark"] .desktop-pr-right-pane .cd-upload-area {
+  background-color: #1a1c22 !important;
+  border: 1px solid #272a31 !important;
+  color: #f4f4f6 !important;
+}
+
+/* ── 3. Empty detail state in Dark Mode ── */
+.app[data-appearance="dark"] .desktop-pr-right-pane .desktop-pr-empty-title {
+  color: #f4f4f6 !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-right-pane .desktop-pr-empty-subtitle {
+  color: #9ca3af !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-right-pane .desktop-pr-empty-illustration {
+  background: #ffffff !important;
+  color: #000000 !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-right-pane .desktop-pr-empty-watermark {
+  color: #000000 !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-right-pane .desktop-pr-empty-features {
+  background: #15161b !important;
+  border-color: #23252c !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-right-pane .desktop-pr-feature-item {
+  color: #f4f4f6 !important;
+}
+
+/* ── Footer Protection Disclaimer: ALWAYS at the EXACT SAME position at the bottom across ALL payment rooms ── */
+.desktop-pr-mobile-viewport .ap-footer-note,
+.desktop-pr-mobile-viewport .comp-footer-note,
+.desktop-pr-mobile-viewport .cd-footer-note,
+.desktop-pr-mobile-viewport .pr-footer-note {
+  margin-top: auto !important;
+  margin-bottom: 0 !important;
+  padding-top: 6px !important;
+  padding-bottom: 0 !important;
+  height: 20px !important;
+  min-height: 20px !important;
+  max-height: 20px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 5px !important;
+  font-size: 11px !important;
+  color: #9ca3af !important;
+  user-select: none !important;
+  flex-shrink: 0 !important;
+  line-height: 1 !important;
+}
+
+/* When preceded by any button container, keep exact 6px gap below the button */
+.desktop-pr-mobile-viewport .ap-cta-container + .ap-footer-note,
+.desktop-pr-mobile-viewport .cd-actions-container + .ap-footer-note,
+.desktop-pr-mobile-viewport .cd-actions + .ap-footer-note,
+.desktop-pr-mobile-viewport .ap-payment-actions + .ap-footer-note,
+.desktop-pr-mobile-viewport .ap-cta-container + .comp-footer-note,
+.desktop-pr-mobile-viewport .cd-actions-container + .comp-footer-note {
+  margin-top: 6px !important;
+}
+
+/* Empty Right Pane Detail State */
+.desktop-pr-empty-detail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: clamp(32px, 3vw, 48px);
+  text-align: center;
+  gap: clamp(12px, 1.1vw, 16px);
+  color: var(--muted);
+  max-width: 420px;
+  margin: auto;
+  box-sizing: border-box;
+}
+
+.desktop-pr-empty-illustration {
+  width: clamp(68px, 5.2vw, 84px);
+  height: clamp(68px, 5.2vw, 84px);
+  border-radius: 50%;
+  background: #000000;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 6px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.desktop-pr-empty-watermark {
+  font-size: clamp(34px, 2.7vw, 44px);
+  color: #ffffff;
+  opacity: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.app[data-appearance="dark"] .desktop-pr-empty-illustration,
+[data-appearance="dark"] .desktop-pr-empty-illustration,
+body.dark .desktop-pr-empty-illustration,
+.dark .desktop-pr-empty-illustration {
+  background: #ffffff;
+  color: #000000;
+}
+
+.app[data-appearance="dark"] .desktop-pr-empty-watermark,
+[data-appearance="dark"] .desktop-pr-empty-watermark,
+body.dark .desktop-pr-empty-watermark,
+.dark .desktop-pr-empty-watermark {
+  color: #000000;
+  opacity: 1;
+}
+
+.desktop-pr-empty-title {
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif;
+  font-size: clamp(17px, 1.25vw, 20px);
+  font-weight: 700;
   color: var(--ink);
   margin: 0;
 }
 
-/* Detail view inner header */
-.desktop-pr-back-bar {
+.desktop-pr-empty-subtitle {
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(12.5px, 0.88vw, 14px);
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.desktop-pr-empty-features {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+  width: 100%;
+  align-items: flex-start;
+  background: color-mix(in srgb, var(--ink) 3%, transparent);
+  padding: 14px 18px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  box-sizing: border-box;
+}
+
+.app[data-appearance="dark"] .desktop-pr-empty-features {
+  background: rgba(255, 255, 255, 0.03);
+  border-color: #23252c;
+}
+
+.desktop-pr-feature-item {
   display: flex;
   align-items: center;
-  gap: clamp(8px, 0.7vw, 12px);
-  margin-bottom: clamp(12px, 1.1vw, 18px);
-}
-
-.desktop-pr-back-btn {
-  background: transparent;
-  border: 1px solid var(--line);
-  border-radius: clamp(6px, 0.5vw, 8px);
-  padding: clamp(5px, 0.45vw, 7px) clamp(12px, 0.95vw, 16px);
-  font-family: 'Inter', sans-serif;
-  font-size: clamp(12px, 0.85vw, 13.5px);
+  gap: 9px;
+  font-size: 12.5px;
   font-weight: 600;
   color: var(--ink);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: clamp(5px, 0.4vw, 7px);
-  transition: all 0.15s ease;
 }
 
-.desktop-pr-back-btn:hover {
-  background: color-mix(in srgb, var(--ink) 5%, transparent);
+.desktop-pr-feature-item .material-symbols-outlined {
+  font-size: 18px;
+  color: #10b981;
 }
+
+/* ==========================================================================
+   DESKTOP PAYMENT ROOM - MODAL BEHAVIOR
+   All modals opened in the payment room slide up from bottom like mobile
+   ========================================================================== */
+@media (min-width: 701px) {
+  body:has(.desktop-payment-room-wrapper) .ap-bottom-sheet-backdrop,
+  body:has(.desktop-payment-room-wrapper) .pk-receipt-backdrop,
+  body:has(.desktop-payment-room-wrapper) .ap-order-help-backdrop,
+  body:has(.desktop-payment-room-wrapper) .atm-backdrop,
+  body:has(.desktop-payment-room-wrapper) .cd-issue-backdrop,
+  body:has(.desktop-payment-room-wrapper) .ap-modal-backdrop,
+  body:has(.desktop-payment-room-wrapper) .profile-modal-overlay:has(.payout-dialog-card) {
+    align-items: flex-end !important;
+    justify-content: center !important;
+    padding: 0 !important;
+  }
+
+  body:has(.desktop-payment-room-wrapper) .ap-bottom-sheet:not(.ap-chat-slide-modal):not([class*="chat"]),
+  body:has(.desktop-payment-room-wrapper) .pk-receipt-sheet,
+  body:has(.desktop-payment-room-wrapper) .ap-order-help-container,
+  body:has(.desktop-payment-room-wrapper) .atm-sheet-container,
+  body:has(.desktop-payment-room-wrapper) .cd-issue-sheet-container,
+  body:has(.desktop-payment-room-wrapper) .ssm-sheet,
+  body:has(.desktop-payment-room-wrapper) .ap-modal-card,
+  body:has(.desktop-payment-room-wrapper) .pr-change-bank-modal,
+  body:has(.desktop-payment-room-wrapper) .profile-modal-overlay .profile-modal-card {
+    width: 100% !important;
+    max-width: 620px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-sizing: border-box !important;
+    border-radius: 24px 24px 0 0 !important;
+    border-bottom: none !important;
+    max-height: 88vh !important;
+    box-shadow: 0 -12px 50px rgba(0, 0, 0, 0.35) !important;
+  }
+
+  body:has(.desktop-payment-room-wrapper) .ap-sheet-handle,
+  body:has(.desktop-payment-room-wrapper) .pk-receipt-handle,
+  body:has(.desktop-payment-room-wrapper) .atm-handle-bar {
+    display: block !important;
+  }
+}
+

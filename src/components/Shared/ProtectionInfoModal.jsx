@@ -1,9 +1,7 @@
-import { createPortal } from "react-dom";
-
 export default function ProtectionInfoModal({ isOpen, onClose }) {
   if (!isOpen) return null;
 
-  return createPortal(
+  return (
     <div
       className="ap-bottom-sheet-backdrop"
       onClick={onClose}
@@ -31,7 +29,6 @@ export default function ProtectionInfoModal({ isOpen, onClose }) {
           </p>
         </div>
       </div>
-    </div>,
-    document.body
+    </div>
   );
 }

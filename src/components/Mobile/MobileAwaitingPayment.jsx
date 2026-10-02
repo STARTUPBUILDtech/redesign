@@ -8,6 +8,7 @@ export default function MobileAwaitingPayment({
   room = {},
   onBack,
   onPaymentConfirmed,
+  isPaymentRoomWhite,
 }) {
   const roomId = room.id || room.orderNumber || "ORD-603607";
   const storageKey = `pk_agreed_terms_${roomId}`;
@@ -605,6 +606,7 @@ export default function MobileAwaitingPayment({
         onAgree={handleAgreeTerms}
         room={room}
         sellerName={sellerName}
+        isPaymentRoomWhite={isPaymentRoomWhite}
       />
 
       {/* Toast */}

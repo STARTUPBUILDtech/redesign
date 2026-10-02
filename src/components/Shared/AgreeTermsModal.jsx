@@ -48,6 +48,8 @@ export default function AgreeTermsModal({
   onAgree,
   room = {},
   sellerName: propSellerName,
+  appearance: propAppearance,
+  isPaymentRoomWhite,
 }) {
   const [selectedState, setSelectedState] = useState(room.deliveryState || "");
   const [city, setCity] = useState(room.deliveryCity || "");
@@ -56,32 +58,40 @@ export default function AgreeTermsModal({
   const [isAgreed, setIsAgreed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Sync appearance (light/dark) with document body to match body color
-  const [appearance, setAppearance] = useState(() => {
-    if (typeof document === "undefined") return "light";
-    return (
-      document.body.getAttribute("data-appearance") ||
-      document.documentElement.getAttribute("data-appearance") ||
-      "light"
-    );
-  });
+  // Sync appearance with the current payment room color:
+  // If payment room is white -> "light". If payment room is black -> "dark".
+  const resolvePaymentRoomAppearance = () => {
+    if (typeof isPaymentRoomWhite === "boolean") {
+      return isPaymentRoomWhite ? "light" : "dark";
+    }
+    if (propAppearance) return propAppearance;
+    if (typeof document !== "undefined") {
+      const appEl = document.querySelector(".app[data-appearance='dark']");
+      const bodyApp = document.body.getAttribute("data-appearance");
+      const docApp = document.documentElement.getAttribute("data-appearance");
+      return (appEl || bodyApp === "dark" || docApp === "dark") ? "dark" : "light";
+    }
+    return "light";
+  };
+
+  const [appearance, setAppearance] = useState(resolvePaymentRoomAppearance);
 
   useEffect(() => {
-    if (typeof document === "undefined") return;
     const updateAppearance = () => {
-      const current =
-        document.body.getAttribute("data-appearance") ||
-        document.documentElement.getAttribute("data-appearance") ||
-        "light";
-      setAppearance(current);
+      setAppearance(resolvePaymentRoomAppearance());
     };
 
     updateAppearance();
+    if (typeof document === "undefined") return;
     const observer = new MutationObserver(updateAppearance);
+    const rightPane = document.querySelector(".desktop-pr-right-pane");
+    if (rightPane) {
+      observer.observe(rightPane, { attributes: true, attributeFilter: ["class"] });
+    }
     observer.observe(document.body, { attributes: true, attributeFilter: ["data-appearance"] });
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-appearance"] });
     return () => observer.disconnect();
-  }, []);
+  }, [isPaymentRoomWhite, propAppearance]);
 
   const cityInputRef = useRef(null);
   const searchInputRef = useRef(null);
@@ -143,9 +153,10 @@ export default function AgreeTermsModal({
     }, 1200);
   };
 
+  const isWhite = appearance === "light";
   const modalContent = (
     <div
-      className="atm-backdrop"
+      className={`atm-backdrop ${isWhite ? "atm-white-mode" : "atm-dark-mode"}`}
       data-appearance={appearance}
       onClick={(e) => {
         // Compulsory modal: prevent dismissing on accidental outside click
@@ -156,7 +167,7 @@ export default function AgreeTermsModal({
       }}
     >
       <div
-        className="atm-sheet-container"
+        className={`atm-sheet-container ${isWhite ? "atm-white-mode" : "atm-dark-mode"}`}
         data-appearance={appearance}
         onClick={(e) => e.stopPropagation()}
         role="dialog"

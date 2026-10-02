@@ -35,6 +35,7 @@ export default function MobileConfirmDelivery({
   onDeliveryConfirmed,
   onNavigateToDispute,
   role = "Buying",
+  isPaymentRoomWhite,
 }) {
   // 59m 57s countdown timer as shown in reference image (3597 seconds)
   const [seconds, setSeconds] = useState(3597);
@@ -813,6 +814,7 @@ export default function MobileConfirmDelivery({
       <ReceiptModal
         isOpen={isReceiptOpen}
         onClose={() => setIsReceiptOpen(false)}
+        isPaymentRoomWhite={isPaymentRoomWhite}
         room={{
           ...room,
           id: orderNumber,

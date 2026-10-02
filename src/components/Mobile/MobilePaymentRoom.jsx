@@ -5,7 +5,20 @@ import { ALL_PAYMENT_ROOMS } from "../../data/paymentRooms.js";
 import { useDashboard } from "../../context/DashboardContext";
 import "../../styles/mobile-payment-room.css";
 
-export default function MobilePaymentRoom({ onSelectRoom, rooms }) {
+export default function MobilePaymentRoom({
+  onSelectRoom,
+  rooms,
+  activeTab: propActiveTab,
+  setActiveTab: propSetActiveTab,
+  searchTerm: propSearchTerm,
+  setSearchTerm: propSetSearchTerm,
+  selectedRole: propSelectedRole,
+  setSelectedRole: propSetSelectedRole,
+  selectedState: propSelectedState,
+  setSelectedState: propSetSelectedState,
+  isSearchExpanded: propIsSearchExpanded,
+  setIsSearchExpanded: propSetIsSearchExpanded,
+}) {
   let contextRooms;
   try {
     const dash = useDashboard();
@@ -15,12 +28,27 @@ export default function MobilePaymentRoom({ onSelectRoom, rooms }) {
   }
 
   const roomsList = rooms || contextRooms || ALL_PAYMENT_ROOMS;
-  const [activeTab, setActiveTab] = useState("ongoing");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedRole, setSelectedRole] = useState("all");
-  const [selectedState, setSelectedState] = useState("all");
-  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  const [internalActiveTab, setInternalActiveTab] = useState("ongoing");
+  const [internalSearchTerm, setInternalSearchTerm] = useState("");
+  const [internalSelectedRole, setInternalSelectedRole] = useState("all");
+  const [internalSelectedState, setInternalSelectedState] = useState("all");
+  const [internalIsSearchExpanded, setInternalIsSearchExpanded] = useState(false);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  const activeTab = propActiveTab !== undefined ? propActiveTab : internalActiveTab;
+  const setActiveTab = propSetActiveTab || setInternalActiveTab;
+
+  const searchTerm = propSearchTerm !== undefined ? propSearchTerm : internalSearchTerm;
+  const setSearchTerm = propSetSearchTerm || setInternalSearchTerm;
+
+  const selectedRole = propSelectedRole !== undefined ? propSelectedRole : internalSelectedRole;
+  const setSelectedRole = propSetSelectedRole || setInternalSelectedRole;
+
+  const selectedState = propSelectedState !== undefined ? propSelectedState : internalSelectedState;
+  const setSelectedState = propSetSelectedState || setInternalSelectedState;
+
+  const isSearchExpanded = propIsSearchExpanded !== undefined ? propIsSearchExpanded : internalIsSearchExpanded;
+  const setIsSearchExpanded = propSetIsSearchExpanded || setInternalIsSearchExpanded;
 
   const filterRef = useRef(null);
   const searchInputRef = useRef(null);

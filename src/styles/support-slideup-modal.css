@@ -221,8 +221,8 @@ body.modal-open-desktop .topbar .header-theme-btn,
   }
 
   .pk-slideup-container {
-    width: min(100%, 700px) !important;
-    max-width: 700px !important;
+    width: min(100%, 620px) !important;
+    max-width: 620px !important;
     height: calc(100vh - var(--pk-header-bottom, clamp(64px, 3.8vw, 80px))) !important;
     height: calc(100dvh - var(--pk-header-bottom, clamp(64px, 3.8vw, 80px))) !important;
     max-height: calc(100vh - var(--pk-header-bottom, clamp(64px, 3.8vw, 80px))) !important;

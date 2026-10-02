@@ -8,7 +8,7 @@
   position: fixed;
   inset: 0;
   z-index: 10000;
-  background-color: rgba(15, 23, 42, 0.55);
+  background-color: rgba(0, 0, 0, 0.55);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   display: flex;
@@ -17,6 +17,17 @@
   padding: 16px;
   animation: profileModalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   box-sizing: border-box;
+}
+
+.profile-modal-overlay[data-appearance="dark"],
+[data-appearance="dark"] .profile-modal-overlay,
+body[data-appearance="dark"] .profile-modal-overlay,
+html[data-appearance="dark"] .profile-modal-overlay,
+body.dark .profile-modal-overlay,
+html.dark .profile-modal-overlay {
+  background-color: rgba(0, 0, 0, 0.65) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
 }
 
 @keyframes profileModalFadeIn {
@@ -53,25 +64,32 @@
   box-sizing: border-box;
 }
 
-.profile-modal-overlay[data-appearance="dark"],
+@media (min-width: 701px) {
+  .profile-modal-card {
+    max-width: 620px;
+    width: 100%;
+  }
+}
+
 .profile-modal-card[data-appearance="dark"],
+.profile-modal-overlay[data-appearance="dark"] .profile-modal-card,
 [data-appearance="dark"] .profile-modal-card,
 body[data-appearance="dark"] .profile-modal-card,
 html[data-appearance="dark"] .profile-modal-card,
 body.dark .profile-modal-card,
 html.dark .profile-modal-card {
-  --page: #171920 !important;
+  --page: #000000 !important;
   --ink: #f4f4f6 !important;
   --muted: #9ca3af !important;
-  --line: rgba(255, 255, 255, 0.12) !important;
-  --panel: #1e2029 !important;
+  --line: rgba(255, 255, 255, 0.14) !important;
+  --panel: #0e0e11 !important;
   color-scheme: dark !important;
-  background-color: #171920 !important;
+  background-color: #000000 !important;
+  background: #000000 !important;
   color: #f4f4f6 !important;
-  border-color: rgba(255, 255, 255, 0.12) !important;
-  box-shadow:
-    0 28px 56px -12px rgba(0, 0, 0, 0.55),
-    0 4px 16px rgba(0, 0, 0, 0.4) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.9), 0 4px 16px rgba(0, 0, 0, 0.6) !important;
 }
 
 @keyframes profileModalPopIn {
@@ -277,9 +295,11 @@ html.dark .profile-form-label,
   transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
 }
 
-[data-appearance="dark"] .profile-input-wrap {
-  background: #141518 !important;
-  border-color: var(--line) !important;
+[data-appearance="dark"] .profile-input-wrap,
+.profile-modal-card[data-appearance="dark"] .profile-input-wrap,
+.profile-modal-overlay[data-appearance="dark"] .profile-input-wrap {
+  background: #0e0e11 !important;
+  border-color: rgba(255, 255, 255, 0.14) !important;
 }
 
 .profile-input-wrap:focus-within {
@@ -510,8 +530,8 @@ html[data-appearance="dark"] .profile-textarea-field,
 body.dark .profile-textarea-field,
 html.dark .profile-textarea-field,
 .profile-modal-card[data-appearance="dark"] textarea {
-  background: #141518 !important;
-  border-color: var(--line) !important;
+  background: #0e0e11 !important;
+  border-color: rgba(255, 255, 255, 0.14) !important;
   color: #f4f4f6 !important;
   -webkit-text-fill-color: #f4f4f6 !important;
 }
@@ -554,8 +574,8 @@ html[data-appearance="dark"] .profile-select-field,
 body.dark .profile-select-field,
 html.dark .profile-select-field,
 .profile-modal-card[data-appearance="dark"] select {
-  background: #141518 !important;
-  border-color: var(--line) !important;
+  background: #0e0e11 !important;
+  border-color: rgba(255, 255, 255, 0.14) !important;
   color: #f4f4f6 !important;
   -webkit-text-fill-color: #f4f4f6 !important;
 }
@@ -563,7 +583,7 @@ html.dark .profile-select-field,
 [data-appearance="dark"] .profile-select-field option,
 .profile-modal-card[data-appearance="dark"] .profile-select-field option,
 .profile-modal-overlay[data-appearance="dark"] .profile-select-field option {
-  background-color: #171920 !important;
+  background-color: #0e0e11 !important;
   color: #f4f4f6 !important;
 }
 
@@ -756,8 +776,8 @@ html.dark .profile-btn-primary {
 [data-appearance="dark"] .rewards-copy-box,
 .profile-modal-card[data-appearance="dark"] .rewards-copy-box,
 .profile-modal-overlay[data-appearance="dark"] .rewards-copy-box {
-  background-color: #21242d !important;
-  border-color: rgba(255, 255, 255, 0.12) !important;
+  background-color: #1a1c22 !important;
+  border-color: #26282e !important;
   color: #f4f4f6 !important;
   -webkit-text-fill-color: #f4f4f6 !important;
 }
@@ -807,6 +827,43 @@ html.dark .profile-btn-primary {
   }
 }
 
+@keyframes profileModalSlideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* ── Payout Account modal (when opened from Payment Room) sliding from bottom ── */
+.profile-modal-overlay:has(.payout-dialog-card) {
+  align-items: flex-end !important;
+  justify-content: center !important;
+  padding: 0 !important;
+}
+
+.profile-modal-overlay .profile-modal-card.payout-dialog-card {
+  width: 100% !important;
+  max-width: 620px !important;
+  border-radius: 24px 24px 0 0 !important;
+  border-top: 1px solid var(--line, rgba(0, 0, 0, 0.08)) !important;
+  border-left: 1px solid var(--line, rgba(0, 0, 0, 0.08)) !important;
+  border-right: 1px solid var(--line, rgba(0, 0, 0, 0.08)) !important;
+  border-bottom: none !important;
+  animation: profileModalSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+  max-height: 88vh !important;
+  box-shadow: 0 -12px 50px rgba(0, 0, 0, 0.35) !important;
+}
+
+[data-appearance="dark"] .profile-modal-overlay .profile-modal-card.payout-dialog-card {
+  border-top: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-bottom: none !important;
+  box-shadow: 0 -12px 50px rgba(0, 0, 0, 0.75) !important;
+}
+
 /* ── Mobile Slide-Up Adaptation ── */
 @media (max-width: 600px) {
   .profile-modal-overlay {
@@ -825,15 +882,6 @@ html.dark .profile-btn-primary {
     animation: profileModalSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     max-height: 90vh;
     overscroll-behavior: contain;
-  }
-
-  @keyframes profileModalSlideUp {
-    from {
-      transform: translateY(100%);
-    }
-    to {
-      transform: translateY(0);
-    }
   }
 
   .profile-modal-header {
@@ -867,7 +915,7 @@ html.dark .profile-btn-primary {
    List view with default selector & Add view with suggested banks & matching
    ══════════════════════════════════════════════════════════════════════════ */
 .payout-dialog-card {
-  max-width: 480px;
+  max-width: 620px;
   min-height: 520px;
   display: flex;
   flex-direction: column;
@@ -1587,8 +1635,8 @@ html.dark .profile-btn-primary {
 
 [data-appearance="dark"] .payout-change-bank-btn:hover,
 .profile-modal-card[data-appearance="dark"] .payout-change-bank-btn:hover {
-  background: #1e2029;
-  border-color: #1e2029;
+  background: #1a1c22;
+  border-color: #26282e;
   color: #ffffff;
 }
 
@@ -1648,8 +1696,8 @@ html.dark .profile-btn-primary {
 /* ── Dark Mode Overrides for Payout Modal ── */
 [data-appearance="dark"] .payout-account-select-card,
 .profile-modal-card[data-appearance="dark"] .payout-account-select-card {
-  background-color: #1e2029;
-  border-color: rgba(255, 255, 255, 0.1);
+  background-color: #1a1c22;
+  border-color: #26282e;
 }
 
 [data-appearance="dark"] .payout-account-select-card:hover,
@@ -1726,8 +1774,8 @@ html.dark .profile-btn-primary {
 
 [data-appearance="dark"] .payout-suggested-bank-tile,
 .profile-modal-card[data-appearance="dark"] .payout-suggested-bank-tile {
-  background-color: #1e2029;
-  border-color: rgba(255, 255, 255, 0.1);
+  background-color: #1a1c22;
+  border-color: #26282e;
 }
 
 [data-appearance="dark"] .payout-suggested-bank-tile:hover,
@@ -1756,8 +1804,8 @@ html.dark .profile-btn-primary {
 
 [data-appearance="dark"] .payout-back-arrow-btn,
 .profile-modal-card[data-appearance="dark"] .payout-back-arrow-btn {
-  background-color: #1e2029;
-  border-color: rgba(255, 255, 255, 0.12);
+  background-color: #1a1c22;
+  border-color: #26282e;
   color: #f4f4f6;
 }
 
@@ -1896,8 +1944,8 @@ html.dark .profile-btn-primary {
 
 [data-appearance="dark"] .payout-suggested-row-item,
 .profile-modal-card[data-appearance="dark"] .payout-suggested-row-item {
-  background-color: #1e2029;
-  border-color: rgba(255, 255, 255, 0.1);
+  background-color: #1a1c22;
+  border-color: #26282e;
 }
 
 [data-appearance="dark"] .payout-suggested-row-item:hover,

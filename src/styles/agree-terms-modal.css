@@ -60,14 +60,32 @@
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-[data-appearance="dark"] .atm-sheet-container,
+@media (min-width: 701px) {
+  .atm-sheet-container {
+    width: 100% !important;
+    max-width: 620px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    border-radius: 24px 24px 0 0 !important;
+  }
+}
+
+.atm-sheet-container.atm-dark-mode,
+.atm-backdrop.atm-dark-mode .atm-sheet-container,
 .atm-sheet-container[data-appearance="dark"],
-.atm-backdrop[data-appearance="dark"] .atm-sheet-container,
-body[data-appearance="dark"] .atm-sheet-container,
-html[data-appearance="dark"] .atm-sheet-container {
-  background-color: var(--page, #121316) !important;
-  color: var(--ink, #f4f4f6) !important;
+.atm-backdrop[data-appearance="dark"] .atm-sheet-container {
+  background-color: #121316 !important;
+  color: #f4f4f6 !important;
   box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.7);
+}
+
+.atm-sheet-container.atm-white-mode,
+.atm-backdrop.atm-white-mode .atm-sheet-container,
+.atm-sheet-container[data-appearance="light"],
+.atm-backdrop[data-appearance="light"] .atm-sheet-container {
+  background-color: #ffffff !important;
+  color: #111827 !important;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.25) !important;
 }
 
 /* Drag handle */
@@ -80,10 +98,18 @@ html[data-appearance="dark"] .atm-sheet-container {
   flex-shrink: 0;
 }
 
-[data-appearance="dark"] .atm-handle-bar,
+.atm-sheet-container.atm-dark-mode .atm-handle-bar,
+.atm-backdrop.atm-dark-mode .atm-handle-bar,
 .atm-sheet-container[data-appearance="dark"] .atm-handle-bar,
 .atm-backdrop[data-appearance="dark"] .atm-handle-bar {
-  background-color: #2d3036;
+  background-color: #2d3036 !important;
+}
+
+.atm-sheet-container.atm-white-mode .atm-handle-bar,
+.atm-backdrop.atm-white-mode .atm-handle-bar,
+.atm-sheet-container[data-appearance="light"] .atm-handle-bar,
+.atm-backdrop[data-appearance="light"] .atm-handle-bar {
+  background-color: #e2e8f0 !important;
 }
 
 /* Modal Title */
@@ -91,16 +117,24 @@ html[data-appearance="dark"] .atm-sheet-container {
   font-size: 19px;
   font-weight: 800;
   text-align: center;
-  color: var(--ink, #0c1a12);
+  color: #111827;
   margin: 4px 16px 16px 16px;
   letter-spacing: -0.3px;
   flex-shrink: 0;
 }
 
-[data-appearance="dark"] .atm-title,
+.atm-sheet-container.atm-dark-mode .atm-title,
+.atm-backdrop.atm-dark-mode .atm-title,
 .atm-sheet-container[data-appearance="dark"] .atm-title,
 .atm-backdrop[data-appearance="dark"] .atm-title {
-  color: #f1f5f9;
+  color: #f1f5f9 !important;
+}
+
+.atm-sheet-container.atm-white-mode .atm-title,
+.atm-backdrop.atm-white-mode .atm-title,
+.atm-sheet-container[data-appearance="light"] .atm-title,
+.atm-backdrop[data-appearance="light"] .atm-title {
+  color: #111827 !important;
 }
 
 /* Scrollable Content */
@@ -650,33 +684,43 @@ html[data-appearance="dark"] .atm-sheet-container {
   color: #5f6470;
 }
 
-/* Enabled: solid black in light mode */
+/* Enabled: solid pure black in white mode (does not change color on hover) */
+.atm-sheet-container.atm-white-mode .atm-cta-btn:not(:disabled),
+.atm-backdrop.atm-white-mode .atm-cta-btn:not(:disabled),
+.atm-sheet-container[data-appearance="light"] .atm-cta-btn:not(:disabled),
+.atm-backdrop[data-appearance="light"] .atm-cta-btn:not(:disabled),
 .atm-cta-btn:not(:disabled) {
-  background-color: #171717;
-  color: #ffffff;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18) !important;
+}
+
+.atm-sheet-container.atm-white-mode .atm-cta-btn:not(:disabled):hover,
+.atm-backdrop.atm-white-mode .atm-cta-btn:not(:disabled):hover,
+.atm-sheet-container[data-appearance="light"] .atm-cta-btn:not(:disabled):hover,
+.atm-backdrop[data-appearance="light"] .atm-cta-btn:not(:disabled):hover,
+.atm-cta-btn:not(:disabled):hover {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  transform: none !important;
 }
 
 /* Enabled: solid white in dark mode */
-[data-appearance="dark"] .atm-cta-btn:not(:disabled),
+.atm-sheet-container.atm-dark-mode .atm-cta-btn:not(:disabled),
+.atm-backdrop.atm-dark-mode .atm-cta-btn:not(:disabled),
 .atm-sheet-container[data-appearance="dark"] .atm-cta-btn:not(:disabled),
 .atm-backdrop[data-appearance="dark"] .atm-cta-btn:not(:disabled) {
-  background-color: #ffffff;
-  color: #111215;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  background-color: #ffffff !important;
+  color: #111215 !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4) !important;
 }
 
-.atm-cta-btn:not(:disabled):hover {
-  background-color: #2c2d33;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
-}
-
-[data-appearance="dark"] .atm-cta-btn:not(:disabled):hover,
+.atm-sheet-container.atm-dark-mode .atm-cta-btn:not(:disabled):hover,
+.atm-backdrop.atm-dark-mode .atm-cta-btn:not(:disabled):hover,
 .atm-sheet-container[data-appearance="dark"] .atm-cta-btn:not(:disabled):hover,
 .atm-backdrop[data-appearance="dark"] .atm-cta-btn:not(:disabled):hover {
-  background-color: #f0f1f4;
-  color: #111215;
+  background-color: #f0f1f4 !important;
+  color: #111215 !important;
 }
 
 .atm-cta-btn:not(:disabled):active {
@@ -728,36 +772,53 @@ html[data-appearance="dark"] .atm-sheet-container {
 
 @media (min-width: 701px) {
   .atm-backdrop {
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-    background: rgba(0, 0, 0, 0.65);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    align-items: flex-end !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    background: rgba(0, 0, 0, 0.65) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
   }
 
   .atm-handle-bar {
-    display: none !important;
+    display: block !important;
   }
 
   .atm-sheet-container {
-    width: min(580px, calc(100vw - 32px)) !important;
-    max-width: min(580px, calc(100vw - 32px)) !important;
-    max-height: min(90vh, 840px) !important;
-    border-radius: 20px !important;
-    border: 1px solid var(--line) !important;
-    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.32), 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
-    animation: npModalPopIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    width: 100% !important;
+    max-width: 580px !important;
+    max-height: 88vh !important;
+    border-radius: 24px 24px 0 0 !important;
+    border-top: 1px solid var(--line) !important;
+    border-left: 1px solid var(--line) !important;
+    border-right: 1px solid var(--line) !important;
+    border-bottom: none !important;
+    box-shadow: 0 -12px 50px rgba(0, 0, 0, 0.35) !important;
+    animation: atmSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
   }
 
-  [data-appearance="dark"] .atm-sheet-container,
+  .atm-sheet-container.atm-dark-mode,
+  .atm-backdrop.atm-dark-mode .atm-sheet-container,
   .atm-sheet-container[data-appearance="dark"],
-  .atm-backdrop[data-appearance="dark"] .atm-sheet-container,
-  body[data-appearance="dark"] .atm-sheet-container,
-  html[data-appearance="dark"] .atm-sheet-container {
-    background: #141518 !important;
-    border-color: rgba(255, 255, 255, 0.12) !important;
-    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.08) !important;
+  .atm-backdrop[data-appearance="dark"] .atm-sheet-container {
+    background: #121316 !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-left: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-bottom: none !important;
+    box-shadow: 0 -12px 50px rgba(0, 0, 0, 0.75) !important;
+  }
+
+  .atm-sheet-container.atm-white-mode,
+  .atm-backdrop.atm-white-mode .atm-sheet-container,
+  .atm-sheet-container[data-appearance="light"],
+  .atm-backdrop[data-appearance="light"] .atm-sheet-container {
+    background: #ffffff !important;
+    border-top: 1px solid #e2e8f0 !important;
+    border-left: 1px solid #e2e8f0 !important;
+    border-right: 1px solid #e2e8f0 !important;
+    border-bottom: none !important;
+    box-shadow: 0 -12px 50px rgba(0, 0, 0, 0.25) !important;
   }
 
   .atm-title {

@@ -180,5 +180,5 @@ export default function HelpDrawer({
     </div>
   );
 
-  return isDesktop ? createPortal(modalContent, document.body) : modalContent;
+  return modalContent;
 }

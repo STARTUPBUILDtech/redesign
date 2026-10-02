@@ -1,83 +1,117 @@
 /* ══════════════════════════════════════════════════════════════
-   LOGIN PAGE — PayKudi
-   Full-screen video background + centered glassmorphism card
+   KUDA-STYLE LOGIN PAGE — PayKudi Redesign
+   Black & White Theme + Right-Side Showcase Carousel (Slide 1 to 5)
    ══════════════════════════════════════════════════════════════ */
 
-/* Fonts are loaded globally via <link> in index.html — no @import needed here */
-
-/* ── Page wrapper ── */
-.login-page {
+/* ── Overall Layout Container ── */
+.kuda-login-layout {
   position: fixed;
   inset: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   height: 100dvh;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  font-family: 'Mulish', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  overflow-y: auto;
-  overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-  padding: 68px 16px 28px;
+  overflow: hidden;
+  font-family: 'Mulish', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   box-sizing: border-box;
 }
 
-/* ── Full-screen background video ── */
-.login-bg-video {
-  position: fixed;
-  inset: 0;
-  width: 100%;
+/* ── Theme variables ── */
+.kuda-login-layout.theme-dark {
+  --kuda-bg: #0e0e11;
+  --kuda-left-bg: #121215;
+  --kuda-card-bg: #19191d;
+  --kuda-card-border: rgba(255, 255, 255, 0.08);
+  --kuda-card-shadow: 0 20px 48px rgba(0, 0, 0, 0.6);
+  --kuda-text-primary: #ffffff;
+  --kuda-text-secondary: rgba(255, 255, 255, 0.68);
+  --kuda-text-muted: rgba(255, 255, 255, 0.42);
+  --kuda-input-bg: #1f1f24;
+  --kuda-input-border: rgba(255, 255, 255, 0.14);
+  --kuda-input-focus-border: #ffffff;
+  --kuda-input-text: #ffffff;
+  --kuda-btn-inactive-bg: #ffffff;
+  --kuda-btn-inactive-text: #000000;
+  --kuda-btn-active-bg: #ffffff;
+  --kuda-btn-active-text: #000000;
+  --kuda-btn-hover-bg: #e4e4e7;
+  --kuda-tab-bg: #16161a;
+  --kuda-tab-active-bg: #ffffff;
+  --kuda-tab-active-text: #000000;
+}
+
+.kuda-login-layout.theme-light {
+  --kuda-bg: #f5f6f8;
+  --kuda-left-bg: #ffffff;
+  --kuda-card-bg: #ffffff;
+  --kuda-card-border: rgba(0, 0, 0, 0.08);
+  --kuda-card-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+  --kuda-text-primary: #09090b;
+  --kuda-text-secondary: #52525b;
+  --kuda-text-muted: #71717a;
+  --kuda-input-bg: #f4f4f5;
+  --kuda-input-border: rgba(0, 0, 0, 0.12);
+  --kuda-input-focus-border: #000000;
+  --kuda-input-text: #09090b;
+  --kuda-btn-inactive-bg: #000000;
+  --kuda-btn-inactive-text: rgba(255, 255, 255, 0.9);
+  --kuda-btn-active-bg: #000000;
+  --kuda-btn-active-text: #ffffff;
+  --kuda-btn-hover-bg: #1f1f23;
+  --kuda-tab-bg: #f4f4f5;
+  --kuda-tab-active-bg: #000000;
+  --kuda-tab-active-text: #ffffff;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   LEFT PANEL (Form, Header)
+   ══════════════════════════════════════════════════════════════ */
+.kuda-login-left {
+  flex: 0 0 50%;
+  max-width: 50%;
   height: 100%;
-  object-fit: cover;
-  object-position: center;
-  z-index: 0;
-  pointer-events: none;
+  background: var(--kuda-left-bg);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  z-index: 5;
+  box-sizing: border-box;
+  transition: background-color 0.25s ease;
 }
 
-/* ── Dark overlay on top of video ── */
-.login-bg-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.55);
-  z-index: 1;
-  pointer-events: none;
+/* ── Top Header bar ── */
+.kuda-left-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 32px 48px 16px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-/* ── Logo — fixed top-left of page ── */
-.login-page-logo {
-  position: fixed;
-  top: 20px;
-  left: 28px;
-  z-index: 10;
+.kuda-brand-logo-wrap {
   display: flex;
   align-items: center;
 }
 
-.login-page-logo-img {
-  height: 22px;
-  max-height: 22px;
+.kuda-brand-logo {
+  height: 28px;
   width: auto;
   object-fit: contain;
   display: block;
-  filter: none;
 }
 
-/* ── Theme toggle — top-right ── */
-.login-theme-btn {
-  position: fixed;
-  top: 20px;
-  right: 24px;
-  z-index: 10;
-  width: 40px;
-  height: 40px;
+.kuda-theme-toggle {
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  color: #ffffff;
+  border: 1px solid var(--kuda-input-border);
+  background: var(--kuda-tab-bg);
+  color: var(--kuda-text-primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -85,402 +119,619 @@
   transition: all 0.18s ease;
 }
 
-.login-theme-btn .material-symbols-outlined {
+.kuda-theme-toggle:hover {
+  border-color: var(--kuda-text-secondary);
+  transform: scale(1.05);
+}
+
+.kuda-theme-toggle .material-symbols-outlined {
   font-size: 19px;
 }
 
-.login-theme-btn:hover {
-  background: rgba(255, 255, 255, 0.22);
-  border-color: rgba(255, 255, 255, 0.4);
-}
-
-/* ══════════════════════════════════════════════════════════════
-   CENTER MODAL CARD (Frosted Glassmorphism Theme)
-   ══════════════════════════════════════════════════════════════ */
-.login-card {
-  position: relative;
-  z-index: 5;
-  width: 100%;
-  max-width: 480px;
-  margin: auto;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.04) 100%), rgba(18, 22, 28, 0.72);
-  backdrop-filter: blur(24px) saturate(170%);
-  -webkit-backdrop-filter: blur(24px) saturate(170%);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 16px;
-  padding: 44px 44px 38px;
-  box-shadow:
-    0 24px 64px rgba(0, 0, 0, 0.6),
-    0 4px 16px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  box-sizing: border-box;
-  animation: loginCardIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-  transform: translateZ(0);
-  isolation: isolate;
-  scroll-margin-top: 70px;
-}
-
-@keyframes loginCardIn {
-  from { opacity: 0; transform: translateY(16px) scale(0.98); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-/* ── Card title ── */
-.login-card-title {
-  font-size: 32px;
-  font-weight: 800;
-  color: #ffffff;
-  text-align: left;
-  margin: 0 0 18px;
-  letter-spacing: -0.6px;
-  line-height: 1.2;
-}
-
-/* ── Login Method Selector (Email / WhatsApp) ── */
-.login-method-selector {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 12px;
-  padding: 4px;
-  margin-bottom: 24px;
-  backdrop-filter: blur(8px);
-}
-
-.login-method-btn {
+/* ── Center Form Container ── */
+.kuda-form-container {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  height: 42px;
-  border-radius: 9px;
+  padding: 16px 48px 48px;
+  box-sizing: border-box;
+}
+
+.kuda-login-card {
+  width: 100%;
+  max-width: 440px;
+  background: var(--kuda-card-bg);
+  border: 1px solid var(--kuda-card-border);
+  border-radius: 16px;
+  padding: 38px 36px 32px;
+  box-shadow: var(--kuda-card-shadow);
+  box-sizing: border-box;
+  animation: cardFadeUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes cardFadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.kuda-card-title {
+  font-size: 29px;
+  font-weight: 800;
+  letter-spacing: -0.6px;
+  color: var(--kuda-text-primary);
+  margin: 0 0 20px;
+  line-height: 1.2;
+}
+
+/* ── Login Method Tabs (Email / WhatsApp) ── */
+.kuda-method-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  background: var(--kuda-tab-bg);
+  border: 1px solid var(--kuda-card-border);
+  border-radius: 10px;
+  padding: 4px;
+  margin-bottom: 22px;
+}
+
+.kuda-method-tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 40px;
+  border-radius: 8px;
   border: 1px solid transparent;
   background: transparent;
-  color: rgba(255, 255, 255, 0.65);
-  font-size: 14px;
+  color: var(--kuda-text-muted);
+  font-size: 13.5px;
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
-  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.16s ease;
 }
 
-.login-method-btn:hover:not(.active) {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.06);
+.kuda-method-tab:hover:not(.active) {
+  color: var(--kuda-text-primary);
 }
 
-.login-method-btn.active {
-  background: #000000;
-  color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.18);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+.kuda-method-tab.active {
+  background: var(--kuda-tab-active-bg);
+  color: var(--kuda-tab-active-text);
+  border-color: var(--kuda-card-border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
 
-.login-method-btn.active svg {
-  color: #25d366;
+.theme-dark .kuda-method-tab.active {
+  background: #ffffff;
+  color: #000000;
+  border-color: #ffffff;
+  box-shadow: 0 2px 10px rgba(255, 255, 255, 0.15);
 }
 
-.login-method-btn .material-symbols-outlined {
-  font-size: 18px;
+.kuda-method-tab .tab-icon {
+  font-size: 17px;
 }
 
-/* ══════════════════════════════════════════════════════════════
-   FORM ELEMENTS
-   ══════════════════════════════════════════════════════════════ */
-.login-form {
+/* ── Auth Form & Inputs ── */
+.kuda-auth-form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 18px;
 }
 
-.login-field {
+.kuda-input-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 7px;
 }
 
-.login-label {
-  font-size: 13.5px;
+.kuda-input-label {
+  font-size: 13px;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.92);
+  color: var(--kuda-text-primary);
   letter-spacing: 0.1px;
-  text-align: left;
 }
 
-.login-input-wrap {
+.kuda-input-box {
   position: relative;
   display: flex;
   align-items: center;
   width: 100%;
 }
 
-.login-input {
+.kuda-input-field {
   width: 100%;
-  height: 52px;
+  height: 50px;
   border-radius: 10px;
-  border: 1.5px solid rgba(255, 255, 255, 0.16);
-  background: rgba(255, 255, 255, 0.07);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  color: #ffffff;
+  background: var(--kuda-input-bg);
+  border: 1.5px solid var(--kuda-input-border);
+  color: var(--kuda-input-text);
   font-size: 15px;
   font-family: inherit;
   padding: 0 16px;
   outline: none;
   transition: all 0.18s ease;
   box-sizing: border-box;
-  -webkit-font-smoothing: antialiased;
 }
 
-.login-input.password-input {
+.kuda-input-field::placeholder {
+  color: var(--kuda-text-muted);
+}
+
+.kuda-input-field:focus {
+  border-color: var(--kuda-input-focus-border);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.12);
+}
+
+.theme-light .kuda-input-field:focus {
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08);
+}
+
+/* Password input */
+.kuda-input-field.password-field {
   padding-right: 48px;
 }
 
-.login-phone-wrap {
-  position: relative;
+.kuda-pass-toggle {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--kuda-text-secondary);
   display: flex;
   align-items: center;
-  width: 100%;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 6px;
+  transition: color 0.15s ease;
 }
 
-.login-phone-prefix {
+.kuda-pass-toggle:hover {
+  color: var(--kuda-text-primary);
+}
+
+.kuda-pass-toggle .material-symbols-outlined {
+  font-size: 20px;
+}
+
+/* Phone input with Nigeria Flag Prefix */
+.kuda-phone-box {
+  position: relative;
+}
+
+.kuda-phone-prefix {
   position: absolute;
   left: 14px;
   display: flex;
   align-items: center;
   gap: 6px;
-  color: rgba(255, 255, 255, 0.9);
-  font-size: 14.5px;
+  color: var(--kuda-text-primary);
+  font-size: 14px;
   font-weight: 600;
   pointer-events: none;
   z-index: 2;
   user-select: none;
 }
 
-.login-phone-flag {
-  font-size: 16px;
-  line-height: 1;
+.kuda-country-flag {
+  border-radius: 2px;
+  display: block;
+  flex-shrink: 0;
 }
 
-.login-input.phone-input {
-  padding-left: 86px;
+.kuda-input-field.phone-field {
+  padding-left: 84px;
 }
 
-.login-input::placeholder {
-  color: rgba(255, 255, 255, 0.4);
+/* Error states */
+.kuda-input-group.has-error .kuda-input-field {
+  border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.08);
 }
 
-.login-input:focus {
-  border-color: rgba(255, 255, 255, 0.6);
-  background: rgba(255, 255, 255, 0.12);
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08);
+.kuda-input-group.has-error .kuda-input-field:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
 }
 
-/* Error state */
-.login-field.has-error .login-input {
-  border-color: #f87171;
-  background: rgba(239, 68, 68, 0.12);
-}
-
-.login-field.has-error .login-input:focus {
-  box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.2);
-}
-
-.login-error-msg {
+.kuda-error-text {
   font-size: 12px;
-  color: #fca5a5;
-  text-align: left;
-}
-
-/* Show/hide password button */
-.login-show-pass-btn {
-  position: absolute;
-  right: 14px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: rgba(255, 255, 255, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 4px;
-  border-radius: 6px;
-  transition: color 0.15s ease;
-}
-
-.login-show-pass-btn:hover {
-  color: #ffffff;
-}
-
-.login-show-pass-btn .material-symbols-outlined {
-  font-size: 20px;
-}
-
-/* ── Forgot row ── */
-.login-forgot-row {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 6px;
-  margin-top: 2px;
-  margin-bottom: 6px;
-  font-size: 14.5px;
-}
-
-.login-forgot-text {
-  color: rgba(255, 255, 255, 0.88);
+  color: #f87171;
   font-weight: 500;
 }
 
-.login-reset-link {
-  color: #ffffff;
+/* ── Forgot Password Row ── */
+.kuda-forgot-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  margin-top: 2px;
+  margin-bottom: 4px;
+}
+
+.kuda-forgot-prompt {
+  color: var(--kuda-text-secondary);
+}
+
+.kuda-reset-anchor {
+  color: var(--kuda-text-primary);
   font-weight: 700;
-  text-decoration: none;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
   transition: opacity 0.15s ease;
 }
 
-.login-reset-link:hover {
-  opacity: 0.85;
-  text-decoration: underline;
+.kuda-reset-anchor:hover {
+  opacity: 0.8;
 }
 
-/* ── Submit button ── */
-.login-submit-btn {
+/* ── Submit Button (Monochrome Black & White) ── */
+.kuda-submit-button {
   width: 100%;
-  height: 52px;
+  height: 50px;
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: #000000;
-  color: #ffffff;
-  font-size: 15.5px;
+  border: 1px solid var(--kuda-card-border);
+  background: var(--kuda-btn-inactive-bg);
+  color: var(--kuda-btn-inactive-text);
+  font-size: 15px;
   font-weight: 700;
   font-family: inherit;
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45);
-  transition: all 0.18s ease;
-  margin-top: 6px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  margin-top: 4px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
 }
 
-.login-submit-btn.active {
-  background: #000000;
-  color: #ffffff;
+.kuda-submit-button.active {
+  background: var(--kuda-btn-active-bg);
+  color: var(--kuda-btn-active-text);
+  border-color: transparent;
   cursor: pointer;
 }
 
-.login-submit-btn:hover:not(:disabled) {
-  background: #151515;
-  border-color: rgba(255, 255, 255, 0.25);
+.kuda-submit-button.active:hover {
+  background: var(--kuda-btn-hover-bg);
   transform: translateY(-1px);
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.55);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
 }
 
-.login-submit-btn:active:not(:disabled) {
-  transform: translateY(0);
+.theme-dark .kuda-submit-button {
+  background: #ffffff;
+  color: #000000;
+  border-color: #ffffff;
 }
 
-.login-submit-btn:disabled {
+.theme-dark .kuda-submit-button:hover:not(:disabled) {
+  background: #e4e4e7;
+  color: #000000;
+  box-shadow: 0 6px 24px rgba(255, 255, 255, 0.18);
+}
+
+.theme-dark .kuda-submit-button:disabled {
+  background: #ffffff;
+  color: #000000;
+  opacity: 0.88;
+}
+
+.theme-dark .kuda-submit-button .kuda-button-spinner {
+  border: 2.5px solid rgba(0, 0, 0, 0.25);
+  border-top-color: #000000;
+}
+
+.theme-light .kuda-submit-button {
+  background: #000000;
+  color: #ffffff;
+  border-color: #000000;
+}
+
+.theme-light .kuda-submit-button:hover:not(:disabled) {
+  background: #1f1f23;
+  color: #ffffff;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+.theme-light .kuda-submit-button:disabled {
+  background: #000000;
+  color: rgba(255, 255, 255, 0.88);
+  opacity: 0.85;
+}
+
+.kuda-submit-button:disabled {
   opacity: 0.75;
   cursor: not-allowed;
 }
 
-/* Spinner */
-.login-spinner {
+.kuda-button-spinner {
   width: 20px;
   height: 20px;
   border: 2.5px solid rgba(255, 255, 255, 0.35);
   border-top-color: #ffffff;
   border-radius: 50%;
-  animation: loginSpin 0.7s linear infinite;
+  animation: kudaSpin 0.7s linear infinite;
 }
 
-@keyframes loginSpin {
+.theme-light .kuda-submit-button .kuda-button-spinner {
+  border-color: rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+}
+
+@keyframes kudaSpin {
   to { transform: rotate(360deg); }
 }
 
-/* ── Create an Account row ── */
-.login-register-row {
+/* ── Create an Account Link ── */
+.kuda-register-row {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 12px;
+  margin-top: 10px;
 }
 
-.login-create-account-btn {
-  color: #ffffff;
-  font-size: 15px;
+.kuda-create-account-link {
+  color: var(--kuda-text-primary);
+  font-size: 14.5px;
   font-weight: 700;
   text-decoration: none;
-  transition: opacity 0.15s ease;
   cursor: pointer;
+  transition: opacity 0.15s ease;
 }
 
-.login-create-account-btn:hover {
-  opacity: 0.85;
+.kuda-create-account-link:hover {
+  opacity: 0.8;
   text-decoration: underline;
 }
 
-/* ── Responsive adjustments ── */
-@media (max-width: 520px) {
-  .login-page {
-    padding: 64px 12px 24px;
-    align-items: center;
+/* ══════════════════════════════════════════════════════════════
+   RIGHT PANEL (Image Carousel, Overlays, Dots & QR Code)
+   ══════════════════════════════════════════════════════════════ */
+.kuda-login-right {
+  flex: 0 0 50%;
+  max-width: 50%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  background: #000000;
+}
+
+/* ── Viewport & Slide Items ── */
+.kuda-slider-viewport {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.kuda-slide-item {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1), transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+  transform: scale(1.04);
+}
+
+.kuda-slide-item.active {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+}
+
+.kuda-slide-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+/* ── Cinematic Dark Vignette & Gradient Overlays ── */
+.kuda-slide-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.72) 0%,
+    rgba(0, 0, 0, 0.32) 28%,
+    rgba(0, 0, 0, 0.15) 55%,
+    rgba(0, 0, 0, 0.65) 85%,
+    rgba(0, 0, 0, 0.88) 100%
+  );
+  pointer-events: none;
+}
+
+/* ── Slide Captions & Dots Bar ── */
+.kuda-slide-caption-bar {
+  position: absolute;
+  top: 36px;
+  left: 44px;
+  right: 44px;
+  z-index: 10;
+  max-width: 540px;
+  pointer-events: none;
+}
+
+.kuda-caption-content {
+  pointer-events: auto;
+  animation: captionIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes captionIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.kuda-slide-headline {
+  font-family: 'Hanken Grotesk', 'Inter', -apple-system, sans-serif;
+  font-size: 34px;
+  font-weight: 900;
+  text-transform: uppercase;
+  color: #ffffff;
+  letter-spacing: -0.6px;
+  line-height: 1.15;
+  margin: 0 0 10px;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.7);
+}
+
+.kuda-slide-subheadline {
+  font-size: 15.5px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.45;
+  margin: 0 0 20px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+}
+
+/* ── Pagination Dots ── */
+.kuda-slide-dots {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.kuda-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.32);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.kuda-dot:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.65);
+}
+
+.kuda-dot.active {
+  background: #ffffff;
+  width: 22px;
+  border-radius: 10px;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
+}
+
+/* ── QR Code Card in Bottom-Right Corner ── */
+.kuda-qr-container {
+  position: absolute;
+  bottom: 32px;
+  right: 36px;
+  z-index: 10;
+}
+
+.login-qr-card {
+  background: #000000;
+  border: 1.5px solid rgba(255, 255, 255, 0.22);
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow:
+    0 14px 36px rgba(0, 0, 0, 0.7),
+    0 2px 8px rgba(0, 0, 0, 0.4);
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-qr-card:hover {
+  transform: translateY(-2px) scale(1.04);
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow:
+    0 18px 44px rgba(0, 0, 0, 0.8),
+    0 0 16px rgba(255, 255, 255, 0.15);
+}
+
+.login-qr-inner {
+  width: 82px;
+  height: 82px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-qr-svg {
+  width: 100%;
+  height: 100%;
+  color: #ffffff;
+  display: block;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE DESIGN (Tablets & Mobile)
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 1080px) {
+  .kuda-left-header {
+    padding: 24px 32px 12px;
+  }
+  .kuda-form-container {
+    padding: 16px 32px 36px;
+  }
+  .kuda-slide-caption-bar {
+    top: 28px;
+    left: 28px;
+    right: 28px;
+  }
+  .kuda-slide-headline {
+    font-size: 28px;
+  }
+  .kuda-qr-container {
+    bottom: 24px;
+    right: 24px;
+  }
+}
+
+@media (max-width: 880px) {
+  .kuda-login-layout {
+    flex-direction: column;
+    overflow-y: auto;
   }
 
-  .login-card {
-    padding: 28px 20px 22px;
-    border-radius: 16px;
-    margin: auto 0;
-    width: 100%;
+  .kuda-login-left {
+    flex: 1 0 auto;
     max-width: 100%;
+    width: 100%;
+    min-height: 100vh;
+    padding-bottom: 24px;
   }
 
-  .login-card-title {
-    font-size: 24px;
-    margin-bottom: 14px;
+  .kuda-login-right {
+    display: none; /* Mobile focuses cleanly on the secure login form */
   }
 
-  .login-method-selector {
-    margin-bottom: 16px;
-    padding: 3px;
+  .kuda-left-header {
+    padding: 20px 20px 10px;
   }
 
-  .login-method-btn {
-    height: 38px;
-    font-size: 13.5px;
+  .kuda-form-container {
+    padding: 12px 18px 28px;
   }
 
-  .login-field {
-    margin-bottom: 14px;
+  .kuda-login-card {
+    padding: 28px 20px 24px;
+    border-radius: 14px;
   }
 
-  .login-input {
+  .kuda-card-title {
+    font-size: 25px;
+  }
+
+  .kuda-input-field {
     height: 48px;
     font-size: 14.5px;
   }
 
-  .login-forgot-row {
-    margin: 4px 0 16px;
-  }
-
-  .login-submit-btn {
+  .kuda-submit-button {
     height: 48px;
     font-size: 15px;
-  }
-
-  .login-page-logo {
-    top: 16px;
-    left: 18px;
-  }
-
-  .login-theme-btn {
-    top: 16px;
-    right: 18px;
-    width: 38px;
-    height: 38px;
   }
 }

@@ -7,7 +7,6 @@ import DesktopActivity from "./components/DesktopActivity.jsx";
 import DesktopNewPayment from "./components/DesktopNewPayment.jsx";
 import DesktopPaymentInvitationModal from "./components/DesktopPaymentInvitationModal.jsx";
 import DesktopPaymentRoom from "./components/DesktopPaymentRoom.jsx";
-import DesktopPaymentRoomDetail from "./components/DesktopPaymentRoomDetail.jsx";
 import MobileActivity from "./components/Mobile/MobileActivity.jsx";
 import MobileNewPayment from "./components/Mobile/MobileNewPayment.jsx";
 import MobilePaymentInvitation from "./components/Mobile/MobilePaymentInvitation.jsx";
@@ -509,6 +508,16 @@ function MobileDashboard({
   onAddPaymentRoom,
   ongoingPaymentRoomsCount,
   onSignOut = () => {},
+  prActiveTab,
+  setPrActiveTab,
+  prSearchQuery,
+  setPrSearchQuery,
+  prSelectedRole,
+  setSelectedRole: setPrSelectedRole,
+  prSelectedState,
+  setSelectedState: setPrSelectedState,
+  prIsSearchExpanded,
+  setIsSearchExpanded: setPrIsSearchExpanded,
 }) {
   const contentScrollRef = useRef(null);
   const [selectedActivityReceipt, setSelectedActivityReceipt] = useState(null);
@@ -628,6 +637,16 @@ function MobileDashboard({
           ) : active === "Payment room" || active === "Payment Room" ? (
             <MobilePaymentRoom
               rooms={paymentRooms}
+              activeTab={prActiveTab}
+              setActiveTab={setPrActiveTab}
+              searchTerm={prSearchQuery}
+              setSearchTerm={setPrSearchQuery}
+              selectedRole={prSelectedRole}
+              setSelectedRole={setPrSelectedRole}
+              selectedState={prSelectedState}
+              setSelectedState={setPrSelectedState}
+              isSearchExpanded={prIsSearchExpanded}
+              setIsSearchExpanded={setPrIsSearchExpanded}
               onSelectRoom={(r) => {
                 if (r) setActiveRoom(r);
                 if (r && (r.status === "awaiting_payment" || r.statusText === "Awaiting Payment")) {
@@ -808,6 +827,13 @@ export default function App() {
   const [paymentRooms, setPaymentRooms] = useState(ALL_PAYMENT_ROOMS);
   const ongoingPaymentRoomsCount = paymentRooms.filter((r) => r.category === "ongoing").length;
 
+  // Shared Payment Room Filters (synchronized across desktop & mobile screen resizes)
+  const [prActiveTab, setPrActiveTab] = useState("ongoing");
+  const [prSearchQuery, setPrSearchQuery] = useState("");
+  const [prSelectedRole, setPrSelectedRole] = useState("all");
+  const [prSelectedState, setPrSelectedState] = useState("all");
+  const [prIsSearchExpanded, setPrIsSearchExpanded] = useState(false);
+
   const handleAddPaymentRoom = (newRoom) => {
     if (!newRoom) return newRoom;
     const formattedRoom = {
@@ -907,26 +933,43 @@ export default function App() {
         <BrandLogo dark={dark} className="brand" />
         {!isModalOpenOnDesktop && (
           <nav aria-label="Primary navigation">
-            {nav.map(([name, NavIcon]) => (
-              <button
-                key={name}
-                onClick={() => {
-                  setActive(name);
-                  setIsPaymentModalOpen(false);
-                  setIsInvitationModalOpen(false);
-                  setIsTermsModalOpen(false);
-                  setIsWithdrawModalOpen(false);
-                  window.scrollTo({ top: 0, behavior: "instant" });
-                }}
-                className={active === name ? "active" : ""}
-              >
-                <NavIcon
-                  active={active === name}
-                  count={name === "Payment room" ? ongoingPaymentRoomsCount : undefined}
-                />
-                <span>{name}</span>
-              </button>
-            ))}
+            {nav.map(([name, NavIcon]) => {
+              const isPMRoom =
+                name === "Payment room" &&
+                (active === "Payment room" ||
+                 active === "Payment Room" ||
+                 active === "Awaiting Payment" ||
+                 active === "Payment Received" ||
+                 active === "In Transit" ||
+                 active === "Confirm Delivery" ||
+                 active === "Confirm delivery" ||
+                 active === "Dispute Ongoing" ||
+                 active === "Dispute ongoing" ||
+                 active === "Completed" ||
+                 active === "Payment Completed");
+              const isBtnActive = active === name || isPMRoom;
+
+              return (
+                <button
+                  key={name}
+                  onClick={() => {
+                    setActive(name);
+                    setIsPaymentModalOpen(false);
+                    setIsInvitationModalOpen(false);
+                    setIsTermsModalOpen(false);
+                    setIsWithdrawModalOpen(false);
+                    window.scrollTo({ top: 0, behavior: "instant" });
+                  }}
+                  className={isBtnActive ? "active" : ""}
+                >
+                  <NavIcon
+                    active={isBtnActive}
+                    count={name === "Payment room" ? ongoingPaymentRoomsCount : undefined}
+                  />
+                  <span>{name}</span>
+                </button>
+              );
+            })}
           </nav>
         )}
         <div className="top-actions">
@@ -949,17 +992,9 @@ export default function App() {
       {/* Desktop Views */}
       {active === "Activity" ? (
         <DesktopActivity />
-      ) : active === "Payment room" || active === "Payment Room" ? (
-        <DesktopPaymentRoom
-          rooms={paymentRooms}
-          role={role}
-          onBackToHome={() => setActive("Home")}
-        />
-      ) : active === "Help" || active === "Help & support" ? (
-        <DesktopHelp />
-      ) : active === "Profile" ? (
-        <DesktopProfile userName="Amaka" dark={dark} onSignOut={handleSignOut} />
-      ) : active === "Awaiting Payment" ||
+      ) : active === "Payment room" ||
+         active === "Payment Room" ||
+         active === "Awaiting Payment" ||
          active === "Payment Received" ||
          active === "In Transit" ||
          active === "Confirm Delivery" ||
@@ -968,14 +1003,45 @@ export default function App() {
          active === "Dispute ongoing" ||
          active === "Completed" ||
          active === "Payment Completed" ? (
-        <main id="desktop-payment-room-detail" className="desktop-container desktop-prd-main-wrapper" style={{ padding: 0, maxWidth: "none", margin: 0 }}>
-          <DesktopPaymentRoomDetail
-            room={activeRoom || paymentRooms[0]}
-            onBack={() => setActive("Payment room")}
-            role={role}
-            onPaymentConfirmed={() => {}}
-          />
-        </main>
+        <DesktopPaymentRoom
+          rooms={paymentRooms}
+          role={role}
+          dark={dark}
+          initialSelectedRoom={activeRoom || paymentRooms[0]}
+          onBackToHome={() => setActive("Home")}
+          activeTab={prActiveTab}
+          setActiveTab={setPrActiveTab}
+          searchQuery={prSearchQuery}
+          setSearchQuery={setPrSearchQuery}
+          selectedRole={prSelectedRole}
+          setSelectedRole={setPrSelectedRole}
+          selectedState={prSelectedState}
+          setSelectedState={setPrSelectedState}
+          isSearchExpanded={prIsSearchExpanded}
+          setIsSearchExpanded={setPrIsSearchExpanded}
+          onSelectRoom={(r) => {
+            if (r) {
+              setActiveRoom(r);
+              if (r.status === "awaiting_payment" || r.statusText === "Awaiting Payment") {
+                setActive("Awaiting Payment");
+              } else if (r.status === "payment_received" || r.statusText === "Payment Received") {
+                setActive("Payment Received");
+              } else if (r.status === "in_transit" || r.statusText === "In Transit") {
+                setActive("In Transit");
+              } else if (r.status === "delivered" || r.statusText === "Confirm delivery" || r.statusText === "Confirm Delivery") {
+                setActive("Confirm Delivery");
+              } else if (r.status === "dispute_ongoing" || r.statusText === "Dispute Ongoing" || r.statusText === "Dispute ongoing") {
+                setActive("Dispute Ongoing");
+              } else if (r.status === "completed" || r.statusText === "Completed" || r.statusText === "Payment Completed") {
+                setActive("Completed");
+              }
+            }
+          }}
+        />
+      ) : active === "Help" || active === "Help & support" ? (
+        <DesktopHelp />
+      ) : active === "Profile" ? (
+        <DesktopProfile userName="Amaka" dark={dark} onSignOut={handleSignOut} />
       ) : (
         <main id="home" className="desktop-container">
           <div className="desktop-content-wrap desktop-intro-wrap">
@@ -1136,6 +1202,16 @@ export default function App() {
         onAddPaymentRoom={handleAddPaymentRoom}
         ongoingPaymentRoomsCount={ongoingPaymentRoomsCount}
         onSignOut={handleSignOut}
+        prActiveTab={prActiveTab}
+        setPrActiveTab={setPrActiveTab}
+        prSearchQuery={prSearchQuery}
+        setPrSearchQuery={setPrSearchQuery}
+        prSelectedRole={prSelectedRole}
+        setPrSelectedRole={setPrSelectedRole}
+        prSelectedState={prSelectedState}
+        setPrSelectedState={setPrSelectedState}
+        prIsSearchExpanded={prIsSearchExpanded}
+        setPrIsSearchExpanded={setPrIsSearchExpanded}
       />
 
       <ReceiptModal

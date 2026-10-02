@@ -244,3 +244,120 @@
     margin: 0;
   }
 }
+
+/* ==========================================================================
+   DESKTOP MODAL UNIFIED WIDTH (Matches Report an Issue modal: max-width 620px)
+   All modals EXCEPT Chat Modal have the exact same width on desktop
+   ========================================================================== */
+@media (min-width: 701px) {
+  .cd-issue-sheet-container,
+  .ap-bottom-sheet:not(.ap-chat-slide-modal):not([class*="chat"]),
+  .pk-receipt-sheet,
+  .ap-order-help-container,
+  .atm-sheet-container,
+  .pr-change-bank-modal,
+  .ssm-sheet,
+  .ap-modal-card,
+  .profile-modal-card,
+  .payout-dialog-card,
+  .pk-slideup-container,
+  .payout-confirm-sheet,
+  .desktop-withdraw-modal-container,
+  .desktop-np-modal-container,
+  .desktop-prd-proof-modal,
+  .desktop-prd-bank-modal,
+  .desktop-prd-call-modal {
+    width: 100% !important;
+    max-width: 620px !important;
+    box-sizing: border-box !important;
+  }
+}
+
+/* ==========================================================================
+   MOBILE VIEW: Specific Modals stopping directly at PayKudi header
+   (Order Help/FAQ modal, Report an Issue modal, Submit More Proof modal)
+   Identical to the chat modal
+   ========================================================================== */
+body:has(.mobile-dashboard) .mobile-header,
+body:has(.ap-order-help-backdrop) .mobile-header,
+body:has(.cd-issue-backdrop) .mobile-header,
+body:has(.ap-chat-backdrop) .mobile-header {
+  z-index: 100001 !important;
+  pointer-events: auto !important;
+}
+
+.mobile-dashboard .ap-order-help-backdrop,
+.mobile-dashboard .cd-issue-backdrop,
+.mobile-awaiting-payment-screen .ap-order-help-backdrop,
+.mobile-awaiting-payment-screen .cd-issue-backdrop {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  background-color: transparent !important;
+  z-index: 50 !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: stretch !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.mobile-dashboard .ap-order-help-container,
+.mobile-dashboard .cd-issue-sheet-container,
+.mobile-dashboard .cd-proof-sheet,
+.mobile-awaiting-payment-screen .ap-order-help-container,
+.mobile-awaiting-payment-screen .cd-issue-sheet-container,
+.mobile-awaiting-payment-screen .cd-proof-sheet {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  min-height: 100% !important;
+  border-radius: 0 !important;
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+  padding-top: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  background-color: var(--page, #ffffff) !important;
+  animation: apChatSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  overscroll-behavior: contain !important;
+  touch-action: pan-y !important;
+}
+
+.mobile-dashboard [data-appearance="dark"] .ap-order-help-container,
+.mobile-dashboard [data-appearance="dark"] .cd-issue-sheet-container,
+.mobile-dashboard [data-appearance="dark"] .cd-proof-sheet,
+.mobile-dashboard[data-appearance="dark"] .ap-order-help-container,
+.mobile-dashboard[data-appearance="dark"] .cd-issue-sheet-container,
+.mobile-dashboard[data-appearance="dark"] .cd-proof-sheet {
+  background-color: #121316 !important;
+  color: #f4f4f6 !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.mobile-dashboard .ap-order-help-container .ap-sheet-handle,
+.mobile-dashboard .cd-issue-sheet-container .ap-sheet-handle,
+.mobile-dashboard .cd-proof-sheet .ap-sheet-handle,
+.mobile-awaiting-payment-screen .ap-order-help-container .ap-sheet-handle,
+.mobile-awaiting-payment-screen .cd-issue-sheet-container .ap-sheet-handle,
+.mobile-awaiting-payment-screen .cd-proof-sheet .ap-sheet-handle {
+  display: none !important;
+}
+
+
+

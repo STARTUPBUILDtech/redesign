@@ -313,7 +313,7 @@ export default function ReportIssueModal({
     </div>
   );
 
-  return isDesktop ? createPortal(modalContent, document.body) : modalContent;
+  return modalContent;
 }
 
 // ── Child Component: Submit More Proof Modal ──
@@ -538,7 +538,7 @@ export function SubmitMoreProofModal({
     </div>
   );
 
-  return isDesktop ? createPortal(content, document.body) : content;
+  return content;
 }
 
 ReportIssueModal.SubmitMoreProof = SubmitMoreProofModal;

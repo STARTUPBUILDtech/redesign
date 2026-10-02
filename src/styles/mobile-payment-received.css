@@ -139,6 +139,16 @@
   overflow-y: auto;
 }
 
+@media (min-width: 701px) {
+  .pr-change-bank-modal {
+    width: 100% !important;
+    max-width: 620px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    border-radius: 24px 24px 0 0 !important;
+  }
+}
+
 [data-appearance="dark"] .pr-change-bank-modal {
   background-color: #121316;
   color: #f4f4f6;

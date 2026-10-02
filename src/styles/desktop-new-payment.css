@@ -38,7 +38,8 @@
 /* ── Centered Modal Card ── */
 .desktop-np-modal-container {
   position: relative;
-  width: min(580px, calc(100vw - 32px));
+  width: min(620px, calc(100vw - 32px)) !important;
+  max-width: 620px !important;
   max-height: min(90vh, 840px);
   background: var(--page);
   border: 1px solid var(--line);

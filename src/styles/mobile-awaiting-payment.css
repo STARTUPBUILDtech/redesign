@@ -650,6 +650,7 @@ body[data-appearance="dark"] .ap-back-btn .material-symbols-outlined,
   box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.7) !important;
 }
 
+
 @keyframes pkModalCenterIn {
   from {
     transform: scale(0.95) translateY(12px);
@@ -688,27 +689,38 @@ body[data-appearance="dark"] .ap-back-btn .material-symbols-outlined,
 
 @media (min-width: 701px) {
   .ap-bottom-sheet-backdrop {
-    align-items: center !important;
-    padding: clamp(16px, 3vw, 24px) !important;
+    align-items: flex-end !important;
+    justify-content: center !important;
+    padding: 0 !important;
   }
 
-  .ap-bottom-sheet {
-    max-width: 560px !important;
-    border-radius: 20px !important;
-    border: 1px solid var(--line, rgba(0, 0, 0, 0.08)) !important;
-    padding: 18px 22px 24px 22px !important;
-    animation: pkModalCenterIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
-    max-height: min(640px, 86vh) !important;
-    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45) !important;
+  .ap-bottom-sheet:not(.ap-chat-slide-modal):not([class*="chat"]) {
+    width: 100% !important;
+    max-width: 620px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-sizing: border-box !important;
+    border-radius: 24px 24px 0 0 !important;
+    border-top: 1px solid var(--line, rgba(0, 0, 0, 0.08)) !important;
+    border-left: 1px solid var(--line, rgba(0, 0, 0, 0.08)) !important;
+    border-right: 1px solid var(--line, rgba(0, 0, 0, 0.08)) !important;
+    border-bottom: none !important;
+    padding: 14px 22px calc(24px + env(safe-area-inset-bottom, 12px)) 22px !important;
+    animation: apSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    max-height: 88vh !important;
+    box-shadow: 0 -12px 50px rgba(0, 0, 0, 0.35) !important;
   }
 
   [data-appearance="dark"] .ap-bottom-sheet {
-    border: 1px solid rgba(255, 255, 255, 0.12) !important;
-    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.75) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-left: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-bottom: none !important;
+    box-shadow: 0 -12px 50px rgba(0, 0, 0, 0.75) !important;
   }
 
   .ap-sheet-handle {
-    display: none !important;
+    display: block !important;
   }
 }
 
@@ -1103,19 +1115,50 @@ body[data-appearance="dark"] .ap-back-btn .material-symbols-outlined,
 }
 
 /* Dark mode: solid white */
-[data-appearance="dark"] .ap-primary-payment-btn,
-.app[data-appearance="dark"] .ap-primary-payment-btn,
-body[data-appearance="dark"] .ap-primary-payment-btn,
-html[data-appearance="dark"] .ap-primary-payment-btn {
+[data-appearance="dark"] .ap-primary-payment-btn:not(.desktop-pr-right-pane *),
+.app[data-appearance="dark"] :not(.desktop-pr-right-pane) > .ap-primary-payment-btn,
+body[data-appearance="dark"] :not(.desktop-pr-right-pane) .ap-primary-payment-btn,
+html[data-appearance="dark"] :not(.desktop-pr-right-pane) .ap-primary-payment-btn {
   background-color: #ffffff !important;
   color: #111215 !important;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45) !important;
 }
 
-[data-appearance="dark"] .ap-primary-payment-btn:hover:not(:disabled):not(.confirmed),
-.app[data-appearance="dark"] .ap-primary-payment-btn:hover:not(:disabled):not(.confirmed),
-body[data-appearance="dark"] .ap-primary-payment-btn:hover:not(:disabled):not(.confirmed),
-html[data-appearance="dark"] .ap-primary-payment-btn:hover:not(:disabled):not(.confirmed) {
+[data-appearance="dark"] .ap-primary-payment-btn:not(.desktop-pr-right-pane *):hover:not(:disabled):not(.confirmed),
+.app[data-appearance="dark"] :not(.desktop-pr-right-pane) > .ap-primary-payment-btn:hover:not(:disabled):not(.confirmed),
+body[data-appearance="dark"] :not(.desktop-pr-right-pane) .ap-primary-payment-btn:hover:not(:disabled):not(.confirmed),
+html[data-appearance="dark"] :not(.desktop-pr-right-pane) .ap-primary-payment-btn:hover:not(:disabled):not(.confirmed) {
+  background-color: #f0f1f4 !important;
+  color: #111215 !important;
+}
+
+/* When inside desktop right pane in light mode (ashy white side), button is ALWAYS solid black and NEVER changes color on hover */
+.desktop-pr-right-pane .ap-primary-payment-btn {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+.desktop-pr-right-pane .ap-primary-payment-btn:hover,
+.desktop-pr-right-pane .ap-primary-payment-btn:hover:not(:disabled):not(.confirmed),
+.desktop-pr-right-pane .ap-primary-payment-btn:active,
+.desktop-pr-right-pane .ap-primary-payment-btn:focus {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* In Dark mode inside desktop right pane (black side), button is solid white */
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-primary-payment-btn {
+  background-color: #ffffff !important;
+  color: #111215 !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-primary-payment-btn:hover,
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-primary-payment-btn:hover:not(:disabled):not(.confirmed),
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-primary-payment-btn:active,
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-primary-payment-btn:focus {
   background-color: #f0f1f4 !important;
   color: #111215 !important;
 }
@@ -1171,10 +1214,16 @@ html[data-appearance="dark"] .ap-btn-spinner {
   gap: 5px;
   font-size: 11px;
   color: #9ca3af;
-  margin-top: 6px;
+  margin-top: auto;
   padding-bottom: 2px;
   user-select: none;
   flex-shrink: 0;
+}
+
+.ap-cta-container + .ap-footer-note,
+.cd-actions-container + .ap-footer-note,
+.cd-actions + .ap-footer-note {
+  margin-top: 6px;
 }
 
 .ap-footer-note strong {
@@ -1221,6 +1270,16 @@ html[data-appearance="dark"] .ap-btn-spinner {
   box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.25);
   animation: apSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   box-sizing: border-box;
+}
+
+@media (min-width: 701px) {
+  .ap-modal-card {
+    width: 100% !important;
+    max-width: 620px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    border-radius: 24px 24px 0 0 !important;
+  }
 }
 
 [data-appearance="dark"] .ap-modal-card {

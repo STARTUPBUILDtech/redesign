@@ -31,6 +31,7 @@ export default function MobileInTransit({
   room = {},
   onBack,
   role = "Buyer",
+  isPaymentRoomWhite,
 }) {
   const [copiedKey, setCopiedKey] = useState(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
@@ -662,6 +663,7 @@ export default function MobileInTransit({
       <ReceiptModal
         isOpen={isReceiptOpen}
         onClose={() => setIsReceiptOpen(false)}
+        isPaymentRoomWhite={isPaymentRoomWhite}
         room={{
           ...room,
           id: orderNumber,

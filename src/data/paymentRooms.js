@@ -20,6 +20,7 @@ export const ALL_PAYMENT_ROOMS = [
     accountName: "PayKudi(08032001585)",
     accountNumber: "903370574",
     variant: "Color, RAM size, Storage",
+    hasAgreedTerms: true,
   },
   {
     id: "ORD-302914",

@@ -64,7 +64,8 @@
 
 .desktop-withdraw-modal-container {
   position: relative;
-  width: min(580px, calc(100vw - 32px));
+  width: min(620px, calc(100vw - 32px)) !important;
+  max-width: 620px !important;
   min-height: 440px;
   max-height: min(90vh, 840px);
   background: var(--page, #ffffff);
@@ -1262,7 +1263,8 @@ body.dark .payout-dropdown-item.is-selected .payout-account-num-val,
     padding: clamp(16px, 3vw, 24px);
   }
   .payout-confirm-sheet {
-    max-width: 480px;
+    width: 100% !important;
+    max-width: 620px !important;
     border-radius: 20px;
     border: 1px solid var(--line);
     padding: 20px 24px 24px;

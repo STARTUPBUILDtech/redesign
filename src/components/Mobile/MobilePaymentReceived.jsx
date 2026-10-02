@@ -10,6 +10,7 @@ import { PayoutAccountModal } from "../Shared/ProfileModals.jsx";
 export default function MobilePaymentReceived({
   room = {},
   onBack,
+  isPaymentRoomWhite,
 }) {
   const [copiedKey, setCopiedKey] = useState(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
@@ -510,6 +511,7 @@ export default function MobilePaymentReceived({
       <ReceiptModal
         isOpen={isReceiptOpen}
         onClose={() => setIsReceiptOpen(false)}
+        isPaymentRoomWhite={isPaymentRoomWhite}
         room={{
           ...room,
           id: orderNumber,
@@ -531,6 +533,7 @@ export default function MobilePaymentReceived({
       <PayoutAccountModal
         isOpen={isChangeBankOpen}
         onClose={() => setIsChangeBankOpen(false)}
+        dark={isPaymentRoomWhite !== undefined ? !isPaymentRoomWhite : undefined}
         currentData={{
           bank: selectedBank,
           accountNumber,

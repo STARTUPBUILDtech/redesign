@@ -1,8 +1,45 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import paykudiLogo from "../../assets/paykudi-logo.png";
 import logoDarkMode from "../../assets/logodarkmode.png";
-import bgVideo from "../../assets/login-slide-3.mp4";
+import slide1 from "../../assets/slide-1.png";
+import slide2 from "../../assets/slide-2.png";
+import slide3 from "../../assets/slide-3.png";
+import slide4 from "../../assets/slide-4.png";
+import slide5 from "../../assets/slide-5.png";
 import "../../styles/login.css";
+
+const SLIDES = [
+  {
+    id: 1,
+    image: slide1,
+    title: "SPLIT BILLS, SHARE MOMENTS",
+    subtitle: "Send and receive money with friends instantly with zero stress",
+  },
+  {
+    id: 2,
+    image: slide2,
+    title: "SPEND SMART EVERYWHERE",
+    subtitle: "Virtual and physical debit cards that work seamlessly worldwide",
+  },
+  {
+    id: 3,
+    image: slide3,
+    title: "PAYMENTS AT THE SPEED OF LIFE",
+    subtitle: "Experience lightning-fast transfers with zero maintenance fees",
+  },
+  {
+    id: 4,
+    image: slide4,
+    title: "JOURNEY BEYOND BOUNDARIES",
+    subtitle: "Manage your finances effortlessly wherever your adventures take you",
+  },
+  {
+    id: 5,
+    image: slide5,
+    title: "INVEST IN YOUR FUTURE",
+    subtitle: "Buy top US stocks from as little as ₦20,000",
+  },
+];
 
 function WhatsAppIcon({ size = 18 }) {
   return (
@@ -12,7 +49,99 @@ function WhatsAppIcon({ size = 18 }) {
   );
 }
 
+function PaykudiQRCode() {
+  return (
+    <div className="login-qr-card" title="Scan to download PayKudi mobile app">
+      <div className="login-qr-inner">
+        <svg
+          viewBox="0 0 100 100"
+          className="login-qr-svg"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          {/* Top-Left Finder */}
+          <rect x="6" y="6" width="26" height="26" rx="4" fill="none" stroke="currentColor" strokeWidth="4" />
+          <rect x="13" y="13" width="12" height="12" rx="2" fill="currentColor" />
+
+          {/* Top-Right Finder */}
+          <rect x="68" y="6" width="26" height="26" rx="4" fill="none" stroke="currentColor" strokeWidth="4" />
+          <rect x="75" y="13" width="12" height="12" rx="2" fill="currentColor" />
+
+          {/* Bottom-Left Finder */}
+          <rect x="6" y="68" width="26" height="26" rx="4" fill="none" stroke="currentColor" strokeWidth="4" />
+          <rect x="13" y="75" width="12" height="12" rx="2" fill="currentColor" />
+
+          {/* Data Modules */}
+          <rect x="38" y="8" width="5" height="5" rx="1" fill="currentColor" />
+          <rect x="48" y="8" width="5" height="5" rx="1" fill="currentColor" />
+          <rect x="58" y="8" width="5" height="5" rx="1" fill="currentColor" />
+          <rect x="38" y="18" width="5" height="5" rx="1" fill="currentColor" />
+          <rect x="50" y="18" width="6" height="5" rx="1" fill="currentColor" />
+          <rect x="38" y="27" width="6" height="6" rx="1" fill="currentColor" />
+          <rect x="54" y="27" width="5" height="5" rx="1" fill="currentColor" />
+
+          <rect x="8" y="38" width="5" height="5" rx="1" fill="currentColor" />
+          <rect x="18" y="38" width="5" height="5" rx="1" fill="currentColor" />
+          <rect x="26" y="38" width="6" height="5" rx="1" fill="currentColor" />
+          <rect x="8" y="48" width="6" height="5" rx="1" fill="currentColor" />
+          <rect x="22" y="48" width="5" height="6" rx="1" fill="currentColor" />
+          <rect x="8" y="58" width="5" height="5" rx="1" fill="currentColor" />
+          <rect x="24" y="58" width="6" height="5" rx="1" fill="currentColor" />
+
+          <rect x="68" y="38" width="5" height="5" rx="1" fill="currentColor" />
+          <rect x="78" y="38" width="6" height="5" rx="1" fill="currentColor" />
+          <rect x="88" y="38" width="5" height="5" rx="1" fill="currentColor" />
+          <rect x="68" y="48" width="5" height="5" rx="1" fill="currentColor" />
+          <rect x="80" y="48" width="5" height="5" rx="1" fill="currentColor" />
+          <rect x="72" y="58" width="6" height="5" rx="1" fill="currentColor" />
+          <rect x="86" y="58" width="5" height="5" rx="1" fill="currentColor" />
+
+          <rect x="38" y="68" width="5" height="6" rx="1" fill="currentColor" />
+          <rect x="52" y="68" width="6" height="5" rx="1" fill="currentColor" />
+          <rect x="42" y="78" width="5" height="5" rx="1" fill="currentColor" />
+          <rect x="56" y="78" width="5" height="5" rx="1" fill="currentColor" />
+          <rect x="38" y="86" width="6" height="6" rx="1" fill="currentColor" />
+          <rect x="52" y="86" width="5" height="5" rx="1" fill="currentColor" />
+          <rect x="68" y="72" width="5" height="5" rx="1" fill="currentColor" />
+          <rect x="82" y="72" width="6" height="5" rx="1" fill="currentColor" />
+          <rect x="74" y="84" width="5" height="5" rx="1" fill="currentColor" />
+          <rect x="86" y="84" width="6" height="5" rx="1" fill="currentColor" />
+
+          {/* Center Monogram Badge */}
+          <rect x="35" y="35" width="30" height="30" rx="4" fill="#000000" />
+          <text
+            x="50"
+            y="52"
+            fill="#ffffff"
+            fontSize="10"
+            fontWeight="900"
+            fontFamily="Inter, system-ui, sans-serif"
+            textAnchor="middle"
+            letterSpacing="0.5"
+          >
+            PAY
+          </text>
+          <text
+            x="50"
+            y="61"
+            fill="#ffffff"
+            fontSize="8"
+            fontWeight="800"
+            fontFamily="Inter, system-ui, sans-serif"
+            textAnchor="middle"
+            letterSpacing="0.5"
+          >
+            KUDI
+          </text>
+        </svg>
+      </div>
+    </div>
+  );
+}
+
 export default function LoginPage({ dark, onThemeToggle, onLogin }) {
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
   const [loginMethod, setLoginMethod] = useState("email"); // "email" | "whatsapp"
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -20,6 +149,17 @@ export default function LoginPage({ dark, onThemeToggle, onLogin }) {
   const [showPass, setShowPass] = useState(false);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const slideTimerRef = useRef(null);
+
+  // Auto-advance slides every 5.5 seconds unless paused
+  useEffect(() => {
+    if (isPaused) return;
+    slideTimerRef.current = setInterval(() => {
+      setActiveSlide((prev) => (prev + 1) % SLIDES.length);
+    }, 5500);
+
+    return () => clearInterval(slideTimerRef.current);
+  }, [isPaused]);
 
   const validate = () => {
     const e = {};
@@ -41,191 +181,266 @@ export default function LoginPage({ dark, onThemeToggle, onLogin }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     const errs = validate();
-    if (Object.keys(errs).length) { setErrors(errs); return; }
+    if (Object.keys(errs).length) {
+      setErrors(errs);
+      return;
+    }
     setErrors({});
     setLoading(true);
-    setTimeout(() => { setLoading(false); onLogin?.(); }, 1200);
+    setTimeout(() => {
+      setLoading(false);
+      onLogin?.();
+    }, 1000);
   };
 
+  const isFormFilled =
+    (loginMethod === "email" ? email.trim().length > 0 : phone.trim().length > 0) &&
+    password.length > 0;
+
   return (
-    <div className="login-page">
-      {/* ── Full-screen video background ── */}
-      <video
-        className="login-bg-video"
-        src={bgVideo}
-        autoPlay
-        muted
-        loop
-        playsInline
-      />
+    <div className={`kuda-login-layout ${dark ? "theme-dark" : "theme-light"}`}>
+      {/* ══════════════════════════════════════════════════════════════
+          LEFT PANEL: Header, Login Form
+         ══════════════════════════════════════════════════════════════ */}
+      <section className="kuda-login-left">
+        {/* Top Header bar with Logo and Theme toggle */}
+        <header className="kuda-left-header">
+          <div className="kuda-brand-logo-wrap">
+            <img
+              src={dark ? logoDarkMode : paykudiLogo}
+              alt="PayKudi"
+              className="kuda-brand-logo"
+            />
+          </div>
 
-      {/* ── Dark overlay ── */}
-      <div className="login-bg-overlay" />
-
-      {/* ── Logo — top left of page ── */}
-      <div className="login-page-logo">
-        <img
-          src={logoDarkMode}
-          alt="PayKudi"
-          className="login-page-logo-img"
-          style={{ height: "22px", maxHeight: "22px", width: "auto" }}
-        />
-      </div>
-
-      {/* ── Theme toggle (top-right corner) ── */}
-      <button
-        type="button"
-        className="login-theme-btn"
-        onClick={onThemeToggle}
-        title={dark ? "Switch to light mode" : "Switch to dark mode"}
-        aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
-      >
-        <span className="material-symbols-outlined">
-          {dark ? "dark_mode" : "light_mode"}
-        </span>
-      </button>
-
-      {/* ── Centered modal card ── */}
-      <div className="login-card">
-        <h1 className="login-card-title">Sign in to PayKudi</h1>
-
-        {/* ── Login Method Selector (Email or WhatsApp) ── */}
-        <div className="login-method-selector" role="tablist" aria-label="Login method">
           <button
             type="button"
-            role="tab"
-            aria-selected={loginMethod === "email"}
-            className={`login-method-btn ${loginMethod === "email" ? "active" : ""}`}
-            onClick={() => {
-              setLoginMethod("email");
-              setErrors({});
-            }}
+            className="kuda-theme-toggle"
+            onClick={onThemeToggle}
+            title={dark ? "Switch to light mode" : "Switch to dark mode"}
+            aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
           >
-            <span className="material-symbols-outlined login-method-icon">mail</span>
-            <span>Email</span>
+            <span className="material-symbols-outlined">
+              {dark ? "light_mode" : "dark_mode"}
+            </span>
           </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={loginMethod === "whatsapp"}
-            className={`login-method-btn ${loginMethod === "whatsapp" ? "active" : ""}`}
-            onClick={() => {
-              setLoginMethod("whatsapp");
-              setErrors({});
-            }}
-          >
-            <WhatsAppIcon size={16} />
-            <span>WhatsApp</span>
-          </button>
-        </div>
+        </header>
 
-        <form className="login-form" onSubmit={handleSubmit} noValidate>
-          {/* Email or WhatsApp Field */}
-          {loginMethod === "email" ? (
-            <div className={`login-field ${errors.email ? "has-error" : ""}`}>
-              <label className="login-label" htmlFor="login-email">
-                Email Address
-              </label>
-              <div className="login-input-wrap">
-                <input
-                  id="login-email"
-                  type="email"
-                  className="login-input"
-                  placeholder="example@gmail.com"
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                    if (errors.email) setErrors((p) => ({ ...p, email: "" }));
-                  }}
-                  autoComplete="email"
-                />
-              </div>
-              {errors.email && <span className="login-error-msg">{errors.email}</span>}
-            </div>
-          ) : (
-            <div className={`login-field ${errors.phone ? "has-error" : ""}`}>
-              <label className="login-label" htmlFor="login-phone">
-                WhatsApp Phone Number
-              </label>
-              <div className="login-input-wrap login-phone-wrap">
-                <span className="login-phone-prefix">
-                  <svg width="20" height="14" viewBox="0 0 20 14" style={{borderRadius: "2px", display:"block", flexShrink:0}}>
-                    <rect width="20" height="14" fill="#008751"/>
-                    <rect x="6.67" width="6.66" height="14" fill="#ffffff"/>
-                  </svg>
-                  <span>+234</span>
-                </span>
-                <input
-                  id="login-phone"
-                  type="tel"
-                  className="login-input phone-input"
-                  placeholder="801 234 5678"
-                  value={phone}
-                  onChange={(e) => {
-                    setPhone(e.target.value);
-                    if (errors.phone) setErrors((p) => ({ ...p, phone: "" }));
-                  }}
-                  autoComplete="tel"
-                />
-              </div>
-              {errors.phone && <span className="login-error-msg">{errors.phone}</span>}
-            </div>
-          )}
+        {/* Centered Login Card */}
+        <div className="kuda-form-container">
+          <div className="kuda-login-card">
+            <h1 className="kuda-card-title">Sign in to PayKudi</h1>
 
-          {/* Password */}
-          <div className={`login-field ${errors.password ? "has-error" : ""}`}>
-            <label className="login-label" htmlFor="login-password">
-              Password
-            </label>
-            <div className="login-input-wrap">
-              <input
-                id="login-password"
-                type={showPass ? "text" : "password"}
-                className="login-input password-input"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  if (errors.password) setErrors((p) => ({ ...p, password: "" }));
-                }}
-                autoComplete="current-password"
-              />
+            {/* Email / WhatsApp Method Selector */}
+            <div className="kuda-method-tabs" role="tablist" aria-label="Sign in method">
               <button
                 type="button"
-                className="login-show-pass-btn"
-                onClick={() => setShowPass((v) => !v)}
-                tabIndex={-1}
-                aria-label={showPass ? "Hide password" : "Show password"}
+                role="tab"
+                aria-selected={loginMethod === "email"}
+                className={`kuda-method-tab ${loginMethod === "email" ? "active" : ""}`}
+                onClick={() => {
+                  setLoginMethod("email");
+                  setErrors({});
+                }}
               >
-                <span className="material-symbols-outlined">
-                  {showPass ? "visibility_off" : "visibility"}
-                </span>
+                <span className="material-symbols-outlined tab-icon">mail</span>
+                <span>Email Address</span>
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={loginMethod === "whatsapp"}
+                className={`kuda-method-tab ${loginMethod === "whatsapp" ? "active" : ""}`}
+                onClick={() => {
+                  setLoginMethod("whatsapp");
+                  setErrors({});
+                }}
+              >
+                <WhatsAppIcon size={16} />
+                <span>WhatsApp</span>
               </button>
             </div>
-            {errors.password && <span className="login-error-msg">{errors.password}</span>}
-          </div>
 
-          {/* Forgot your password? Reset it */}
-          <div className="login-forgot-row">
-            <span className="login-forgot-text">Forgot your password?</span>
-            <a href="#" className="login-reset-link">Reset it</a>
-          </div>
+            <form className="kuda-auth-form" onSubmit={handleSubmit} noValidate>
+              {loginMethod === "email" ? (
+                <div className={`kuda-input-group ${errors.email ? "has-error" : ""}`}>
+                  <label className="kuda-input-label" htmlFor="kuda-email">
+                    Email Address
+                  </label>
+                  <div className="kuda-input-box">
+                    <input
+                      id="kuda-email"
+                      type="email"
+                      className="kuda-input-field"
+                      placeholder="example@gmail.com"
+                      value={email}
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                        if (errors.email) setErrors((p) => ({ ...p, email: "" }));
+                      }}
+                      autoComplete="email"
+                    />
+                  </div>
+                  {errors.email && <span className="kuda-error-text">{errors.email}</span>}
+                </div>
+              ) : (
+                <div className={`kuda-input-group ${errors.phone ? "has-error" : ""}`}>
+                  <label className="kuda-input-label" htmlFor="kuda-phone">
+                    WhatsApp Phone Number
+                  </label>
+                  <div className="kuda-input-box kuda-phone-box">
+                    <span className="kuda-phone-prefix">
+                      <svg
+                        width="18"
+                        height="12"
+                        viewBox="0 0 20 14"
+                        className="kuda-country-flag"
+                        aria-hidden="true"
+                      >
+                        <rect width="20" height="14" fill="#008751" />
+                        <rect x="6.67" width="6.66" height="14" fill="#ffffff" />
+                      </svg>
+                      <span>+234</span>
+                    </span>
+                    <input
+                      id="kuda-phone"
+                      type="tel"
+                      className="kuda-input-field phone-field"
+                      placeholder="801 234 5678"
+                      value={phone}
+                      onChange={(e) => {
+                        setPhone(e.target.value);
+                        if (errors.phone) setErrors((p) => ({ ...p, phone: "" }));
+                      }}
+                      autoComplete="tel"
+                    />
+                  </div>
+                  {errors.phone && <span className="kuda-error-text">{errors.phone}</span>}
+                </div>
+              )}
 
-          {/* Submit */}
-          <button
-            type="submit"
-            className={`login-submit-btn${((loginMethod === "email" ? email.trim() : phone.trim()) && password) ? " active" : ""}${loading ? " loading" : ""}`}
-            disabled={loading}
-          >
-            {loading ? <span className="login-spinner" /> : "Sign In"}
-          </button>
+              {/* Password */}
+              <div className={`kuda-input-group ${errors.password ? "has-error" : ""}`}>
+                <label className="kuda-input-label" htmlFor="kuda-password">
+                  Password
+                </label>
+                <div className="kuda-input-box password-box">
+                  <input
+                    id="kuda-password"
+                    type={showPass ? "text" : "password"}
+                    className="kuda-input-field password-field"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      if (errors.password) setErrors((p) => ({ ...p, password: "" }));
+                    }}
+                    autoComplete="current-password"
+                  />
+                  <button
+                    type="button"
+                    className="kuda-pass-toggle"
+                    onClick={() => setShowPass((v) => !v)}
+                    tabIndex={-1}
+                    aria-label={showPass ? "Hide password" : "Show password"}
+                  >
+                    <span className="material-symbols-outlined">
+                      {showPass ? "visibility_off" : "visibility"}
+                    </span>
+                  </button>
+                </div>
+                {errors.password && (
+                  <span className="kuda-error-text">{errors.password}</span>
+                )}
+              </div>
 
-          {/* Create an Account */}
-          <div className="login-register-row">
-            <a href="#" className="login-create-account-btn">Create an Account</a>
+              {/* Forgot your password? Reset it */}
+              <div className="kuda-forgot-row">
+                <span className="kuda-forgot-prompt">Forgot your password?</span>
+                <a href="#reset" className="kuda-reset-anchor">
+                  Reset it
+                </a>
+              </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                className={`kuda-submit-button ${isFormFilled ? "active" : ""} ${loading ? "loading" : ""}`}
+                disabled={loading}
+              >
+                {loading ? <span className="kuda-button-spinner" /> : "Sign In"}
+              </button>
+
+              {/* Create an Account */}
+              <div className="kuda-register-row">
+                <a href="#signup" className="kuda-create-account-link">
+                  Create an Account
+                </a>
+              </div>
+            </form>
           </div>
-        </form>
-      </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════════════════
+          RIGHT PANEL: Slideshow Hero with Titles, Dots & QR Code
+         ══════════════════════════════════════════════════════════════ */}
+      <section
+        className="kuda-login-right"
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+        aria-label="Product Showcase"
+      >
+        {/* Slide Images with smooth crossfade */}
+        <div className="kuda-slider-viewport">
+          {SLIDES.map((slide, idx) => (
+            <div
+              key={slide.id}
+              className={`kuda-slide-item ${idx === activeSlide ? "active" : ""}`}
+              aria-hidden={idx !== activeSlide}
+            >
+              <img
+                src={slide.image}
+                alt={slide.title}
+                className="kuda-slide-image"
+              />
+              <div className="kuda-slide-overlay" />
+            </div>
+          ))}
+        </div>
+
+        {/* Content overlay on the right slide (Title, Subtitle, Dots) */}
+        <div className="kuda-slide-caption-bar">
+          <div className="kuda-caption-content">
+            <h2 className="kuda-slide-headline">
+              {SLIDES[activeSlide].title}
+            </h2>
+            <p className="kuda-slide-subheadline">
+              {SLIDES[activeSlide].subtitle}
+            </p>
+
+            {/* Pagination Dots */}
+            <div className="kuda-slide-dots" role="tablist" aria-label="Slideshow pagination">
+              {SLIDES.map((slide, idx) => (
+                <button
+                  key={slide.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={idx === activeSlide}
+                  className={`kuda-dot ${idx === activeSlide ? "active" : ""}`}
+                  onClick={() => setActiveSlide(idx)}
+                  aria-label={`Go to slide ${idx + 1}: ${slide.title}`}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* QR Code Card in Bottom Right */}
+        <div className="kuda-qr-container">
+          <PaykudiQRCode />
+        </div>
+      </section>
     </div>
   );
 }
