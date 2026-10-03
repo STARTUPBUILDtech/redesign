@@ -200,23 +200,13 @@ export default function DesktopPaymentRoom({
         <div className="desktop-pr-empty-detail">
           <div className="desktop-pr-empty-illustration">
             <span className="material-symbols-outlined desktop-pr-empty-watermark">
-              shield_lock
+              payments
             </span>
           </div>
           <h3 className="desktop-pr-empty-title">PayKudi Payment Room</h3>
           <p className="desktop-pr-empty-subtitle">
             Select a payment room from the left list to view.
           </p>
-          <div className="desktop-pr-empty-features">
-            <div className="desktop-pr-feature-item">
-              <span className="material-symbols-outlined">lock</span>
-              <span>End-to-End PayKudi Security</span>
-            </div>
-            <div className="desktop-pr-feature-item">
-              <span className="material-symbols-outlined">verified_user</span>
-              <span>Verified Counterparties</span>
-            </div>
-          </div>
         </div>
       );
     }
