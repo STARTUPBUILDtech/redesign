@@ -12,6 +12,7 @@ export default function MobilePaymentReceived({
   onBack,
   isPaymentRoomWhite,
 }) {
+  const safeRoom = room || {};
   const [copiedKey, setCopiedKey] = useState(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [isArrowUp, setIsArrowUp] = useState(false);
@@ -21,7 +22,7 @@ export default function MobilePaymentReceived({
   const [isReceiptOpen, setIsReceiptOpen] = useState(false);
   const [isChangeBankOpen, setIsChangeBankOpen] = useState(false);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
-  const [selectedBank, setSelectedBank] = useState(room.refundBank || "Access Bank");
+  const [selectedBank, setSelectedBank] = useState(safeRoom.refundBank || "Access Bank");
   const [toastText, setToastText] = useState(null);
   const screenRef = useRef(null);
 
@@ -34,15 +35,15 @@ export default function MobilePaymentReceived({
     }
   }, [isChatOpen, isHelpOpen]);
 
-  const orderNumber = room.id || room.orderNumber || "ORD-533666";
-  const orderAmount = room.amount || room.price || "₦2,345,680";
-  const youPaidAmount = room.youPaid || "₦2,381,165";
-  const [accountName, setAccountName] = useState(room.accountName || "Marcus Vance");
-  const [accountNumber, setAccountNumber] = useState(room.accountNumber || "0123456789");
-  const sellerName = room.sellerName || "07012345678";
-  const buyerName = room.buyerName || "Marcus Vance";
-  const itemName = room.item || room.title || 'MacBook Pro M3 Max 16"';
-  const variantText = room.variant || "Space Black, 36GB RAM, 1TB SSD";
+  const orderNumber = safeRoom.id || safeRoom.orderNumber || "ORD-533666";
+  const orderAmount = safeRoom.amount || safeRoom.price || "₦2,345,680";
+  const youPaidAmount = safeRoom.youPaid || "₦2,381,165";
+  const [accountName, setAccountName] = useState(safeRoom.accountName || "Marcus Vance");
+  const [accountNumber, setAccountNumber] = useState(safeRoom.accountNumber || "0123456789");
+  const sellerName = safeRoom.sellerName || "07012345678";
+  const buyerName = safeRoom.buyerName || "Marcus Vance";
+  const itemName = safeRoom.item || safeRoom.title || 'MacBook Pro M3 Max 16"';
+  const variantText = safeRoom.variant || "Space Black, 36GB RAM, 1TB SSD";
 
   const handleSavePayoutAccount = (updated) => {
     if (updated) {

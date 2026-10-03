@@ -51,8 +51,9 @@ export default function AgreeTermsModal({
   appearance: propAppearance,
   isPaymentRoomWhite,
 }) {
-  const [selectedState, setSelectedState] = useState(room.deliveryState || "");
-  const [city, setCity] = useState(room.deliveryCity || "");
+  const safeRoom = room || {};
+  const [selectedState, setSelectedState] = useState(safeRoom.deliveryState || "");
+  const [city, setCity] = useState(safeRoom.deliveryCity || "");
   const [isPickerOpen, setIsPickerOpen] = useState(false);
   const [stateSearch, setStateSearch] = useState("");
   const [isAgreed, setIsAgreed] = useState(false);
@@ -98,9 +99,9 @@ export default function AgreeTermsModal({
 
   // Sync state if room changes
   useEffect(() => {
-    if (room.deliveryState) setSelectedState(room.deliveryState);
-    if (room.deliveryCity) setCity(room.deliveryCity);
-  }, [room]);
+    if (safeRoom.deliveryState) setSelectedState(safeRoom.deliveryState);
+    if (safeRoom.deliveryCity) setCity(safeRoom.deliveryCity);
+  }, [safeRoom.deliveryState, safeRoom.deliveryCity]);
 
   useEffect(() => {
     if (isPickerOpen && searchInputRef.current) {
@@ -112,8 +113,8 @@ export default function AgreeTermsModal({
 
   const sellerName =
     propSellerName ||
-    room.sellerName ||
-    room.counterparty ||
+    safeRoom.sellerName ||
+    safeRoom.counterparty ||
     "900000909099";
 
   const filteredStates = NIGERIAN_STATES.filter((st) =>

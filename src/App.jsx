@@ -577,31 +577,31 @@ function MobileDashboard({
         />
       ) : active === "Payment Invitation" ? (
         <MobilePaymentInvitation
-          room={activeRoom}
+          room={activeRoom || {}}
           onCancel={() => handleNavClick("Home")}
           onProceed={() => handleNavClick("Awaiting Payment")}
           onShare={() => {}}
         />
       ) : active === "Awaiting Payment" ? (
         <MobileAwaitingPayment
-          room={activeRoom}
+          room={activeRoom || {}}
           onBack={() => handleNavClick("Payment room")}
           onPaymentConfirmed={() => {}}
         />
       ) : active === "Payment Received" ? (
         <MobilePaymentReceived
-          room={activeRoom}
+          room={activeRoom || {}}
           onBack={() => handleNavClick("Payment room")}
         />
       ) : active === "In Transit" ? (
         <MobileInTransit
-          room={activeRoom}
+          room={activeRoom || {}}
           onBack={() => handleNavClick("Payment room")}
           role={role}
         />
       ) : active === "Confirm Delivery" || active === "Confirm delivery" ? (
         <MobileConfirmDelivery
-          room={activeRoom}
+          room={activeRoom || {}}
           onBack={() => handleNavClick("Payment room")}
           role={role}
           onNavigateToDispute={(disputeData) => {
@@ -620,13 +620,13 @@ function MobileDashboard({
         />
       ) : active === "Dispute Ongoing" || active === "Dispute ongoing" ? (
         <MobileDisputeOngoing
-          room={activeRoom}
+          room={activeRoom || {}}
           onBack={() => handleNavClick("Payment room")}
           role={role}
         />
       ) : active === "Completed" || active === "Payment Completed" ? (
         <MobileCompleted
-          room={activeRoom}
+          room={activeRoom || {}}
           onBack={() => handleNavClick("Payment room")}
           role={role}
         />
@@ -807,22 +807,7 @@ export default function App() {
   const [visible, setVisible] = useState(true);
   const [active, setActive] = useState("Home");
   const [role, setRole] = useState("Buyer");
-  const [activeRoom, setActiveRoom] = useState({
-    id: "ORD-603607",
-    orderNumber: "ORD-603607",
-    counterparty: "08032001585",
-    sellerName: "08032001585",
-    item: "Iphone 18 Pro Max",
-    amount: "₦1,000,000",
-    price: "₦1,000,000",
-    priceNumeric: 1000000,
-    role: "Buying",
-    status: "awaiting_payment",
-    statusText: "Awaiting Payment",
-    bank: "Guaranteed Trust Bank (GTBank)",
-    accountName: "PayKudi(08032001585)",
-    accountNumber: "903370574",
-  });
+  const [activeRoom, setActiveRoom] = useState(null);
 
   const [paymentRooms, setPaymentRooms] = useState(ALL_PAYMENT_ROOMS);
   const ongoingPaymentRoomsCount = paymentRooms.filter((r) => r.category === "ongoing").length;
@@ -953,6 +938,9 @@ export default function App() {
                 <button
                   key={name}
                   onClick={() => {
+                    if (name === "Payment room") {
+                      setActiveRoom(null);
+                    }
                     setActive(name);
                     setIsPaymentModalOpen(false);
                     setIsInvitationModalOpen(false);
@@ -1007,7 +995,7 @@ export default function App() {
           rooms={paymentRooms}
           role={role}
           dark={dark}
-          initialSelectedRoom={activeRoom || paymentRooms[0]}
+          initialSelectedRoom={activeRoom || null}
           onBackToHome={() => setActive("Home")}
           activeTab={prActiveTab}
           setActiveTab={setPrActiveTab}
@@ -1136,7 +1124,7 @@ export default function App() {
       {/* Desktop Payment Invitation Modal (same modal size as New Payment modal, compulsory until Proceed) */}
       {(isInvitationModalOpen || active === "Payment Invitation") && (
         <DesktopPaymentInvitationModal
-          room={activeRoom}
+          room={activeRoom || {}}
           onProceed={() => {
             setIsInvitationModalOpen(false);
             if (active === "Payment Invitation") setActive("Home");
@@ -1147,32 +1135,34 @@ export default function App() {
       )}
 
       {/* Agree to Terms Modal (compulsory after Payment Invitation) */}
-      <AgreeTermsModal
-        isOpen={isTermsModalOpen}
-        onClose={() => {
-          setIsTermsModalOpen(false);
-          setIsInvitationModalOpen(true);
-        }}
-        onAgree={({ state, city, location }) => {
-          setIsTermsModalOpen(false);
-          if (activeRoom) {
-            const storageKey = `pk_agreed_terms_${activeRoom.id || activeRoom.orderNumber || "ORD-603607"}`;
-            try {
-              localStorage.setItem(storageKey, "true");
-            } catch (e) {}
-            activeRoom.deliveryState = state;
-            activeRoom.deliveryCity = city;
-            activeRoom.deliveryLocation = location;
-            activeRoom.hasAgreedTerms = true;
+      {isTermsModalOpen && (
+        <AgreeTermsModal
+          isOpen={isTermsModalOpen}
+          onClose={() => {
+            setIsTermsModalOpen(false);
+            setIsInvitationModalOpen(true);
+          }}
+          onAgree={({ state, city, location }) => {
+            setIsTermsModalOpen(false);
+            if (activeRoom) {
+              const storageKey = `pk_agreed_terms_${activeRoom.id || activeRoom.orderNumber || "ORD-603607"}`;
+              try {
+                localStorage.setItem(storageKey, "true");
+              } catch (e) {}
+              activeRoom.deliveryState = state;
+              activeRoom.deliveryCity = city;
+              activeRoom.deliveryLocation = location;
+              activeRoom.hasAgreedTerms = true;
+            }
+            setActive("Awaiting Payment");
+          }}
+          room={activeRoom || {}}
+          sellerName={
+            activeRoom?.sellerName ||
+            (activeRoom?.role === "Selling" ? "Amaka Obi" : (activeRoom?.counterparty || "Howard Ukah"))
           }
-          setActive("Awaiting Payment");
-        }}
-        room={activeRoom}
-        sellerName={
-          activeRoom?.sellerName ||
-          (activeRoom?.role === "Selling" ? "Amaka Obi" : (activeRoom?.counterparty || "Howard Ukah"))
-        }
-      />
+        />
+      )}
 
       {/* Desktop Withdraw Modal (pops up in the middle of home screen) */}
       {(isWithdrawModalOpen || active === "Withdraw" || active === "Payout") && (

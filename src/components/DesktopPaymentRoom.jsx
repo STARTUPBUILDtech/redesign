@@ -86,6 +86,8 @@ export default function DesktopPaymentRoom({
           setActiveTab("ongoing");
         }
       }
+    } else {
+      setSelectedRoom(null);
     }
   }, [initialSelectedRoom, roomsList, setActiveTab]);
 
@@ -181,13 +183,14 @@ export default function DesktopPaymentRoom({
     });
   }, [activeTab, searchQuery, selectedRole, selectedState, ongoingRooms, fulfilledRooms]);
 
-  // Active selected room: defaults to current selected room if present in list, else first item of filtered list
+  // Active selected room: only selected when user explicitly chooses one or when initialSelectedRoom is provided
   const activeSelectedRoom = useMemo(() => {
     if (selectedRoom) {
       const match = filteredRooms.find((r) => r.id === selectedRoom.id);
       if (match) return { ...match, ...selectedRoom };
+      return selectedRoom;
     }
-    return filteredRooms.length > 0 ? filteredRooms[0] : null;
+    return null;
   }, [selectedRoom, filteredRooms]);
 
   // Render the matching mobile view component for the selected room

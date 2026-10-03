@@ -55,15 +55,16 @@ export default function MobileAwaitingPayment({
   }, [hasAgreedTerms, seconds]);
 
   // Order data matching reference image
-  const orderNumber = room.id || room.orderNumber || "ORD-603607";
-  const orderAmount = room.amount || room.price || "₦1,000,000";
-  const youPayAmount = room.totalAmount || "₦1,015,300";
-  const bankName = room.bank || "Guaranteed Trust Bank (GTBank)";
-  const accountName = room.accountName || "PayKudi(08032001585)";
-  const accountNumber = room.accountNumber || "903370574";
-  const sellerName = room.sellerName || "900000909099";
-  const itemName = room.item || room.title || "Iphone 18 Pro Max";
-  const variantText = room.variant || "Color, Ram size, Storage";
+  const safeRoom = room || {};
+  const orderNumber = safeRoom.id || safeRoom.orderNumber || "ORD-603607";
+  const orderAmount = safeRoom.amount || safeRoom.price || "₦1,000,000";
+  const youPayAmount = safeRoom.totalAmount || "₦1,015,300";
+  const bankName = safeRoom.bank || "Guaranteed Trust Bank (GTBank)";
+  const accountName = safeRoom.accountName || "PayKudi(08032001585)";
+  const accountNumber = safeRoom.accountNumber || "903370574";
+  const sellerName = safeRoom.sellerName || "900000909099";
+  const itemName = safeRoom.item || safeRoom.title || "Iphone 18 Pro Max";
+  const variantText = safeRoom.variant || "Color, Ram size, Storage";
 
   const handleCopy = (text, label) => {
     try {

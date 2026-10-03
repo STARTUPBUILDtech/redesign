@@ -77,11 +77,12 @@ export default function MobileCompleted({
     setIsArrowUp(false);
   };
 
-  const orderNumber = room.id || room.orderNumber || "ORD-192834";
-  const orderAmount = room.amount || room.price || "₦145,000";
-  const sellerName = room.sellerName || room.counterparty || "Sneaker Plug";
-  const youPaidAmount = room.youPaid || (orderAmount.startsWith("₦") ? orderAmount : `₦${orderAmount}`);
-  const itemName = room.item || room.title || "Item Order";
+  const safeRoom = room || {};
+  const orderNumber = safeRoom.id || safeRoom.orderNumber || "ORD-192834";
+  const orderAmount = safeRoom.amount || safeRoom.price || "₦145,000";
+  const sellerName = safeRoom.sellerName || safeRoom.counterparty || "Sneaker Plug";
+  const youPaidAmount = safeRoom.youPaid || (orderAmount.startsWith("₦") ? orderAmount : `₦${orderAmount}`);
+  const itemName = safeRoom.item || safeRoom.title || "Item Order";
 
   return (
     <div

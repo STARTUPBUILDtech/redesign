@@ -56,22 +56,23 @@ export default function MobileInTransit({
     }
   }, [isChatOpen, isHelpOpen]);
 
-  const orderNumber = room.id || room.orderNumber || "ORD-774120";
-  const orderAmountRaw = room.amount || room.price || "₦385,000";
+  const safeRoom = room || {};
+  const orderNumber = safeRoom.id || safeRoom.orderNumber || "ORD-774120";
+  const orderAmountRaw = safeRoom.amount || safeRoom.price || "₦385,000";
   const orderAmount = orderAmountRaw;
   // Compute fees matching Awaiting Payment modal
-  const priceNum = room.priceNumeric || parseFloat(orderAmountRaw.replace(/[^0-9.]/g, "")) || 385000;
+  const priceNum = safeRoom.priceNumeric || parseFloat(orderAmountRaw.replace(/[^0-9.]/g, "")) || 385000;
   const txFee = Math.round(priceNum * 0.015).toLocaleString("en-US");
-  const totalAmount = room.totalAmount || `₦${(priceNum + Math.round(priceNum * 0.015) + 300).toLocaleString("en-US")}`;
-  const courierService = room.courier || "GIG Logistics";
-  const trackingNumber = room.trackingNumber || "KMLMLMMO";
-  const estimatedArrival = room.estimatedArrival || "12-10-2024";
-  const buyerName = room.buyerName || "Amaka Obi";
-  const sellerName = room.sellerName || "Gadget Haven";
-  const counterpartyName = (role === "Seller" || room.role === "Selling") ? buyerName : sellerName;
-  const counterpartyLabel = (role === "Seller" || room.role === "Selling") ? "Buyer's Name" : "Seller's Name";
-  const itemName = room.item || room.title || "Sony WH-1000XM5 Headphones";
-  const variantText = room.variant || "Midnight Silver, Noise Cancelling";
+  const totalAmount = safeRoom.totalAmount || `₦${(priceNum + Math.round(priceNum * 0.015) + 300).toLocaleString("en-US")}`;
+  const courierService = safeRoom.courier || "GIG Logistics";
+  const trackingNumber = safeRoom.trackingNumber || "KMLMLMMO";
+  const estimatedArrival = safeRoom.estimatedArrival || "12-10-2024";
+  const buyerName = safeRoom.buyerName || "Amaka Obi";
+  const sellerName = safeRoom.sellerName || "Gadget Haven";
+  const counterpartyName = (role === "Seller" || safeRoom.role === "Selling") ? buyerName : sellerName;
+  const counterpartyLabel = (role === "Seller" || safeRoom.role === "Selling") ? "Buyer's Name" : "Seller's Name";
+  const itemName = safeRoom.item || safeRoom.title || "Sony WH-1000XM5 Headphones";
+  const variantText = safeRoom.variant || "Midnight Silver, Noise Cancelling";
 
   const handleCopy = (text, label) => {
     try {

@@ -17,6 +17,7 @@ export default function MobileDisputeOngoing({
   role = "Buying",
   isPaymentRoomWhite,
 }) {
+  const safeRoom = room || {};
   // Countdown timer for dispute response (starts at 29m 30s as in reference design)
   const [seconds, setSeconds] = useState(1770);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
@@ -44,13 +45,13 @@ export default function MobileDisputeOngoing({
     {
       id: 1,
       type: "buyer",
-      sender: room.buyerName || "Tunde Adeleke",
+      sender: safeRoom.buyerName || "Tunde Adeleke",
       time: "Today, 02:15 PM",
-      reason: room.disputeReason || "Item arrived damaged",
+      reason: safeRoom.disputeReason || "Item arrived damaged",
       message:
-        room.disputeMessage ||
+        safeRoom.disputeMessage ||
         "The package delivered contains a different model than agreed upon in the order details. The serial number does not match the invoice.",
-      photos: room.disputePhotos || [],
+      photos: safeRoom.disputePhotos || [],
     },
     {
       id: 2,
@@ -129,9 +130,9 @@ export default function MobileDisputeOngoing({
     setIsArrowUp(false);
   };
 
-  const orderNumber = room.id || room.orderNumber || "ORD-884102";
-  const orderAmount = room.amount || room.price || "₦50,000";
-  const counterpartyName = room.sellerName || room.counterparty || "Marcus Vance";
+  const orderNumber = safeRoom.id || safeRoom.orderNumber || "ORD-884102";
+  const orderAmount = safeRoom.amount || safeRoom.price || "₦50,000";
+  const counterpartyName = safeRoom.sellerName || safeRoom.counterparty || "Marcus Vance";
 
 
   return (

@@ -82,24 +82,25 @@ export default function MobileConfirmDelivery({
   };
 
   // Order data matching reference image
-  const orderNumber = room.id || room.orderNumber || "ORD-662819";
-  const orderAmount = room.amount || room.price || "₦50,000";
-  const courierService = room.courier || "GIG Logistics";
-  const trackingNumber = room.trackingNumber || "GIG2208471";
-  const deliveryStatus = room.deliveryStatus || "Delivered Today";
-  const sellerName = room.sellerName || "Emeka Tech Hub";
-  const buyerName = room.buyerName || "Amaka Obi";
-  const itemName = room.item || room.title || "Nike Air Max 2025";
-  const variantText = room.variant || "Black / Volt, Size 43";
+  const safeRoom = room || {};
+  const orderNumber = safeRoom.id || safeRoom.orderNumber || "ORD-662819";
+  const orderAmount = safeRoom.amount || safeRoom.price || "₦50,000";
+  const courierService = safeRoom.courier || "GIG Logistics";
+  const trackingNumber = safeRoom.trackingNumber || "GIG2208471";
+  const deliveryStatus = safeRoom.deliveryStatus || "Delivered Today";
+  const sellerName = safeRoom.sellerName || "Emeka Tech Hub";
+  const buyerName = safeRoom.buyerName || "Amaka Obi";
+  const itemName = safeRoom.item || safeRoom.title || "Nike Air Max 2025";
+  const variantText = safeRoom.variant || "Black / Volt, Size 43";
 
-  const isBuying = role === "Buying" || room.role === "Buying";
+  const isBuying = role === "Buying" || safeRoom.role === "Buying";
   const counterpartyLabel = isBuying ? "Seller's Name" : "Buyer's Name";
   const counterpartyName = isBuying ? sellerName : buyerName;
 
   // Pricing calculations
   const rawNum =
-    typeof room.priceNumeric === "number"
-      ? room.priceNumeric
+    typeof safeRoom.priceNumeric === "number"
+      ? safeRoom.priceNumeric
       : parseInt(String(orderAmount).replace(/[^0-9]/g, ""), 10) || 50000;
   const txFee = (rawNum * 0.015).toLocaleString();
   const totalAmount = `₦${(rawNum + rawNum * 0.015 + 300).toLocaleString()}`;
