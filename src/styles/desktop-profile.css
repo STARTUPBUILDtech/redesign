@@ -875,3 +875,296 @@ body.dark .seller-sub-card {
 .seller-verify-submit-btn:active {
   transform: translateY(0);
 }
+
+/* ══════════════════════════════════════════════════════════════
+   DESKTOP PROFILE: SPLIT-PANE LAYOUT
+   (mirrors Desktop Payment Room & Desktop Help & Support)
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Left pane: scrollable list column ── */
+.desktop-profile-left-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: clamp(24px, 2.4vw, 40px) clamp(10px, 1.2vw, 39px) 32px clamp(10px, 1.2vw, 39px);
+  box-sizing: border-box;
+  scrollbar-width: thin;
+}
+
+.desktop-profile-left-header {
+  margin-bottom: clamp(22px, 2.2vw, 32px) !important;
+  padding: 0 10px;
+  box-sizing: border-box;
+}
+
+.desktop-profile-left-pane .desktop-profile-avatar-wrap {
+  width: clamp(68px, 5.2vw, 84px);
+  height: clamp(68px, 5.2vw, 84px);
+}
+
+.desktop-profile-left-pane .desktop-profile-avatar-icon {
+  font-size: clamp(46px, 3.5vw, 56px) !important;
+}
+
+.desktop-profile-left-pane .desktop-profile-name {
+  font-size: clamp(22px, 2vw, 28px);
+}
+
+.desktop-profile-left-group + .desktop-profile-left-group {
+  margin-top: clamp(22px, 2.2vw, 32px);
+}
+
+.desktop-profile-left-pane .desktop-profile-section-title {
+  padding: 0 10px;
+  margin-bottom: 4px;
+}
+
+/* ── Rows: rounded hover area like Help list ── */
+.desktop-profile-left-pane .desktop-profile-item {
+  padding: 0 10px;
+  border-radius: 12px;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.desktop-profile-left-pane .desktop-profile-item-inner {
+  padding: clamp(15px, 1.4vw, 19px) 0;
+}
+
+/* ── Selected row: black in light mode ── */
+.desktop-profile-left-pane .desktop-profile-item.selected {
+  background: #000000 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+}
+
+.desktop-profile-left-pane .desktop-profile-item.selected .desktop-profile-item-inner {
+  border-bottom-color: transparent !important;
+}
+
+.desktop-profile-left-pane .desktop-profile-item.selected .desktop-profile-item-title {
+  color: #ffffff !important;
+}
+
+.desktop-profile-left-pane .desktop-profile-item.selected .desktop-profile-item-subtitle {
+  color: rgba(255, 255, 255, 0.72) !important;
+}
+
+.desktop-profile-left-pane .desktop-profile-item.selected .desktop-profile-item-chevron {
+  color: #ffffff !important;
+  transform: translateX(3px);
+}
+
+.desktop-profile-left-pane .desktop-profile-item.selected .desktop-profile-badge.address {
+  background-color: rgba(217, 119, 6, 0.25);
+  color: #fcd34d;
+}
+.desktop-profile-left-pane .desktop-profile-item.selected .desktop-profile-badge.email {
+  background-color: rgba(147, 51, 234, 0.28);
+  color: #d8b4fe;
+}
+.desktop-profile-left-pane .desktop-profile-item.selected .desktop-profile-badge.payout {
+  background-color: rgba(34, 166, 89, 0.25);
+  color: #86efac;
+}
+.desktop-profile-left-pane .desktop-profile-item.selected .desktop-profile-badge.verified {
+  background-color: rgba(66, 126, 196, 0.26);
+  color: #93c5fd;
+}
+.desktop-profile-left-pane .desktop-profile-item.selected .desktop-profile-badge.statements {
+  background-color: rgba(20, 184, 166, 0.25);
+  color: #5eead4;
+}
+.desktop-profile-left-pane .desktop-profile-item.selected .desktop-profile-badge.rewards {
+  background-color: rgba(245, 158, 11, 0.25);
+  color: #fcd34d;
+}
+
+/* ── Selected row: white in dark mode ── */
+.app[data-appearance="dark"] .desktop-profile-left-pane .desktop-profile-item.selected,
+[data-appearance="dark"] .desktop-profile-left-pane .desktop-profile-item.selected {
+  background: #ffffff !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+[data-appearance="dark"] .desktop-profile-left-pane .desktop-profile-item.selected .desktop-profile-item-title {
+  color: #000000 !important;
+}
+
+[data-appearance="dark"] .desktop-profile-left-pane .desktop-profile-item.selected .desktop-profile-item-subtitle {
+  color: rgba(0, 0, 0, 0.65) !important;
+}
+
+[data-appearance="dark"] .desktop-profile-left-pane .desktop-profile-item.selected .desktop-profile-item-chevron {
+  color: #000000 !important;
+}
+
+[data-appearance="dark"] .desktop-profile-left-pane .desktop-profile-item.selected .desktop-profile-badge.address {
+  background-color: #fce8d3;
+  color: #c76016;
+}
+[data-appearance="dark"] .desktop-profile-left-pane .desktop-profile-item.selected .desktop-profile-badge.email {
+  background-color: #eedffe;
+  color: #7e22ce;
+}
+[data-appearance="dark"] .desktop-profile-left-pane .desktop-profile-item.selected .desktop-profile-badge.payout {
+  background-color: #dcf2e4;
+  color: #1b7347;
+}
+[data-appearance="dark"] .desktop-profile-left-pane .desktop-profile-item.selected .desktop-profile-badge.verified {
+  background-color: #e0ebf5;
+  color: #275b8a;
+}
+[data-appearance="dark"] .desktop-profile-left-pane .desktop-profile-item.selected .desktop-profile-badge.statements {
+  background-color: #dcf4f2;
+  color: #0f766e;
+}
+[data-appearance="dark"] .desktop-profile-left-pane .desktop-profile-item.selected .desktop-profile-badge.rewards {
+  background-color: #fef0d9;
+  color: #b45309;
+}
+
+/* ── Right pane: inline profile editors fill the pane ── */
+.desktop-profile-right-pane .profile-modal-inline {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  scrollbar-width: thin;
+  animation: profileInlinePanelIn 0.22s ease-out;
+}
+
+.desktop-profile-right-pane .profile-modal-card.is-inline,
+.desktop-profile-right-pane .profile-modal-card.is-inline[data-appearance="dark"] {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-height: 100% !important;
+  max-height: none !important;
+  height: 100% !important;
+  flex: 1 1 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  animation: none !important;
+  overflow: visible !important;
+  background: #f6f7f9 !important;
+  background-color: #f6f7f9 !important;
+  box-sizing: border-box !important;
+}
+
+.desktop-profile-right-pane .profile-modal-card.is-inline[data-appearance="dark"] {
+  background: #16171b !important;
+  background-color: #16171b !important;
+}
+
+/* Ensure form stretches vertically to push footer to bottom right */
+.desktop-profile-right-pane .profile-modal-card.is-inline > form {
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  box-sizing: border-box !important;
+}
+
+/* Sticky header so the close button stays reachable while scrolling */
+.desktop-profile-right-pane .profile-modal-card.is-inline > .profile-modal-header,
+.desktop-profile-right-pane .profile-modal-card.is-inline form > .profile-modal-header {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: inherit;
+  padding: clamp(18px, 1.6vw, 24px) clamp(20px, 2vw, 36px);
+  flex-shrink: 0;
+}
+
+.desktop-profile-right-pane .profile-modal-card.is-inline .profile-modal-body {
+  flex: 1 1 auto !important;
+  padding-left: clamp(20px, 2vw, 36px);
+  padding-right: clamp(20px, 2vw, 36px);
+  box-sizing: border-box !important;
+}
+
+/* Push buttons to bottom right of the right pane */
+.desktop-profile-right-pane .profile-modal-card.is-inline .profile-modal-footer {
+  margin-top: auto !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 12px !important;
+  padding: 20px clamp(20px, 2vw, 36px) 32px clamp(20px, 2vw, 36px) !important;
+  position: sticky !important;
+  bottom: 0 !important;
+  background: inherit !important;
+  z-index: 2 !important;
+  flex-shrink: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.desktop-profile-right-pane .profile-modal-card.is-inline .payout-modal-scrollable {
+  padding-left: clamp(20px, 2vw, 36px);
+  padding-right: clamp(20px, 2vw, 36px);
+}
+
+@keyframes profileInlinePanelIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Seller verification panel (right pane) ── */
+.desktop-profile-seller-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 20px;
+  padding-bottom: 28px;
+}
+
+.desktop-profile-seller-panel-intro {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.desktop-profile-seller-panel-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.desktop-profile-right-pane .seller-sub-card {
+  background-color: #ffffff;
+  border-color: #e2e4e9;
+  padding: 14px 16px;
+}
+
+.desktop-profile-right-pane [data-appearance="dark"] .seller-sub-card,
+[data-appearance="dark"] .desktop-profile-right-pane .seller-sub-card {
+  background-color: #1d1f25;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.desktop-profile-right-pane .profile-modal-icon-badge.desktop-profile-badge {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  border-radius: 12px;
+}
+
+/* ── Empty state sizing ── */
+.desktop-profile-right-pane .desktop-pr-empty-detail {
+  max-width: 560px;
+}
+
+.desktop-profile-right-pane .desktop-pr-empty-subtitle {
+  white-space: nowrap;
+}

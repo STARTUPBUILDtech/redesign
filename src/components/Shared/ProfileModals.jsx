@@ -101,6 +101,37 @@ export function useModalAppearance(darkProp) {
   return appearance;
 }
 
+/* ── Shared shell: renders as a portal overlay modal, or embedded inline (desktop split-pane) ── */
+function ModalShell({ inline, appearance, onClose, cardClassName = "", labelledBy, children }) {
+  const cardClass = `profile-modal-card${cardClassName ? ` ${cardClassName}` : ""}`;
+  if (inline) {
+    return (
+      <div className="profile-modal-inline" data-appearance={appearance}>
+        <div className={`${cardClass} is-inline`} data-appearance={appearance}>
+          {children}
+        </div>
+      </div>
+    );
+  }
+  return createPortal(
+    <div
+      className="profile-modal-overlay"
+      data-appearance={appearance}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={labelledBy}
+    >
+      <div className={cardClass} data-appearance={appearance}>
+        {children}
+      </div>
+    </div>,
+    document.body
+  );
+}
+
 function extractLocalPhone(phoneStr) {
   if (!phoneStr) return "";
   let cleaned = phoneStr.trim();
@@ -123,6 +154,7 @@ export function EditFieldModal({
   currentData,
   onSave,
   dark,
+  inline = false,
 }) {
   const appearance = useModalAppearance(dark);
   const isDark = appearance === "dark";
@@ -270,18 +302,13 @@ export function EditFieldModal({
 
   const cfg = getHeaderConfig();
 
-  return createPortal(
-    <div
-      className="profile-modal-overlay"
-      data-appearance={appearance}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="profile-modal-title"
+  return (
+    <ModalShell
+      inline={inline}
+      appearance={appearance}
+      onClose={onClose}
+      labelledBy="profile-modal-title"
     >
-      <div className="profile-modal-card" data-appearance={appearance}>
         {/* Header without subtitle */}
         <div className="profile-modal-header">
           <div className="profile-modal-header-left">
@@ -526,9 +553,7 @@ export function EditFieldModal({
             </button>
           </div>
         </form>
-      </div>
-    </div>,
-    document.body
+    </ModalShell>
   );
 }
 
@@ -546,7 +571,7 @@ const OTHER_BANKS = [
   { code: "palmpay", name: "PalmPay" },
 ];
 
-export function PayoutAccountModal({ isOpen, onClose, currentData, onSave, dark }) {
+export function PayoutAccountModal({ isOpen, onClose, currentData, onSave, dark, inline = false }) {
   const appearance = useModalAppearance(dark);
   const isDark = appearance === "dark";
 
@@ -622,7 +647,9 @@ export function PayoutAccountModal({ isOpen, onClose, currentData, onSave, dark 
   const [setAsDefaultNew, setSetAsDefaultNew] = useState(true);
   const [error, setError] = useState("");
   const [listError, setListError] = useState("");
+  const [isBankDropdownOpen, setIsBankDropdownOpen] = useState(false);
   const accountInputRef = useRef(null);
+  const bankDropdownRef = useRef(null);
 
   // Sync state whenever modal opens
   useEffect(() => {
@@ -634,6 +661,7 @@ export function PayoutAccountModal({ isOpen, onClose, currentData, onSave, dark 
       setIsMatchingBank(false);
       setShowSuggestedBanks(false);
       setShowAllBanks(false);
+      setIsBankDropdownOpen(false);
       setSelectedBank(null);
       setIsMatchingName(false);
       setMatchedAccountName("");
@@ -654,11 +682,12 @@ export function PayoutAccountModal({ isOpen, onClose, currentData, onSave, dark 
 
   // Intentionally do not auto-focus input so keyboard is not prompted until user taps the input box
 
-  // When user enters 10 digits: show small loading state under field matching bank, then show list of 3
+  // When user enters 10 digits: show small loading state under Select Bank drop down box, then auto open dropdown
   useEffect(() => {
     if (newAccountNumber.length === 10) {
       setIsMatchingBank(true);
       setShowSuggestedBanks(false);
+      setIsBankDropdownOpen(false);
       setSelectedBank(null);
       setIsMatchingName(false);
       setMatchedAccountName("");
@@ -666,18 +695,36 @@ export function PayoutAccountModal({ isOpen, onClose, currentData, onSave, dark 
       const timer = setTimeout(() => {
         setIsMatchingBank(false);
         setShowSuggestedBanks(true);
+        setIsBankDropdownOpen(true);
       }, 450);
 
       return () => clearTimeout(timer);
     } else {
       setIsMatchingBank(false);
       setShowSuggestedBanks(false);
+      setIsBankDropdownOpen(false);
       setShowAllBanks(false);
       setSelectedBank(null);
       setIsMatchingName(false);
       setMatchedAccountName("");
     }
   }, [newAccountNumber]);
+
+  // Click outside listener to close bank dropdown
+  useEffect(() => {
+    if (!isBankDropdownOpen) return;
+    const handleClickOutside = (e) => {
+      if (bankDropdownRef.current && !bankDropdownRef.current.contains(e.target)) {
+        setIsBankDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [isBankDropdownOpen]);
 
   if (!isOpen) return null;
 
@@ -727,6 +774,7 @@ export function PayoutAccountModal({ isOpen, onClose, currentData, onSave, dark 
     setView("add");
     setNewAccountNumber("");
     setSelectedBank(null);
+    setIsBankDropdownOpen(false);
     setMatchedAccountName("");
     setError("");
   };
@@ -750,6 +798,7 @@ export function PayoutAccountModal({ isOpen, onClose, currentData, onSave, dark 
   // Handle selecting a suggested bank -> triggers name matching
   const handleBankSelect = (bankObj) => {
     setSelectedBank(bankObj);
+    setIsBankDropdownOpen(false);
     setError("");
     setIsMatchingName(true);
     setMatchedAccountName("");
@@ -851,17 +900,13 @@ export function PayoutAccountModal({ isOpen, onClose, currentData, onSave, dark 
 
   const isFieldUneditable = Boolean(selectedBank);
 
-  return createPortal(
-    <div
-      className="profile-modal-overlay"
-      data-appearance={appearance}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
-      role="dialog"
-      aria-modal="true"
+  return (
+    <ModalShell
+      inline={inline}
+      appearance={appearance}
+      onClose={onClose}
+      cardClassName="payout-dialog-card"
     >
-      <div className="profile-modal-card payout-dialog-card" data-appearance={appearance}>
         {/* ════ VIEW 1: Added Payout Banks List (Default) ════ */}
         {view === "list" && (
           <>
@@ -1087,82 +1132,126 @@ export function PayoutAccountModal({ isOpen, onClose, currentData, onSave, dark 
                     </span>
                   )}
                 </div>
-
-                {/* Small loading state right under the field matching bank */}
-                {isMatchingBank && (
-                  <div className="payout-matching-bank-loading">
-                    <span className="payout-spinner-sm"></span>
-                    <span>Matching bank...</span>
-                  </div>
-                )}
               </div>
 
-              {/* 2. Suggested banks like a list of 3 - hidden once bank is selected */}
-              {showSuggestedBanks && !selectedBank && (
-                <div className="payout-suggested-section">
-                  <div className="payout-suggested-header">
-                    <span className="profile-form-label">Suggested Banks</span>
-                    <span className="payout-suggested-sub">Choose your bank</span>
-                  </div>
-
-                  <div className="payout-suggested-list-items">
-                    {PRIMARY_SUGGESTED_BANKS.map((b) => {
-                      const isChosen = selectedBank?.code === b.code;
-                      return (
-                        <button
-                          key={b.code}
-                          type="button"
-                          className={`payout-suggested-row-item ${isChosen ? "is-selected" : ""}`}
-                          onClick={() => handleBankSelect(b)}
-                        >
-                          <div className="payout-suggested-row-left">
-                            <BankLogo bankCode={b.code} bankName={b.name} size={36} />
-                            <span className="payout-suggested-row-name">{b.name}</span>
-                          </div>
-                          <div className="payout-suggested-row-radio">
-                            <span className="material-symbols-outlined">
-                              {isChosen ? "radio_button_checked" : "radio_button_unchecked"}
-                            </span>
-                          </div>
-                        </button>
-                      );
-                    })}
-
-                    {!showAllBanks ? (
+              {/* 2. Select Bank Dropdown (unclickable until account number input is 10 digits complete) */}
+              {(() => {
+                const isDropdownDisabled = newAccountNumber.length < 10 || isMatchingBank;
+                return (
+                  <div className="new-payment-field-group" style={{ position: "relative" }}>
+                    <label className="new-payment-label" htmlFor="payout-select-bank-trigger">
+                      Select Bank
+                    </label>
+                    <div
+                      ref={bankDropdownRef}
+                      className={`payout-bank-select-container ${isDropdownDisabled ? "is-disabled" : ""} ${isBankDropdownOpen ? "is-open" : ""}`}
+                    >
                       <button
+                        id="payout-select-bank-trigger"
                         type="button"
-                        className="payout-more-banks-btn"
-                        onClick={() => setShowAllBanks(true)}
+                        className={`new-payment-field-box payout-bank-select-trigger ${isDropdownDisabled ? "is-disabled" : ""} ${isBankDropdownOpen ? "is-open" : ""} ${selectedBank ? "has-bank" : ""}`}
+                        disabled={isDropdownDisabled}
+                        onClick={() => {
+                          if (!isDropdownDisabled) {
+                            setIsBankDropdownOpen((prev) => !prev);
+                          }
+                        }}
+                        aria-haspopup="listbox"
+                        aria-expanded={isBankDropdownOpen}
+                        title={isDropdownDisabled ? "Enter complete 10-digit account number first" : "Choose bank"}
                       >
-                        <span>Other banks</span>
-                        <span className="material-symbols-outlined" style={{ fontSize: 16 }}>expand_more</span>
+                        <div className="payout-bank-trigger-left">
+                          {selectedBank ? (
+                            <>
+                              <BankLogo bankCode={selectedBank.code} bankName={selectedBank.name} size={22} />
+                              <span className="payout-bank-trigger-name">{selectedBank.name}</span>
+                            </>
+                          ) : (
+                            <span className="payout-bank-trigger-placeholder">Select Bank</span>
+                          )}
+                        </div>
+                        <span className={`material-symbols-outlined payout-bank-chevron ${isBankDropdownOpen ? "rotate" : ""}`}>
+                          keyboard_arrow_down
+                        </span>
                       </button>
-                    ) : (
-                      OTHER_BANKS.map((b) => {
-                        const isChosen = selectedBank?.code === b.code;
-                        return (
-                          <button
-                            key={b.code}
-                            type="button"
-                            className={`payout-suggested-row-item ${isChosen ? "is-selected" : ""}`}
-                            onClick={() => handleBankSelect(b)}
-                          >
-                            <div className="payout-suggested-row-left">
-                              <BankLogo bankCode={b.code} bankName={b.name} size={36} />
-                              <span className="payout-suggested-row-name">{b.name}</span>
-                            </div>
-                            <div className="payout-suggested-row-radio">
-                              <span className="material-symbols-outlined">
-                                {isChosen ? "radio_button_checked" : "radio_button_unchecked"}
-                              </span>
-                            </div>
-                          </button>
-                        );
-                      })
+
+                      {/* Dropdown Menu popover that drops down auto when matching finishes */}
+                      {isBankDropdownOpen && !isDropdownDisabled && (
+                        <div className="payout-bank-dropdown-menu" role="listbox">
+                          <div className="payout-bank-dropdown-header">Choose your bank</div>
+                          <div className="payout-bank-dropdown-list">
+                            {PRIMARY_SUGGESTED_BANKS.map((b) => {
+                              const isChosen = selectedBank?.code === b.code;
+                              return (
+                                <button
+                                  key={b.code}
+                                  type="button"
+                                  className={`payout-bank-dropdown-item ${isChosen ? "is-selected" : ""}`}
+                                  onClick={() => handleBankSelect(b)}
+                                >
+                                  <div className="payout-bank-dropdown-item-left">
+                                    <BankLogo bankCode={b.code} bankName={b.name} size={26} />
+                                    <span className="payout-bank-dropdown-item-name">{b.name}</span>
+                                  </div>
+                                  {isChosen && (
+                                    <span className="material-symbols-outlined payout-bank-dropdown-check">
+                                      check
+                                    </span>
+                                  )}
+                                </button>
+                              );
+                            })}
+
+                            {!showAllBanks ? (
+                              <button
+                                type="button"
+                                className="payout-bank-dropdown-more-btn"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setShowAllBanks(true);
+                                }}
+                              >
+                                <span>Other banks</span>
+                                <span className="material-symbols-outlined" style={{ fontSize: 16 }}>expand_more</span>
+                              </button>
+                            ) : (
+                              OTHER_BANKS.map((b) => {
+                                const isChosen = selectedBank?.code === b.code;
+                                return (
+                                  <button
+                                    key={b.code}
+                                    type="button"
+                                    className={`payout-bank-dropdown-item ${isChosen ? "is-selected" : ""}`}
+                                    onClick={() => handleBankSelect(b)}
+                                  >
+                                    <div className="payout-bank-dropdown-item-left">
+                                      <BankLogo bankCode={b.code} bankName={b.name} size={26} />
+                                      <span className="payout-bank-dropdown-item-name">{b.name}</span>
+                                    </div>
+                                    {isChosen && (
+                                      <span className="material-symbols-outlined payout-bank-dropdown-check">
+                                        check
+                                      </span>
+                                    )}
+                                  </button>
+                                );
+                              })
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Small loading state right under the select Bank dropdown box */}
+                    {isMatchingBank && (
+                      <div className="payout-matching-bank-loading">
+                        <span className="payout-spinner-sm"></span>
+                        <span>Matching bank...</span>
+                      </div>
                     )}
                   </div>
-                </div>
-              )}
+                );
+              })()}
 
               {/* 3. Small loading state when user chooses a bank matching name */}
               {isMatchingName && (
@@ -1172,7 +1261,7 @@ export function PayoutAccountModal({ isOpen, onClose, currentData, onSave, dark 
                 </div>
               )}
 
-              {/* 4. Matched name result */}
+              {/* 4. Full account details card rendered under the select bank dropdown */}
               {selectedBank && matchedAccountName && !isMatchingName && (
                 <div className="payout-match-result-container">
                   <div className="payout-match-card">
@@ -1191,6 +1280,7 @@ export function PayoutAccountModal({ isOpen, onClose, currentData, onSave, dark 
                         onClick={() => {
                           setSelectedBank(null);
                           setMatchedAccountName("");
+                          setIsBankDropdownOpen(true);
                         }}
                         title="Choose another bank"
                       >
@@ -1200,7 +1290,6 @@ export function PayoutAccountModal({ isOpen, onClose, currentData, onSave, dark 
                   </div>
                 </div>
               )}
-
             </div>
 
             <div className="profile-modal-footer payout-single-footer">
@@ -1228,14 +1317,12 @@ export function PayoutAccountModal({ isOpen, onClose, currentData, onSave, dark 
             </div>
           </form>
         )}
-      </div>
-    </div>,
-    document.body
+    </ModalShell>
   );
 }
 
 // ── 3. Seller Verification Modal ──
-export function VerifiedSellerModal({ isOpen, onClose, currentStatus, onVerified, dark }) {
+export function VerifiedSellerModal({ isOpen, onClose, currentStatus, onVerified, dark, inline = false }) {
   const appearance = useModalAppearance(dark);
   const isDark = appearance === "dark";
 
@@ -1264,17 +1351,8 @@ export function VerifiedSellerModal({ isOpen, onClose, currentStatus, onVerified
     }, 900);
   };
 
-  return createPortal(
-    <div
-      className="profile-modal-overlay"
-      data-appearance={appearance}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
-      role="dialog"
-      aria-modal="true"
-    >
-      <div className="profile-modal-card" data-appearance={appearance}>
+  return (
+    <ModalShell inline={inline} appearance={appearance} onClose={onClose}>
         <div className="profile-modal-header">
           <div className="profile-modal-header-left">
             <div
@@ -1426,14 +1504,12 @@ export function VerifiedSellerModal({ isOpen, onClose, currentStatus, onVerified
             </div>
           </form>
         )}
-      </div>
-    </div>,
-    document.body
+    </ModalShell>
   );
 }
 
 // ── 4. Statements & Reports Modal ──
-export function StatementsModal({ isOpen, onClose, userEmail, onSend, dark }) {
+export function StatementsModal({ isOpen, onClose, userEmail, onSend, dark, inline = false }) {
   const appearance = useModalAppearance(dark);
   const isDark = appearance === "dark";
 
@@ -1459,17 +1535,13 @@ export function StatementsModal({ isOpen, onClose, userEmail, onSend, dark }) {
     }, 1200);
   };
 
-  return createPortal(
-    <div
-      className="profile-modal-overlay"
-      data-appearance={appearance}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
-      role="dialog"
-      aria-modal="true"
+  return (
+    <ModalShell
+      inline={inline}
+      appearance={appearance}
+      onClose={onClose}
+      cardClassName="statements-dialog-card"
     >
-      <div className="profile-modal-card statements-dialog-card" data-appearance={appearance}>
         <div className="profile-modal-header">
           <div className="profile-modal-header-left">
             <div
@@ -1589,14 +1661,12 @@ export function StatementsModal({ isOpen, onClose, userEmail, onSend, dark }) {
             </button>
           </div>
         )}
-      </div>
-    </div>,
-    document.body
+    </ModalShell>
   );
 }
 
 // ── 5. Cashback & Referral Rewards Modal ──
-export function RewardsModal({ isOpen, onClose, onCopy, dark }) {
+export function RewardsModal({ isOpen, onClose, onCopy, dark, inline = false }) {
   const appearance = useModalAppearance(dark);
   const isDark = appearance === "dark";
 
@@ -1612,17 +1682,8 @@ export function RewardsModal({ isOpen, onClose, onCopy, dark }) {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  return createPortal(
-    <div
-      className="profile-modal-overlay"
-      data-appearance={appearance}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
-      role="dialog"
-      aria-modal="true"
-    >
-      <div className="profile-modal-card" data-appearance={appearance}>
+  return (
+    <ModalShell inline={inline} appearance={appearance} onClose={onClose}>
         <div className="profile-modal-header">
           <div className="profile-modal-header-left">
             <div
@@ -1686,9 +1747,7 @@ export function RewardsModal({ isOpen, onClose, onCopy, dark }) {
             Close
           </button>
         </div>
-      </div>
-    </div>,
-    document.body
+    </ModalShell>
   );
 }
 
@@ -1713,7 +1772,7 @@ export function ProfileToast({ message, isVisible, dark }) {
 }
 
 // ── 7. Seller Verification Step Modal (BVN, NIN, or Business Info) ──
-export function SellerStepModal({ isOpen, onClose, step, onSave, dark }) {
+export function SellerStepModal({ isOpen, onClose, step, onSave, dark, inline = false }) {
   const appearance = useModalAppearance(dark);
   const isDark = appearance === "dark";
 
@@ -1760,17 +1819,8 @@ export function SellerStepModal({ isOpen, onClose, step, onSave, dark }) {
     }
   };
 
-  return createPortal(
-    <div
-      className="profile-modal-overlay"
-      data-appearance={appearance}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
-      role="dialog"
-      aria-modal="true"
-    >
-      <div className="profile-modal-card" data-appearance={appearance}>
+  return (
+    <ModalShell inline={inline} appearance={appearance} onClose={onClose}>
         <div className="profile-modal-header">
           <div className="profile-modal-header-left">
             <div
@@ -1916,8 +1966,6 @@ export function SellerStepModal({ isOpen, onClose, step, onSave, dark }) {
             </button>
           </div>
         </form>
-      </div>
-    </div>,
-    document.body
+    </ModalShell>
   );
 }

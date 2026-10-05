@@ -253,7 +253,7 @@ export default function MobilePaymentInvitation({
             {!counterpartyJoined ? (
               <>
                 <div
-                  className="header-avatar-circle m-invite-profile-avatar"
+                  className="m-invite-profile-avatar"
                   aria-label="User avatar"
                 >
                   <img
@@ -279,7 +279,7 @@ export default function MobilePaymentInvitation({
                 title="Counter party has joined room"
               >
                 <div
-                  className="header-avatar-circle m-invite-profile-avatar m-invite-avatar-first"
+                  className="m-invite-profile-avatar m-invite-avatar-first"
                   aria-label="Your avatar"
                 >
                   <img
@@ -289,7 +289,7 @@ export default function MobilePaymentInvitation({
                   />
                 </div>
                 <div
-                  className="header-avatar-circle m-invite-profile-avatar m-invite-avatar-second"
+                  className="m-invite-profile-avatar m-invite-avatar-second"
                   aria-label="Counterparty avatar"
                   style={{ backgroundColor: "#e5ebf3" }}
                 >

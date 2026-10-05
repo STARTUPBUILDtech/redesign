@@ -1148,20 +1148,20 @@
 }
 
 .desktop-pr-right-pane .ap-back-btn {
-  background-color: #ffffff !important;
-  border: 1px solid #e5e7eb !important;
-  color: #111827 !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+  background-color: #000000 !important;
+  border: 1px solid #000000 !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
 }
 
 .desktop-pr-right-pane .ap-back-btn:hover {
-  background-color: #f3f4f6 !important;
-  border-color: #d1d5db !important;
-  color: #000000 !important;
+  background-color: #222222 !important;
+  border-color: #222222 !important;
+  color: #ffffff !important;
 }
 
 .desktop-pr-right-pane .ap-back-btn .material-symbols-outlined {
-  color: #111827 !important;
+  color: #ffffff !important;
 }
 
 .desktop-pr-right-pane .ap-help-btn {
@@ -1415,20 +1415,30 @@
   color: #f4f4f6 !important;
 }
 
-.app[data-appearance="dark"] .desktop-pr-right-pane .ap-back-btn {
-  background-color: #1a1c22 !important;
-  border: 1px solid #272a31 !important;
-  color: #f4f4f6 !important;
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-back-btn,
+[data-appearance="dark"] .desktop-pr-right-pane .ap-back-btn,
+body[data-appearance="dark"] .desktop-pr-right-pane .ap-back-btn,
+.mobile-dashboard[data-appearance="dark"] .desktop-pr-right-pane .ap-back-btn {
+  background-color: #ffffff !important;
+  border: 1px solid #ffffff !important;
+  color: #111827 !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4) !important;
 }
 
-.app[data-appearance="dark"] .desktop-pr-right-pane .ap-back-btn:hover {
-  background-color: #242730 !important;
-  border-color: #32353e !important;
-  color: #ffffff !important;
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-back-btn:hover,
+[data-appearance="dark"] .desktop-pr-right-pane .ap-back-btn:hover,
+body[data-appearance="dark"] .desktop-pr-right-pane .ap-back-btn:hover,
+.mobile-dashboard[data-appearance="dark"] .desktop-pr-right-pane .ap-back-btn:hover {
+  background-color: #f1f2f4 !important;
+  border-color: #f1f2f4 !important;
+  color: #000000 !important;
 }
 
-.app[data-appearance="dark"] .desktop-pr-right-pane .ap-back-btn .material-symbols-outlined {
-  color: #f4f4f6 !important;
+.app[data-appearance="dark"] .desktop-pr-right-pane .ap-back-btn .material-symbols-outlined,
+[data-appearance="dark"] .desktop-pr-right-pane .ap-back-btn .material-symbols-outlined,
+body[data-appearance="dark"] .desktop-pr-right-pane .ap-back-btn .material-symbols-outlined,
+.mobile-dashboard[data-appearance="dark"] .desktop-pr-right-pane .ap-back-btn .material-symbols-outlined {
+  color: #111827 !important;
 }
 
 .app[data-appearance="dark"] .desktop-pr-right-pane .ap-help-btn {

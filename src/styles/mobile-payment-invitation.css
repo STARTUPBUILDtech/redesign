@@ -393,6 +393,8 @@
   border-radius: 50% !important;
   overflow: hidden !important;
   display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
   align-items: center !important;
   justify-content: center !important;
   background-color: #ffffff !important;
@@ -413,6 +415,8 @@
   object-position: center bottom !important;
   border-radius: 50% !important;
   display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
   user-select: none !important;
   pointer-events: none !important;
   image-rendering: -webkit-optimize-contrast !important;

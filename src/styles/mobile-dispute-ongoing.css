@@ -410,8 +410,10 @@ body[data-appearance="dark"] .mobile-dispute-ongoing-screen .ap-back-btn:hover,
 }
 
 /* ── Order Details Accordion Button ── */
-.mobile-dispute-ongoing-screen .ap-accordion-wrap {
-  margin-top: 8px;
+.mobile-dispute-ongoing-screen .ap-accordion-wrap,
+.desktop-pr-mobile-viewport .mobile-dispute-ongoing-screen .ap-accordion-wrap {
+  margin-top: 26px !important;
+  margin-bottom: 6px !important;
 }
 
 .mdo-order-details-trigger {

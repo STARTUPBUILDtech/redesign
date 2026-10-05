@@ -121,11 +121,38 @@ function SendPlaneIcon() {
   );
 }
 
+/* ── Shared shell: renders as a slide-up portal modal, or embedded inline (desktop split-pane) ── */
+function SlideUpShell({ inline, onClose, headerBottom, children }) {
+  if (inline) {
+    return <div className="pk-slideup-container pk-slideup-inline">{children}</div>;
+  }
+  return createPortal(
+    <div
+      className="pk-slideup-backdrop"
+      style={{ "--pk-header-bottom": `${headerBottom}px` }}
+      onClick={onClose}
+    >
+      <div
+        className="pk-slideup-container"
+        style={{
+          "--pk-header-bottom": `${headerBottom}px`,
+          height: `calc(100dvh - ${headerBottom}px)`,
+          maxHeight: `calc(100dvh - ${headerBottom}px)`,
+        }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {children}
+      </div>
+    </div>,
+    document.body
+  );
+}
+
 /* ==========================================================================
    IMAGE 1: SEND US A MESSAGE SLIDE-UP MODAL
    ========================================================================== */
-export function SendMessageSlideUpModal({ isOpen, onClose }) {
-  const headerBottom = useHeaderBottom(isOpen);
+export function SendMessageSlideUpModal({ isOpen, onClose, inline = false }) {
+  const headerBottom = useHeaderBottom(isOpen && !inline);
   const [messages, setMessages] = useState([
     {
       id: 1,
@@ -174,21 +201,8 @@ export function SendMessageSlideUpModal({ isOpen, onClose }) {
     }, 900);
   };
 
-  return createPortal(
-    <div
-      className="pk-slideup-backdrop"
-      style={{ "--pk-header-bottom": `${headerBottom}px` }}
-      onClick={onClose}
-    >
-      <div
-        className="pk-slideup-container"
-        style={{
-          "--pk-header-bottom": `${headerBottom}px`,
-          height: `calc(100dvh - ${headerBottom}px)`,
-          maxHeight: `calc(100dvh - ${headerBottom}px)`,
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
+  return (
+    <SlideUpShell inline={inline} onClose={onClose} headerBottom={headerBottom}>
         {/* Navy Header */}
         <div className="pk-slideup-header header-message">
           <div className="pk-slideup-header-left">
@@ -245,17 +259,15 @@ export function SendMessageSlideUpModal({ isOpen, onClose }) {
             <SendPlaneIcon />
           </button>
         </form>
-      </div>
-    </div>,
-    document.body
+    </SlideUpShell>
   );
 }
 
 /* ==========================================================================
    IMAGE 2: PAYKUDI ASSISTANT SLIDE-UP MODAL
    ========================================================================== */
-export function BotAssistantSlideUpModal({ isOpen, onClose, room = {} }) {
-  const headerBottom = useHeaderBottom(isOpen);
+export function BotAssistantSlideUpModal({ isOpen, onClose, room = {}, inline = false }) {
+  const headerBottom = useHeaderBottom(isOpen && !inline);
   const [chatMessages, setChatMessages] = useState([]);
   const [inputText, setInputText] = useState("");
   const threadEndRef = useRef(null);
@@ -313,21 +325,8 @@ export function BotAssistantSlideUpModal({ isOpen, onClose, room = {} }) {
     }, 700);
   };
 
-  return createPortal(
-    <div
-      className="pk-slideup-backdrop"
-      style={{ "--pk-header-bottom": `${headerBottom}px` }}
-      onClick={onClose}
-    >
-      <div
-        className="pk-slideup-container"
-        style={{
-          "--pk-header-bottom": `${headerBottom}px`,
-          height: `calc(100dvh - ${headerBottom}px)`,
-          maxHeight: `calc(100dvh - ${headerBottom}px)`,
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
+  return (
+    <SlideUpShell inline={inline} onClose={onClose} headerBottom={headerBottom}>
         {/* Emerald Green Header */}
         <div className="pk-slideup-header header-bot">
           <div className="pk-slideup-header-left">
@@ -439,17 +438,15 @@ export function BotAssistantSlideUpModal({ isOpen, onClose, room = {} }) {
             <SendPlaneIcon />
           </button>
         </form>
-      </div>
-    </div>,
-    document.body
+    </SlideUpShell>
   );
 }
 
 /* ==========================================================================
    IMAGE 3: FREQUENTLY ASKED QUESTIONS SLIDE-UP MODAL
    ========================================================================== */
-export function FaqSlideUpModal({ isOpen, onClose }) {
-  const headerBottom = useHeaderBottom(isOpen);
+export function FaqSlideUpModal({ isOpen, onClose, inline = false }) {
+  const headerBottom = useHeaderBottom(isOpen && !inline);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
   const [expandedFaq, setExpandedFaq] = useState(null);
@@ -589,21 +586,8 @@ export function FaqSlideUpModal({ isOpen, onClose }) {
     return true;
   });
 
-  return createPortal(
-    <div
-      className="pk-slideup-backdrop"
-      style={{ "--pk-header-bottom": `${headerBottom}px` }}
-      onClick={onClose}
-    >
-      <div
-        className="pk-slideup-container"
-        style={{
-          "--pk-header-bottom": `${headerBottom}px`,
-          height: `calc(100dvh - ${headerBottom}px)`,
-          maxHeight: `calc(100dvh - ${headerBottom}px)`,
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
+  return (
+    <SlideUpShell inline={inline} onClose={onClose} headerBottom={headerBottom}>
         {/* Warm Amber Orange Header matching Image 3 */}
         <div className="pk-slideup-header header-faq">
           <div className="pk-slideup-header-left">
@@ -692,8 +676,6 @@ export function FaqSlideUpModal({ isOpen, onClose }) {
             )}
           </div>
         </div>
-      </div>
-    </div>,
-    document.body
+    </SlideUpShell>
   );
 }

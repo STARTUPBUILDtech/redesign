@@ -109,7 +109,7 @@ html.dark .profile-modal-card {
   align-items: center;
   justify-content: space-between;
   padding: 18px 24px;
-  border-bottom: 1px solid var(--line, #e2e8f0);
+  border-bottom: none;
   gap: 16px;
 }
 
@@ -120,7 +120,7 @@ body[data-appearance="dark"] .profile-modal-header,
 html[data-appearance="dark"] .profile-modal-header,
 body.dark .profile-modal-header,
 html.dark .profile-modal-header {
-  border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+  border-bottom: none !important;
 }
 
 .profile-modal-header-left {
@@ -1094,12 +1094,6 @@ html.dark .profile-btn-primary {
   color: #94a3b8 !important;
 }
 
-.payout-modal-desc {
-  margin: 0;
-  font-size: 13.5px;
-  line-height: 1.45;
-  color: var(--muted, #64748b);
-}
 
 /* Back button in Add view */
 .payout-back-arrow-btn {
@@ -1124,9 +1118,10 @@ html.dark .profile-btn-primary {
 }
 
 .payout-modal-desc {
-  margin: 0 0 12px 0;
-  font-size: 13px;
-  color: var(--muted, #64748b);
+  margin: 0 0 14px 0;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: #000000 !important;
   font-weight: 500;
 }
 
@@ -1763,8 +1758,10 @@ html.dark .profile-btn-primary {
 }
 
 [data-appearance="dark"] .payout-modal-desc,
-.profile-modal-card[data-appearance="dark"] .payout-modal-desc {
-  color: #9ca3af;
+.profile-modal-card[data-appearance="dark"] .payout-modal-desc,
+.profile-modal-overlay[data-appearance="dark"] .payout-modal-desc,
+body.dark .payout-modal-desc {
+  color: #f4f4f6 !important;
 }
 
 [data-appearance="dark"] .payout-list-inline-error,
@@ -1973,6 +1970,239 @@ html.dark .profile-btn-primary {
 [data-appearance="dark"] .payout-more-banks-btn:hover,
 .profile-modal-card[data-appearance="dark"] .payout-more-banks-btn:hover {
   color: #10b981;
+}
+
+/* ── Select Bank Dropdown in Add Payout Account ── */
+.payout-bank-select-container {
+  position: relative;
+  width: 100%;
+}
+
+.payout-bank-select-trigger {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  cursor: pointer !important;
+  user-select: none !important;
+  text-align: left !important;
+  outline: none !important;
+}
+
+.payout-bank-select-trigger.is-disabled {
+  cursor: not-allowed !important;
+  background: var(--page-subtle, #f8fafc) !important;
+  opacity: 0.7;
+  border-color: var(--line, #e2e8f0) !important;
+}
+
+[data-appearance="dark"] .payout-bank-select-trigger.is-disabled,
+.profile-modal-card[data-appearance="dark"] .payout-bank-select-trigger.is-disabled {
+  background: #18191d !important;
+  opacity: 0.55;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.payout-bank-select-trigger.is-open {
+  border-color: #000000 !important;
+  box-shadow: 0 0 0 1px #000000 !important;
+}
+
+[data-appearance="dark"] .payout-bank-select-trigger.is-open,
+.profile-modal-card[data-appearance="dark"] .payout-bank-select-trigger.is-open {
+  border-color: #ffffff !important;
+  box-shadow: 0 0 0 1px #ffffff !important;
+}
+
+.payout-bank-trigger-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.payout-bank-trigger-placeholder {
+  color: var(--muted, #94a3b8);
+  font-size: 13.5px;
+  font-family: 'Inter', sans-serif;
+}
+
+.payout-bank-trigger-name {
+  color: var(--ink, #0f172a);
+  font-size: 13.5px;
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+}
+
+[data-appearance="dark"] .payout-bank-trigger-name,
+.profile-modal-card[data-appearance="dark"] .payout-bank-trigger-name {
+  color: #f4f4f6 !important;
+}
+
+.payout-bank-chevron {
+  color: var(--ink, #0f172a);
+  font-size: 20px;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  flex-shrink: 0;
+}
+
+.payout-bank-select-trigger.is-disabled .payout-bank-chevron {
+  color: var(--muted, #94a3b8) !important;
+  opacity: 0.6;
+}
+
+.payout-bank-chevron.rotate {
+  transform: rotate(180deg);
+}
+
+[data-appearance="dark"] .payout-bank-chevron,
+.profile-modal-card[data-appearance="dark"] .payout-bank-chevron {
+  color: #f4f4f6;
+}
+
+.payout-bank-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: var(--page, #ffffff);
+  border: 1px solid var(--line, #e2e8f0);
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12), 0 4px 10px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: customDropdownFade 0.15s ease-out;
+}
+
+[data-appearance="dark"] .payout-bank-dropdown-menu,
+.profile-modal-card[data-appearance="dark"] .payout-bank-dropdown-menu {
+  background: #18191d !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.6) !important;
+}
+
+.payout-bank-dropdown-header {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--muted, #64748b);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  padding: 10px 14px 4px 14px;
+}
+
+[data-appearance="dark"] .payout-bank-dropdown-header,
+.profile-modal-card[data-appearance="dark"] .payout-bank-dropdown-header {
+  color: #94a3b8 !important;
+}
+
+.payout-bank-dropdown-list {
+  max-height: 220px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 4px 6px 6px 6px;
+  gap: 2px;
+  scrollbar-width: thin;
+}
+
+.payout-bank-dropdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.12s ease;
+  text-align: left;
+}
+
+.payout-bank-dropdown-item:hover {
+  background-color: color-mix(in srgb, var(--ink) 6%, transparent);
+}
+
+[data-appearance="dark"] .payout-bank-dropdown-item:hover,
+.profile-modal-card[data-appearance="dark"] .payout-bank-dropdown-item:hover {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.payout-bank-dropdown-item.is-selected {
+  background-color: color-mix(in srgb, var(--ink) 8%, transparent);
+}
+
+[data-appearance="dark"] .payout-bank-dropdown-item.is-selected,
+.profile-modal-card[data-appearance="dark"] .payout-bank-dropdown-item.is-selected {
+  background-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.payout-bank-dropdown-item-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.payout-bank-dropdown-item-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--ink, #0f172a);
+  font-family: 'Inter', sans-serif;
+}
+
+[data-appearance="dark"] .payout-bank-dropdown-item-name,
+.profile-modal-card[data-appearance="dark"] .payout-bank-dropdown-item-name {
+  color: #f4f4f6 !important;
+}
+
+.payout-bank-dropdown-check {
+  color: #10b981;
+  font-size: 18px;
+}
+
+.payout-bank-dropdown-more-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 10px;
+  border: none;
+  background: transparent;
+  color: var(--muted, #64748b);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 6px;
+  margin-top: 2px;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.payout-bank-dropdown-more-btn:hover {
+  color: var(--ink, #0f172a);
+  background-color: color-mix(in srgb, var(--ink) 4%, transparent);
+}
+
+[data-appearance="dark"] .payout-bank-dropdown-more-btn {
+  color: #94a3b8 !important;
+}
+
+[data-appearance="dark"] .payout-bank-dropdown-more-btn:hover {
+  color: #f4f4f6 !important;
+  background-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+@keyframes customDropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ── Custom Dropdown Selector in Profile Modals (Matching State & Status Dropdown) ── */

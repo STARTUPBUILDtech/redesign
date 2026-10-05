@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import "../styles/desktop-profile.css";
+import "../styles/desktop-payment-room.css";
 import {
   EditFieldModal,
   PayoutAccountModal,
@@ -10,6 +11,7 @@ import {
   SellerStepModal,
   BvnIcon,
   NinIcon,
+  useModalAppearance,
 } from "./Shared/ProfileModals.jsx";
 
 function WhatsAppIcon({ size = 20 }) {
@@ -20,13 +22,23 @@ function WhatsAppIcon({ size = 20 }) {
   );
 }
 
+/**
+ * @param {"stacked" | "split"} layout
+ *   - "stacked" (default): original two-column page with popup modals (used on mobile)
+ *   - "split": desktop split-pane — list on the left, selected panel opens on the right
+ *     (mirrors Desktop Payment Room and Desktop Help & Support)
+ */
 export default function DesktopProfile({
   userName = "Amaka",
   phoneNumber = "+234 803 200 1585",
   onEditProfile,
   onSignOut = () => {},
   dark,
+  layout = "stacked",
 }) {
+  const isSplit = layout === "split";
+  const appearance = useModalAppearance(dark);
+
   // Initialize state with stored details or fallbacks
   const [profileData, setProfileData] = useState(() => {
     try {
@@ -61,7 +73,9 @@ export default function DesktopProfile({
     };
   });
 
-  // Modal display state: null | 'email' | 'name' | 'address' | 'phone' | 'profile' | 'payout' | 'verification' | 'statements' | 'rewards'
+  // Modal / panel display state:
+  // null | 'email' | 'name' | 'address' | 'phone' | 'profile' | 'payout' | 'verification' | 'seller' | 'statements' | 'rewards'
+  // In "stacked" layout this drives popup modals; in "split" layout it drives the right pane.
   const [activeModal, setActiveModal] = useState(null);
 
   // Seller verification dropdown and steps
@@ -82,6 +96,10 @@ export default function DesktopProfile({
   // Toast feedback state
   const [toastMessage, setToastMessage] = useState("");
   const [isToastVisible, setIsToastVisible] = useState(false);
+
+  useEffect(() => {
+    if (isSplit) window.scrollTo({ top: 0, behavior: "instant" });
+  }, [isSplit]);
 
   const showToast = (message) => {
     setToastMessage(message);
@@ -104,7 +122,13 @@ export default function DesktopProfile({
   };
 
   const handleEditClick = (field) => {
+    setActiveSellerStep(null);
     setActiveModal(field);
+  };
+
+  const closePanel = () => {
+    setActiveSellerStep(null);
+    setActiveModal(null);
   };
 
   const handleSaveSellerStep = (step, data) => {
@@ -140,6 +164,511 @@ export default function DesktopProfile({
     );
   };
 
+  const handleFieldSave = (updates) => {
+    let msg = "Details updated successfully";
+    if (updates.email) msg = "Email address updated successfully";
+    else if (updates.address) msg = "Address updated successfully";
+    updateProfile(updates, msg);
+  };
+
+  /* ── Shared render helpers ── */
+
+  const renderAvatar = () => (
+    <div className="desktop-profile-avatar-wrap">
+      <div
+        className="desktop-profile-avatar-circle"
+        style={{ cursor: "pointer" }}
+        onClick={() => handleEditClick("profile")}
+        title="Click to edit profile"
+      >
+        <span className="material-symbols-outlined desktop-profile-avatar-icon">
+          account_circle
+        </span>
+      </div>
+      <button
+        id="profile-avatar-edit-btn"
+        type="button"
+        className="desktop-profile-avatar-edit"
+        onClick={() => {
+          if (onEditProfile) {
+            onEditProfile();
+          } else {
+            handleEditClick("profile");
+          }
+        }}
+        aria-label="Edit profile picture"
+        title="Edit avatar and profile"
+      >
+        <span className="material-symbols-outlined">edit</span>
+      </button>
+    </div>
+  );
+
+  const renderUserInfo = () => (
+    <div className="desktop-profile-info">
+      <h1 className="desktop-profile-name">{profileData.name}</h1>
+      <div className="desktop-profile-phone-pill">
+        <WhatsAppIcon size={14} />
+        <span>{profileData.phone}</span>
+      </div>
+    </div>
+  );
+
+  // Generic list row. Readonly rows render as a div; actionable rows as a button.
+  const renderRow = ({
+    id,
+    badgeClass,
+    badgeContent,
+    title,
+    subtitle,
+    ariaLabel,
+    onClick,
+    readonly = false,
+    noBorder = false,
+    selected = false,
+    chevron = "chevron_right",
+    chevronClass = "",
+    expanded,
+    titleTooltip,
+  }) => {
+    const inner = (
+      <>
+        <div className={`desktop-profile-badge ${badgeClass}`}>{badgeContent}</div>
+        <div className={`desktop-profile-item-inner ${noBorder ? "no-border" : ""}`}>
+          <div className="desktop-profile-item-text">
+            <span className="desktop-profile-item-title">{title}</span>
+            <span className="desktop-profile-item-subtitle">{subtitle}</span>
+          </div>
+          {!readonly && (
+            <span className={`material-symbols-outlined desktop-profile-item-chevron ${chevronClass}`}>
+              {chevron}
+            </span>
+          )}
+        </div>
+      </>
+    );
+
+    if (readonly) {
+      return (
+        <div id={id} className="desktop-profile-item readonly" aria-label={ariaLabel}>
+          {inner}
+        </div>
+      );
+    }
+
+    return (
+      <button
+        id={id}
+        type="button"
+        className={`desktop-profile-item ${selected ? "selected" : ""} ${expanded ? "is-expanded" : ""}`}
+        aria-label={ariaLabel}
+        onClick={onClick}
+        title={titleTooltip}
+        aria-pressed={isSplit ? selected : undefined}
+        aria-expanded={expanded}
+      >
+        {inner}
+      </button>
+    );
+  };
+
+  const sellerTitle = (
+    <>
+      <span>Become a Verified Seller</span>
+      {profileData.isVerified ? (
+        <span className="desktop-profile-unverified-tag" style={{ color: "#10b981", fontWeight: 700 }}>
+          (Verified)
+        </span>
+      ) : (
+        <span className="desktop-profile-unverified-tag">(Unverified)</span>
+      )}
+    </>
+  );
+
+  const sellerSubtitle = profileData.isVerified
+    ? "Verification approved. Enjoy Verified Seller escrow benefits."
+    : "Complete verification to enjoy Verified Seller benefits.";
+
+  // BVN / NIN / Business step cards + submit CTA (used by accordion and right panel)
+  const renderSellerSteps = () => (
+    <>
+      {/* Card 1: BVN */}
+      <div className="seller-sub-card">
+        <div className="seller-sub-card-left">
+          <div className="seller-sub-card-badge bvn">
+            <BvnIcon size={20} />
+          </div>
+          <div className="seller-sub-card-info">
+            <span className="seller-sub-card-title">BVN Verification</span>
+            <span className="seller-sub-card-sub">Bank Verification Number</span>
+          </div>
+        </div>
+        <button
+          id="seller-step-bvn-btn"
+          type="button"
+          className={`seller-sub-card-btn ${sellerSteps.bvn ? "is-done" : ""}`}
+          onClick={() => setActiveSellerStep("bvn")}
+          title={sellerSteps.bvn ? "BVN Verified" : "Verify BVN"}
+          aria-label={sellerSteps.bvn ? "BVN Verified" : "Verify BVN"}
+        >
+          {sellerSteps.bvn ? (
+            <span className="material-symbols-outlined seller-verified-tick-icon">verified</span>
+          ) : (
+            "Verify BVN"
+          )}
+        </button>
+      </div>
+
+      {/* Card 2: NIN */}
+      <div className="seller-sub-card">
+        <div className="seller-sub-card-left">
+          <div className="seller-sub-card-badge nin">
+            <NinIcon size={20} />
+          </div>
+          <div className="seller-sub-card-info">
+            <span className="seller-sub-card-title">NIN Verification</span>
+            <span className="seller-sub-card-sub">National Identity Number</span>
+          </div>
+        </div>
+        <button
+          id="seller-step-nin-btn"
+          type="button"
+          className={`seller-sub-card-btn ${sellerSteps.nin ? "is-done" : ""}`}
+          onClick={() => setActiveSellerStep("nin")}
+          title={sellerSteps.nin ? "NIN Verified" : "Verify NIN"}
+          aria-label={sellerSteps.nin ? "NIN Verified" : "Verify NIN"}
+        >
+          {sellerSteps.nin ? (
+            <span className="material-symbols-outlined seller-verified-tick-icon">verified</span>
+          ) : (
+            "Verify NIN"
+          )}
+        </button>
+      </div>
+
+      {/* Card 3: Business Info */}
+      <div className="seller-sub-card">
+        <div className="seller-sub-card-left">
+          <div className="seller-sub-card-badge business">
+            <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
+              storefront
+            </span>
+          </div>
+          <div className="seller-sub-card-info">
+            <span className="seller-sub-card-title">Business Info</span>
+            <span className="seller-sub-card-sub">Store Name &amp; Category</span>
+          </div>
+        </div>
+        <button
+          id="seller-step-business-btn"
+          type="button"
+          className={`seller-sub-card-btn ${sellerSteps.business ? "is-done" : ""}`}
+          onClick={() => setActiveSellerStep("business")}
+          title={sellerSteps.business ? "Business Info Added" : "Add Business"}
+          aria-label={sellerSteps.business ? "Business Info Added" : "Add Business"}
+        >
+          {sellerSteps.business ? (
+            <span className="material-symbols-outlined seller-verified-tick-icon">verified</span>
+          ) : (
+            "Add Business"
+          )}
+        </button>
+      </div>
+
+      {/* Bottom CTA Submit Button */}
+      <button
+        id="seller-verify-submit-btn"
+        type="button"
+        className="seller-verify-submit-btn"
+        onClick={handleFinalSubmitVerification}
+      >
+        <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
+          verified
+        </span>
+        <span>Submit Seller Verification</span>
+      </button>
+    </>
+  );
+
+  /* ── Personal Details rows ── */
+  const renderPersonalRows = () => (
+    <>
+      {renderRow({
+        id: "profile-row-name",
+        badgeClass: "user",
+        badgeContent: <span className="material-symbols-outlined">person</span>,
+        title: profileData.name,
+        subtitle: "Account Name",
+        ariaLabel: `Account Name: ${profileData.name}`,
+        readonly: true,
+      })}
+      {renderRow({
+        id: "profile-row-address",
+        badgeClass: "address",
+        badgeContent: <span className="material-symbols-outlined">location_on</span>,
+        title: profileData.address || "Add your address",
+        subtitle: "Address",
+        ariaLabel: `Address: ${profileData.address || "Add your address"}. Tap to edit.`,
+        onClick: () => handleEditClick("address"),
+        selected: isSplit && activeModal === "address",
+        titleTooltip: "Click to edit address",
+      })}
+      {renderRow({
+        id: "profile-row-phone",
+        badgeClass: "whatsapp",
+        badgeContent: <WhatsAppIcon size={16} />,
+        title: profileData.phone,
+        subtitle: "Phone Number",
+        ariaLabel: `Phone Number: ${profileData.phone}`,
+        readonly: true,
+      })}
+      {renderRow({
+        id: "profile-row-email",
+        badgeClass: "email",
+        badgeContent: <span className="material-symbols-outlined">mail</span>,
+        title: profileData.email || "Add your email",
+        subtitle: "Email Address",
+        ariaLabel: `Email Address: ${profileData.email || "Add your email"}. Tap to edit.`,
+        onClick: () => handleEditClick("email"),
+        noBorder: true,
+        selected: isSplit && activeModal === "email",
+        titleTooltip: "Click to edit email address",
+      })}
+    </>
+  );
+
+  /* ── Services & Settings rows ── */
+  const renderPayoutRow = () =>
+    renderRow({
+      id: "profile-row-payout",
+      badgeClass: "payout",
+      badgeContent: <span className="material-symbols-outlined">account_balance</span>,
+      title: "Payout Accounts",
+      subtitle:
+        profileData.bank && profileData.accountNumber
+          ? `${profileData.bank} · ${profileData.accountNumber}`
+          : "Add, change, or set primary bank accounts for payouts.",
+      ariaLabel: "Payout Accounts: Tap to manage bank account.",
+      onClick: () => handleEditClick("payout"),
+      selected: isSplit && activeModal === "payout",
+      titleTooltip: "Click to manage payout accounts",
+    });
+
+  const renderStatementsRow = () =>
+    renderRow({
+      id: "profile-row-statements",
+      badgeClass: "statements",
+      badgeContent: <span className="material-symbols-outlined">receipt_long</span>,
+      title: "Statements & Reports",
+      subtitle: "Get a statement and report for your activities and orders.",
+      ariaLabel: "Statements & Reports: Tap to generate statement.",
+      onClick: () => handleEditClick("statements"),
+      selected: isSplit && activeModal === "statements",
+      titleTooltip: "Click to generate statements and reports",
+    });
+
+  const renderRewardsRow = () =>
+    renderRow({
+      id: "profile-row-rewards",
+      badgeClass: "rewards",
+      badgeContent: <span className="material-symbols-outlined">card_giftcard</span>,
+      title: "Cashback & Referral Rewards",
+      subtitle: "See how much you've earned from referrals.",
+      ariaLabel: "Cashback & Referral Rewards: Tap to view earnings.",
+      onClick: () => handleEditClick("rewards"),
+      noBorder: true,
+      selected: isSplit && activeModal === "rewards",
+      titleTooltip: "Click to view cashback and rewards",
+    });
+
+  /* ══════════════════════════════════════════════════════════════
+     SPLIT LAYOUT (Desktop): list on left, opening panel on right
+     ══════════════════════════════════════════════════════════════ */
+  if (isSplit) {
+    const renderDetail = () => {
+      if (activeModal === "address" || activeModal === "email" || activeModal === "profile") {
+        return (
+          <EditFieldModal
+            key={activeModal}
+            inline
+            isOpen
+            fieldType={activeModal}
+            currentData={profileData}
+            dark={dark}
+            onClose={closePanel}
+            onSave={handleFieldSave}
+          />
+        );
+      }
+      if (activeModal === "payout") {
+        return (
+          <PayoutAccountModal
+            key="payout"
+            inline
+            isOpen
+            currentData={profileData}
+            dark={dark}
+            onClose={closePanel}
+            onSave={(payoutUpdates) =>
+              updateProfile(payoutUpdates, "Payout bank account updated successfully")
+            }
+          />
+        );
+      }
+      if (activeModal === "seller") {
+        if (activeSellerStep) {
+          return (
+            <SellerStepModal
+              key={`seller-${activeSellerStep}`}
+              inline
+              isOpen
+              step={activeSellerStep}
+              dark={dark}
+              onClose={() => setActiveSellerStep(null)}
+              onSave={handleSaveSellerStep}
+            />
+          );
+        }
+        return (
+          <div className="profile-modal-inline" data-appearance={appearance} key="seller">
+            <div className="profile-modal-card is-inline" data-appearance={appearance}>
+              <div className="profile-modal-header">
+                <div className="profile-modal-header-left">
+                  <div className="profile-modal-icon-badge desktop-profile-badge verified">
+                    <span className="material-symbols-outlined">verified</span>
+                  </div>
+                  <div className="profile-modal-header-titles">
+                    <h2 className="profile-modal-title">Become a Verified Seller</h2>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="profile-modal-close-btn"
+                  onClick={closePanel}
+                  aria-label="Close"
+                >
+                  <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
+                    close
+                  </span>
+                </button>
+              </div>
+              <div className="profile-modal-body desktop-profile-seller-panel">
+                <p className="desktop-profile-seller-panel-intro">{sellerSubtitle}</p>
+                <div className="desktop-profile-seller-panel-steps">{renderSellerSteps()}</div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+      if (activeModal === "statements") {
+        return (
+          <StatementsModal
+            key="statements"
+            inline
+            isOpen
+            userEmail={profileData.email}
+            dark={dark}
+            onClose={closePanel}
+            onSend={(msg) => showToast(msg)}
+          />
+        );
+      }
+      if (activeModal === "rewards") {
+        return (
+          <RewardsModal
+            key="rewards"
+            inline
+            isOpen
+            dark={dark}
+            onClose={closePanel}
+            onCopy={(msg) => showToast(msg)}
+          />
+        );
+      }
+      return (
+        <div className="desktop-pr-empty-detail">
+          <div className="desktop-pr-empty-illustration">
+            <span className="material-symbols-outlined desktop-pr-empty-watermark">
+              manage_accounts
+            </span>
+          </div>
+          <h3 className="desktop-pr-empty-title">Your PayKudi Profile</h3>
+          <p className="desktop-pr-empty-subtitle">
+            Select an item from the left list to view or update it.
+          </p>
+        </div>
+      );
+    };
+
+    return (
+      <div
+        className="desktop-payment-room-wrapper desktop-profile-split-wrapper"
+        data-appearance={appearance}
+      >
+        <main id="profile-section" className="desktop-payment-room-main">
+          <div className="desktop-pr-split-layout">
+            {/* ── LEFT PANE: PROFILE LIST ── */}
+            <aside
+              className="desktop-pr-left-pane desktop-profile-left-pane"
+              aria-label="Profile settings list"
+            >
+              <div className="desktop-profile-left-scroll">
+                <section className="desktop-profile-header desktop-profile-left-header">
+                  <div
+                    className={`desktop-profile-user-info-row ${
+                      activeModal === "profile" ? "is-selected" : ""
+                    }`}
+                  >
+                    {renderAvatar()}
+                    {renderUserInfo()}
+                  </div>
+                </section>
+
+                <div className="desktop-profile-left-group">
+                  <h2 className="desktop-profile-section-title">PERSONAL DETAILS</h2>
+                  <div className="desktop-profile-list">{renderPersonalRows()}</div>
+                </div>
+
+                <div className="desktop-profile-left-group">
+                  <h2 className="desktop-profile-section-title">SERVICES &amp; SETTINGS</h2>
+                  <div className="desktop-profile-list">
+                    {renderPayoutRow()}
+                    {renderRow({
+                      id: "profile-row-seller",
+                      badgeClass: "verified",
+                      badgeContent: <span className="material-symbols-outlined">verified</span>,
+                      title: sellerTitle,
+                      subtitle: sellerSubtitle,
+                      ariaLabel: "Become a Verified Seller: Tap to complete verification.",
+                      onClick: () => handleEditClick("seller"),
+                      selected: activeModal === "seller",
+                      titleTooltip: "Click to open seller verification",
+                    })}
+                    {renderStatementsRow()}
+                    {renderRewardsRow()}
+                  </div>
+                </div>
+              </div>
+            </aside>
+
+            {/* ── RIGHT PANE: SELECTED PANEL ── */}
+            <section
+              className="desktop-pr-right-pane desktop-profile-right-pane"
+              aria-label="Profile detail view"
+            >
+              {renderDetail()}
+            </section>
+          </div>
+        </main>
+
+        <ProfileToast message={toastMessage} isVisible={isToastVisible} dark={dark} />
+      </div>
+    );
+  }
+
+  /* ══════════════════════════════════════════════════════════════
+     STACKED LAYOUT (Mobile / default): two columns + popup modals
+     ══════════════════════════════════════════════════════════════ */
   return (
     <main
       id="profile-section"
@@ -150,45 +679,9 @@ export default function DesktopProfile({
         {/* ── Top Header: Avatar & Info ── */}
         <section className="desktop-profile-header">
           <div className="desktop-profile-user-info-row">
-            <div className="desktop-profile-avatar-wrap">
-              <div
-                className="desktop-profile-avatar-circle"
-                style={{ cursor: "pointer" }}
-                onClick={() => handleEditClick("profile")}
-                title="Click to edit profile"
-              >
-                <span className="material-symbols-outlined desktop-profile-avatar-icon">
-                  account_circle
-                </span>
-              </div>
-              <button
-                type="button"
-                className="desktop-profile-avatar-edit"
-                onClick={() => {
-                  if (onEditProfile) {
-                    onEditProfile();
-                  } else {
-                    handleEditClick("profile");
-                  }
-                }}
-                aria-label="Edit profile picture"
-                title="Edit avatar and profile"
-              >
-                <span className="material-symbols-outlined">edit</span>
-              </button>
-            </div>
-
-            <div className="desktop-profile-info">
-              <h1 className="desktop-profile-name">
-                {profileData.name}
-              </h1>
-              <div className="desktop-profile-phone-pill">
-                <WhatsAppIcon size={14} />
-                <span>{profileData.phone}</span>
-              </div>
-            </div>
+            {renderAvatar()}
+            {renderUserInfo()}
           </div>
-
         </section>
 
         {/* ── Two-Column Layout ── */}
@@ -196,312 +689,44 @@ export default function DesktopProfile({
           {/* ── Column 1: Personal Details ── */}
           <div className="desktop-profile-column">
             <h2 className="desktop-profile-section-title">PERSONAL DETAILS</h2>
-            <div className="desktop-profile-list">
-              {/* Item 1: Name (Non-editable) */}
-              <div
-                className="desktop-profile-item readonly"
-                aria-label={`Account Name: ${profileData.name}`}
-              >
-                <div className="desktop-profile-badge user">
-                  <span className="material-symbols-outlined">person</span>
-                </div>
-                <div className="desktop-profile-item-inner">
-                  <div className="desktop-profile-item-text">
-                    <span className="desktop-profile-item-title">{profileData.name}</span>
-                    <span className="desktop-profile-item-subtitle">Account Name</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Item 2: Address */}
-              <button
-                type="button"
-                className="desktop-profile-item"
-                aria-label={`Address: ${profileData.address || "Add your address"}. Tap to edit.`}
-                onClick={() => handleEditClick("address")}
-                title="Click to edit address"
-              >
-                <div className="desktop-profile-badge address">
-                  <span className="material-symbols-outlined">location_on</span>
-                </div>
-                <div className="desktop-profile-item-inner">
-                  <div className="desktop-profile-item-text">
-                    <span className="desktop-profile-item-title">
-                      {profileData.address || "Add your address"}
-                    </span>
-                    <span className="desktop-profile-item-subtitle">Address</span>
-                  </div>
-                  <span className="material-symbols-outlined desktop-profile-item-chevron">
-                    chevron_right
-                  </span>
-                </div>
-              </button>
-
-              {/* Item 3: Phone (Non-editable) */}
-              <div
-                className="desktop-profile-item readonly"
-                aria-label={`Phone Number: ${profileData.phone}`}
-              >
-                <div className="desktop-profile-badge whatsapp">
-                  <WhatsAppIcon size={16} />
-                </div>
-                <div className="desktop-profile-item-inner">
-                  <div className="desktop-profile-item-text">
-                    <span className="desktop-profile-item-title">{profileData.phone}</span>
-                    <span className="desktop-profile-item-subtitle">Phone Number</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Item 4: Email */}
-              <button
-                type="button"
-                className="desktop-profile-item"
-                aria-label={`Email Address: ${profileData.email || "Add your email"}. Tap to edit.`}
-                onClick={() => handleEditClick("email")}
-                title="Click to edit email address"
-              >
-                <div className="desktop-profile-badge email">
-                  <span className="material-symbols-outlined">mail</span>
-                </div>
-                <div className="desktop-profile-item-inner no-border">
-                  <div className="desktop-profile-item-text">
-                    <span className="desktop-profile-item-title">
-                      {profileData.email || "Add your email"}
-                    </span>
-                    <span className="desktop-profile-item-subtitle">Email Address</span>
-                  </div>
-                  <span className="material-symbols-outlined desktop-profile-item-chevron">
-                    chevron_right
-                  </span>
-                </div>
-              </button>
-            </div>
+            <div className="desktop-profile-list">{renderPersonalRows()}</div>
           </div>
 
           {/* ── Column 2: Services & Settings ── */}
           <div className="desktop-profile-column">
-            <h2 className="desktop-profile-section-title">SERVICES & SETTINGS</h2>
+            <h2 className="desktop-profile-section-title">SERVICES &amp; SETTINGS</h2>
             <div className="desktop-profile-list">
               {/* Item 1: Payout Accounts */}
-              <button
-                type="button"
-                className="desktop-profile-item"
-                aria-label="Payout Accounts: Tap to manage bank account."
-                onClick={() => handleEditClick("payout")}
-                title="Click to manage payout accounts"
-              >
-                <div className="desktop-profile-badge payout">
-                  <span className="material-symbols-outlined">account_balance</span>
-                </div>
-                <div className="desktop-profile-item-inner">
-                  <div className="desktop-profile-item-text">
-                    <span className="desktop-profile-item-title">Payout Accounts</span>
-                    <span className="desktop-profile-item-subtitle">
-                      {profileData.bank && profileData.accountNumber
-                        ? `${profileData.bank} · ${profileData.accountNumber}`
-                        : "Add, change, or set primary bank accounts for payouts."}
-                    </span>
-                  </div>
-                  <span className="material-symbols-outlined desktop-profile-item-chevron">
-                    chevron_right
-                  </span>
-                </div>
-              </button>
+              {renderPayoutRow()}
 
               {/* Item 2: Become a Verified Seller (Expandable Dropdown) */}
               <div className={`desktop-profile-seller-accordion ${isSellerExpanded ? "is-expanded" : ""}`}>
-                <button
-                  type="button"
-                  className={`desktop-profile-item ${isSellerExpanded ? "is-expanded" : ""}`}
-                  aria-label="Become a Verified Seller: Tap to complete verification."
-                  onClick={() => setIsSellerExpanded((prev) => !prev)}
-                  title="Click to toggle seller verification options"
-                  aria-expanded={isSellerExpanded}
-                >
-                  <div className="desktop-profile-badge verified">
-                    <span className="material-symbols-outlined">verified</span>
-                  </div>
-                  <div className={`desktop-profile-item-inner ${isSellerExpanded ? "no-border" : ""}`}>
-                    <div className="desktop-profile-item-text">
-                      <span className="desktop-profile-item-title">
-                        <span>Become a Verified Seller</span>
-                        {profileData.isVerified ? (
-                          <span
-                            className="desktop-profile-unverified-tag"
-                            style={{ color: "#10b981", fontWeight: 700 }}
-                          >
-                            (Verified)
-                          </span>
-                        ) : (
-                          <span className="desktop-profile-unverified-tag">(Unverified)</span>
-                        )}
-                      </span>
-                      <span className="desktop-profile-item-subtitle">
-                        {profileData.isVerified
-                          ? "Verification approved. Enjoy Verified Seller escrow benefits."
-                          : "Complete verification to enjoy Verified Seller benefits."}
-                      </span>
-                    </div>
-                    <span className="material-symbols-outlined desktop-profile-item-chevron chevron-down">
-                      {isSellerExpanded ? "keyboard_arrow_up" : "keyboard_arrow_down"}
-                    </span>
-                  </div>
-                </button>
+                {renderRow({
+                  id: "profile-row-seller",
+                  badgeClass: "verified",
+                  badgeContent: <span className="material-symbols-outlined">verified</span>,
+                  title: sellerTitle,
+                  subtitle: sellerSubtitle,
+                  ariaLabel: "Become a Verified Seller: Tap to complete verification.",
+                  onClick: () => setIsSellerExpanded((prev) => !prev),
+                  noBorder: isSellerExpanded,
+                  chevron: isSellerExpanded ? "keyboard_arrow_up" : "keyboard_arrow_down",
+                  chevronClass: "chevron-down",
+                  expanded: isSellerExpanded,
+                  titleTooltip: "Click to toggle seller verification options",
+                })}
 
                 {/* Dropdown Content */}
                 {isSellerExpanded && (
-                  <div className="desktop-profile-seller-dropdown">
-                    {/* Card 1: BVN */}
-                    <div className="seller-sub-card">
-                      <div className="seller-sub-card-left">
-                        <div className="seller-sub-card-badge bvn">
-                          <BvnIcon size={20} />
-                        </div>
-                        <div className="seller-sub-card-info">
-                          <span className="seller-sub-card-title">BVN Verification</span>
-                          <span className="seller-sub-card-sub">Bank Verification Number</span>
-                        </div>
-                      </div>
-                      <button
-                        type="button"
-                        className={`seller-sub-card-btn ${sellerSteps.bvn ? "is-done" : ""}`}
-                        onClick={() => setActiveSellerStep("bvn")}
-                        title={sellerSteps.bvn ? "BVN Verified" : "Verify BVN"}
-                        aria-label={sellerSteps.bvn ? "BVN Verified" : "Verify BVN"}
-                      >
-                        {sellerSteps.bvn ? (
-                          <span className="material-symbols-outlined seller-verified-tick-icon">
-                            verified
-                          </span>
-                        ) : (
-                          "Verify BVN"
-                        )}
-                      </button>
-                    </div>
-
-                    {/* Card 2: NIN */}
-                    <div className="seller-sub-card">
-                      <div className="seller-sub-card-left">
-                        <div className="seller-sub-card-badge nin">
-                          <NinIcon size={20} />
-                        </div>
-                        <div className="seller-sub-card-info">
-                          <span className="seller-sub-card-title">NIN Verification</span>
-                          <span className="seller-sub-card-sub">National Identity Number</span>
-                        </div>
-                      </div>
-                      <button
-                        type="button"
-                        className={`seller-sub-card-btn ${sellerSteps.nin ? "is-done" : ""}`}
-                        onClick={() => setActiveSellerStep("nin")}
-                        title={sellerSteps.nin ? "NIN Verified" : "Verify NIN"}
-                        aria-label={sellerSteps.nin ? "NIN Verified" : "Verify NIN"}
-                      >
-                        {sellerSteps.nin ? (
-                          <span className="material-symbols-outlined seller-verified-tick-icon">
-                            verified
-                          </span>
-                        ) : (
-                          "Verify NIN"
-                        )}
-                      </button>
-                    </div>
-
-                    {/* Card 3: Business Info */}
-                    <div className="seller-sub-card">
-                      <div className="seller-sub-card-left">
-                        <div className="seller-sub-card-badge business">
-                          <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
-                            storefront
-                          </span>
-                        </div>
-                        <div className="seller-sub-card-info">
-                          <span className="seller-sub-card-title">Business Info</span>
-                          <span className="seller-sub-card-sub">Store Name & Category</span>
-                        </div>
-                      </div>
-                      <button
-                        type="button"
-                        className={`seller-sub-card-btn ${sellerSteps.business ? "is-done" : ""}`}
-                        onClick={() => setActiveSellerStep("business")}
-                        title={sellerSteps.business ? "Business Info Added" : "Add Business"}
-                        aria-label={sellerSteps.business ? "Business Info Added" : "Add Business"}
-                      >
-                        {sellerSteps.business ? (
-                          <span className="material-symbols-outlined seller-verified-tick-icon">
-                            verified
-                          </span>
-                        ) : (
-                          "Add Business"
-                        )}
-                      </button>
-                    </div>
-
-                    {/* Bottom CTA Submit Button */}
-                    <button
-                      type="button"
-                      className="seller-verify-submit-btn"
-                      onClick={handleFinalSubmitVerification}
-                    >
-                      <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
-                        verified
-                      </span>
-                      <span>Submit Seller Verification</span>
-                    </button>
-                  </div>
+                  <div className="desktop-profile-seller-dropdown">{renderSellerSteps()}</div>
                 )}
               </div>
 
               {/* Item 3: Statements & Reports */}
-              <button
-                type="button"
-                className="desktop-profile-item"
-                aria-label="Statements & Reports: Tap to generate statement."
-                onClick={() => handleEditClick("statements")}
-                title="Click to generate statements and reports"
-              >
-                <div className="desktop-profile-badge statements">
-                  <span className="material-symbols-outlined">receipt_long</span>
-                </div>
-                <div className="desktop-profile-item-inner">
-                  <div className="desktop-profile-item-text">
-                    <span className="desktop-profile-item-title">Statements & Reports</span>
-                    <span className="desktop-profile-item-subtitle">
-                      Get a statement and report for your activities and orders.
-                    </span>
-                  </div>
-                  <span className="material-symbols-outlined desktop-profile-item-chevron">
-                    chevron_right
-                  </span>
-                </div>
-              </button>
+              {renderStatementsRow()}
 
               {/* Item 4: Cashback & Referral Rewards */}
-              <button
-                type="button"
-                className="desktop-profile-item"
-                aria-label="Cashback & Referral Rewards: Tap to view earnings."
-                onClick={() => handleEditClick("rewards")}
-                title="Click to view cashback and rewards"
-              >
-                <div className="desktop-profile-badge rewards">
-                  <span className="material-symbols-outlined">card_giftcard</span>
-                </div>
-                <div className="desktop-profile-item-inner no-border">
-                  <div className="desktop-profile-item-text">
-                    <span className="desktop-profile-item-title">
-                      Cashback & Referral Rewards
-                    </span>
-                    <span className="desktop-profile-item-subtitle">
-                      See how much you've earned from referrals.
-                    </span>
-                  </div>
-                  <span className="material-symbols-outlined desktop-profile-item-chevron">
-                    chevron_right
-                  </span>
-                </div>
-              </button>
+              {renderRewardsRow()}
             </div>
           </div>
         </div>
@@ -519,12 +744,7 @@ export default function DesktopProfile({
         currentData={profileData}
         dark={dark}
         onClose={() => setActiveModal(null)}
-        onSave={(updates) => {
-          let msg = "Details updated successfully";
-          if (updates.email) msg = "Email address updated successfully";
-          else if (updates.address) msg = "Address updated successfully";
-          updateProfile(updates, msg);
-        }}
+        onSave={handleFieldSave}
       />
 
       {/* 2. Payout Account Modal */}

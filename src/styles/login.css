@@ -1,9 +1,9 @@
 /* ══════════════════════════════════════════════════════════════
-   KUDA-STYLE LOGIN PAGE — PayKudi Redesign
-   Black & White Theme + Right-Side Showcase Carousel (Slide 1 to 5)
+   PAYKUDI SPLIT LOGIN PAGE
+   Left: Elevated Parakeet-style Card + Ambient Emerald Glow
+   Right: Showcase Slideshow Carousel (Images 1 - 5)
    ══════════════════════════════════════════════════════════════ */
 
-/* ── Overall Layout Container ── */
 .kuda-login-layout {
   position: fixed;
   inset: 0;
@@ -12,485 +12,753 @@
   height: 100dvh;
   display: flex;
   overflow: hidden;
-  font-family: 'Mulish', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Hanken Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   box-sizing: border-box;
 }
 
-/* ── Theme variables ── */
-.kuda-login-layout.theme-dark {
-  --kuda-bg: #0e0e11;
-  --kuda-left-bg: #121215;
-  --kuda-card-bg: #19191d;
-  --kuda-card-border: rgba(255, 255, 255, 0.08);
-  --kuda-card-shadow: 0 20px 48px rgba(0, 0, 0, 0.6);
-  --kuda-text-primary: #ffffff;
-  --kuda-text-secondary: rgba(255, 255, 255, 0.68);
-  --kuda-text-muted: rgba(255, 255, 255, 0.42);
-  --kuda-input-bg: #1f1f24;
-  --kuda-input-border: rgba(255, 255, 255, 0.14);
-  --kuda-input-focus-border: #ffffff;
-  --kuda-input-text: #ffffff;
-  --kuda-btn-inactive-bg: #ffffff;
-  --kuda-btn-inactive-text: #000000;
-  --kuda-btn-active-bg: #ffffff;
-  --kuda-btn-active-text: #000000;
-  --kuda-btn-hover-bg: #e4e4e7;
-  --kuda-tab-bg: #16161a;
-  --kuda-tab-active-bg: #ffffff;
-  --kuda-tab-active-text: #000000;
+/* ── Light Mode Color Tokens ── */
+.kuda-login-layout.theme-light {
+  --pk-bg: #ffffff;
+  --pk-card-bg: #ffffff;
+  --pk-card-border: rgba(0, 0, 0, 0.08);
+  --pk-card-shadow: none;
+  --pk-text-primary: #111827;
+  --pk-text-secondary: #4b5563;
+  --pk-text-muted: #6b7280;
+  --pk-btn-primary-bg: #18191c;
+  --pk-btn-primary-hover: #26272c;
+  --pk-btn-primary-text: #ffffff;
+  --pk-btn-secondary-bg: #ffffff;
+  --pk-btn-secondary-border: #e5e7eb;
+  --pk-btn-secondary-hover: #f9fafb;
+  --pk-btn-secondary-text: #111827;
+  --pk-divider-line: #e5e7eb;
+  --pk-divider-text: #9ca3af;
+  --pk-input-bg: #f9fafb;
+  --pk-input-border: #e5e7eb;
+  --pk-input-focus: #10b981;
+  --pk-link: #059669;
+  --pk-ambient-bg: #ffffff;
 }
 
-.kuda-login-layout.theme-light {
-  --kuda-bg: #f5f6f8;
-  --kuda-left-bg: #ffffff;
-  --kuda-card-bg: #ffffff;
-  --kuda-card-border: rgba(0, 0, 0, 0.08);
-  --kuda-card-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
-  --kuda-text-primary: #09090b;
-  --kuda-text-secondary: #52525b;
-  --kuda-text-muted: #71717a;
-  --kuda-input-bg: #f4f4f5;
-  --kuda-input-border: rgba(0, 0, 0, 0.12);
-  --kuda-input-focus-border: #000000;
-  --kuda-input-text: #09090b;
-  --kuda-btn-inactive-bg: #000000;
-  --kuda-btn-inactive-text: rgba(255, 255, 255, 0.9);
-  --kuda-btn-active-bg: #000000;
-  --kuda-btn-active-text: #ffffff;
-  --kuda-btn-hover-bg: #1f1f23;
-  --kuda-tab-bg: #f4f4f5;
-  --kuda-tab-active-bg: #000000;
-  --kuda-tab-active-text: #ffffff;
+/* ── Dark Mode Color Tokens ── */
+.kuda-login-layout.theme-dark {
+  --pk-bg: #0b0f17;
+  --pk-card-bg: #141a23;
+  --pk-card-border: rgba(255, 255, 255, 0.1);
+  --pk-card-shadow: none;
+  --pk-text-primary: #f9fafb;
+  --pk-text-secondary: #9ca3af;
+  --pk-text-muted: #6b7280;
+  --pk-btn-primary-bg: #202632;
+  --pk-btn-primary-hover: #2a3242;
+  --pk-btn-primary-text: #ffffff;
+  --pk-btn-secondary-bg: rgba(255, 255, 255, 0.03);
+  --pk-btn-secondary-border: rgba(255, 255, 255, 0.12);
+  --pk-btn-secondary-hover: rgba(255, 255, 255, 0.07);
+  --pk-btn-secondary-text: #f3f4f6;
+  --pk-divider-line: rgba(255, 255, 255, 0.1);
+  --pk-divider-text: #6b7280;
+  --pk-input-bg: #1a222e;
+  --pk-input-border: rgba(255, 255, 255, 0.12);
+  --pk-input-focus: #10b981;
+  --pk-link: #34d399;
+  --pk-ambient-bg: #0b0f17;
 }
 
 /* ══════════════════════════════════════════════════════════════
-   LEFT PANEL (Form, Header)
+   LEFT PANEL (Flat Clean Background + Centered Card)
    ══════════════════════════════════════════════════════════════ */
 .kuda-login-left {
   flex: 0 0 50%;
   max-width: 50%;
   height: 100%;
-  background: var(--kuda-left-bg);
+  background: var(--pk-bg);
+  background-color: var(--pk-bg);
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
   overflow-y: auto;
   overflow-x: hidden;
   position: relative;
   z-index: 5;
+  padding: 32px 24px;
   box-sizing: border-box;
-  transition: background-color 0.25s ease;
+  transition: background 0.3s ease;
 }
 
-/* ── Top Header bar ── */
-.kuda-left-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 32px 48px 16px;
+.pk-auth-main {
   width: 100%;
-  box-sizing: border-box;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: auto 0;
 }
 
-.kuda-brand-logo-wrap {
+/* ── Brand Logo in Top-Left Corner ── */
+.pk-auth-top-left-logo {
+  position: absolute;
+  top: 36px;
+  left: 44px;
   display: flex;
   align-items: center;
+  z-index: 20;
+  text-decoration: none;
 }
 
-.kuda-brand-logo {
+.pk-auth-top-left-logo .pk-auth-logo {
   height: 28px;
   width: auto;
+  max-width: 145px;
   object-fit: contain;
-  display: block;
 }
 
-.kuda-theme-toggle {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  border: 1px solid var(--kuda-input-border);
-  background: var(--kuda-tab-bg);
-  color: var(--kuda-text-primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.18s ease;
-}
-
-.kuda-theme-toggle:hover {
-  border-color: var(--kuda-text-secondary);
-  transform: scale(1.05);
-}
-
-.kuda-theme-toggle .material-symbols-outlined {
-  font-size: 19px;
-}
-
-/* ── Center Form Container ── */
-.kuda-form-container {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px 48px 48px;
-  box-sizing: border-box;
-}
-
-.kuda-login-card {
+/* ── Elevated Card ── */
+.pk-auth-card {
   width: 100%;
-  max-width: 440px;
-  background: var(--kuda-card-bg);
-  border: 1px solid var(--kuda-card-border);
-  border-radius: 16px;
-  padding: 38px 36px 32px;
-  box-shadow: var(--kuda-card-shadow);
+  background: var(--pk-card-bg);
+  border: 1px solid var(--pk-card-border);
+  border-radius: 28px;
+  box-shadow: none !important;
+  padding: 38px 34px 34px;
   box-sizing: border-box;
-  animation: cardFadeUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: transform 0.25s ease;
+  animation: pkCardSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@keyframes cardFadeUp {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes pkCardSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
-.kuda-card-title {
-  font-size: 29px;
-  font-weight: 800;
-  letter-spacing: -0.6px;
-  color: var(--kuda-text-primary);
-  margin: 0 0 20px;
-  line-height: 1.2;
+/* ── Smooth View Change Animation ── */
+.pk-view-anim {
+  width: 100%;
+  animation: pkViewEnter 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: opacity, transform;
 }
 
-/* ── Login Method Tabs (Email / WhatsApp) ── */
-.kuda-method-tabs {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px;
-  background: var(--kuda-tab-bg);
-  border: 1px solid var(--kuda-card-border);
-  border-radius: 10px;
-  padding: 4px;
-  margin-bottom: 22px;
+@keyframes pkViewEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.988);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
-.kuda-method-tab {
+/* ── Card Back Button ── */
+.pk-card-nav {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 7px;
-  height: 40px;
-  border-radius: 8px;
-  border: 1px solid transparent;
-  background: transparent;
-  color: var(--kuda-text-muted);
-  font-size: 13.5px;
-  font-weight: 600;
-  font-family: inherit;
-  cursor: pointer;
-  transition: all 0.16s ease;
+  justify-content: flex-start;
+  margin-bottom: 16px;
 }
-
-.kuda-method-tab:hover:not(.active) {
-  color: var(--kuda-text-primary);
-}
-
-.kuda-method-tab.active {
-  background: var(--kuda-tab-active-bg);
-  color: var(--kuda-tab-active-text);
-  border-color: var(--kuda-card-border);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-}
-
-.theme-dark .kuda-method-tab.active {
-  background: #ffffff;
-  color: #000000;
-  border-color: #ffffff;
-  box-shadow: 0 2px 10px rgba(255, 255, 255, 0.15);
-}
-
-.kuda-method-tab .tab-icon {
-  font-size: 17px;
-}
-
-/* ── Auth Form & Inputs ── */
-.kuda-auth-form {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.kuda-input-group {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-}
-
-.kuda-input-label {
+.pk-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  padding: 6px 10px;
+  margin-left: -10px;
   font-size: 13px;
   font-weight: 600;
-  color: var(--kuda-text-primary);
-  letter-spacing: 0.1px;
+  color: var(--pk-text-secondary);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.pk-back-btn:hover {
+  background: var(--pk-btn-secondary-hover);
+  color: var(--pk-text-primary);
 }
 
-.kuda-input-box {
-  position: relative;
+/* ── Card Heading ── */
+.pk-card-title {
+  font-size: 23px;
+  font-weight: 700;
+  color: var(--pk-text-primary);
+  text-align: center;
+  margin: 0 0 26px 0;
+  letter-spacing: -0.3px;
+}
+
+/* ── Action Buttons Container ── */
+.pk-auth-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+/* ── Primary Pill Button (Continue with Email / WhatsApp) ── */
+.pk-btn-primary {
+  width: 100%;
+  height: 48px;
+  background: var(--pk-btn-primary-bg);
+  color: var(--pk-btn-primary-text);
+  border: none;
+  border-radius: 12px;
+  font-size: 14.5px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: none;
+}
+.pk-btn-primary:hover {
+  background: var(--pk-btn-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: none;
+}
+.pk-btn-primary:active {
+  transform: translateY(0);
+}
+
+/* ── OR Divider ── */
+.pk-auth-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 8px 0;
+  width: 100%;
+}
+.pk-auth-divider::before,
+.pk-auth-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid var(--pk-divider-line);
+}
+.pk-auth-divider span {
+  padding: 0 14px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--pk-divider-text);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ── Secondary Pill Button (Create an Account) ── */
+.pk-btn-secondary {
+  width: 100%;
+  height: 48px;
+  background: var(--pk-btn-secondary-bg);
+  color: var(--pk-btn-secondary-text);
+  border: 1px solid var(--pk-btn-secondary-border);
+  border-radius: 12px;
+  font-size: 14.5px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.pk-btn-secondary:hover {
+  background: var(--pk-btn-secondary-hover);
+  border-color: #d1d5db;
+  transform: translateY(-1px);
+  box-shadow: none;
+}
+.pk-btn-secondary:active {
+  transform: translateY(0);
+}
+
+/* ── Footer ── */
+.pk-auth-footer {
+  margin-top: 28px;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--pk-text-muted);
+  text-align: center;
+}
+.pk-auth-footer a {
+  color: var(--pk-text-muted);
+  text-decoration: underline;
+  text-underline-offset: 2.5px;
+  transition: color 0.15s ease;
+  cursor: pointer;
+}
+.pk-auth-footer a:hover {
+  color: var(--pk-text-primary);
+}
+
+/* ── Direct Subview Form (Matching Screenshot) ── */
+.pk-step-nav {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 2px;
+  width: 100%;
+}
+
+.pk-step-back-btn {
+  background: none;
+  border: none;
+  padding: 4px 6px;
+  margin-left: -6px;
+  cursor: pointer;
+  color: var(--pk-text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+.pk-step-back-btn:hover {
+  opacity: 0.7;
+  transform: translateX(-2px);
+}
+
+.pk-step-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--pk-text-primary);
+  text-align: center;
+  margin: 6px 0 24px 0;
+  letter-spacing: -0.35px;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+.pk-step-input-wrap {
+  width: 100%;
+  margin-bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pk-step-input {
+  width: 100%;
+  height: 48px;
+  background: var(--pk-input-bg);
+  border: 1px solid var(--pk-input-border);
+  border-radius: 8px;
+  padding: 0 16px;
+  font-size: 15px;
+  color: var(--pk-text-primary);
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  font-family: inherit;
+}
+.pk-step-input:focus {
+  border-color: #18191c;
+  box-shadow: none;
+  background: var(--pk-card-bg);
+}
+.theme-dark .pk-step-input:focus {
+  border-color: #10b981;
+  box-shadow: none;
+}
+
+.pk-phone-step-box {
   display: flex;
   align-items: center;
   width: 100%;
+  height: 48px;
+  background: var(--pk-input-bg);
+  border: 1px solid var(--pk-input-border);
+  border-radius: 8px;
+  padding: 0 14px;
+  box-sizing: border-box;
+  transition: border-color 0.15s ease;
+}
+.pk-phone-step-box:focus-within {
+  border-color: #18191c;
+  box-shadow: none;
+  background: var(--pk-card-bg);
+}
+.theme-dark .pk-phone-step-box:focus-within {
+  border-color: #10b981;
+  box-shadow: none;
 }
 
-.kuda-input-field {
+.pk-phone-step-field {
+  flex: 1;
+  height: 100%;
+  border: none;
+  background: transparent;
+  font-size: 15px;
+  color: var(--pk-text-primary);
+  outline: none;
+  font-family: inherit;
+}
+
+.pk-step-subtitle {
+  font-size: 13.5px;
+  color: var(--pk-text-secondary);
+  text-align: center;
+  margin: -14px 0 20px 0;
+  line-height: 1.45;
+}
+
+.pk-otp-row {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 8px 0 16px;
   width: 100%;
+}
+
+.pk-otp-digit {
+  width: 44px;
   height: 50px;
   border-radius: 10px;
-  background: var(--kuda-input-bg);
-  border: 1.5px solid var(--kuda-input-border);
-  color: var(--kuda-input-text);
-  font-size: 15px;
-  font-family: inherit;
-  padding: 0 16px;
+  border: 1px solid var(--pk-input-border);
+  background: var(--pk-input-bg);
+  text-align: center;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--pk-text-primary);
   outline: none;
-  transition: all 0.18s ease;
+  transition: all 0.15s ease;
+  font-family: inherit;
   box-sizing: border-box;
 }
 
-.kuda-input-field::placeholder {
-  color: var(--kuda-text-muted);
+.pk-otp-digit:focus {
+  border-color: #18191c;
+  box-shadow: none;
+  background: var(--pk-card-bg);
 }
 
-.kuda-input-field:focus {
-  border-color: var(--kuda-input-focus-border);
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.12);
+.theme-dark .pk-otp-digit:focus {
+  border-color: #10b981;
+  box-shadow: none;
 }
 
-.theme-light .kuda-input-field:focus {
-  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08);
+.pk-otp-helper {
+  font-size: 12.5px;
+  color: var(--pk-text-muted);
+  text-align: center;
+  margin-bottom: 18px;
 }
 
-/* Password input */
-.kuda-input-field.password-field {
-  padding-right: 48px;
+.pk-resend-btn {
+  background: none;
+  border: none;
+  color: var(--pk-link);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 4px;
+  text-decoration: underline;
 }
 
-.kuda-pass-toggle {
+.pk-step-button {
+  width: 100%;
+  max-width: 100%;
+  height: 48px;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: width 0.95s cubic-bezier(0.25, 1, 0.35, 1),
+              border-radius 0.95s cubic-bezier(0.25, 1, 0.35, 1),
+              background 0.3s ease,
+              transform 0.18s ease;
+  background: #71717a;
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+  margin: 0 auto;
+  box-shadow: none;
+}
+
+.pk-btn-text {
+  display: inline-block;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  white-space: nowrap;
+}
+
+.pk-step-button.active {
+  background: #18191c;
+  color: #ffffff;
+}
+
+.theme-dark .pk-step-button.active {
+  background: #10b981;
+  color: #ffffff;
+}
+
+.pk-step-button:hover:not(.is-loading) {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.pk-step-button:active:not(.is-loading) {
+  transform: translateY(0);
+}
+
+/* Button smoothly & obviously shrinks into a circle and spins */
+.pk-step-button.is-loading {
+  width: 48px !important;
+  max-width: 48px !important;
+  min-width: 48px !important;
+  height: 48px !important;
+  border-radius: 50% !important;
+  background: #18191c !important;
+  padding: 0 !important;
+  cursor: default;
+  box-shadow: none !important;
+}
+
+.theme-dark .pk-step-button.is-loading {
+  background: #10b981 !important;
+  box-shadow: none !important;
+}
+
+.pk-step-button.is-loading .pk-btn-text {
+  opacity: 0;
+  transform: scale(0.6);
+  pointer-events: none;
+}
+
+.pk-btn-spinner {
   position: absolute;
-  right: 12px;
+  width: 22px;
+  height: 22px;
+  border: 2.5px solid rgba(255, 255, 255, 0.28);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  opacity: 0;
+  transform: scale(0.3);
+  transition: opacity 0.35s ease 0.65s, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1) 0.65s;
+  pointer-events: none;
+}
+
+.pk-step-button.is-loading .pk-btn-spinner {
+  opacity: 1;
+  transform: scale(1);
+  animation: pkBtnSpin 0.75s linear infinite 0.65s;
+}
+
+@keyframes pkBtnSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.pk-skip-btn {
+  display: block;
+  width: 100%;
+  text-align: center;
+  margin-top: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--pk-text-secondary);
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--kuda-text-secondary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 6px;
-  border-radius: 6px;
+  padding: 8px;
   transition: color 0.15s ease;
 }
-
-.kuda-pass-toggle:hover {
-  color: var(--kuda-text-primary);
+.pk-skip-btn:hover {
+  color: var(--pk-text-primary);
+  text-decoration: underline;
 }
 
-.kuda-pass-toggle .material-symbols-outlined {
-  font-size: 20px;
+.pk-step-back-link {
+  display: block;
+  width: 100%;
+  text-align: center;
+  margin-top: 22px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--pk-text-secondary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.15s ease;
+  text-decoration: none;
+}
+.pk-step-back-link:hover {
+  color: var(--pk-text-primary);
+  text-decoration: underline;
 }
 
-/* Phone input with Nigeria Flag Prefix */
-.kuda-phone-box {
-  position: relative;
+/* ── Sub-Form Inside Card ── */
+.pk-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
 }
 
-.kuda-phone-prefix {
-  position: absolute;
-  left: 14px;
+.pk-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.pk-input-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--pk-text-primary);
+}
+
+.pk-input-box {
+  display: flex;
+  align-items: center;
+  background: var(--pk-input-bg);
+  border: 1px solid var(--pk-input-border);
+  border-radius: 12px;
+  padding: 0 14px;
+  height: 46px;
+  transition: all 0.18s ease;
+}
+.pk-input-box:focus-within {
+  border-color: var(--pk-input-focus);
+  box-shadow: none;
+  background: var(--pk-card-bg);
+}
+
+.pk-input-field {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--pk-text-primary);
+  font-size: 14.5px;
+  font-family: inherit;
+  outline: none;
+}
+.pk-input-field::placeholder {
+  color: var(--pk-divider-text);
+}
+
+.pk-pass-toggle {
+  background: none;
+  border: none;
+  color: var(--pk-text-muted);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s ease;
+}
+.pk-pass-toggle:hover {
+  color: var(--pk-text-primary);
+}
+
+.pk-phone-prefix {
   display: flex;
   align-items: center;
   gap: 6px;
-  color: var(--kuda-text-primary);
+  padding-right: 10px;
+  margin-right: 8px;
+  border-right: 1px solid var(--pk-divider-line);
   font-size: 14px;
   font-weight: 600;
-  pointer-events: none;
-  z-index: 2;
-  user-select: none;
+  color: var(--pk-text-primary);
 }
 
-.kuda-country-flag {
-  border-radius: 2px;
-  display: block;
-  flex-shrink: 0;
-}
-
-.kuda-input-field.phone-field {
-  padding-left: 84px;
-}
-
-/* Error states */
-.kuda-input-group.has-error .kuda-input-field {
-  border-color: #ef4444;
-  background: rgba(239, 68, 68, 0.08);
-}
-
-.kuda-input-group.has-error .kuda-input-field:focus {
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
-}
-
-.kuda-error-text {
+.pk-error-text {
   font-size: 12px;
-  color: #f87171;
-  font-weight: 500;
-}
-
-/* ── Forgot Password Row ── */
-.kuda-forgot-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 14px;
+  color: #ef4444;
   margin-top: 2px;
-  margin-bottom: 4px;
 }
 
-.kuda-forgot-prompt {
-  color: var(--kuda-text-secondary);
-}
-
-.kuda-reset-anchor {
-  color: var(--kuda-text-primary);
-  font-weight: 700;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-  cursor: pointer;
-  transition: opacity 0.15s ease;
-}
-
-.kuda-reset-anchor:hover {
-  opacity: 0.8;
-}
-
-/* ── Submit Button (Monochrome Black & White) ── */
-.kuda-submit-button {
-  width: 100%;
-  height: 50px;
-  border-radius: 10px;
-  border: 1px solid var(--kuda-card-border);
-  background: var(--kuda-btn-inactive-bg);
-  color: var(--kuda-btn-inactive-text);
-  font-size: 15px;
-  font-weight: 700;
-  font-family: inherit;
+.pk-forgot-row {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  margin-top: 4px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  justify-content: flex-end;
+  margin-top: -4px;
 }
-
-.kuda-submit-button.active {
-  background: var(--kuda-btn-active-bg);
-  color: var(--kuda-btn-active-text);
-  border-color: transparent;
-  cursor: pointer;
-}
-
-.kuda-submit-button.active:hover {
-  background: var(--kuda-btn-hover-bg);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
-}
-
-.theme-dark .kuda-submit-button {
-  background: #ffffff;
-  color: #000000;
-  border-color: #ffffff;
-}
-
-.theme-dark .kuda-submit-button:hover:not(:disabled) {
-  background: #e4e4e7;
-  color: #000000;
-  box-shadow: 0 6px 24px rgba(255, 255, 255, 0.18);
-}
-
-.theme-dark .kuda-submit-button:disabled {
-  background: #ffffff;
-  color: #000000;
-  opacity: 0.88;
-}
-
-.theme-dark .kuda-submit-button .kuda-button-spinner {
-  border: 2.5px solid rgba(0, 0, 0, 0.25);
-  border-top-color: #000000;
-}
-
-.theme-light .kuda-submit-button {
-  background: #000000;
-  color: #ffffff;
-  border-color: #000000;
-}
-
-.theme-light .kuda-submit-button:hover:not(:disabled) {
-  background: #1f1f23;
-  color: #ffffff;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-}
-
-.theme-light .kuda-submit-button:disabled {
-  background: #000000;
-  color: rgba(255, 255, 255, 0.88);
-  opacity: 0.85;
-}
-
-.kuda-submit-button:disabled {
-  opacity: 0.75;
-  cursor: not-allowed;
-}
-
-.kuda-button-spinner {
-  width: 20px;
-  height: 20px;
-  border: 2.5px solid rgba(255, 255, 255, 0.35);
-  border-top-color: #ffffff;
-  border-radius: 50%;
-  animation: kudaSpin 0.7s linear infinite;
-}
-
-.theme-light .kuda-submit-button .kuda-button-spinner {
-  border-color: rgba(255, 255, 255, 0.3);
-  border-top-color: #ffffff;
-}
-
-@keyframes kudaSpin {
-  to { transform: rotate(360deg); }
-}
-
-/* ── Create an Account Link ── */
-.kuda-register-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 10px;
-}
-
-.kuda-create-account-link {
-  color: var(--kuda-text-primary);
-  font-size: 14.5px;
-  font-weight: 700;
+.pk-forgot-link {
+  font-size: 12.5px;
+  color: var(--pk-link);
   text-decoration: none;
-  cursor: pointer;
-  transition: opacity 0.15s ease;
+  font-weight: 600;
+}
+.pk-forgot-link:hover {
+  text-decoration: underline;
 }
 
-.kuda-create-account-link:hover {
-  opacity: 0.8;
+.pk-submit-btn {
+  width: 100%;
+  height: 48px;
+  background: #10b981;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.18s ease;
+  box-shadow: none;
+  margin-top: 4px;
+}
+.pk-submit-btn:hover {
+  background: #059669;
+  transform: translateY(-1px);
+  box-shadow: none;
+}
+.pk-submit-btn:active {
+  transform: translateY(0);
+}
+
+.pk-switch-view-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--pk-text-secondary);
+  margin-top: 6px;
+}
+.pk-switch-view-row a,
+.pk-switch-view-row button {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--pk-link);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+}
+.pk-switch-view-row a:hover,
+.pk-switch-view-row button:hover {
   text-decoration: underline;
 }
 
 /* ══════════════════════════════════════════════════════════════
-   RIGHT PANEL (Image Carousel, Overlays, Dots & QR Code)
+   RIGHT PANEL (Showcase Carousel Slide 1 - 5)
    ══════════════════════════════════════════════════════════════ */
 .kuda-login-right {
   flex: 0 0 50%;
@@ -534,7 +802,7 @@
   display: block;
 }
 
-/* ── Cinematic Dark Vignette & Gradient Overlays ── */
+/* ── Gradient Overlay for Text Readability ── */
 .kuda-slide-overlay {
   position: absolute;
   inset: 0;
@@ -553,16 +821,17 @@
 .kuda-slide-caption-bar {
   position: absolute;
   top: 36px;
-  left: 44px;
-  right: 44px;
+  left: 40px;
+  right: 40px;
   z-index: 10;
-  max-width: 540px;
+  max-width: none;
   pointer-events: none;
 }
 
 .kuda-caption-content {
   pointer-events: auto;
   animation: captionIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  max-width: 100%;
 }
 
 @keyframes captionIn {
@@ -572,23 +841,25 @@
 
 .kuda-slide-headline {
   font-family: 'Hanken Grotesk', 'Inter', -apple-system, sans-serif;
-  font-size: 34px;
-  font-weight: 900;
-  text-transform: uppercase;
+  font-size: 32px;
+  font-weight: 800;
+  text-transform: none;
   color: #ffffff;
-  letter-spacing: -0.6px;
-  line-height: 1.15;
+  letter-spacing: -0.5px;
+  line-height: 1.18;
   margin: 0 0 10px;
   text-shadow: 0 2px 14px rgba(0, 0, 0, 0.7);
+  white-space: nowrap;
 }
 
 .kuda-slide-subheadline {
-  font-size: 15.5px;
+  font-size: clamp(13.5px, 1.05vw, 15px);
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(255, 255, 255, 0.92);
   line-height: 1.45;
   margin: 0 0 20px;
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+  white-space: nowrap;
 }
 
 /* ── Pagination Dots ── */
@@ -599,61 +870,61 @@
 }
 
 .kuda-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.32);
+  height: 6px;
+  width: 6px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.4);
   border: none;
-  cursor: pointer;
   padding: 0;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.kuda-dot:hover:not(.active) {
-  background: rgba(255, 255, 255, 0.65);
+.kuda-dot:hover {
+  background: rgba(255, 255, 255, 0.75);
 }
 
 .kuda-dot.active {
+  width: 24px;
   background: #ffffff;
-  width: 22px;
-  border-radius: 10px;
-  box-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
 }
 
-/* ── QR Code Card in Bottom-Right Corner ── */
+/* ── QR Code Floating Card ── */
 .kuda-qr-container {
   position: absolute;
   bottom: 32px;
-  right: 36px;
+  right: 32px;
   z-index: 10;
 }
 
 .login-qr-card {
-  background: #000000;
-  border: 1.5px solid rgba(255, 255, 255, 0.22);
-  border-radius: 12px;
+  width: 84px;
+  height: 84px;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
   padding: 8px;
-  box-shadow:
-    0 14px 36px rgba(0, 0, 0, 0.7),
-    0 2px 8px rgba(0, 0, 0, 0.4);
-  cursor: pointer;
-  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: none;
+  transition: transform 0.25s ease, background 0.25s ease;
+  cursor: pointer;
 }
 
 .login-qr-card:hover {
-  transform: translateY(-2px) scale(1.04);
-  border-color: rgba(255, 255, 255, 0.5);
-  box-shadow:
-    0 18px 44px rgba(0, 0, 0, 0.8),
-    0 0 16px rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px) scale(1.03);
+  background: rgba(0, 0, 0, 0.88);
+  border-color: rgba(255, 255, 255, 0.28);
+  box-shadow: none;
 }
 
 .login-qr-inner {
-  width: 82px;
-  height: 82px;
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -663,26 +934,22 @@
   width: 100%;
   height: 100%;
   color: #ffffff;
-  display: block;
 }
 
 /* ══════════════════════════════════════════════════════════════
    RESPONSIVE DESIGN (Tablets & Mobile)
    ══════════════════════════════════════════════════════════════ */
 @media (max-width: 1080px) {
-  .kuda-left-header {
-    padding: 24px 32px 12px;
-  }
-  .kuda-form-container {
-    padding: 16px 32px 36px;
-  }
   .kuda-slide-caption-bar {
     top: 28px;
     left: 28px;
     right: 28px;
   }
   .kuda-slide-headline {
-    font-size: 28px;
+    font-size: 26px;
+  }
+  .kuda-slide-subheadline {
+    font-size: 13.5px;
   }
   .kuda-qr-container {
     bottom: 24px;
@@ -701,37 +968,33 @@
     max-width: 100%;
     width: 100%;
     min-height: 100vh;
-    padding-bottom: 24px;
+    padding: 32px 18px;
+  }
+
+  .pk-auth-top-left-logo {
+    top: 20px;
+    left: 20px;
   }
 
   .kuda-login-right {
-    display: none; /* Mobile focuses cleanly on the secure login form */
+    display: none;
   }
 
-  .kuda-left-header {
-    padding: 20px 20px 10px;
+  .pk-auth-card {
+    padding: 32px 22px 28px;
+    border-radius: 22px;
   }
 
-  .kuda-form-container {
-    padding: 12px 18px 28px;
+  .pk-card-title,
+  .pk-step-title {
+    font-size: 20px;
+    margin-bottom: 22px;
   }
 
-  .kuda-login-card {
-    padding: 28px 20px 24px;
-    border-radius: 14px;
-  }
-
-  .kuda-card-title {
-    font-size: 25px;
-  }
-
-  .kuda-input-field {
-    height: 48px;
-    font-size: 14.5px;
-  }
-
-  .kuda-submit-button {
-    height: 48px;
-    font-size: 15px;
+  .pk-btn-primary,
+  .pk-btn-secondary,
+  .pk-submit-btn {
+    height: 46px;
+    font-size: 14px;
   }
 }

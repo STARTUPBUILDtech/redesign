@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import paykudiLogo from "./assets/paykudi-logo.png";
 import logoDarkMode from "./assets/logodarkmode.png";
-import avatarIllustration from "./assets/avatar-illustration.png";
 import LoginPage from "./components/Auth/LoginPage.jsx";
 import DesktopActivity from "./components/DesktopActivity.jsx";
 import DesktopNewPayment from "./components/DesktopNewPayment.jsx";
@@ -1029,7 +1028,7 @@ export default function App() {
       ) : active === "Help" || active === "Help & support" ? (
         <DesktopHelp />
       ) : active === "Profile" ? (
-        <DesktopProfile userName="Amaka" dark={dark} onSignOut={handleSignOut} />
+        <DesktopProfile userName="Amaka" dark={dark} onSignOut={handleSignOut} layout="split" />
       ) : (
         <main id="home" className="desktop-container">
           <div className="desktop-content-wrap desktop-intro-wrap">

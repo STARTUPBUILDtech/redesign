@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import "../styles/desktop-payment-room.css";
 import "../styles/support-section.css";
 import {
   SendMessageSlideUpModal,
@@ -54,8 +55,36 @@ function WhatsAppIcon() {
   );
 }
 
+const SUPPORT_OPTIONS = [
+  {
+    id: "message",
+    title: "Send us a message",
+    subtitle: "Chat with resolution specialists",
+    badge: "message",
+    Icon: HeadsetAgentIcon,
+  },
+  {
+    id: "bot",
+    title: "PayKudi Bot Assistant",
+    subtitle: "Instant automated answers & diagnostics",
+    badge: "bot",
+    Icon: RobotBotIcon,
+  },
+  {
+    id: "faq",
+    title: "Frequently Asked Questions",
+    subtitle: "Search escrow rules & policies",
+    badge: "faq",
+    Icon: QuestionBoxIcon,
+  },
+];
+
 export default function DesktopHelp({ room = {} }) {
-  const [activeModal, setActiveModal] = useState(null); // 'message' | 'bot' | 'faq' | null
+  const [activePanel, setActivePanel] = useState(null); // 'message' | 'bot' | 'faq' | null
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, []);
 
   const handleWhatsAppClick = () => {
     window.open(
@@ -64,125 +93,143 @@ export default function DesktopHelp({ room = {} }) {
     );
   };
 
-  return (
-    <main id="help-support" className="desktop-container desktop-help-main">
-      {/* ── Desktop Intro Heading obeying desktop-content-wrap padding ── */}
-      <div className="desktop-content-wrap desktop-intro-wrap">
-        <section className="intro desktop-help-intro">
-          <div>
-            <h1>24/7 PayKudi Support</h1>
-            <p>Chat with specialists, get instant diagnostics, or browse policies</p>
-          </div>
-        </section>
-      </div>
+  const closePanel = () => setActivePanel(null);
 
-      {/* ── Desktop Support Grid obeying desktop-content-wrap padding ── */}
-      <div className="desktop-content-wrap">
-        <div className="desktop-help-cards-grid">
-          {/* 1. Send us a message */}
-          <button
-            type="button"
-            className="desktop-help-card"
-            onClick={() => setActiveModal("message")}
-            aria-label="Send us a message: Chat with resolution specialists"
-          >
-            <div className="desktop-help-card-header">
-              <div className="desktop-help-card-badge message">
-                <HeadsetAgentIcon />
-              </div>
-              <span className="material-symbols-outlined desktop-help-card-chevron">
-                chevron_right
-              </span>
-            </div>
-            <div className="desktop-help-card-body">
-              <span className="desktop-help-card-title">Send us a message</span>
-              <span className="desktop-help-card-subtitle">Chat with resolution specialists</span>
-            </div>
-          </button>
-
-          {/* 2. PayKudi Bot Assistant */}
-          <button
-            type="button"
-            className="desktop-help-card"
-            onClick={() => setActiveModal("bot")}
-            aria-label="PayKudi Bot Assistant: Instant automated answers & diagnostics"
-          >
-            <div className="desktop-help-card-header">
-              <div className="desktop-help-card-badge bot">
-                <RobotBotIcon />
-              </div>
-              <span className="material-symbols-outlined desktop-help-card-chevron">
-                chevron_right
-              </span>
-            </div>
-            <div className="desktop-help-card-body">
-              <span className="desktop-help-card-title">PayKudi Bot Assistant</span>
-              <span className="desktop-help-card-subtitle">Instant automated answers & diagnostics</span>
-            </div>
-          </button>
-
-          {/* 3. Frequently Asked Questions */}
-          <button
-            type="button"
-            className="desktop-help-card"
-            onClick={() => setActiveModal("faq")}
-            aria-label="Frequently Asked Questions: Search escrow rules & policies"
-          >
-            <div className="desktop-help-card-header">
-              <div className="desktop-help-card-badge faq">
-                <QuestionBoxIcon />
-              </div>
-              <span className="material-symbols-outlined desktop-help-card-chevron">
-                chevron_right
-              </span>
-            </div>
-            <div className="desktop-help-card-body">
-              <span className="desktop-help-card-title">Frequently Asked Questions</span>
-              <span className="desktop-help-card-subtitle">Search escrow rules & policies</span>
-            </div>
-          </button>
-
-          {/* 4. WhatsApp Live Support */}
-          <button
-            type="button"
-            className="desktop-help-card whatsapp-featured-card"
-            onClick={handleWhatsAppClick}
-            aria-label="WhatsApp Live Support: Direct live chat assistance"
-          >
-            <div className="desktop-help-card-header">
-              <div className="desktop-help-card-badge whatsapp">
-                <WhatsAppIcon />
-              </div>
-              <span className="material-symbols-outlined desktop-help-card-chevron whatsapp-external">
-                open_in_new
-              </span>
-            </div>
-            <div className="desktop-help-card-body">
-              <span className="desktop-help-card-title">WhatsApp Live Support</span>
-              <span className="desktop-help-card-subtitle">Direct live chat assistance</span>
-            </div>
-          </button>
+  const renderDetail = () => {
+    if (activePanel === "message") {
+      return <SendMessageSlideUpModal key="message" inline isOpen onClose={closePanel} />;
+    }
+    if (activePanel === "bot") {
+      return <BotAssistantSlideUpModal key="bot" inline isOpen onClose={closePanel} room={room} />;
+    }
+    if (activePanel === "faq") {
+      return <FaqSlideUpModal key="faq" inline isOpen onClose={closePanel} />;
+    }
+    return (
+      <div className="desktop-pr-empty-detail">
+        <div className="desktop-pr-empty-illustration">
+          <span className="material-symbols-outlined desktop-pr-empty-watermark">
+            support_agent
+          </span>
         </div>
+        <h3 className="desktop-pr-empty-title">PayKudi Help &amp; Support</h3>
+        <p className="desktop-pr-empty-subtitle" style={{ whiteSpace: "nowrap" }}>
+          Select a support option from the left list to get started.
+        </p>
       </div>
+    );
+  };
 
-      {/* ── Slide-Up Modal 1: Send Us a Message (Stops at PayKudi Header) ── */}
-      <SendMessageSlideUpModal
-        isOpen={activeModal === "message"}
-        onClose={() => setActiveModal(null)}
-      />
+  return (
+    <div className="desktop-payment-room-wrapper desktop-help-wrapper">
+      <main id="help-support" className="desktop-payment-room-main">
+        <div className="desktop-pr-split-layout">
+          {/* ── LEFT PANE: SUPPORT OPTIONS LIST ── */}
+          <aside className="desktop-pr-left-pane desktop-help-left-pane" aria-label="Support options">
+            <div className="desktop-help-left-header">
+              <h1 className="pk-support-title">24/7 PayKudi Support</h1>
+            </div>
 
-      {/* ── Slide-Up Modal 2: PayKudi Assistant (Stops at PayKudi Header) ── */}
-      <BotAssistantSlideUpModal
-        isOpen={activeModal === "bot"}
-        onClose={() => setActiveModal(null)}
-        room={room}
-      />
+            <div className="pk-support-list desktop-help-support-list" role="list">
+              {/* 1. Send us a message */}
+              <button
+                id="help-option-message"
+                type="button"
+                className={`pk-support-item ${activePanel === "message" ? "selected" : ""}`}
+                onClick={() => setActivePanel("message")}
+                aria-pressed={activePanel === "message"}
+                aria-label="Send us a message: Chat with resolution specialists"
+              >
+                <div className="pk-support-icon-circle message">
+                  <HeadsetAgentIcon />
+                </div>
+                <div className="pk-support-item-inner">
+                  <div className="pk-support-text">
+                    <span className="pk-support-label">Send us a message</span>
+                    <span className="pk-support-subtitle">Chat with resolution specialists</span>
+                  </div>
+                  <span className="material-symbols-outlined pk-support-chevron">
+                    chevron_right
+                  </span>
+                </div>
+              </button>
 
-      {/* ── Slide-Up Modal 3: Frequently Asked Questions (Stops at PayKudi Header) ── */}
-      <FaqSlideUpModal
-        isOpen={activeModal === "faq"}
-        onClose={() => setActiveModal(null)}
-      />
-    </main>
+              {/* 2. PayKudi Bot Assistant */}
+              <button
+                id="help-option-bot"
+                type="button"
+                className={`pk-support-item ${activePanel === "bot" ? "selected" : ""}`}
+                onClick={() => setActivePanel("bot")}
+                aria-pressed={activePanel === "bot"}
+                aria-label="PayKudi Bot Assistant: Instant automated answers & diagnostics"
+              >
+                <div className="pk-support-icon-circle bot">
+                  <RobotBotIcon />
+                </div>
+                <div className="pk-support-item-inner">
+                  <div className="pk-support-text">
+                    <span className="pk-support-label">PayKudi Bot Assistant</span>
+                    <span className="pk-support-subtitle">Instant automated answers & diagnostics</span>
+                  </div>
+                  <span className="material-symbols-outlined pk-support-chevron">
+                    chevron_right
+                  </span>
+                </div>
+              </button>
+
+              {/* 3. Frequently Asked Questions */}
+              <button
+                id="help-option-faq"
+                type="button"
+                className={`pk-support-item ${activePanel === "faq" ? "selected" : ""}`}
+                onClick={() => setActivePanel("faq")}
+                aria-pressed={activePanel === "faq"}
+                aria-label="Frequently Asked Questions: Search escrow rules & policies"
+              >
+                <div className="pk-support-icon-circle faq">
+                  <QuestionBoxIcon />
+                </div>
+                <div className="pk-support-item-inner">
+                  <div className="pk-support-text">
+                    <span className="pk-support-label">Frequently Asked Questions</span>
+                    <span className="pk-support-subtitle">Search escrow rules & policies</span>
+                  </div>
+                  <span className="material-symbols-outlined pk-support-chevron">
+                    chevron_right
+                  </span>
+                </div>
+              </button>
+
+              {/* 4. WhatsApp Live Support */}
+              <button
+                id="help-option-whatsapp"
+                type="button"
+                className="pk-support-item"
+                onClick={handleWhatsAppClick}
+                aria-label="WhatsApp Live Support: Connect instantly with our support team"
+              >
+                <div className="pk-support-icon-circle whatsapp">
+                  <WhatsAppIcon />
+                </div>
+                <div className="pk-support-item-inner no-border">
+                  <div className="pk-support-text">
+                    <span className="pk-support-label whatsapp-label">WhatsApp Live Support</span>
+                    <span className="pk-support-subtitle">Connect instantly with our support team</span>
+                  </div>
+                  <span className="material-symbols-outlined pk-support-chevron whatsapp-chevron">
+                    chevron_right
+                  </span>
+                </div>
+              </button>
+            </div>
+          </aside>
+
+          {/* ── RIGHT PANE: SELECTED SUPPORT PANEL ── */}
+          <section className="desktop-pr-right-pane desktop-help-right-pane" aria-label="Support detail view">
+            {renderDetail()}
+          </section>
+        </div>
+      </main>
+    </div>
   );
 }

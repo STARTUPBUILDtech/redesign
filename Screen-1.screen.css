@@ -47,13 +47,13 @@
     opacity: 0 !important;
   }
 
-  body:has([role="dialog"]) .header-avatar-circle,
-  body:has([aria-modal="true"]) .header-avatar-circle,
-  body:has(.cd-issue-backdrop) .header-avatar-circle,
-  body:has(.ap-bottom-sheet-backdrop) .header-avatar-circle,
-  body:has([class*="-backdrop"]) .header-avatar-circle,
-  body.modal-open-desktop .header-avatar-circle,
-  body.modal-open .header-avatar-circle,
+  body:has([role="dialog"]) .topbar .header-avatar-circle,
+  body:has([aria-modal="true"]) .topbar .header-avatar-circle,
+  body:has(.cd-issue-backdrop) .topbar .header-avatar-circle,
+  body:has(.ap-bottom-sheet-backdrop) .topbar .header-avatar-circle,
+  body:has([class*="-backdrop"]) .topbar .header-avatar-circle,
+  body.modal-open-desktop .topbar .header-avatar-circle,
+  body.modal-open .topbar .header-avatar-circle,
   body:has([role="dialog"]) .topbar .header-avatar-circle,
   body:has([aria-modal="true"]) .topbar .header-avatar-circle,
   body:has(.cd-issue-backdrop) .topbar .header-avatar-circle,

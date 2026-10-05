@@ -8,7 +8,6 @@
    ========================================================================== */
 
 /* ── Fixed Backdrop covering the screen, blurred and focused ── */
-/* ── Fixed Backdrop covering the screen, blurred and focused ── */
 .pk-slideup-backdrop {
   position: fixed;
   inset: 0 !important;
