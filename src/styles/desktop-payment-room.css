@@ -823,6 +823,7 @@
 /* Empty Left List State */
 .desktop-pr-cards-list:has(.desktop-pr-empty) {
   justify-content: center;
+  align-items: center;
 }
 
 .desktop-pr-empty {
@@ -830,29 +831,178 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 40px 16px;
+  padding: clamp(32px, 4vw, 56px) 16px;
   text-align: center;
-  gap: 12px;
-  color: var(--muted);
   flex: 1;
   width: 100%;
   margin: auto 0;
   box-sizing: border-box;
 }
 
-.desktop-pr-empty-icon {
-  font-size: 38px;
-  color: var(--muted);
-  opacity: 0.5;
+/* ── 3 Stacked Cards Graphic ── */
+.pr-empty-graphic-wrap {
+  width: 100%;
+  max-width: 310px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 22px;
 }
 
-.desktop-pr-empty-text {
-  font-size: 13.5px;
+.pr-empty-graphic-svg {
+  width: 100%;
+  height: auto;
+  max-height: 165px;
+  overflow: visible;
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.03));
+}
+
+/* Card SVG Elements: Light Theme */
+.pr-card-bg-back {
+  fill: #f8fafc;
+  stroke: #e5e7eb;
+  stroke-width: 1.5;
+}
+
+.pr-card-bg-mid {
+  fill: #ffffff;
+  stroke: #e5e7eb;
+  stroke-width: 1.5;
+}
+
+.pr-card-bg-front {
+  fill: #ffffff;
+  stroke: #e2e8f0;
+  stroke-width: 1.5;
+}
+
+.pr-empty-card-front {
+  filter: drop-shadow(0 10px 14px rgba(15, 23, 42, 0.08));
+}
+
+.pr-card-disc {
+  fill: #eaecf0;
+}
+
+.pr-card-bar {
+  fill: #eaecf0;
+}
+
+/* Card SVG Elements: Dark Theme */
+.app[data-appearance="dark"] .pr-card-bg-back {
+  fill: #14161c;
+  stroke: rgba(255, 255, 255, 0.08);
+}
+
+.app[data-appearance="dark"] .pr-card-bg-mid {
+  fill: #181a22;
+  stroke: rgba(255, 255, 255, 0.1);
+}
+
+.app[data-appearance="dark"] .pr-card-bg-front {
+  fill: #1e2029;
+  stroke: rgba(255, 255, 255, 0.14);
+}
+
+.app[data-appearance="dark"] .pr-card-disc {
+  fill: #2a2d39;
+}
+
+.app[data-appearance="dark"] .pr-card-bar {
+  fill: #2a2d39;
+}
+
+/* Title beneath stacked cards */
+.desktop-pr-empty-title {
+  font-family: 'Hanken Grotesk', 'Inter', -apple-system, sans-serif;
+  font-size: clamp(17px, 1.2vw, 19.5px);
   font-weight: 600;
-  color: var(--ink);
-  margin: 0;
-  max-width: 320px;
-  line-height: 1.45;
+  color: #4b5565;
+  margin: 0 0 0 0;
+  text-align: center;
+  letter-spacing: -0.2px;
+  line-height: 1.35;
+}
+
+.app[data-appearance="dark"] .desktop-pr-empty-title,
+[data-appearance="dark"] .desktop-pr-empty-title,
+body.dark .desktop-pr-empty-title,
+.dark .desktop-pr-empty-title {
+  color: #cbd5e1;
+}
+
+/* CTA Button: Black in light mode, White in black mode, brought down comfortably */
+.desktop-pr-empty-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #000000;
+  color: #ffffff;
+  border: 1px solid #000000;
+  border-radius: 999px;
+  padding: 12px 28px;
+  margin-top: 38px !important;
+  font-family: 'Inter', sans-serif;
+  font-size: 14.5px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  outline: none;
+  user-select: none;
+}
+
+.desktop-pr-empty-cta-btn:hover {
+  background: #1f2228;
+  border-color: #1f2228;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+}
+
+.desktop-pr-empty-cta-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+}
+
+.desktop-pr-empty-cta-arrow {
+  flex-shrink: 0;
+  stroke: currentColor;
+  transition: transform 0.18s ease;
+}
+
+.desktop-pr-empty-cta-btn:hover .desktop-pr-empty-cta-arrow {
+  transform: translate(1.5px, -1.5px);
+}
+
+/* ── Dark Mode (Black Mode): Button is SOLID WHITE with black text & black icon ── */
+.app[data-appearance="dark"] .desktop-pr-empty-cta-btn,
+[data-appearance="dark"] .desktop-pr-empty-cta-btn,
+body.dark .desktop-pr-empty-cta-btn,
+.dark .desktop-pr-empty-cta-btn {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border-color: #ffffff !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-empty-cta-btn:hover,
+[data-appearance="dark"] .desktop-pr-empty-cta-btn:hover,
+body.dark .desktop-pr-empty-cta-btn:hover,
+.dark .desktop-pr-empty-cta-btn:hover {
+  background: #e5e7eb !important;
+  border-color: #e5e7eb !important;
+  color: #000000 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 24px rgba(255, 255, 255, 0.2) !important;
+}
+
+.app[data-appearance="dark"] .desktop-pr-empty-cta-btn:active,
+[data-appearance="dark"] .desktop-pr-empty-cta-btn:active,
+body.dark .desktop-pr-empty-cta-btn:active,
+.dark .desktop-pr-empty-cta-btn:active {
+  transform: translateY(0) !important;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3) !important;
 }
 
 /* ══════════════════════════════════════════════════════════════

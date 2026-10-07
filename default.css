@@ -123,10 +123,17 @@ input[type="tel"],
 }
 
 /* Default capital letter for input fields across the app */
-input:not([type="password"]):not([type="email"]):not([type="number"]):not([type="tel"]),
+input:not([type="password"]):not([type="email"]):not([type="number"]):not([type="tel"]):not([data-password-field]):not(.pk-password-input),
 textarea,
 .ui-input {
   text-transform: capitalize;
+}
+
+/* Password fields must NEVER have capitalization or sentence casing */
+input[type="password"],
+input[data-password-field],
+.pk-password-input {
+  text-transform: none !important;
 }
 
 /* Placeholders must never be forced to capitalize */
@@ -368,6 +375,13 @@ textarea::placeholder,
   color: #ffffff !important;
 }
 
+/* When the menu is out in light mode: active trigger avatar circle turns white with black letter */
+.header-profile-trigger.active .header-avatar-circle-h,
+.header-profile-trigger:active .header-avatar-circle-h {
+  background-color: #ffffff !important;
+  color: #111215 !important;
+}
+
 /* ── Dark Mode Base (not white) ── */
 .app[data-appearance="dark"] .header-profile-trigger,
 .mobile-dashboard[data-appearance="dark"] .header-profile-trigger,
@@ -412,13 +426,13 @@ textarea::placeholder,
   color: #111215 !important;
 }
 
-/* Circle H Avatar */
+/* Circle Avatar: Black in Light Mode, White in Dark Mode */
 .header-avatar-circle-h {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background-color: #b875ea;
-  color: #ffffff;
+  background-color: #111215 !important;
+  color: #ffffff !important;
   font-family: 'Hanken Grotesk', 'Inter', -apple-system, sans-serif;
   font-size: 12.5px;
   font-weight: 700;
@@ -429,13 +443,26 @@ textarea::placeholder,
   flex-shrink: 0;
   line-height: 1;
   letter-spacing: -0.2px;
+  text-transform: uppercase !important;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .app[data-appearance="dark"] .header-avatar-circle-h,
 .mobile-dashboard[data-appearance="dark"] .header-avatar-circle-h,
-[data-appearance="dark"] .header-avatar-circle-h {
-  background-color: #b875ea;
-  color: #ffffff;
+[data-appearance="dark"] .header-avatar-circle-h,
+.dark .header-avatar-circle-h,
+body.dark .header-avatar-circle-h {
+  background-color: #ffffff !important;
+  color: #111215 !important;
+}
+
+.app[data-appearance="dark"] .header-profile-trigger.active .header-avatar-circle-h,
+.mobile-dashboard[data-appearance="dark"] .header-profile-trigger.active .header-avatar-circle-h,
+[data-appearance="dark"] .header-profile-trigger.active .header-avatar-circle-h,
+.dark .header-profile-trigger.active .header-avatar-circle-h,
+body.dark .header-profile-trigger.active .header-avatar-circle-h {
+  background-color: #111215 !important;
+  color: #ffffff !important;
 }
 
 /* Chevron Icon */
@@ -515,8 +542,8 @@ html[data-appearance="dark"] .header-profile-dropdown {
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  background-color: #b875ea;
-  color: #ffffff;
+  background-color: #ffffff !important;
+  color: #111215 !important;
   font-family: 'Hanken Grotesk', 'Inter', -apple-system, sans-serif;
   font-size: 19px;
   font-weight: 700;
@@ -526,13 +553,17 @@ html[data-appearance="dark"] .header-profile-dropdown {
   flex-shrink: 0;
   line-height: 1;
   letter-spacing: -0.3px;
+  text-transform: uppercase !important;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 [data-appearance="dark"] .header-dropdown-avatar,
 .app[data-appearance="dark"] .header-dropdown-avatar,
-.mobile-dashboard[data-appearance="dark"] .header-dropdown-avatar {
-  background-color: #b875ea !important;
-  color: #ffffff !important;
+.mobile-dashboard[data-appearance="dark"] .header-dropdown-avatar,
+.dark .header-dropdown-avatar,
+body.dark .header-dropdown-avatar {
+  background-color: #ffffff !important;
+  color: #111215 !important;
 }
 
 .header-dropdown-user-info {
@@ -549,6 +580,7 @@ html[data-appearance="dark"] .header-profile-dropdown {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-transform: capitalize;
   line-height: 1.25;
 }
 
@@ -564,12 +596,45 @@ html[data-appearance="dark"] .header-profile-dropdown {
   color: #9ca3af;
   margin-top: 3px;
   line-height: 1.2;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 [data-appearance="dark"] .header-dropdown-user-id,
 .app[data-appearance="dark"] .header-dropdown-user-id,
 .mobile-dashboard[data-appearance="dark"] .header-dropdown-user-id {
   color: #6b7280 !important;
+}
+
+.header-dropdown-copy-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+  opacity: 0.7;
+  transition: opacity 0.15s ease, transform 0.15s ease, color 0.15s ease;
+  line-height: 1;
+}
+
+.header-dropdown-copy-btn:hover {
+  opacity: 1;
+  transform: scale(1.18);
+  color: #ffffff;
+}
+
+[data-appearance="dark"] .header-dropdown-copy-btn:hover,
+.app[data-appearance="dark"] .header-dropdown-copy-btn:hover,
+.mobile-dashboard[data-appearance="dark"] .header-dropdown-copy-btn:hover {
+  color: #000000 !important;
+}
+
+.header-dropdown-copy-icon {
+  font-size: 13.5px !important;
 }
 
 /* Dropdown Divider */
@@ -1005,15 +1070,23 @@ nav button.active #m-pr-nav-badge,
   font-family: 'Hanken Grotesk', sans-serif;
   font-size: clamp(34px, 8.5vw, 44px);
   font-weight: 800;
-  letter-spacing: -1.5px;
+  letter-spacing: -0.5px;
   color: var(--ink);
   margin: 0;
   line-height: 1;
+  display: inline-flex;
+  align-items: center;
+}
+
+.balance-currency-symbol {
+  font-family: inherit;
+  font-weight: 700;
+  margin-right: 5px;
 }
 
 .balance-eye-btn {
   position: absolute;
-  left: calc(100% + 10px);
+  left: calc(100% + 14px);
   top: 50%;
   transform: translateY(-50%);
   width: 32px;
@@ -1055,12 +1128,58 @@ nav button.active #m-pr-nav-badge,
   background: color-mix(in srgb, var(--ink) 9%, transparent);
 }
 
+.balance-timestamp-row {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 0;
+}
+
 .balance-timestamp {
   font-size: 11px;
   color: var(--muted);
   margin: 0;
   font-family: 'Inter', sans-serif;
   font-weight: 400;
+}
+
+.balance-refresh-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted, #6b7280);
+  opacity: 0.75;
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.balance-refresh-btn:hover {
+  opacity: 1;
+  color: #ffffff;
+  transform: scale(1.15);
+}
+
+[data-appearance="dark"] .balance-refresh-btn:hover,
+.app[data-appearance="dark"] .balance-refresh-btn:hover {
+  color: #000000;
+}
+
+.balance-refresh-icon {
+  font-size: 12.5px !important;
+}
+
+.balance-refresh-btn.refreshing .balance-refresh-icon {
+  animation: balance-spin 0.65s linear infinite;
+}
+
+@keyframes balance-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 /* ── Desktop Full-Bleed Balance Banner & Sizing ── */
@@ -1174,10 +1293,27 @@ main.desktop-container {
 }
 
 .desktop-activity-wrap {
-  margin-bottom: clamp(24px, 2.5vw, 36px);
+  margin-bottom: clamp(8px, 1vw, 16px) !important;
 }
 
-/* ── Activity Heading 'View all' matching mobile ── */
+/* ── Activity Heading (Flex row at all screen sizes) ── */
+.activity-heading {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  margin-bottom: clamp(8px, 0.8vw, 12px) !important;
+  gap: 12px !important;
+}
+
+.activity-heading h2 {
+  margin: 0 !important;
+  font-size: clamp(18px, 1.2vw, 24px) !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.4px !important;
+  line-height: 1.2 !important;
+}
+
 .activity-heading a {
   color: #078c5c !important;
   font-size: clamp(12.5px, 1vw, 13.5px) !important;
@@ -1187,6 +1323,8 @@ main.desktop-container {
   margin-bottom: 0 !important;
   display: inline-flex !important;
   align-items: center !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
   transition: opacity 0.15s ease;
 }
 
@@ -1202,7 +1340,7 @@ main.desktop-container {
 
 /* ── Boxless Recent Activity (Matching dashboard.html) ── */
 .activity-card.boxless-activity-card {
-  margin-top: clamp(16px, 1.8vw, 24px) !important;
+  margin-top: clamp(16px, 1.5vw, 24px) !important;
   padding: 0 !important;
   border: none !important;
   border-radius: 0 !important;
@@ -1475,5 +1613,209 @@ body[data-appearance="dark"] .m-invite-add-spec-btn:hover,
   color: #4ade80 !important;
   border: none !important;
 }
+
+/* ── Shared Activity / Home Empty State (Compact design matching reference) ── */
+.activity-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 18px 16px 20px !important;
+  width: 100%;
+  box-sizing: border-box;
+  animation: actEmptyFadeIn 0.25s ease-out;
+}
+
+.home-recent-empty-state {
+  padding: 16px 16px !important;
+}
+
+@keyframes actEmptyFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.activity-empty-graphic-wrap {
+  position: relative;
+  width: 130px !important;
+  height: auto !important;
+  margin: 0 auto 20px auto !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.activity-empty-graphic-svg,
+.activity-empty-wallet-wrapper {
+  width: 100% !important;
+  height: auto !important;
+  overflow: visible;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.activity-empty-wallet-img {
+  width: 100% !important;
+  height: auto !important;
+  max-width: 130px !important;
+  object-fit: contain;
+  display: block;
+  user-select: none;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.05));
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.activity-empty-wallet-dark {
+  display: none !important;
+}
+
+[data-appearance="dark"] .activity-empty-wallet-light,
+.app[data-appearance="dark"] .activity-empty-wallet-light,
+.mobile-dashboard[data-appearance="dark"] .activity-empty-wallet-light,
+body.dark .activity-empty-wallet-light,
+.dark .activity-empty-wallet-light {
+  display: none !important;
+}
+
+[data-appearance="dark"] .activity-empty-wallet-dark,
+.app[data-appearance="dark"] .activity-empty-wallet-dark,
+.mobile-dashboard[data-appearance="dark"] .activity-empty-wallet-dark,
+body.dark .activity-empty-wallet-dark,
+.dark .activity-empty-wallet-dark {
+  display: block !important;
+  filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.25)) drop-shadow(0 6px 16px rgba(0, 0, 0, 0.5));
+}
+
+/* Empty State Title: 2 line space beneath */
+.activity-empty-title {
+  font-family: 'Hanken Grotesk', 'Inter', -apple-system, sans-serif;
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  color: #111827;
+  letter-spacing: -0.2px;
+  margin: 0 0 10px 0 !important;
+  line-height: 1.3 !important;
+  text-align: center;
+}
+
+[data-appearance="dark"] .activity-empty-title,
+.app[data-appearance="dark"] .activity-empty-title,
+.mobile-dashboard[data-appearance="dark"] .activity-empty-title,
+body.dark .activity-empty-title,
+.dark .activity-empty-title {
+  color: #f1f5f9;
+}
+
+/* Empty State Subtitle: 2 line space beneath */
+.activity-empty-subtitle {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  color: #6b7280;
+  line-height: 1.45 !important;
+  margin: 0 0 22px 0 !important;
+  max-width: 260px;
+  text-align: center;
+}
+
+[data-appearance="dark"] .activity-empty-subtitle,
+.app[data-appearance="dark"] .activity-empty-subtitle,
+.mobile-dashboard[data-appearance="dark"] .activity-empty-subtitle,
+body.dark .activity-empty-subtitle,
+.dark .activity-empty-subtitle {
+  color: #94a3b8;
+}
+
+/* Empty State CTA Button: compact margin */
+.activity-empty-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 24px !important;
+  border-radius: 9999px;
+  background: #000000;
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  font-size: 13.5px !important;
+  font-weight: 600;
+  border: 1px solid #000000;
+  cursor: pointer;
+  outline: none;
+  margin-top: 0 !important;
+  transition: all 0.15s ease;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
+}
+
+.activity-empty-title + .activity-empty-cta-btn {
+  margin-top: 22px !important;
+}
+
+.activity-empty-cta-arrow {
+  flex-shrink: 0;
+  transition: transform 0.15s ease;
+}
+
+.activity-empty-cta-btn:hover {
+  background: #1f2228;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+}
+
+.activity-empty-cta-btn:hover .activity-empty-cta-arrow {
+  transform: translate(1px, -1px);
+}
+
+.activity-empty-cta-btn:active {
+  transform: scale(0.97);
+}
+
+[data-appearance="dark"] .activity-empty-cta-btn,
+.app[data-appearance="dark"] .activity-empty-cta-btn,
+.mobile-dashboard[data-appearance="dark"] .activity-empty-cta-btn {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border-color: #ffffff !important;
+  box-shadow: 0 4px 16px rgba(255, 255, 255, 0.18) !important;
+}
+
+[data-appearance="dark"] .activity-empty-cta-btn:hover,
+.app[data-appearance="dark"] .activity-empty-cta-btn:hover,
+.mobile-dashboard[data-appearance="dark"] .activity-empty-cta-btn:hover {
+  background: #f0f0f2 !important;
+  color: #000000 !important;
+}
+
+/* ── Greyed Out & Unpressable 'View all' when no transactions ── */
+.activity-heading a.is-disabled,
+.mobile-activity-head a.is-disabled {
+  filter: none !important;
+  color: #9ca3af !important;
+  opacity: 0.65 !important;
+  pointer-events: none !important;
+  cursor: default !important;
+  text-decoration: none !important;
+  user-select: none !important;
+}
+
+.app[data-appearance="dark"] .activity-heading a.is-disabled,
+[data-appearance="dark"] .activity-heading a.is-disabled,
+.app[data-appearance="dark"] .mobile-activity-head a.is-disabled,
+[data-appearance="dark"] .mobile-activity-head a.is-disabled {
+  color: #6b7280 !important;
+  opacity: 0.7 !important;
+}
+
+
+
+
 
 

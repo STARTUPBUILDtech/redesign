@@ -4,7 +4,7 @@ import BankLogo from "../BankLogo.jsx";
 import { Select, SelectContent, SelectItem } from "../ui/select.jsx";
 import "../../styles/profile-modals.css";
 
-function WhatsAppIcon({ size = 18 }) {
+export function WhatsAppIcon({ size = 18 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
       <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.456 5.71 1.457h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.414z" />
@@ -258,7 +258,7 @@ export function EditFieldModal({
     switch (fieldType) {
       case "email":
         return {
-          title: "Edit Email Address",
+          title: formData.email ? "Edit Bound Email Address" : "Bind Email Address",
           icon: "mail",
           badgeClass: "email",
           badgeBg: isDark ? "rgba(168, 85, 247, 0.22)" : "#eedffe",
@@ -369,6 +369,10 @@ export function EditFieldModal({
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     autoComplete="email"
                   />
+                </div>
+                <div style={{ marginTop: "7px", fontSize: "12px", color: "var(--muted, #71717a)", display: "flex", alignItems: "center", gap: "6px" }}>
+                  <span className="material-symbols-outlined" style={{ fontSize: "14px", color: "#10b981" }}>verified</span>
+                  <span>Binding an email allows you to sign in with your email & password.</span>
                 </div>
               </div>
             )}
@@ -578,55 +582,53 @@ export function PayoutAccountModal({ isOpen, onClose, currentData, onSave, dark,
   // Modal view: 'list' (default view showing added accounts) | 'add' (add new account flow)
   const [view, setView] = useState("list");
 
+  // Helper to detect generic/dummy accounts
+  const isGenericAccount = (acc) => {
+    if (!acc) return true;
+    const name = String(acc.accountName || "").toLowerCase();
+    const num = String(acc.accountNumber || "");
+    const genericNums = ["1234567653", "2345678900", "0234567891", "0123456789", "2001948291"];
+    return name.includes("amaka") || genericNums.includes(num);
+  };
+
   // Initial accounts seed helper
   const getInitialAccounts = () => {
     try {
       const saved = localStorage.getItem("paykudi_payout_accounts");
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed)) {
+          const clean = parsed.filter((a) => !isGenericAccount(a));
+          if (clean.length !== parsed.length) {
+            localStorage.setItem("paykudi_payout_accounts", JSON.stringify(clean));
+          }
+          return clean;
+        }
       }
     } catch (e) {}
 
-    const curBank = currentData?.bank || "Kuda Bank";
-    const curBankCode =
-      currentData?.bankCode ||
-      (curBank.toLowerCase().includes("kuda")
-        ? "kuda"
-        : curBank.toLowerCase().includes("gt")
-        ? "gtbank"
-        : curBank.toLowerCase().includes("access")
-        ? "access"
-        : curBank.toLowerCase().includes("zenith")
-        ? "zenith"
-        : "kuda");
+    // Check if currentData has a real, non-generic bank account
+    if (
+      currentData?.bank &&
+      currentData?.accountNumber &&
+      !isGenericAccount({
+        accountName: currentData.accountName || currentData.name,
+        accountNumber: currentData.accountNumber,
+      })
+    ) {
+      return [
+        {
+          id: "payout-acc-" + Date.now(),
+          bank: currentData.bank,
+          bankCode: currentData.bankCode || "kuda",
+          accountNumber: currentData.accountNumber,
+          accountName: currentData.accountName || currentData.name || "",
+          isDefault: true,
+        },
+      ];
+    }
 
-    return [
-      {
-        id: "payout-acc-1",
-        bank: curBank,
-        bankCode: curBankCode,
-        accountNumber: currentData?.accountNumber || "2001948291",
-        accountName: currentData?.accountName || currentData?.name || "Amaka Obi",
-        isDefault: true,
-      },
-      {
-        id: "payout-acc-2",
-        bank: "GTBank",
-        bankCode: "gtbank",
-        accountNumber: "0234567891",
-        accountName: "Amaka Jennifer Obi",
-        isDefault: false,
-      },
-      {
-        id: "payout-acc-3",
-        bank: "Access Bank",
-        bankCode: "access",
-        accountNumber: "0123456789",
-        accountName: "Amaka Obi",
-        isDefault: false,
-      },
-    ];
+    return [];
   };
 
   const [accounts, setAccounts] = useState(getInitialAccounts);
@@ -669,14 +671,20 @@ export function PayoutAccountModal({ isOpen, onClose, currentData, onSave, dark,
         const saved = localStorage.getItem("paykudi_payout_accounts");
         if (saved) {
           const parsed = JSON.parse(saved);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            setAccounts(parsed);
-            const def = parsed.find((a) => a.isDefault);
-            if (def) setSelectedDefaultId(def.id);
+          if (Array.isArray(parsed)) {
+            const clean = parsed.filter((a) => !isGenericAccount(a));
+            if (clean.length !== parsed.length) {
+              localStorage.setItem("paykudi_payout_accounts", JSON.stringify(clean));
+            }
+            setAccounts(clean);
+            const def = clean.find((a) => a.isDefault) || clean[0];
+            setSelectedDefaultId(def ? def.id : "");
             return;
           }
         }
       } catch (e) {}
+      setAccounts([]);
+      setSelectedDefaultId("");
     }
   }, [isOpen]);
 
@@ -804,9 +812,8 @@ export function PayoutAccountModal({ isOpen, onClose, currentData, onSave, dark,
     setMatchedAccountName("");
 
     const timer = setTimeout(() => {
-      const baseName = currentData?.name ? currentData.name.toUpperCase() : "AMAKA";
-      const fullName = `${baseName} JENNIFER OBI`;
-      setMatchedAccountName(fullName);
+      const userFullName = currentData?.name || currentData?.accountName || "Howard Ukah";
+      setMatchedAccountName(userFullName.toUpperCase());
       setIsMatchingName(false);
     }, 400);
   };
@@ -874,10 +881,9 @@ export function PayoutAccountModal({ isOpen, onClose, currentData, onSave, dark,
     setView("list");
   };
 
-  // Delete an account (if not the default and more than 1)
+  // Delete an account
   const handleDeleteAccount = (e, accId) => {
     e.stopPropagation();
-    if (accounts.length <= 1) return;
     const filtered = accounts.filter((a) => a.id !== accId);
     setAccounts(filtered);
     setListError("");
@@ -886,13 +892,13 @@ export function PayoutAccountModal({ isOpen, onClose, currentData, onSave, dark,
     } catch (e) {}
     if (selectedDefaultId === accId) {
       const nextDef = filtered[0];
-      setSelectedDefaultId(nextDef.id);
+      setSelectedDefaultId(nextDef ? nextDef.id : "");
       if (onSave) {
         onSave({
-          bank: nextDef.bank,
-          accountNumber: nextDef.accountNumber,
-          accountName: nextDef.accountName,
-          bankCode: nextDef.bankCode,
+          bank: nextDef ? nextDef.bank : "",
+          accountNumber: nextDef ? nextDef.accountNumber : "",
+          accountName: nextDef ? nextDef.accountName : "",
+          bankCode: nextDef ? nextDef.bankCode : "",
         });
       }
     }
@@ -937,11 +943,14 @@ export function PayoutAccountModal({ isOpen, onClose, currentData, onSave, dark,
 
             <div className="profile-modal-body payout-modal-scrollable">
               <p className="payout-modal-desc">
-                Select your default Payout Bank Account.
+                {accounts.length > 0
+                  ? "Select your default Payout Bank Account."
+                  : "No payout bank accounts linked yet."}
               </p>
 
               {/* Added Payout Banks List */}
-              <div className="payout-accounts-list">
+              {accounts.length > 0 && (
+                <div className="payout-accounts-list">
                 {accounts.map((acc) => {
                   const isDefaultSelected = acc.id === selectedDefaultId;
                   return (
@@ -1007,6 +1016,7 @@ export function PayoutAccountModal({ isOpen, onClose, currentData, onSave, dark,
                   );
                 })}
               </div>
+              )}
 
               {/* Error warning if user tries adding and 3 accounts are already saved */}
               {listError && (
@@ -1969,3 +1979,201 @@ export function SellerStepModal({ isOpen, onClose, step, onSave, dark, inline = 
     </ModalShell>
   );
 }
+
+export function PocketBalanceModal({
+  isOpen,
+  onClose,
+  currentBalanceKobo = 0,
+  onSave,
+  dark,
+  inline = false,
+}) {
+  const appearance = useModalAppearance(dark);
+  const [balanceNairaInput, setBalanceNairaInput] = useState(() => (currentBalanceKobo / 100).toString());
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (isOpen) {
+      setBalanceNairaInput((currentBalanceKobo / 100).toString());
+      setError("");
+    }
+  }, [isOpen, currentBalanceKobo]);
+
+  if (!isOpen) return null;
+
+  const parsedNaira = parseFloat(balanceNairaInput) || 0;
+  const computedKobo = Math.round(parsedNaira * 100);
+
+  const handleSubmit = (e) => {
+    if (e) e.preventDefault();
+    if (isNaN(parsedNaira) || parsedNaira < 0) {
+      setError("Please enter a valid positive balance amount.");
+      return;
+    }
+    onSave?.(computedKobo);
+    onClose();
+  };
+
+  const handleQuickAdd = (amountNaira) => {
+    const nextNaira = Math.max(0, parsedNaira + amountNaira);
+    setBalanceNairaInput(nextNaira.toString());
+  };
+
+  return (
+    <ModalShell
+      inline={inline}
+      appearance={appearance}
+      onClose={onClose}
+      cardClassName="edit-balance-modal"
+      labelledBy="edit-pocket-balance-title"
+    >
+      <div className="profile-modal-header">
+        <div className="profile-modal-header-left">
+          <div
+            className="profile-modal-icon-badge"
+            style={{
+              backgroundColor: appearance === "dark" ? "rgba(16, 185, 129, 0.22)" : "#d1fae5",
+              color: appearance === "dark" ? "#34d399" : "#059669",
+            }}
+          >
+            <span className="material-symbols-outlined">account_balance_wallet</span>
+          </div>
+          <div className="profile-modal-header-titles">
+            <h2 id="edit-pocket-balance-title" className="profile-modal-title">
+              Available Pocket Balance
+            </h2>
+            <p className="profile-modal-subtitle">
+              Basic unit: <strong>kobo</strong> (1 NGN = 100 kobo)
+            </p>
+          </div>
+        </div>
+        <button
+          type="button"
+          className="profile-modal-close-btn"
+          onClick={onClose}
+          aria-label="Close"
+        >
+          <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
+            close
+          </span>
+        </button>
+      </div>
+
+      <form onSubmit={handleSubmit} className="profile-modal-form">
+        <div className="profile-modal-body">
+          {error && <div className="profile-form-error">{error}</div>}
+
+          {/* Current balance card overview */}
+          <div
+            style={{
+              background: appearance === "dark" ? "#1e2025" : "#f8fafc",
+              border: `1px solid ${appearance === "dark" ? "rgba(255,255,255,0.08)" : "#e2e8f0"}`,
+              borderRadius: "12px",
+              padding: "16px",
+              marginBottom: "16px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <div>
+              <div style={{ fontSize: "12px", color: "#64748b", fontWeight: 500 }}>
+                Current Pocket Balance
+              </div>
+              <div style={{ fontSize: "22px", fontWeight: 700, color: appearance === "dark" ? "#ffffff" : "#0f172a", marginTop: "2px" }}>
+                ₦{((currentBalanceKobo || 0) / 100).toLocaleString("en-NG", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </div>
+            </div>
+            <div style={{ textAlign: "right" }}>
+              <div style={{ fontSize: "11px", color: "#64748b", fontWeight: 500 }}>
+                Basic Unit Value
+              </div>
+              <div style={{ fontSize: "13px", fontWeight: 600, color: "#10b981", marginTop: "4px" }}>
+                {(currentBalanceKobo || 0).toLocaleString()} kobo
+              </div>
+            </div>
+          </div>
+
+          <div className="profile-form-group">
+            <label className="profile-form-label" htmlFor="pocket-balance-input">
+              Update Available Balance (NGN)
+            </label>
+            <div className="profile-input-wrap">
+              <span style={{ position: "absolute", left: "14px", fontWeight: 600, color: "#64748b", zIndex: 1 }}>
+                ₦
+              </span>
+              <input
+                id="pocket-balance-input"
+                type="number"
+                step="any"
+                min="0"
+                className="profile-input-field"
+                style={{ paddingLeft: "32px" }}
+                placeholder="0.00"
+                value={balanceNairaInput}
+                onChange={(e) => setBalanceNairaInput(e.target.value)}
+              />
+            </div>
+            <p className="profile-input-help" style={{ display: "flex", justifyContent: "space-between", marginTop: "6px" }}>
+              <span>Equivalent in basic unit:</span>
+              <strong style={{ color: "#10b981" }}>{computedKobo.toLocaleString()} kobo</strong>
+            </p>
+          </div>
+
+          {/* Quick preset buttons */}
+          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "12px" }}>
+            <button
+              type="button"
+              className="profile-btn profile-btn-secondary"
+              style={{ fontSize: "12px", padding: "6px 10px", height: "auto" }}
+              onClick={() => handleQuickAdd(50000)}
+            >
+              +₦50,000
+            </button>
+            <button
+              type="button"
+              className="profile-btn profile-btn-secondary"
+              style={{ fontSize: "12px", padding: "6px 10px", height: "auto" }}
+              onClick={() => handleQuickAdd(100000)}
+            >
+              +₦100,000
+            </button>
+            <button
+              type="button"
+              className="profile-btn profile-btn-secondary"
+              style={{ fontSize: "12px", padding: "6px 10px", height: "auto" }}
+              onClick={() => handleQuickAdd(500000)}
+            >
+              +₦500,000
+            </button>
+            <button
+              type="button"
+              className="profile-btn profile-btn-secondary"
+              style={{ fontSize: "12px", padding: "6px 10px", height: "auto" }}
+              onClick={() => setBalanceNairaInput("0")}
+            >
+              Reset to ₦0
+            </button>
+          </div>
+        </div>
+
+        <div className="profile-modal-footer">
+          <button
+            type="button"
+            className="profile-btn profile-btn-secondary"
+            onClick={onClose}
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="profile-btn profile-btn-primary"
+          >
+            Save Balance
+          </button>
+        </div>
+      </form>
+    </ModalShell>
+  );
+}
+

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import paykudiLogo from "./assets/paykudi-logo.png";
 import logoDarkMode from "./assets/logodarkmode.png";
 import LoginPage from "./components/Auth/LoginPage.jsx";
@@ -24,11 +24,31 @@ import MobileWithdraw from "./components/Mobile/MobileWithdraw.jsx";
 import AgreeTermsModal from "./components/Shared/AgreeTermsModal.jsx";
 import BankLogo from "./components/BankLogo.jsx";
 import ReceiptModal from "./components/Shared/ReceiptModal.jsx";
+import EmptyActivityGraphic from "./components/Shared/EmptyActivityGraphic.jsx";
 import { ALL_PAYMENT_ROOMS } from "./data/paymentRooms.js";
+import { useDashboard } from "./context/DashboardContext.jsx";
+import {
+  getStoredPocketBalanceKobo,
+  saveStoredPocketBalanceKobo,
+  koboToNaira,
+  nairaToKobo,
+  formatPocketBalanceNaira,
+} from "./utils/balanceUtils.js";
 
-function BrandLogo({ dark, className }) {
+function BrandLogo({ dark, className, onClick }) {
   return (
-    <a className={className} href="#home" aria-label="PayKudi home">
+    <a
+      className={className}
+      href="#"
+      onClick={(e) => {
+        e.preventDefault();
+        if (onClick) onClick();
+        if (window.location.hash) {
+          window.history.replaceState(null, "", window.location.pathname + window.location.search);
+        }
+      }}
+      aria-label="PayKudi home"
+    >
       <img
         src={dark ? logoDarkMode : paykudiLogo}
         alt="PayKudi"
@@ -39,6 +59,53 @@ function BrandLogo({ dark, className }) {
   );
 }
 
+// Dynamic greeting based on time of day
+function getTimeGreeting() {
+  const hour = new Date().getHours();
+  if (hour >= 5 && hour < 12) {
+    return "Good morning";
+  } else if (hour >= 12 && hour < 17) {
+    return "Good afternoon";
+  } else {
+    return "Good evening";
+  }
+}
+
+// Helper to verify if a string is a phone number
+function isPhoneNumber(str) {
+  if (!str || typeof str !== "string") return false;
+  const trimmed = str.trim();
+  return trimmed.startsWith("+") || /^\d[\d\s-]{6,}$/.test(trimmed);
+}
+
+// Helper to extract clean full name, first name, and avatar initial
+function extractUserNames(rawName, fallback = "Howard Ukah-Columba") {
+  let name = typeof rawName === "string" ? rawName.trim() : "";
+  if (!name || isPhoneNumber(name) || name === "Amaka") {
+    try {
+      const stored = JSON.parse(localStorage.getItem("paykudi_user_profile") || "{}");
+      if (stored?.name && !isPhoneNumber(stored.name) && stored.name.trim() !== "Amaka") {
+        name = stored.name.trim();
+      }
+    } catch {}
+  }
+  if (!name || isPhoneNumber(name) || name === "Amaka") {
+    name = fallback;
+  }
+  const parts = name.split(/\s+/).filter(Boolean);
+  let firstName = parts[0] || "Howard";
+  if (isPhoneNumber(firstName)) {
+    firstName = "Howard";
+  }
+  firstName = firstName.charAt(0).toUpperCase() + firstName.slice(1);
+  const capitalizedFullName = parts
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+  const letterMatch = firstName.match(/[a-zA-Z]/) || name.match(/[a-zA-Z]/);
+  const initial = (letterMatch ? letterMatch[0] : "H").toUpperCase();
+  return { fullName: capitalizedFullName || name, firstName, initial };
+}
+
 // Header Actions with Theme Toggle and Avatar Dropdown Menu (matching target redesign)
 function HeaderActions({
   dark,
@@ -47,10 +114,16 @@ function HeaderActions({
   onSignOut,
   isProfileActive,
   hideAvatar,
+  user,
 }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const shouldHideAvatar = hideAvatar;
+
+  const { fullName: userName, firstName: userFirstName, initial: userInitial } = extractUserNames(
+    user?.fullName || user?.firstName || user?.name
+  );
+  const displayInitial = String(user?.initial || userInitial || "H").toUpperCase();
 
   // Close dropdown on outside click or touch
   useEffect(() => {
@@ -83,6 +156,21 @@ function HeaderActions({
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [isDropdownOpen]);
+
+  const [copiedId, setCopiedId] = useState(false);
+  const userId = formatAccountId(user?.phone || "8032001585");
+
+  const handleCopyId = (e) => {
+    e.stopPropagation();
+    try {
+      navigator.clipboard?.writeText(userId);
+      setCopiedId(true);
+      setTimeout(() => setCopiedId(false), 2000);
+    } catch {
+      setCopiedId(true);
+      setTimeout(() => setCopiedId(false), 2000);
+    }
+  };
 
   return (
     <div className="header-actions">
@@ -138,9 +226,9 @@ function HeaderActions({
             onClick={() => setIsDropdownOpen((prev) => !prev)}
             aria-expanded={isDropdownOpen}
             aria-haspopup="true"
-            title="Howard Ukah-Columba"
+            title={userName}
           >
-            <div className="header-avatar-circle-h">H</div>
+            <div className="header-avatar-circle-h">{displayInitial}</div>
             <svg
               width="13"
               height="8"
@@ -160,10 +248,23 @@ function HeaderActions({
             <div className="header-profile-dropdown" role="menu">
               {/* User Identity Header */}
               <div className="header-dropdown-user">
-                <div className="header-dropdown-avatar">H</div>
+                <div className="header-dropdown-avatar">{displayInitial}</div>
                 <div className="header-dropdown-user-info">
-                  <div className="header-dropdown-user-name">Howard Ukah-Columba</div>
-                  <div className="header-dropdown-user-id">2032614152 · T3</div>
+                  <div className="header-dropdown-user-name">{userName}</div>
+                  <div className="header-dropdown-user-id">
+                    <span>{userId}</span>
+                    <button
+                      type="button"
+                      onClick={handleCopyId}
+                      className="header-dropdown-copy-btn"
+                      title={copiedId ? "Copied!" : "Copy ID"}
+                      aria-label="Copy ID"
+                    >
+                      <span className="material-symbols-outlined header-dropdown-copy-icon">
+                        {copiedId ? "check" : "content_copy"}
+                      </span>
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -338,13 +439,6 @@ const ProfileIcon = ({ active }) => (
   </span>
 );
 
-const transactions = [
-  { id: "tx-1", title: "Amaka Obi", time: "Today, 10:42 AM", amount: "+₦145,000.00", type: "received", bankCode: "access" },
-  { id: "tx-2", title: "Chidi Okeke", time: "Yesterday, 4:18 PM", amount: "−₦85,000.00", type: "sent", bankCode: "zenith" },
-  { id: "tx-3", title: "Howard Ukah-Columba", time: "Mon, 9:24 AM", amount: "₦24,000.00", type: "payout", bankCode: "firstbank" },
-  { id: "tx-4", title: "Marcus Vance", time: "Sun, 2:15 PM", amount: "−₦12,500.00", type: "refund", bankCode: "kuda" },
-];
-
 function getActivityConfig(item) {
   const t = (item.type || item.typeKey || item.title || "").toLowerCase();
 
@@ -432,13 +526,65 @@ function ActivityRow({ item, isLast, onSelect }) {
   );
 }
 
+// Live ticking time-ago counter (counts by seconds until minutes, then updates every minute)
+function useLiveTimeAgo(lastUpdated) {
+  const [seconds, setSeconds] = useState(0);
+
+  useEffect(() => {
+    const calcDiff = () => Math.max(0, Math.floor((Date.now() - (lastUpdated || Date.now())) / 1000));
+    setSeconds(calcDiff());
+
+    const timer = setInterval(() => {
+      setSeconds(calcDiff());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [lastUpdated]);
+
+  if (seconds < 2) return "Last updated just now";
+  if (seconds < 60) return `Last updated ${seconds} sec. ago`;
+  const mins = Math.floor(seconds / 60);
+  if (mins === 1) return "Last updated 1 min. ago";
+  if (mins < 60) return `Last updated ${mins} mins. ago`;
+  const hours = Math.floor(mins / 60);
+  return `Last updated ${hours} ${hours === 1 ? "hr" : "hrs"} ago`;
+}
+
+// Helper to format Nigerian phone numbers as clean PayKudi account IDs without leading 0
+export const formatAccountId = (val) => {
+  if (!val) return "8032001585";
+  let digits = String(val).replace(/\D/g, "");
+  if (!digits) return "8032001585";
+  if (digits.startsWith("234")) {
+    digits = digits.slice(3);
+  }
+  // Strip any leading zeros so '08032001585' becomes '8032001585'
+  digits = digits.replace(/^0+/, "");
+  return digits || "8032001585";
+};
+
 // Cardless & Centered Balance matching user screenshot
-function PayKudiBalance({ visible, onToggleVisibility }) {
+function PayKudiBalance({
+  visible,
+  onToggleVisibility,
+  balance = "₦0.00",
+  accountNumber = "8032001585",
+  lastUpdated,
+}) {
   const [copied, setCopied] = useState(false);
+  const [localTimestamp, setLocalTimestamp] = useState(() => lastUpdated || Date.now());
+
+  // Reset timer whenever parent updates balance or lastUpdated timestamp
+  useEffect(() => {
+    setLocalTimestamp(lastUpdated || Date.now());
+  }, [lastUpdated, balance]);
+
+  const timeAgo = useLiveTimeAgo(localTimestamp);
+  const cleanAccount = formatAccountId(accountNumber);
 
   const handleCopy = () => {
     try {
-      navigator.clipboard?.writeText("2032614152");
+      navigator.clipboard?.writeText(cleanAccount);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
@@ -447,12 +593,17 @@ function PayKudiBalance({ visible, onToggleVisibility }) {
     }
   };
 
+  const rawString = String(balance || "₦0.00");
+  const hasNaira = rawString.includes("₦");
+  const currencySymbol = hasNaira ? "₦" : "";
+  const numericPart = rawString.replace(/^₦/, "").trim();
+
   return (
     <div className="cardless-balance">
       {/* Top Meta: Bank icon · Nigerian Naira · Account Number · Copy Icon */}
       <div className="balance-account-bar">
         <span className="material-symbols-outlined balance-bank-icon">account_balance</span>
-        <span className="balance-account-text">Nigerian Naira · 2032614152</span>
+        <span className="balance-account-text">Nigerian Naira · {cleanAccount}</span>
         <button
           type="button"
           onClick={handleCopy}
@@ -470,7 +621,14 @@ function PayKudiBalance({ visible, onToggleVisibility }) {
       <div className="balance-main-row">
         <div className="balance-amount-wrapper">
           <h2 className="balance-amount-text">
-            {visible ? "₦182,000.00" : "••••••••"}
+            {!visible ? (
+              "••••••••"
+            ) : (
+              <>
+                {currencySymbol && <span className="balance-currency-symbol">{currencySymbol}</span>}
+                <span>{numericPart}</span>
+              </>
+            )}
           </h2>
           <button
             type="button"
@@ -486,8 +644,10 @@ function PayKudiBalance({ visible, onToggleVisibility }) {
         </div>
       </div>
 
-      {/* Timestamp */}
-      <p className="balance-timestamp">Last updated 28 sec. ago</p>
+      {/* Live dynamic timestamp (refresh button removed) */}
+      <div className="balance-timestamp-row">
+        <p className="balance-timestamp">{timeAgo}</p>
+      </div>
     </div>
   );
 }
@@ -517,7 +677,23 @@ function MobileDashboard({
   setSelectedState: setPrSelectedState,
   prIsSearchExpanded,
   setIsSearchExpanded: setPrIsSearchExpanded,
+  transactions: propTransactions,
+  totalBalance: propTotalBalance,
+  currentUser,
+  pocketBalanceKobo,
+  onWithdrawSuccess,
 }) {
+  let dash = null;
+  try {
+    dash = useDashboard();
+  } catch (e) {
+    dash = null;
+  }
+
+  const transactions = propTransactions ?? dash?.transactions ?? [];
+  const totalBalance = propTotalBalance ?? "₦0.00";
+  const userAccountNumber = formatAccountId(currentUser?.phone || "8032001585");
+
   const contentScrollRef = useRef(null);
   const [selectedActivityReceipt, setSelectedActivityReceipt] = useState(null);
 
@@ -546,7 +722,11 @@ function MobileDashboard({
   return (
     <div className={`mobile-dashboard${isNoNav ? " no-nav-mode" : ""}`} data-appearance={dark ? "dark" : "light"}>
       <header className="mobile-header">
-        <BrandLogo dark={dark} className="mobile-brand" />
+        <BrandLogo
+          dark={dark}
+          className="mobile-brand"
+          onClick={() => handleNavClick("Home")}
+        />
         <HeaderActions
           dark={dark}
           onThemeToggle={onThemeToggle}
@@ -555,13 +735,17 @@ function MobileDashboard({
           onOpenProfile={() => handleNavClick("Profile")}
           onSignOut={onSignOut}
           isProfileActive={active === "Profile"}
+          user={currentUser}
         />
       </header>
 
       {active === "Withdraw" || active === "Payout" ? (
         <MobileWithdraw
+          availableBalance={koboToNaira(pocketBalanceKobo)}
           onCancel={() => handleNavClick("Home")}
-          onSuccess={() => {}}
+          onSuccess={(res) => {
+            if (onWithdrawSuccess) onWithdrawSuccess(res);
+          }}
         />
       ) : active === "New Payment" ? (
         <MobileNewPayment
@@ -632,7 +816,7 @@ function MobileDashboard({
       ) : (
         <div className="mobile-content-scroll" ref={contentScrollRef}>
           {active === "Activity" ? (
-            <MobileActivity />
+            <MobileActivity onWithdraw={() => handleNavClick("Withdraw")} />
           ) : active === "Payment room" || active === "Payment Room" ? (
             <MobilePaymentRoom
               rooms={paymentRooms}
@@ -646,6 +830,7 @@ function MobileDashboard({
               setSelectedState={setPrSelectedState}
               isSearchExpanded={prIsSearchExpanded}
               setIsSearchExpanded={setPrIsSearchExpanded}
+              onNewPayment={() => setActive("New Payment")}
               onSelectRoom={(r) => {
                 if (r) setActiveRoom(r);
                 if (r && (r.status === "awaiting_payment" || r.statusText === "Awaiting Payment")) {
@@ -668,12 +853,12 @@ function MobileDashboard({
           ) : active === "Help" || active === "Help & support" ? (
             <MobileHelp onOpenChat={() => {}} />
           ) : active === "Profile" ? (
-            <DesktopProfile userName="Amaka" dark={dark} onSignOut={onSignOut} />
+            <DesktopProfile userName={currentUser?.fullName || "Howard Ukah-Columba"} dark={dark} onSignOut={onSignOut} />
           ) : (
             <div className="mobile-home-content">
               <div className="mobile-main mobile-main-top">
                 <section className="mobile-intro">
-                  <h1>Good morning, Amaka</h1>
+                  <h1>{getTimeGreeting()}, {currentUser?.firstName || "Howard"}</h1>
                   <p>What will you like to do?</p>
                 </section>
                 <section className="mobile-cta">
@@ -699,32 +884,48 @@ function MobileDashboard({
                 <PayKudiBalance
                   visible={visible}
                   onToggleVisibility={() => setVisible(!visible)}
+                  balance={totalBalance}
+                  accountNumber={userAccountNumber}
                 />
               </div>
 
               <main className="mobile-main mobile-main-bottom">
-                <section className="mobile-activity" id="activity">
+                <section className={`mobile-activity ${transactions.length === 0 ? "has-empty-state" : ""}`} id="activity">
                   <div className="mobile-activity-head">
                     <h2>Recent activity</h2>
                     <a
                       href="#activity"
+                      className={transactions.length === 0 ? "is-disabled" : ""}
+                      tabIndex={transactions.length === 0 ? -1 : undefined}
+                      aria-disabled={transactions.length === 0}
                       onClick={(e) => {
                         e.preventDefault();
+                        if (transactions.length === 0) return;
                         handleNavClick("Activity");
                       }}
                     >
                       View all
                     </a>
                   </div>
-                  <div className="boxless-activity-list">
-                    {transactions.map((tx, idx) => (
-                      <ActivityRow
-                        key={tx.id || tx.title}
-                        item={tx}
-                        isLast={idx === transactions.length - 1}
-                        onSelect={setSelectedActivityReceipt}
-                      />
-                    ))}
+                  <div className={`boxless-activity-list ${transactions.length === 0 ? "is-empty-list" : ""}`}>
+                    {transactions.length === 0 ? (
+                      <div className="activity-empty-state home-recent-empty-state">
+                        <div className="activity-empty-graphic-wrap">
+                          <EmptyActivityGraphic />
+                        </div>
+                        <h3 className="activity-empty-title">No Transactions</h3>
+                        <p className="activity-empty-subtitle">You haven’t completed any transactions.</p>
+                      </div>
+                    ) : (
+                      transactions.map((tx, idx) => (
+                        <ActivityRow
+                          key={tx.id || tx.title}
+                          item={tx}
+                          isLast={idx === transactions.length - 1}
+                          onSelect={setSelectedActivityReceipt}
+                        />
+                      ))
+                    )}
                   </div>
                 </section>
               </main>
@@ -800,6 +1001,13 @@ function MobileDashboard({
 }
 
 export default function App() {
+  let dash = null;
+  try {
+    dash = useDashboard();
+  } catch (e) {
+    dash = null;
+  }
+
   const [dark, setDark] = useState(false);
   const [selectedDesktopActivityReceipt, setSelectedDesktopActivityReceipt] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -808,8 +1016,101 @@ export default function App() {
   const [role, setRole] = useState("Buyer");
   const [activeRoom, setActiveRoom] = useState(null);
 
-  const [paymentRooms, setPaymentRooms] = useState(ALL_PAYMENT_ROOMS);
-  const ongoingPaymentRoomsCount = paymentRooms.filter((r) => r.category === "ongoing").length;
+  // Automatically remove #home or any hash from the browser address bar
+  useEffect(() => {
+    const clearHash = () => {
+      if (window.location.hash) {
+        window.history.replaceState(null, "", window.location.pathname + window.location.search);
+      }
+    };
+    clearHash();
+    window.addEventListener("hashchange", clearHash);
+    return () => window.removeEventListener("hashchange", clearHash);
+  }, []);
+
+  // User details with first name extraction and phone number
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const stored = localStorage.getItem("paykudi_user_profile");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        const { fullName, firstName, initial } = extractUserNames(parsed.name);
+        const phone = parsed.phone ? formatAccountId(parsed.phone) : "8032001585";
+        // Clean up stored phone number as name if previously corrupted
+        if (isPhoneNumber(parsed.name)) {
+          delete parsed.name;
+          localStorage.setItem("paykudi_user_profile", JSON.stringify(parsed));
+        }
+        return {
+          fullName,
+          firstName,
+          initial,
+          phone,
+        };
+      }
+    } catch {}
+    return {
+      fullName: "Howard Ukah-Columba",
+      firstName: "Howard",
+      initial: "H",
+      phone: "8032001585",
+    };
+  });
+
+  // Sync profile if updated elsewhere in the app
+  useEffect(() => {
+    const syncProfile = () => {
+      try {
+        const stored = localStorage.getItem("paykudi_user_profile");
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (parsed.name || parsed.phone) {
+            const { fullName, firstName, initial } = extractUserNames(parsed.name);
+            const phone = parsed.phone ? formatAccountId(parsed.phone) : "8032001585";
+            setCurrentUser({
+              fullName,
+              firstName,
+              initial,
+              phone,
+            });
+          }
+        }
+      } catch {}
+    };
+
+    window.addEventListener("storage", syncProfile);
+    window.addEventListener("paykudi_profile_updated", syncProfile);
+    return () => {
+      window.removeEventListener("storage", syncProfile);
+      window.removeEventListener("paykudi_profile_updated", syncProfile);
+    };
+  }, []);
+
+  const userAccountNumber = formatAccountId(currentUser?.phone || "8032001585");
+
+  const paymentRooms = dash?.paymentRooms || ALL_PAYMENT_ROOMS;
+  const transactions = dash?.transactions || [];
+  const ongoingPaymentRoomsCount = dash?.ongoingPaymentRoomsCount ?? paymentRooms.filter((r) => r.category === "ongoing").length;
+
+  const [pocketBalanceKobo, setPocketBalanceKobo] = useState(getStoredPocketBalanceKobo);
+
+  useEffect(() => {
+    const handleBalanceSync = () => {
+      setPocketBalanceKobo(getStoredPocketBalanceKobo());
+    };
+    window.addEventListener("paykudi_profile_updated", handleBalanceSync);
+    window.addEventListener("paykudi_balance_updated", handleBalanceSync);
+    window.addEventListener("storage", handleBalanceSync);
+    return () => {
+      window.removeEventListener("paykudi_profile_updated", handleBalanceSync);
+      window.removeEventListener("paykudi_balance_updated", handleBalanceSync);
+      window.removeEventListener("storage", handleBalanceSync);
+    };
+  }, []);
+
+  const totalBalance = useMemo(() => {
+    return formatPocketBalanceNaira(pocketBalanceKobo, true);
+  }, [pocketBalanceKobo]);
 
   // Shared Payment Room Filters (synchronized across desktop & mobile screen resizes)
   const [prActiveTab, setPrActiveTab] = useState("ongoing");
@@ -818,32 +1119,12 @@ export default function App() {
   const [prSelectedState, setPrSelectedState] = useState("all");
   const [prIsSearchExpanded, setPrIsSearchExpanded] = useState(false);
 
-  const handleAddPaymentRoom = (newRoom) => {
+  const handleAddPaymentRoom = async (newRoom) => {
     if (!newRoom) return newRoom;
-    const formattedRoom = {
-      id: newRoom.id || ("ORD-" + Math.floor(100000 + Math.random() * 900000)),
-      orderNumber: newRoom.orderNumber || newRoom.id || ("ORD-" + Math.floor(100000 + Math.random() * 900000)),
-      title: newRoom.title || newRoom.item || "Payment Room",
-      item: newRoom.item || newRoom.title || "Payment Room",
-      price: newRoom.price || newRoom.amount || "₦0",
-      amount: newRoom.amount || newRoom.price || "₦0",
-      role: newRoom.role || "Buying",
-      sellerName:
-        newRoom.sellerName ||
-        (newRoom.role === "Selling" ? "Amaka Obi" : (newRoom.counterparty || "Seller")),
-      buyerName:
-        newRoom.buyerName ||
-        (newRoom.role === "Buying" ? "Amaka Obi" : (newRoom.counterparty || "Buyer")),
-      date: "Today · Just now",
-      rawDate: "Today",
-      status: newRoom.status || "awaiting_payment",
-      statusText: newRoom.statusText || "Awaiting Payment",
-      category: newRoom.category || "ongoing",
-      counterparty: newRoom.counterparty || "08032001585",
-      ...newRoom,
-    };
-    setPaymentRooms((prev) => [formattedRoom, ...prev]);
-    return formattedRoom;
+    if (dash?.addPaymentRoom) {
+      return await dash.addPaymentRoom(newRoom);
+    }
+    return newRoom;
   };
 
   const handleSignOut = () => {
@@ -906,15 +1187,39 @@ export default function App() {
         <LoginPage
           dark={dark}
           onThemeToggle={() => setDark(!dark)}
-          onLogin={() => {
+          onLogin={(userData) => {
             setIsLoggedIn(true);
             setActive("Home");
+            const { fullName, firstName, initial } = extractUserNames(userData?.name);
+            const phone = userData?.phone ? formatAccountId(userData.phone) : (currentUser?.phone || "8032001585");
+            const email = userData?.email || userData?.user?.email || "";
+            setCurrentUser({ fullName, firstName, initial, phone, email });
+            try {
+              const stored = JSON.parse(localStorage.getItem("paykudi_user_profile") || "{}");
+              localStorage.setItem(
+                "paykudi_user_profile",
+                JSON.stringify({
+                  ...stored,
+                  id: userData?.id || userData?.user?.id || stored?.id,
+                  name: fullName,
+                  phone,
+                  email: email || stored?.email || "",
+                })
+              );
+            } catch {}
           }}
         />
       ) : (
     <div className="app" data-appearance={dark ? "dark" : "light"}>
       <header className={`topbar ${isModalOpenOnDesktop ? "modal-active-topbar" : ""}`}>
-        <BrandLogo dark={dark} className="brand" />
+        <BrandLogo
+          dark={dark}
+          className="brand"
+          onClick={() => {
+            setActive("Home");
+            window.scrollTo({ top: 0, behavior: "instant" });
+          }}
+        />
         {!isModalOpenOnDesktop && (
           <nav aria-label="Primary navigation">
             {nav.map(([name, NavIcon]) => {
@@ -972,13 +1277,14 @@ export default function App() {
             onSignOut={handleSignOut}
             isProfileActive={active === "Profile"}
             hideAvatar={isModalOpenOnDesktop}
+            user={currentUser}
           />
         </div>
       </header>
 
       {/* Desktop Views */}
       {active === "Activity" ? (
-        <DesktopActivity />
+        <DesktopActivity onWithdraw={() => setIsWithdrawModalOpen(true)} />
       ) : active === "Payment room" ||
          active === "Payment Room" ||
          active === "Awaiting Payment" ||
@@ -996,6 +1302,7 @@ export default function App() {
           dark={dark}
           initialSelectedRoom={activeRoom || null}
           onBackToHome={() => setActive("Home")}
+          onNewPayment={() => setActive("New Payment")}
           activeTab={prActiveTab}
           setActiveTab={setPrActiveTab}
           searchQuery={prSearchQuery}
@@ -1028,13 +1335,13 @@ export default function App() {
       ) : active === "Help" || active === "Help & support" ? (
         <DesktopHelp />
       ) : active === "Profile" ? (
-        <DesktopProfile userName="Amaka" dark={dark} onSignOut={handleSignOut} layout="split" />
+        <DesktopProfile userName={currentUser?.fullName || "Howard Ukah-Columba"} dark={dark} onSignOut={handleSignOut} layout="split" />
       ) : (
         <main id="home" className="desktop-container">
           <div className="desktop-content-wrap desktop-intro-wrap">
             <section className="intro">
               <div>
-                <h1>Good morning, Amaka</h1>
+                <h1>{getTimeGreeting()}, {currentUser?.firstName || "Howard"}</h1>
                 <p>What will you like to do?</p>
               </div>
               <div className="intro-actions">
@@ -1059,6 +1366,8 @@ export default function App() {
                 <PayKudiBalance
                   visible={visible}
                   onToggleVisibility={() => setVisible(!visible)}
+                  balance={totalBalance}
+                  accountNumber={userAccountNumber}
                 />
               </div>
             </div>
@@ -1069,8 +1378,12 @@ export default function App() {
                 <h2>Recent activity</h2>
                 <a
                   href="#activity"
+                  className={transactions.length === 0 ? "is-disabled" : ""}
+                  tabIndex={transactions.length === 0 ? -1 : undefined}
+                  aria-disabled={transactions.length === 0}
                   onClick={(e) => {
                     e.preventDefault();
+                    if (transactions.length === 0) return;
                     setActive("Activity");
                   }}
                 >
@@ -1078,14 +1391,24 @@ export default function App() {
                 </a>
               </div>
               <div className="boxless-activity-list">
-                {transactions.map((tx, idx) => (
-                  <ActivityRow
-                    key={tx.id || tx.title}
-                    item={tx}
-                    isLast={idx === transactions.length - 1}
-                    onSelect={setSelectedDesktopActivityReceipt}
-                  />
-                ))}
+                {transactions.length === 0 ? (
+                  <div className="activity-empty-state home-recent-empty-state">
+                    <div className="activity-empty-graphic-wrap">
+                      <EmptyActivityGraphic />
+                    </div>
+                    <h3 className="activity-empty-title">No Transactions</h3>
+                    <p className="activity-empty-subtitle">You haven’t completed any transactions.</p>
+                  </div>
+                ) : (
+                  transactions.map((tx, idx) => (
+                    <ActivityRow
+                      key={tx.id || tx.title}
+                      item={tx}
+                      isLast={idx === transactions.length - 1}
+                      onSelect={setSelectedDesktopActivityReceipt}
+                    />
+                  ))
+                )}
               </div>
             </section>
           </div>
@@ -1167,11 +1490,20 @@ export default function App() {
       {(isWithdrawModalOpen || active === "Withdraw" || active === "Payout") && (
         <DesktopWithdrawModal
           dark={dark}
+          availableBalance={koboToNaira(pocketBalanceKobo)}
           onClose={() => {
             setIsWithdrawModalOpen(false);
             if (active === "Withdraw" || active === "Payout") setActive("Home");
           }}
-          onSuccess={() => {}}
+          onSuccess={(res) => {
+            const withdrawnNaira = res?.amount || res;
+            if (withdrawnNaira && !isNaN(withdrawnNaira)) {
+              const deductKobo = nairaToKobo(withdrawnNaira);
+              const nextKobo = Math.max(0, pocketBalanceKobo - deductKobo);
+              saveStoredPocketBalanceKobo(nextKobo);
+              setPocketBalanceKobo(nextKobo);
+            }
+          }}
         />
       )}
 
@@ -1201,6 +1533,19 @@ export default function App() {
         setPrSelectedState={setPrSelectedState}
         prIsSearchExpanded={prIsSearchExpanded}
         setPrIsSearchExpanded={setPrIsSearchExpanded}
+        transactions={transactions}
+        totalBalance={totalBalance}
+        currentUser={currentUser}
+        pocketBalanceKobo={pocketBalanceKobo}
+        onWithdrawSuccess={(res) => {
+          const withdrawnNaira = res?.amount || res;
+          if (withdrawnNaira && !isNaN(withdrawnNaira)) {
+            const deductKobo = nairaToKobo(withdrawnNaira);
+            const nextKobo = Math.max(0, pocketBalanceKobo - deductKobo);
+            saveStoredPocketBalanceKobo(nextKobo);
+            setPocketBalanceKobo(nextKobo);
+          }
+        }}
       />
 
       <ReceiptModal

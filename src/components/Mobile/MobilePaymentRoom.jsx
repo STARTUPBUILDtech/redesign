@@ -1,12 +1,14 @@
 import { useState, useMemo, useRef, useEffect } from "react";
-import { Search, SlidersHorizontal, X } from "lucide-react";
+import { Search, SlidersHorizontal, X, ArrowUpRight } from "lucide-react";
 import { Select, SelectContent, SelectItem } from "../ui/select";
 import { ALL_PAYMENT_ROOMS } from "../../data/paymentRooms.js";
 import { useDashboard } from "../../context/DashboardContext";
+import EmptyPaymentRoomGraphic from "../Shared/EmptyPaymentRoomGraphic.jsx";
 import "../../styles/mobile-payment-room.css";
 
 export default function MobilePaymentRoom({
   onSelectRoom,
+  onNewPayment,
   rooms,
   activeTab: propActiveTab,
   setActiveTab: propSetActiveTab,
@@ -20,9 +22,10 @@ export default function MobilePaymentRoom({
   setIsSearchExpanded: propSetIsSearchExpanded,
 }) {
   let contextRooms;
+  let dashContext;
   try {
-    const dash = useDashboard();
-    contextRooms = dash?.paymentRooms;
+    dashContext = useDashboard();
+    contextRooms = dashContext?.paymentRooms;
   } catch (e) {
     contextRooms = null;
   }
@@ -132,6 +135,14 @@ export default function MobilePaymentRoom({
     setSearchTerm("");
     setIsSearchExpanded(false);
     setIsFilterOpen(false);
+  };
+
+  const handleNewPayment = () => {
+    if (onNewPayment) {
+      onNewPayment();
+    } else if (dashContext?.setActive) {
+      dashContext.setActive("New Payment");
+    }
   };
 
   return (
@@ -308,11 +319,24 @@ export default function MobilePaymentRoom({
       <div className="mobile-pr-list">
         {filteredRooms.length === 0 ? (
           <div className="mobile-pr-empty">
-            <span className="material-symbols-outlined mobile-pr-empty-icon">payments</span>
-            <p className="mobile-pr-empty-text">
-              No {activeTab} payment rooms found
-              {searchTerm ? ` matching "${searchTerm}"` : ""}
-            </p>
+            <div className="mobile-pr-empty-graphic-wrap">
+              <EmptyPaymentRoomGraphic />
+            </div>
+            <h3 className="mobile-pr-empty-title">
+              {searchTerm
+                ? `No payment rooms matching "${searchTerm}"`
+                : activeTab === "fulfilled"
+                ? "No completed payment rooms"
+                : "No ongoing payment rooms"}
+            </h3>
+            <button
+              type="button"
+              className="mobile-pr-empty-cta-btn"
+              onClick={handleNewPayment}
+            >
+              <ArrowUpRight size={18} className="mobile-pr-empty-cta-arrow" />
+              <span>New Payment</span>
+            </button>
           </div>
         ) : (
           filteredRooms.map((room) => {

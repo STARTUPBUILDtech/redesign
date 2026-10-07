@@ -9,7 +9,7 @@ const DEFAULT_ACCOUNTS = [
     bank: "KUDA",
     bankCode: "kuda",
     name: "Ukah-Columba Chinaza Howard",
-    number: "08032001585",
+    number: "8032001585",
   },
   {
     id: "acc-2",
@@ -34,10 +34,17 @@ const DEFAULT_ACCOUNTS = [
   },
 ];
 
+import {
+  getStoredPocketBalanceKobo,
+  saveStoredPocketBalanceKobo,
+  koboToNaira,
+  nairaToKobo,
+} from "../utils/balanceUtils.js";
+
 export default function DesktopWithdrawModal({
   onClose,
   onSuccess,
-  availableBalance = 1700000,
+  availableBalance = koboToNaira(getStoredPocketBalanceKobo()),
   dark,
 }) {
   const [amount, setAmount] = useState("");
@@ -127,6 +134,11 @@ export default function DesktopWithdrawModal({
       setIsSubmitting(false);
       setIsConfirmModalOpen(false);
       setIsSuccess(true);
+      const currentKobo = getStoredPocketBalanceKobo();
+      const deductKobo = nairaToKobo(numericAmount);
+      const nextKobo = Math.max(0, currentKobo - deductKobo);
+      saveStoredPocketBalanceKobo(nextKobo);
+
       if (onSuccess) {
         onSuccess({
           amount: numericAmount,

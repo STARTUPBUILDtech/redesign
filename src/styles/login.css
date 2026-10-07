@@ -653,6 +653,11 @@
   font-family: inherit;
   outline: none;
 }
+.pk-input-field.pk-password-input,
+.pk-input-field[type="password"],
+.pk-input-field[data-password-field] {
+  text-transform: none !important;
+}
 .pk-input-field::placeholder {
   color: var(--pk-divider-text);
 }

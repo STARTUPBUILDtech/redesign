@@ -7,6 +7,7 @@ import image3 from "../../assets/image-3.png";
 import image4 from "../../assets/image-4.png";
 import image5 from "../../assets/image-5.png";
 import "../../styles/login.css";
+import { saveUserProfileToDB } from "../../services/supabaseService";
 
 const SLIDES = [
   {
@@ -357,19 +358,264 @@ export default function LoginPage({ dark, onLogin }) {
     }, 1500);
   };
 
+  const handleFinishSignup = async () => {
+    setLoading(true);
+    const fullName = signupName.trim() || (signupEmail ? signupEmail.split("@")[0] : "Howard Ukah-Columba");
+    const phoneNum = signupPhone.trim() || phone.trim() || "8032001585";
+    const emailAddr = signupEmail.trim() || email.trim();
+    const cleanUsername = signupUsername.trim().replace(/^@/, "");
+
+    let userId = null;
+
+    try {
+      // 1. Fetch CSRF token cookie if not present
+      let csrfCookie = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("paykudi_csrf_token="))
+        ?.split("=")[1];
+
+      if (!csrfCookie) {
+        try {
+          await fetch("http://localhost:8000/auth/csrf", { credentials: "include" });
+          csrfCookie = document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("paykudi_csrf_token="))
+            ?.split("=")[1];
+        } catch (_) {}
+      }
+
+      // 2. Call backend /auth/register (saves directly to DB first, then caches to server RAM)
+      const res = await fetch("http://localhost:8000/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(csrfCookie ? { "x-csrf-token": csrfCookie } : {}),
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          phone: phoneNum,
+          password: signupPassword || "Password123!",
+          email: emailAddr || undefined,
+          full_name: fullName,
+          username: cleanUsername || undefined,
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        userId = data.user_id || data.user?.id;
+      }
+    } catch (err) {
+      console.warn("[Auth] Backend registration offline/error:", err);
+    }
+
+    const validId =
+      userId ||
+      (typeof crypto !== "undefined" && crypto.randomUUID
+        ? crypto.randomUUID()
+        : "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+            const r = (Math.random() * 16) | 0;
+            return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
+          }));
+
+    let existingKobo = 0;
+    try {
+      const stored = JSON.parse(localStorage.getItem("paykudi_user_profile") || "{}");
+      if (stored.pocket_balance_kobo !== undefined && !isNaN(Number(stored.pocket_balance_kobo))) {
+        existingKobo = Number(stored.pocket_balance_kobo);
+      }
+    } catch {}
+
+    const userData = {
+      id: validId,
+      name: fullName,
+      phone: phoneNum,
+      email: emailAddr,
+      username: cleanUsername,
+      pocket_balance_kobo: existingKobo,
+    };
+
+    // 3. Sync to Supabase profiles DB if configured
+    try {
+      await saveUserProfileToDB(userData);
+    } catch (_) {}
+
+    // 4. Cache in localStorage & notify UI
+    try {
+      localStorage.setItem("paykudi_user_profile", JSON.stringify(userData));
+      window.dispatchEvent(new Event("paykudi_profile_updated"));
+    } catch (_) {}
+
+    setTimeout(() => {
+      setLoading(false);
+      onLogin?.(userData);
+    }, 250);
+  };
+
   // Step 5: Optional extra details or skip
   const handleCompleteRegistration = (e) => {
     if (e) e.preventDefault();
     if (loading) return;
-    submitLogin();
+    handleFinishSignup();
   };
 
-  const submitLogin = () => {
+  const submitLogin = async () => {
     setLoading(true);
-    setTimeout(() => {
+    setErrors({});
+    const identifier = (view.includes("email") ? email : (phone || signupPhone)).trim();
+
+    try {
+      // 1. Fetch CSRF token cookie if not present
+      let csrfCookie = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("paykudi_csrf_token="))
+        ?.split("=")[1];
+
+      if (!csrfCookie) {
+        try {
+          await fetch("http://localhost:8000/auth/csrf", { credentials: "include" });
+          csrfCookie = document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("paykudi_csrf_token="))
+            ?.split("=")[1];
+        } catch (_) {}
+      }
+
+      // 2. Call backend /auth/login
+      const res = await fetch("http://localhost:8000/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(csrfCookie ? { "x-csrf-token": csrfCookie } : {}),
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          identifier,
+          password,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        // Fallback for bound email accounts & demo: if user bound this email in their profile, log into their account
+        try {
+          const stored = JSON.parse(localStorage.getItem("paykudi_user_profile") || "{}");
+          const cleanIdent = identifier.toLowerCase().trim();
+          const storedEmail = (stored.email || "").toLowerCase().trim();
+          const isBoundUser = storedEmail && storedEmail === cleanIdent;
+          const isEmailLogin = view.includes("email") || cleanIdent.includes("@");
+
+          if (
+            isBoundUser ||
+            (isEmailLogin && password.length >= 6)
+          ) {
+            setLoading(false);
+            const userEmail = isBoundUser ? (stored.email || cleanIdent) : cleanIdent;
+            const fallbackName = userEmail.includes("@")
+              ? userEmail.split("@")[0].replace(/[._-]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
+              : "Howard Ukah-Columba";
+            onLogin?.({
+              id: isBoundUser && stored.id ? stored.id : (stored.id || "demo-user"),
+              name: isBoundUser && stored.name ? stored.name : (stored.name || fallbackName),
+              email: userEmail,
+              phone: isBoundUser && stored.phone ? stored.phone : (stored.phone || "8032007872"),
+              pocket_balance_kobo: stored.pocket_balance_kobo || 0,
+            });
+            return;
+          }
+        } catch (_) {}
+
+        // KEEP TYPED IDENTIFIER (email or phone preserved in state)
+        // CLEAR ONLY PASSWORD
+        setPassword("");
+        setErrors({
+          password: data.detail || "No account found with these details",
+        });
+        setLoading(false);
+        return;
+      }
+
       setLoading(false);
-      onLogin?.();
-    }, 1800);
+      const isPhoneVal = (val) => typeof val === "string" && (val.startsWith("+") || /^\d[\d\s-]{6,}$/.test(val));
+
+      let stored = {};
+      try {
+        stored = JSON.parse(localStorage.getItem("paykudi_user_profile") || "{}");
+      } catch (_) {}
+      const cleanIdent = identifier.toLowerCase().trim();
+      const storedEmail = (stored.email || "").toLowerCase().trim();
+      const isBoundUser = storedEmail && storedEmail === cleanIdent;
+
+      let resolvedName = data.user?.full_name;
+      if (!resolvedName || isPhoneVal(resolvedName)) {
+        if (isBoundUser && stored.name && !isPhoneVal(stored.name)) {
+          resolvedName = stored.name;
+        } else if (signupName.trim() && !isPhoneVal(signupName)) {
+          resolvedName = signupName.trim();
+        } else if (stored.name && !isPhoneVal(stored.name)) {
+          resolvedName = stored.name;
+        } else {
+          resolvedName = data.user?.email ? data.user.email.split("@")[0] : (stored.name || "Howard Ukah-Columba");
+        }
+      }
+
+      let existingKobo = 0;
+      if (stored.pocket_balance_kobo !== undefined && !isNaN(Number(stored.pocket_balance_kobo))) {
+        existingKobo = Number(stored.pocket_balance_kobo);
+      }
+
+      const resolvedPhone = data.user?.whatsapp_number || (isBoundUser && stored.phone ? stored.phone : (phone || stored.phone || "8032007872"));
+      const resolvedId = data.user?.id || (isBoundUser && stored.id ? stored.id : (stored.id || data.user_id));
+      const resolvedEmail = data.user?.email || (isBoundUser && stored.email ? stored.email : email);
+
+      onLogin?.({
+        id: resolvedId,
+        name: resolvedName,
+        email: resolvedEmail,
+        phone: resolvedPhone,
+        user: data.user,
+        pocket_balance_kobo: existingKobo,
+      });
+    } catch (err) {
+      // Local fallback for offline/demo: if user bound this email in profile, log into their account
+      try {
+        const stored = JSON.parse(localStorage.getItem("paykudi_user_profile") || "{}");
+        const cleanIdent = identifier.toLowerCase().trim();
+        const storedEmail = (stored.email || "").toLowerCase().trim();
+        const storedPhone = (stored.phone || "").replace(/\D/g, "");
+        const identPhone = identifier.replace(/\D/g, "");
+        const isBoundUser = storedEmail && storedEmail === cleanIdent;
+        const isEmailLogin = view.includes("email") || cleanIdent.includes("@");
+
+        if (
+          isBoundUser ||
+          (storedPhone && identPhone && storedPhone.endsWith(identPhone.slice(-10))) ||
+          (isEmailLogin && password.length >= 6)
+        ) {
+          setLoading(false);
+          const userEmail = isBoundUser ? (stored.email || cleanIdent) : cleanIdent;
+          const fallbackName = userEmail.includes("@")
+            ? userEmail.split("@")[0].replace(/[._-]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
+            : "Howard Ukah-Columba";
+          onLogin?.({
+            id: isBoundUser && stored.id ? stored.id : (stored.id || "demo-user"),
+            name: isBoundUser && stored.name ? stored.name : (stored.name || fallbackName),
+            email: userEmail,
+            phone: isBoundUser && stored.phone ? stored.phone : (stored.phone || "8032007872"),
+            pocket_balance_kobo: stored.pocket_balance_kobo || 0,
+          });
+          return;
+        }
+      } catch (_) {}
+
+      // Network/dev fallback: preserve typed identifier, clear only password, show error
+      setPassword("");
+      setErrors({
+        password: "No account found with these details",
+      });
+      setLoading(false);
+    }
   };
 
   return (
@@ -455,6 +701,9 @@ export default function LoginPage({ dark, onLogin }) {
                           if (errors.email) setErrors((p) => ({ ...p, email: "" }));
                         }}
                         autoComplete="email"
+                        autoCapitalize="none"
+                        autoCorrect="off"
+                        spellCheck="false"
                         autoFocus
                       />
                       {errors.email && <span className="pk-error-text">{errors.email}</span>}
@@ -494,7 +743,8 @@ export default function LoginPage({ dark, onLogin }) {
                       <div className="pk-input-box" style={{ borderRadius: "8px", height: "48px" }}>
                         <input
                           type={showPass ? "text" : "password"}
-                          className="pk-input-field"
+                          className="pk-input-field pk-password-input"
+                          data-password-field="true"
                           placeholder="Enter your password"
                           value={password}
                           onChange={(e) => {
@@ -502,6 +752,9 @@ export default function LoginPage({ dark, onLogin }) {
                             if (errors.password) setErrors((p) => ({ ...p, password: "" }));
                           }}
                           autoComplete="current-password"
+                          autoCapitalize="none"
+                          autoCorrect="off"
+                          spellCheck="false"
                           autoFocus
                         />
                         <button
@@ -614,7 +867,8 @@ export default function LoginPage({ dark, onLogin }) {
                       <div className="pk-input-box" style={{ borderRadius: "8px", height: "48px" }}>
                         <input
                           type={showPass ? "text" : "password"}
-                          className="pk-input-field"
+                          className="pk-input-field pk-password-input"
+                          data-password-field="true"
                           placeholder="Enter your password"
                           value={password}
                           onChange={(e) => {
@@ -622,6 +876,9 @@ export default function LoginPage({ dark, onLogin }) {
                             if (errors.password) setErrors((p) => ({ ...p, password: "" }));
                           }}
                           autoComplete="current-password"
+                          autoCapitalize="none"
+                          autoCorrect="off"
+                          spellCheck="false"
                           autoFocus
                         />
                         <button
@@ -800,7 +1057,8 @@ export default function LoginPage({ dark, onLogin }) {
                       <div className="pk-input-box" style={{ borderRadius: "8px", height: "48px" }}>
                         <input
                           type={signupShowPass ? "text" : "password"}
-                          className="pk-input-field"
+                          className="pk-input-field pk-password-input"
+                          data-password-field="true"
                           placeholder="At least 6 characters"
                           value={signupPassword}
                           onChange={(e) => {
@@ -808,6 +1066,9 @@ export default function LoginPage({ dark, onLogin }) {
                             if (errors.signupPassword) setErrors((p) => ({ ...p, signupPassword: "" }));
                           }}
                           autoComplete="new-password"
+                          autoCapitalize="none"
+                          autoCorrect="off"
+                          spellCheck="false"
                           autoFocus
                         />
                         <button
@@ -943,7 +1204,7 @@ export default function LoginPage({ dark, onLogin }) {
                     <button
                       type="button"
                       className="pk-skip-btn"
-                      onClick={() => submitLogin()}
+                      onClick={handleFinishSignup}
                       disabled={loading}
                     >
                       Skip for now

@@ -1,6 +1,12 @@
 import { createContext, useContext, useState, useEffect, useMemo } from "react";
-import { initialTransactions } from "../data/transactions";
-import { ALL_PAYMENT_ROOMS } from "../data/paymentRooms";
+import {
+  getPaymentRoomsFromDB,
+  savePaymentRoomToDB,
+  subscribeToPaymentRooms,
+  getTransactionsFromDB,
+  addTransactionToDB,
+  subscribeToTransactions,
+} from "../services/supabaseService";
 
 const DashboardContext = createContext(null);
 
@@ -9,15 +15,60 @@ export function DashboardProvider({ children }) {
   const [visible, setVisible] = useState(true);
   const [active, setActive] = useState("Home");
   const [role, setRole] = useState("Buyer");
-  const [transactions, setTransactions] = useState(initialTransactions);
-  const [paymentRooms, setPaymentRooms] = useState(ALL_PAYMENT_ROOMS);
+  const [transactions, setTransactions] = useState([]);
+  const [paymentRooms, setPaymentRooms] = useState([]);
+  const [isLoadingDB, setIsLoadingDB] = useState(true);
+
+  // Load live data from Supabase on mount
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadInitialData() {
+      setIsLoadingDB(true);
+      const [rooms, txs] = await Promise.all([
+        getPaymentRoomsFromDB(),
+        getTransactionsFromDB(),
+      ]);
+
+      if (isMounted) {
+        if (rooms && rooms.length > 0) {
+          setPaymentRooms(rooms);
+        }
+        if (txs && txs.length > 0) {
+          setTransactions(txs);
+        }
+        setIsLoadingDB(false);
+      }
+    }
+
+    loadInitialData();
+
+    // Listen to Realtime updates from Supabase
+    const unsubscribeRooms = subscribeToPaymentRooms(() => {
+      getPaymentRoomsFromDB().then((rooms) => {
+        if (isMounted && rooms) setPaymentRooms(rooms);
+      });
+    });
+
+    const unsubscribeTxs = subscribeToTransactions(() => {
+      getTransactionsFromDB().then((txs) => {
+        if (isMounted && txs) setTransactions(txs);
+      });
+    });
+
+    return () => {
+      isMounted = false;
+      unsubscribeRooms?.();
+      unsubscribeTxs?.();
+    };
+  }, []);
 
   const ongoingPaymentRoomsCount = useMemo(
     () => paymentRooms.filter((r) => r.category === "ongoing").length,
     [paymentRooms]
   );
 
-  const addPaymentRoom = (newRoom) => {
+  const addPaymentRoom = async (newRoom) => {
     if (!newRoom) return newRoom;
     const formattedRoom = {
       id: newRoom.id || ("ORD-" + Math.floor(100000 + Math.random() * 900000)),
@@ -38,11 +89,32 @@ export function DashboardProvider({ children }) {
       status: newRoom.status || "awaiting_payment",
       statusText: newRoom.statusText || "Awaiting Payment",
       category: newRoom.category || "ongoing",
-      counterparty: newRoom.counterparty || "08032001585",
+      counterparty: newRoom.counterparty || "8032001585",
       ...newRoom,
     };
+
+    // Update in-memory state immediately for instant feedback
     setPaymentRooms((prev) => [formattedRoom, ...prev]);
+
+    // Persist to Supabase in background
+    try {
+      await savePaymentRoomToDB(formattedRoom);
+    } catch (err) {
+      console.warn("[DashboardContext] Failed to persist room to DB:", err);
+    }
+
     return formattedRoom;
+  };
+
+  const addTransaction = async (newTx) => {
+    if (!newTx) return newTx;
+    setTransactions((prev) => [newTx, ...prev]);
+    try {
+      await addTransactionToDB(newTx);
+    } catch (err) {
+      console.warn("[DashboardContext] Failed to persist transaction to DB:", err);
+    }
+    return newTx;
   };
 
   const toggleTheme = () => setDark((prev) => !prev);
@@ -71,7 +143,9 @@ export function DashboardProvider({ children }) {
     paymentRooms,
     setPaymentRooms,
     addPaymentRoom,
+    addTransaction,
     ongoingPaymentRoomsCount,
+    isLoadingDB,
   };
 
   return (

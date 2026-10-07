@@ -679,10 +679,14 @@
   color: #dc2626;
 }
 
-/* Empty State */
+/* ── Mobile Empty State: 3 Stacked Cards & Themed CTA Button ── */
 .mobile-pr-list:has(.mobile-pr-empty) {
-  justify-content: center;
-  min-height: 280px;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+  min-height: 380px !important;
+  padding-top: 10px !important;
 }
 
 .mobile-pr-empty {
@@ -690,25 +694,182 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 48px 16px;
+  padding: 16px 16px 28px;
   text-align: center;
-  gap: 12px;
-  color: var(--muted);
-  flex: 1;
-  margin: auto 0;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
-.mobile-pr-empty-icon {
-  font-size: 42px;
-  color: var(--muted);
-  opacity: 0.5;
+/* ── 3 Stacked Cards Graphic in Mobile ── */
+.mobile-pr-empty-graphic-wrap {
+  width: 100%;
+  max-width: 290px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 18px;
 }
 
-.mobile-pr-empty-text {
-  font-size: 13.5px;
-  font-weight: 600;
+.mobile-pr-empty-graphic-wrap .pr-empty-graphic-svg {
+  width: 100%;
+  height: auto;
+  max-height: 150px;
+  overflow: visible;
+}
+
+/* Card SVG Elements: Light Theme */
+.mobile-pr-empty .pr-card-bg-back {
+  fill: #f8fafc;
+  stroke: #e5e7eb;
+  stroke-width: 1.5;
+}
+
+.mobile-pr-empty .pr-card-bg-mid {
+  fill: #ffffff;
+  stroke: #e5e7eb;
+  stroke-width: 1.5;
+}
+
+.mobile-pr-empty .pr-card-bg-front {
+  fill: #ffffff;
+  stroke: #e2e8f0;
+  stroke-width: 1.5;
+}
+
+.mobile-pr-empty .pr-empty-card-front {
+  filter: drop-shadow(0 10px 14px rgba(15, 23, 42, 0.08));
+}
+
+.mobile-pr-empty .pr-card-disc {
+  fill: #eaecf0;
+}
+
+.mobile-pr-empty .pr-card-bar {
+  fill: #eaecf0;
+}
+
+/* Card SVG Elements: Dark Theme */
+[data-appearance="dark"] .mobile-pr-empty .pr-card-bg-back,
+.app[data-appearance="dark"] .mobile-pr-empty .pr-card-bg-back,
+.mobile-dashboard[data-appearance="dark"] .mobile-pr-empty .pr-card-bg-back {
+  fill: #14161c;
+  stroke: rgba(255, 255, 255, 0.08);
+}
+
+[data-appearance="dark"] .mobile-pr-empty .pr-card-bg-mid,
+.app[data-appearance="dark"] .mobile-pr-empty .pr-card-bg-mid,
+.mobile-dashboard[data-appearance="dark"] .mobile-pr-empty .pr-card-bg-mid {
+  fill: #181a22;
+  stroke: rgba(255, 255, 255, 0.1);
+}
+
+[data-appearance="dark"] .mobile-pr-empty .pr-card-bg-front,
+.app[data-appearance="dark"] .mobile-pr-empty .pr-card-bg-front,
+.mobile-dashboard[data-appearance="dark"] .mobile-pr-empty .pr-card-bg-front {
+  fill: #1e2029;
+  stroke: rgba(255, 255, 255, 0.14);
+}
+
+[data-appearance="dark"] .mobile-pr-empty .pr-card-disc,
+.app[data-appearance="dark"] .mobile-pr-empty .pr-card-disc,
+.mobile-dashboard[data-appearance="dark"] .mobile-pr-empty .pr-card-disc {
+  fill: #2a2d39;
+}
+
+[data-appearance="dark"] .mobile-pr-empty .pr-card-bar,
+.app[data-appearance="dark"] .mobile-pr-empty .pr-card-bar,
+.mobile-dashboard[data-appearance="dark"] .mobile-pr-empty .pr-card-bar {
+  fill: #2a2d39;
+}
+
+/* Mobile Title beneath stacked cards */
+.mobile-pr-empty-title {
+  font-family: 'Hanken Grotesk', 'Inter', -apple-system, sans-serif;
+  font-size: clamp(17px, 4.2vw, 19.5px);
+  font-weight: 700;
   color: var(--ink);
-  margin: 0;
-  max-width: 320px;
-  line-height: 1.45;
+  margin: 0 0 0 0;
+  text-align: center;
+  letter-spacing: -0.3px;
+  line-height: 1.35;
 }
+
+[data-appearance="dark"] .mobile-pr-empty-title,
+.app[data-appearance="dark"] .mobile-pr-empty-title,
+.mobile-dashboard[data-appearance="dark"] .mobile-pr-empty-title {
+  color: #cbd5e1;
+}
+
+/* Mobile CTA Button: Black in light mode, White in black mode, brought down 38px */
+.mobile-pr-empty-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #000000;
+  color: #ffffff;
+  border: 1px solid #000000;
+  border-radius: 999px;
+  padding: 12px 28px;
+  margin-top: 38px !important;
+  font-family: 'Inter', sans-serif;
+  font-size: 14.5px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  outline: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mobile-pr-empty-cta-btn:hover {
+  background: #1f2228;
+  border-color: #1f2228;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+}
+
+.mobile-pr-empty-cta-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+}
+
+.mobile-pr-empty-cta-arrow {
+  flex-shrink: 0;
+  stroke: currentColor;
+  transition: transform 0.18s ease;
+}
+
+.mobile-pr-empty-cta-btn:hover .mobile-pr-empty-cta-arrow {
+  transform: translate(1.5px, -1.5px);
+}
+
+/* ── Dark Mode: Button is SOLID WHITE with black text in black mode ── */
+[data-appearance="dark"] .mobile-pr-empty-cta-btn,
+.app[data-appearance="dark"] .mobile-pr-empty-cta-btn,
+.mobile-dashboard[data-appearance="dark"] .mobile-pr-empty-cta-btn {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border-color: #ffffff !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+}
+
+[data-appearance="dark"] .mobile-pr-empty-cta-btn:hover,
+.app[data-appearance="dark"] .mobile-pr-empty-cta-btn:hover,
+.mobile-dashboard[data-appearance="dark"] .mobile-pr-empty-cta-btn:hover {
+  background: #e5e7eb !important;
+  border-color: #e5e7eb !important;
+  color: #000000 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 24px rgba(255, 255, 255, 0.2) !important;
+}
+
+[data-appearance="dark"] .mobile-pr-empty-cta-btn:active,
+.app[data-appearance="dark"] .mobile-pr-empty-cta-btn:active,
+.mobile-dashboard[data-appearance="dark"] .mobile-pr-empty-cta-btn:active {
+  transform: translateY(0) !important;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3) !important;
+}
+

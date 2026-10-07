@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from "react";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Search, SlidersHorizontal, ArrowUpRight, X } from "lucide-react";
 import { Select, SelectContent, SelectItem } from "./ui/select";
 import { ALL_PAYMENT_ROOMS } from "../data/paymentRooms.js";
 import { useDashboard } from "../context/DashboardContext";
@@ -9,11 +9,13 @@ import MobileInTransit from "./Mobile/MobileInTransit.jsx";
 import MobileConfirmDelivery from "./Mobile/MobileConfirmDelivery.jsx";
 import MobileDisputeOngoing from "./Mobile/MobileDisputeOngoing.jsx";
 import MobileCompleted from "./Mobile/MobileCompleted.jsx";
+import EmptyPaymentRoomGraphic from "./Shared/EmptyPaymentRoomGraphic.jsx";
 import "../styles/desktop-payment-room.css";
 
 export default function DesktopPaymentRoom({
   role = "Buyer",
   onBackToHome,
+  onNewPayment,
   rooms,
   initialSelectedRoom,
   dark,
@@ -30,9 +32,10 @@ export default function DesktopPaymentRoom({
   onSelectRoom,
 }) {
   let contextRooms;
+  let dashContext;
   try {
-    const dash = useDashboard();
-    contextRooms = dash?.paymentRooms;
+    dashContext = useDashboard();
+    contextRooms = dashContext?.paymentRooms;
   } catch (e) {
     contextRooms = null;
   }
@@ -192,6 +195,14 @@ export default function DesktopPaymentRoom({
     }
     return null;
   }, [selectedRoom, filteredRooms]);
+
+  const handleStartSending = () => {
+    if (onNewPayment) {
+      onNewPayment();
+    } else if (dashContext?.setActive) {
+      dashContext.setActive("New Payment");
+    }
+  };
 
   // Render the matching mobile view component for the selected room
   const renderMobileDetail = (room) => {
@@ -505,13 +516,24 @@ export default function DesktopPaymentRoom({
             <div className="desktop-pr-cards-list">
               {filteredRooms.length === 0 ? (
                 <div className="desktop-pr-empty">
-                  <span className="material-symbols-outlined desktop-pr-empty-icon">
-                    payments
-                  </span>
-                  <p className="desktop-pr-empty-text">
-                    No {activeTab} payment rooms found
-                    {searchQuery ? ` matching "${searchQuery}"` : ""}
-                  </p>
+                  <div className="pr-empty-graphic-wrap">
+                    <EmptyPaymentRoomGraphic />
+                  </div>
+                  <h3 className="desktop-pr-empty-title">
+                    {searchQuery
+                      ? `No payment rooms matching "${searchQuery}"`
+                      : activeTab === "fulfilled"
+                      ? "No completed payment rooms"
+                      : "No ongoing payment rooms"}
+                  </h3>
+                  <button
+                    type="button"
+                    className="desktop-pr-empty-cta-btn"
+                    onClick={handleStartSending}
+                  >
+                    <ArrowUpRight size={18} className="desktop-pr-empty-cta-arrow" />
+                    <span>New Payment</span>
+                  </button>
                 </div>
               ) : (
                 filteredRooms.map((room) => {

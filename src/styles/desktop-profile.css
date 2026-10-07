@@ -123,11 +123,12 @@
   font-family: 'Hanken Grotesk', 'Inter', sans-serif;
 }
 
-/* ── WhatsApp Phone Pill (black in light mode, white in dark mode) ── */
-.desktop-profile-phone-pill {
+/* ── Account ID Pill (black in light mode, white in dark mode) ── */
+.desktop-profile-phone-pill,
+.desktop-profile-id-pill {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
   padding: 4px 12px;
   border-radius: 9999px;
   background-color: #171717;
@@ -141,6 +142,54 @@
   border: 1px solid #171717;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  user-select: none;
+}
+
+.desktop-profile-phone-pill:hover,
+.desktop-profile-id-pill:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+.desktop-profile-id-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #9ca3af;
+  text-transform: uppercase;
+}
+
+.desktop-profile-id-number {
+  font-family: inherit;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  line-height: 1;
+}
+
+.desktop-profile-id-copy-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: inherit;
+  opacity: 0.75;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  line-height: 1;
+  margin-left: 2px;
+}
+
+.desktop-profile-id-copy-btn:hover {
+  opacity: 1;
+  transform: scale(1.2);
+  color: #ffffff;
+}
+
+.desktop-profile-id-copy-icon {
+  font-size: 13.5px !important;
 }
 
 .desktop-profile-phone-pill span {
@@ -160,25 +209,59 @@
 
 /* White pill in dark mode */
 [data-appearance="dark"] .desktop-profile-phone-pill,
+[data-appearance="dark"] .desktop-profile-id-pill,
 .app[data-appearance="dark"] .desktop-profile-phone-pill,
+.app[data-appearance="dark"] .desktop-profile-id-pill,
 .mobile-dashboard[data-appearance="dark"] .desktop-profile-phone-pill,
+.mobile-dashboard[data-appearance="dark"] .desktop-profile-id-pill,
 body[data-appearance="dark"] .desktop-profile-phone-pill,
+body[data-appearance="dark"] .desktop-profile-id-pill,
 body.dark .desktop-profile-phone-pill,
+body.dark .desktop-profile-id-pill,
 .desktop-profile-main[data-appearance="dark"] .desktop-profile-phone-pill,
-.desktop-profile-main.dark .desktop-profile-phone-pill {
+.desktop-profile-main[data-appearance="dark"] .desktop-profile-id-pill,
+.desktop-profile-main.dark .desktop-profile-phone-pill,
+.desktop-profile-main.dark .desktop-profile-id-pill {
   background-color: #ffffff;
   color: #111215;
   border-color: #ffffff;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
 }
 
+[data-appearance="dark"] .desktop-profile-id-label,
+.app[data-appearance="dark"] .desktop-profile-id-label,
+.mobile-dashboard[data-appearance="dark"] .desktop-profile-id-label,
+body[data-appearance="dark"] .desktop-profile-id-label,
+body.dark .desktop-profile-id-label,
+.desktop-profile-main[data-appearance="dark"] .desktop-profile-id-label,
+.desktop-profile-main.dark .desktop-profile-id-label {
+  color: #6b7280;
+}
+
+[data-appearance="dark"] .desktop-profile-id-copy-btn:hover,
+.app[data-appearance="dark"] .desktop-profile-id-copy-btn:hover,
+.mobile-dashboard[data-appearance="dark"] .desktop-profile-id-copy-btn:hover,
+body[data-appearance="dark"] .desktop-profile-id-copy-btn:hover,
+body.dark .desktop-profile-id-copy-btn:hover,
+.desktop-profile-main[data-appearance="dark"] .desktop-profile-id-copy-btn:hover,
+.desktop-profile-main.dark .desktop-profile-id-copy-btn:hover {
+  color: #000000;
+}
+
 [data-appearance="dark"] .desktop-profile-phone-pill span,
+[data-appearance="dark"] .desktop-profile-id-number,
 .app[data-appearance="dark"] .desktop-profile-phone-pill span,
+.app[data-appearance="dark"] .desktop-profile-id-number,
 .mobile-dashboard[data-appearance="dark"] .desktop-profile-phone-pill span,
+.mobile-dashboard[data-appearance="dark"] .desktop-profile-id-number,
 body[data-appearance="dark"] .desktop-profile-phone-pill span,
+body[data-appearance="dark"] .desktop-profile-id-number,
 body.dark .desktop-profile-phone-pill span,
+body.dark .desktop-profile-id-number,
 .desktop-profile-main[data-appearance="dark"] .desktop-profile-phone-pill span,
-.desktop-profile-main.dark .desktop-profile-phone-pill span {
+.desktop-profile-main[data-appearance="dark"] .desktop-profile-id-number,
+.desktop-profile-main.dark .desktop-profile-phone-pill span,
+.desktop-profile-main.dark .desktop-profile-id-number {
   color: #111215;
 }
 
@@ -1160,11 +1243,243 @@ body.dark .seller-sub-card {
   border-radius: 12px;
 }
 
-/* ── Empty state sizing ── */
-.desktop-profile-right-pane .desktop-pr-empty-detail {
-  max-width: 560px;
+/* ── Empty Detail State in Desktop Profile (Replicated Animation) ── */
+.desktop-profile-right-pane .desktop-pr-empty-detail.desktop-profile-empty-state {
+  max-width: 480px;
+  gap: 0;
 }
 
-.desktop-profile-right-pane .desktop-pr-empty-subtitle {
-  white-space: nowrap;
+.desktop-profile-right-pane .pk-empty-selection-graphic {
+  position: relative;
+  width: 206px;
+  height: 232px;
+  margin-bottom: 22px;
+  user-select: none;
 }
+
+/* ── Circular Background Disk (sits behind cards, shifted down so top card extends outside) ── */
+.desktop-profile-right-pane .pk-empty-circle-disk {
+  position: absolute;
+  top: 26px;
+  left: 0;
+  width: 206px;
+  height: 206px;
+  border-radius: 50%;
+  background: #f4f5f7;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.035);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Canvas Viewport for Scrolling Cards & Cursor ──
+   Top is straight/open so the top card extends outside the circle.
+   Bottom has a 103px radius semicircle matching the exact circle curve so the down side stays inside! ── */
+.desktop-profile-right-pane .pk-empty-circle-canvas {
+  width: 206px;
+  height: 232px;
+  background: transparent !important;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  box-shadow: none !important;
+  border-radius: 14px 14px 103px 103px;
+  clip-path: inset(0 0 0 0 round 14px 14px 103px 103px);
+  -webkit-clip-path: inset(0 0 0 0 round 14px 14px 103px 103px);
+  mask-image: linear-gradient(to bottom, transparent 0%, black 8px, black 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 8px, black 100%);
+}
+
+.desktop-profile-right-pane .pk-empty-cards-scroller {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  position: absolute;
+  top: 6px; /* Card 1 starts at 6px, circle disk starts at 26px -> 20px OUTSIDE the circle! */
+  left: 0;
+  will-change: transform;
+  animation: pkCardsStreamScroll 5.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.desktop-profile-right-pane .pk-empty-card {
+  width: 154px;
+  height: 38px;
+  background: #ffffff;
+  border-radius: 9px;
+  box-shadow: 0 2px 7px rgba(0, 0, 0, 0.04);
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  gap: 10px;
+  position: relative;
+  box-sizing: border-box;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  flex-shrink: 0;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.desktop-profile-right-pane .pk-empty-card-target-1 {
+  z-index: 2;
+  cursor: pointer;
+  animation: pkCard1Highlight 5.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.desktop-profile-right-pane .pk-empty-card-target-2 {
+  z-index: 2;
+  cursor: pointer;
+  animation: pkCard2Highlight 5.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+.desktop-profile-right-pane .pk-empty-card-target-1:hover,
+.desktop-profile-right-pane .pk-empty-card-target-2:hover {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 0 0 3.5px rgba(59, 130, 246, 0.22), 0 6px 18px rgba(59, 130, 246, 0.14) !important;
+}
+
+.desktop-profile-right-pane .pk-empty-route-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 8px;
+  flex-shrink: 0;
+}
+
+.desktop-profile-right-pane .pk-empty-dot {
+  width: 5.5px;
+  height: 5.5px;
+  border-radius: 50%;
+  background-color: #0f9f6e;
+}
+
+.desktop-profile-right-pane .pk-empty-line {
+  width: 1.5px;
+  height: 8.5px;
+  background-color: #0f9f6e;
+  margin: 1px 0;
+}
+
+.desktop-profile-right-pane .pk-empty-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.desktop-profile-right-pane .pk-empty-skel-bar {
+  display: block;
+  border-radius: 2px;
+}
+
+.desktop-profile-right-pane .pk-empty-skel-bar.skel-short {
+  width: 32px;
+  height: 3.5px;
+  background-color: #9ca3af;
+}
+
+.desktop-profile-right-pane .pk-empty-skel-bar.skel-long {
+  width: 65px;
+  height: 3.5px;
+  background-color: #e5e7eb;
+}
+
+.desktop-profile-right-pane .pk-empty-animated-cursor {
+  position: absolute;
+  right: 22px;
+  top: 20px;
+  z-index: 10;
+  pointer-events: none;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.16));
+  will-change: transform, top, opacity;
+  animation: pkCursorTraverse 5.6s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+}
+
+.desktop-profile-right-pane .pk-empty-cursor {
+  display: block;
+}
+
+.desktop-profile-empty-title {
+  font-family: 'Hanken Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: clamp(20px, 1.45vw, 22px);
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.015em;
+  line-height: 1.3;
+}
+
+.desktop-profile-empty-subtitle {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: clamp(13px, 0.9vw, 14.5px);
+  color: #6b7280;
+  line-height: 1.55;
+  margin: 0;
+  max-width: 340px;
+  text-align: center;
+  white-space: normal !important;
+}
+
+/* ── Dark Mode Adaptations ── */
+.app[data-appearance="dark"] .desktop-profile-right-pane .pk-empty-circle-disk,
+[data-appearance="dark"] .desktop-profile-right-pane .pk-empty-circle-disk,
+body.dark .desktop-profile-right-pane .pk-empty-circle-disk,
+.dark .desktop-profile-right-pane .pk-empty-circle-disk {
+  background: #171920;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+.app[data-appearance="dark"] .desktop-profile-right-pane .pk-empty-card,
+[data-appearance="dark"] .desktop-profile-right-pane .pk-empty-card,
+body.dark .desktop-profile-right-pane .pk-empty-card,
+.dark .desktop-profile-right-pane .pk-empty-card {
+  background: #20242e;
+  border-color: rgba(255, 255, 255, 0.07);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+}
+
+.app[data-appearance="dark"] .desktop-profile-right-pane .pk-empty-card-target-1,
+[data-appearance="dark"] .desktop-profile-right-pane .pk-empty-card-target-1,
+body.dark .desktop-profile-right-pane .pk-empty-card-target-1,
+.dark .desktop-profile-right-pane .pk-empty-card-target-1 {
+  animation-name: pkCard1HighlightDark;
+}
+
+.app[data-appearance="dark"] .desktop-profile-right-pane .pk-empty-card-target-2,
+[data-appearance="dark"] .desktop-profile-right-pane .pk-empty-card-target-2,
+body.dark .desktop-profile-right-pane .pk-empty-card-target-2,
+.dark .desktop-profile-right-pane .pk-empty-card-target-2 {
+  animation-name: pkCard2HighlightDark;
+}
+
+.app[data-appearance="dark"] .desktop-profile-right-pane .pk-empty-skel-bar.skel-short,
+[data-appearance="dark"] .desktop-profile-right-pane .pk-empty-skel-bar.skel-short,
+body.dark .desktop-profile-right-pane .pk-empty-skel-bar.skel-short,
+.dark .desktop-profile-right-pane .pk-empty-skel-bar.skel-short {
+  background-color: #64748b;
+}
+
+.app[data-appearance="dark"] .desktop-profile-right-pane .pk-empty-skel-bar.skel-long,
+[data-appearance="dark"] .desktop-profile-right-pane .pk-empty-skel-bar.skel-long,
+body.dark .desktop-profile-right-pane .pk-empty-skel-bar.skel-long,
+.dark .desktop-profile-right-pane .pk-empty-skel-bar.skel-long {
+  background-color: #334155;
+}
+
+.app[data-appearance="dark"] .desktop-profile-empty-title,
+[data-appearance="dark"] .desktop-profile-empty-title,
+body.dark .desktop-profile-empty-title,
+.dark .desktop-profile-empty-title {
+  color: #f9fafb;
+}
+
+.app[data-appearance="dark"] .desktop-profile-empty-subtitle,
+[data-appearance="dark"] .desktop-profile-empty-subtitle,
+body.dark .desktop-profile-empty-subtitle,
+.dark .desktop-profile-empty-subtitle {
+  color: #9ca3af;
+}
+

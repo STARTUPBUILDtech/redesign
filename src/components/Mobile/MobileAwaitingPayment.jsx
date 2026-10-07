@@ -60,7 +60,7 @@ export default function MobileAwaitingPayment({
   const orderAmount = safeRoom.amount || safeRoom.price || "₦1,000,000";
   const youPayAmount = safeRoom.totalAmount || "₦1,015,300";
   const bankName = safeRoom.bank || "Guaranteed Trust Bank (GTBank)";
-  const accountName = safeRoom.accountName || "PayKudi(08032001585)";
+  const accountName = safeRoom.accountName || "PayKudi(8032001585)";
   const accountNumber = safeRoom.accountNumber || "903370574";
   const sellerName = safeRoom.sellerName || "900000909099";
   const itemName = safeRoom.item || safeRoom.title || "Iphone 18 Pro Max";
