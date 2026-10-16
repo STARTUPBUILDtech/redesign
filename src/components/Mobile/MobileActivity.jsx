@@ -2,13 +2,15 @@ import { useState, useMemo, useRef, useEffect } from "react";
 import {
   Search,
   SlidersHorizontal,
-  Activity,
+  ArrowUpRight,
   X,
 } from "lucide-react";
 import { Select, SelectContent, SelectItem } from "../ui/select";
 import { ALL_TRANSACTIONS } from "../../data/transactions.js";
+import { useDashboard } from "../../context/DashboardContext.jsx";
 import BankLogo from "../BankLogo.jsx";
 import ReceiptModal from "../Shared/ReceiptModal";
+import EmptyActivityGraphic from "../Shared/EmptyActivityGraphic.jsx";
 import "../../styles/mobile-activity.css";
 
 function getActivityConfig(item) {
@@ -98,7 +100,18 @@ function MobileActivityRow({ item, isLast, onSelect }) {
   );
 }
 
-export default function MobileActivity() {
+export default function MobileActivity({ transactions: propTransactions, onWithdraw }) {
+  let contextTransactions = null;
+  let dash = null;
+  try {
+    dash = useDashboard();
+    contextTransactions = dash?.transactions;
+  } catch (e) {
+    contextTransactions = null;
+  }
+
+  const transactionsList = propTransactions !== undefined ? propTransactions : (contextTransactions || ALL_TRANSACTIONS);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedType, setSelectedType] = useState("all");
   const [selectedRange, setSelectedRange] = useState("all");
@@ -114,6 +127,35 @@ export default function MobileActivity() {
   const listRef = useRef(null);
   const wasStickyRef = useRef(false);
 
+  // Dynamic monthly stats calculation
+  const stats = useMemo(() => {
+    let sent = 0;
+    let received = 0;
+    let payout = 0;
+    let refund = 0;
+
+    (transactionsList || []).forEach((tx) => {
+      const rawAmount = parseFloat(
+        String(tx.amount || "0").replace(/[^0-9.]/g, "")
+      ) || 0;
+      const type = (tx.typeKey || tx.type || tx.title || "").toLowerCase();
+      if (type.includes("received")) received += rawAmount;
+      else if (type.includes("sent")) sent += rawAmount;
+      else if (type.includes("payout") || type.includes("withdraw")) payout += rawAmount;
+      else if (type.includes("refund")) refund += rawAmount;
+    });
+
+    const formatNaira = (val) =>
+      "₦" + val.toLocaleString("en-NG", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    return {
+      sent: formatNaira(sent),
+      received: formatNaira(received),
+      payout: formatNaira(payout),
+      refund: formatNaira(refund),
+    };
+  }, [transactionsList]);
+
   // Always scroll to the very top on initial view
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" });
@@ -122,7 +164,7 @@ export default function MobileActivity() {
   const activeFilterCount = (selectedType !== "all" ? 1 : 0) + (selectedRange !== "all" ? 1 : 0);
 
   const filteredTransactions = useMemo(() => {
-    return ALL_TRANSACTIONS.filter((tx) => {
+    return (transactionsList || []).filter((tx) => {
       // Type filtering
       if (selectedType !== "all") {
         const typeKey = (tx.typeKey || tx.type || tx.title).toLowerCase();
@@ -333,7 +375,7 @@ export default function MobileActivity() {
               </svg>
             </div>
           </div>
-          <p className="mobile-stat-val">₦248,000.00</p>
+          <p className="mobile-stat-val">{stats.sent}</p>
         </div>
 
         {/* Card 2: Received this month */}
@@ -346,7 +388,7 @@ export default function MobileActivity() {
               </svg>
             </div>
           </div>
-          <p className="mobile-stat-val">₦312,500.00</p>
+          <p className="mobile-stat-val">{stats.received}</p>
         </div>
 
         {/* Card 3: Payout this month */}
@@ -359,7 +401,7 @@ export default function MobileActivity() {
               </svg>
             </div>
           </div>
-          <p className="mobile-stat-val">₦154,000.00</p>
+          <p className="mobile-stat-val">{stats.payout}</p>
         </div>
 
         {/* Card 4: Refund this month */}
@@ -373,7 +415,7 @@ export default function MobileActivity() {
               </svg>
             </div>
           </div>
-          <p className="mobile-stat-val">₦58,250.00</p>
+          <p className="mobile-stat-val">{stats.refund}</p>
         </div>
       </div>
 
@@ -514,34 +556,41 @@ export default function MobileActivity() {
         )}
       </div>
 
-      {/* Transaction List or Empty State */}
-      {filteredTransactions.length === 0 ? (
-        <div className="mobile-empty-state">
-          <Activity className="mobile-empty-icon" size={32} />
-          <div>
-            <h3 className="mobile-empty-title">No matching activity</h3>
-            <p className="mobile-empty-sub">Try changing your search or filters</p>
+      {/* Boxless Activity List (matching Desktop) */}
+      <div className={`boxless-activity-list ${!contentFits ? "overflowing" : ""}`} ref={listRef}>
+        {filteredTransactions.length === 0 ? (
+          <div className="activity-empty-state">
+            <div className="activity-empty-graphic-wrap">
+              <EmptyActivityGraphic />
+            </div>
+            <h3 className="activity-empty-title">No Transactions</h3>
+            <p className="activity-empty-subtitle">You haven’t completed any transactions.</p>
+            <button
+              type="button"
+              className="activity-empty-cta-btn"
+              onClick={() => {
+                if (onWithdraw) {
+                  onWithdraw();
+                } else if (dash?.setActive) {
+                  dash.setActive("Withdraw");
+                }
+              }}
+            >
+              <ArrowUpRight size={18} className="activity-empty-cta-arrow" />
+              <span>Withdraw</span>
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={clearFilters}
-            className="mobile-empty-btn"
-          >
-            Clear filters
-          </button>
-        </div>
-      ) : (
-        <div className={`boxless-activity-list ${!contentFits ? "overflowing" : ""}`} ref={listRef}>
-          {filteredTransactions.map((tx, idx) => (
+        ) : (
+          filteredTransactions.map((tx, idx) => (
             <MobileActivityRow
               key={tx.id}
               item={tx}
               isLast={idx === filteredTransactions.length - 1}
               onSelect={setSelectedReceipt}
             />
-          ))}
-        </div>
-      )}
+          ))
+        )}
+      </div>
 
       <ReceiptModal
         isOpen={!!selectedReceipt}

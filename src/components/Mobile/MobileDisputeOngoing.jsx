@@ -16,6 +16,7 @@ export default function MobileDisputeOngoing({
   onBack,
   role = "Buying",
   isPaymentRoomWhite,
+  currentUser,
 }) {
   const safeRoom = room || {};
   // Countdown timer for dispute response (starts at 29m 30s as in reference design)

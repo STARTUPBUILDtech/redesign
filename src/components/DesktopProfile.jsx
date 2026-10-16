@@ -12,12 +12,34 @@ import {
   BvnIcon,
   NinIcon,
   useModalAppearance,
+  WhatsAppIcon,
 } from "./Shared/ProfileModals.jsx";
+import {
+  DEFAULT_POCKET_BALANCE_KOBO,
+} from "../utils/balanceUtils.js";
+import { saveUserProfileToDB } from "../services/supabaseService.js";
+import { getStoredPayoutAccounts, getPayoutAccountsFromDB } from "../services/payoutService.js";
+import { getUserAvatarStyle } from "../utils/avatarUtils.js";
+import { ensureCsrfToken } from "../services/authService.js";
 
-function WhatsAppIcon({ size = 20 }) {
+function NormalCursorIcon() {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.456 5.71 1.457h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.414z" />
+    <svg
+      width="20"
+      height="22"
+      viewBox="0 0 24 26"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="pk-empty-cursor"
+    >
+      <path
+        d="M3 2v19l5.3-4.8 3.5 8 3.2-1.4-3.5-7.9 6.5.1L3 2z"
+        fill="#FFFFFF"
+        stroke="#1F2937"
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
@@ -29,7 +51,9 @@ function WhatsAppIcon({ size = 20 }) {
  *     (mirrors Desktop Payment Room and Desktop Help & Support)
  */
 export default function DesktopProfile({
+  user,
   userName = "Amaka",
+  username = "",
   phoneNumber = "+234 803 200 1585",
   onEditProfile,
   onSignOut = () => {},
@@ -39,37 +63,95 @@ export default function DesktopProfile({
   const isSplit = layout === "split";
   const appearance = useModalAppearance(dark);
 
+  const isPhoneStr = (v) => typeof v === "string" && (v.startsWith("+") || /^\d[\d\s-]{6,}$/.test(v));
+  const formatSentenceCase = (str) => {
+    if (!str || typeof str !== "string") return "";
+    return str
+      .trim()
+      .split(/\s+/)
+      .map((w) => {
+        if (w.includes("-")) {
+          return w.split("-").map((p) => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join("-");
+        }
+        return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+      })
+      .join(" ");
+  };
+  const cleanDisplayName = (val) => {
+    let resolved = val;
+    if (!resolved || isPhoneStr(resolved) || resolved === "Amaka") {
+      resolved = (userName && !isPhoneStr(userName) && userName !== "Amaka") ? userName : "Howard Ukah-Columba";
+    }
+    return formatSentenceCase(resolved);
+  };
+
+  const isGenericBankAccount = (bank, accountNumber, accountName) => {
+    const genericNumbers = [
+      "2345678900",
+      "1234567653",
+      "0234567891",
+      "0123456789",
+      "2001948291",
+      "8032001585",
+      "8032007872",
+    ];
+    const num = String(accountNumber || "").trim();
+    const name = String(accountName || "").toLowerCase();
+    const b = String(bank || "").toLowerCase();
+    if (!num || !bank) return true;
+    if (genericNumbers.includes(num)) return true;
+    if (name.includes("amaka") || name.includes("chinaza")) return true;
+    if (b.includes("kuda") && (num === "2001948291" || num === "8032001585" || num === "8032007872")) return true;
+    return false;
+  };
+
+
   // Initialize state with stored details or fallbacks
   const [profileData, setProfileData] = useState(() => {
     try {
       const stored = localStorage.getItem("paykudi_user_profile");
       if (stored) {
         const parsed = JSON.parse(stored);
+        const isGeneric = isGenericBankAccount(parsed.bank, parsed.accountNumber, parsed.accountName);
+        if (isGeneric && (parsed.bank || parsed.accountNumber)) {
+          try {
+            localStorage.setItem(
+              "paykudi_user_profile",
+              JSON.stringify({ ...parsed, bank: "", accountNumber: "" })
+            );
+          } catch {}
+        }
         return {
-          name: parsed.name || userName || "Amaka",
+          id: parsed.id || "",
+          name: cleanDisplayName(parsed.name),
+          username: parsed.username || username || (parsed.name ? parsed.name.toLowerCase().replace(/[^a-z0-9]/g, "") : "howard001"),
           address: parsed.address || "",
           phone: parsed.phone || (phoneNumber !== "No phone number" ? phoneNumber : "+234 803 200 1585"),
           email: parsed.email || "",
           isVerified: parsed.isVerified || false,
           verificationStatus: parsed.verificationStatus || "unverified",
-          bank: parsed.bank || "Kuda Bank",
-          accountNumber: parsed.accountNumber || "2001948291",
-          accountName: parsed.accountName || "Amaka",
+          bank: isGeneric ? "" : (parsed.bank || ""),
+          accountNumber: isGeneric ? "" : (parsed.accountNumber || ""),
+          accountName: parsed.accountName || "Howard Ukah-Columba",
+          pocket_balance_kobo: parsed.pocket_balance_kobo !== undefined ? Number(parsed.pocket_balance_kobo) : DEFAULT_POCKET_BALANCE_KOBO,
         };
       }
     } catch (e) {
       // Local storage fallback
     }
     return {
-      name: userName || "Amaka",
+      id: "",
+      name: cleanDisplayName(userName),
+      username: username || "howard001",
       address: "",
       phone: phoneNumber !== "No phone number" ? phoneNumber : "+234 803 200 1585",
       email: "",
       isVerified: false,
       verificationStatus: "unverified",
-      bank: "Kuda Bank",
-      accountNumber: "2001948291",
-      accountName: "Amaka",
+      bank: "",
+      accountNumber: "",
+      accountName: "Howard Ukah-Columba",
+      pocket_balance_kobo: DEFAULT_POCKET_BALANCE_KOBO,
     };
   });
 
@@ -96,6 +178,219 @@ export default function DesktopProfile({
   // Toast feedback state
   const [toastMessage, setToastMessage] = useState("");
   const [isToastVisible, setIsToastVisible] = useState(false);
+  const [copiedId, setCopiedId] = useState(false);
+  const [copiedUsername, setCopiedUsername] = useState(false);
+
+  // Clean WhatsApp number to serve as clean PayKudi ID without leading zero
+  const cleanId = (val) => {
+    if (!val) return "8032007872";
+    let digits = String(val).replace(/\D/g, "");
+    if (!digits) return "8032007872";
+    if (digits.startsWith("234")) {
+      digits = digits.slice(3);
+    }
+    digits = digits.replace(/^0+/, "");
+    return digits || "8032007872";
+  };
+
+  const userAccountId = cleanId(profileData.phone);
+
+  const handleCopyId = (e) => {
+    if (e) e.stopPropagation();
+    try {
+      navigator.clipboard?.writeText(userAccountId);
+      setCopiedId(true);
+      showToast("Copied ID: " + userAccountId);
+      setTimeout(() => setCopiedId(false), 2000);
+    } catch {
+      setCopiedId(true);
+      showToast("Copied ID: " + userAccountId);
+      setTimeout(() => setCopiedId(false), 2000);
+    }
+  };
+
+  // Reactive payout accounts state & linkage check
+  const [payoutAccounts, setPayoutAccounts] = useState(() => {
+    try {
+      const stored = getStoredPayoutAccounts();
+      return stored.filter(
+        (a) => !isGenericBankAccount(a.bank, a.number || a.account_number || a.accountNumber, a.name || a.account_name || a.accountName)
+      );
+    } catch {
+      return [];
+    }
+  });
+
+  const validLinkedAccounts = Array.isArray(payoutAccounts)
+    ? payoutAccounts.filter(
+        (a) =>
+          a &&
+          a.bank &&
+          (a.number || a.account_number || a.accountNumber) &&
+          !isGenericBankAccount(a.bank, a.number || a.account_number || a.accountNumber, a.name || a.account_name || a.accountName)
+      )
+    : [];
+
+  const hasLinkedBankAccount = validLinkedAccounts.length > 0;
+  const activePayoutAccount = hasLinkedBankAccount
+    ? validLinkedAccounts.find((a) => a.is_default || a.isDefault) || validLinkedAccounts[0]
+    : null;
+  const activeBank = activePayoutAccount ? (activePayoutAccount.bank || "") : "";
+  const activeAccountNumber = activePayoutAccount ? (activePayoutAccount.number || activePayoutAccount.account_number || activePayoutAccount.accountNumber || "") : "";
+
+  // Synchronize payout accounts from storage, service, and backend database
+  useEffect(() => {
+    let isMounted = true;
+    const syncAccounts = () => {
+      try {
+        const stored = getStoredPayoutAccounts();
+        const clean = stored.filter(
+          (a) => !isGenericBankAccount(a.bank, a.number || a.account_number || a.accountNumber, a.name || a.account_name || a.accountName)
+        );
+        if (isMounted) setPayoutAccounts(clean);
+      } catch (_) {}
+    };
+
+    window.addEventListener("paykudi_payout_accounts_updated", syncAccounts);
+    window.addEventListener("storage", syncAccounts);
+    syncAccounts();
+
+    getPayoutAccountsFromDB().then((fromDb) => {
+      if (isMounted && Array.isArray(fromDb)) {
+        const cleanDb = fromDb.filter(
+          (a) => !isGenericBankAccount(a.bank, a.number || a.account_number || a.accountNumber, a.name || a.account_name || a.accountName)
+        );
+        setPayoutAccounts(cleanDb);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+      window.removeEventListener("paykudi_payout_accounts_updated", syncAccounts);
+      window.removeEventListener("storage", syncAccounts);
+    };
+  }, []);
+
+  // Airtight guarantee: if no linked bank account exists, completely clear any lingering bank data
+  useEffect(() => {
+    if (!hasLinkedBankAccount) {
+      setProfileData((prev) => {
+        if (!prev.bank && !prev.accountNumber) return prev;
+        return { ...prev, bank: "", accountNumber: "" };
+      });
+      try {
+        const raw = localStorage.getItem("paykudi_user_profile");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed.bank || parsed.accountNumber) {
+            localStorage.setItem(
+              "paykudi_user_profile",
+              JSON.stringify({ ...parsed, bank: "", accountNumber: "" })
+            );
+          }
+        }
+      } catch (_) {}
+    }
+  }, [hasLinkedBankAccount]);
+
+  // Immediate purge of any lingering generic bank accounts on mount
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("paykudi_user_profile");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (isGenericBankAccount(parsed.bank, parsed.accountNumber, parsed.accountName)) {
+          if (parsed.bank || parsed.accountNumber) {
+            localStorage.setItem(
+              "paykudi_user_profile",
+              JSON.stringify({ ...parsed, bank: "", accountNumber: "" })
+            );
+          }
+          setProfileData((prev) => ({
+            ...prev,
+            bank: "",
+            accountNumber: "",
+          }));
+        }
+      }
+      const savedAccs = localStorage.getItem("paykudi_payout_accounts");
+      if (savedAccs) {
+        const parsedAccs = JSON.parse(savedAccs);
+        if (Array.isArray(parsedAccs)) {
+          const cleanAccs = parsedAccs.filter(
+            (a) => !isGenericBankAccount(a.bank, a.accountNumber || a.number || a.account_number, a.accountName || a.name || a.account_name)
+          );
+          if (cleanAccs.length !== parsedAccs.length) {
+            localStorage.setItem("paykudi_payout_accounts", JSON.stringify(cleanAccs));
+          }
+        }
+      }
+    } catch (_) {}
+  }, []);
+
+
+  // Sync profile if updated elsewhere
+  useEffect(() => {
+    const syncProfile = () => {
+      try {
+        const stored = localStorage.getItem("paykudi_user_profile");
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          const isGeneric = isGenericBankAccount(parsed.bank, parsed.accountNumber, parsed.accountName);
+          setProfileData((prev) => ({
+            ...prev,
+            id: parsed.id || prev.id || "",
+            name: cleanDisplayName(parsed.name) || prev.name,
+            username: parsed.username || prev.username,
+            phone: parsed.phone ? cleanId(parsed.phone) : prev.phone,
+            email: parsed.email !== undefined ? (parsed.email || "") : prev.email,
+            address: parsed.address || prev.address,
+            bank: isGeneric ? "" : (parsed.bank ?? prev.bank),
+            accountNumber: isGeneric ? "" : (parsed.accountNumber ?? prev.accountNumber),
+            pocket_balance_kobo: parsed.pocket_balance_kobo !== undefined ? Number(parsed.pocket_balance_kobo) : prev.pocket_balance_kobo,
+          }));
+        }
+      } catch (_) {}
+    };
+
+    window.addEventListener("paykudi_profile_updated", syncProfile);
+    window.addEventListener("storage", syncProfile);
+    return () => {
+      window.removeEventListener("paykudi_profile_updated", syncProfile);
+      window.removeEventListener("storage", syncProfile);
+    };
+  }, []);
+
+  // Fetch verified profile directly from database on mount
+  useEffect(() => {
+    let isMounted = true;
+    const loadFromDB = async () => {
+      try {
+        const res = await fetch("http://localhost:8000/auth/profile", { credentials: "include" });
+        if (res.ok && isMounted) {
+          const u = await res.json();
+          if (u) {
+            setProfileData((prev) => {
+              const next = {
+                ...prev,
+                id: u.id || prev.id,
+                email: u.email || "",
+                username: u.username || prev.username,
+                name: (u.full_name && !isPhoneStr(u.full_name)) ? cleanDisplayName(u.full_name) : prev.name,
+              };
+              try {
+                localStorage.setItem("paykudi_user_profile", JSON.stringify(next));
+                window.dispatchEvent(new Event("paykudi_profile_updated"));
+              } catch {}
+              return next;
+            });
+          }
+        }
+      } catch (_) {}
+    };
+    loadFromDB();
+    return () => { isMounted = false; };
+  }, []);
 
   useEffect(() => {
     if (isSplit) window.scrollTo({ top: 0, behavior: "instant" });
@@ -122,6 +417,14 @@ export default function DesktopProfile({
   };
 
   const handleEditClick = (field) => {
+    if (field === "username") {
+      handleCopyUsername();
+      return;
+    }
+    if (field === "email" && profileData.email && profileData.email.trim()) {
+      showToast("Email address has already been set and cannot be edited.");
+      return;
+    }
     setActiveSellerStep(null);
     setActiveModal(field);
   };
@@ -164,26 +467,173 @@ export default function DesktopProfile({
     );
   };
 
-  const handleFieldSave = (updates) => {
+  const handleFieldSave = async (updates) => {
     let msg = "Details updated successfully";
-    if (updates.email) msg = "Email address updated successfully";
-    else if (updates.address) msg = "Address updated successfully";
+    const hasExistingEmail = Boolean(profileData.email && profileData.email.trim());
+
+    if (updates.name) {
+      updates.name = cleanDisplayName(updates.name);
+    }
+
+    if (updates.email && updates.email.trim()) {
+      const newEmail = updates.email.trim();
+
+      // If user already had an email, prevent editing or changing it
+      if (hasExistingEmail && newEmail.toLowerCase() !== profileData.email.trim().toLowerCase()) {
+        showToast("Email address has already been set and cannot be edited.");
+        return;
+      }
+
+      // If user did not have an email, bind and persist to backend DB
+      if (!hasExistingEmail) {
+        msg = "Email address saved to database successfully!";
+        try {
+          let csrfToken = document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("paykudi_csrf_token="))
+            ?.split("=")[1];
+
+          if (!csrfToken) {
+            try {
+              const csrfRes = await fetch("http://localhost:8000/auth/csrf", { credentials: "include" });
+              const csrfData = await csrfRes.json().catch(() => ({}));
+              csrfToken = csrfData.csrf_token || document.cookie
+                .split("; ")
+                .find((row) => row.startsWith("paykudi_csrf_token="))
+                ?.split("=")[1];
+            } catch (_) {}
+          }
+
+          const res = await fetch("http://localhost:8000/auth/bind-email", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              ...(csrfToken ? { "x-csrf-token": csrfToken } : {}),
+            },
+            credentials: "include",
+            body: JSON.stringify({
+              email: newEmail,
+              user_id: profileData.id || undefined,
+              phone: profileData.phone || undefined,
+              password: updates.password || undefined,
+              otp: updates.otp || undefined,
+            }),
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            if (data.user?.id) {
+              updates.id = data.user.id;
+            }
+            if (data.user?.email) {
+              updates.email = data.user.email;
+            }
+            msg = "Email address saved to database! It is now permanently bound to your profile.";
+          } else {
+            const errData = await res.json().catch(() => ({}));
+            if (errData.detail) {
+              msg = errData.detail;
+            }
+          }
+        } catch (err) {
+          console.warn("[Profile] Backend bind-email error:", err);
+        }
+      }
+    } else if (hasExistingEmail) {
+      // Ensure existing bound email is preserved
+      updates.email = profileData.email;
+    } else if (updates.address) {
+      msg = "Address updated successfully";
+    } else if (updates.username) {
+      msg = "Username updated successfully";
+    }
+
+    // Sync to backend DB
+    try {
+      const csrf = await ensureCsrfToken();
+      const res = await fetch("http://localhost:8000/auth/profile", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(csrf ? { "x-csrf-token": csrf } : {}),
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          full_name: updates.name || profileData.name || undefined,
+          username: updates.username || profileData.username || undefined,
+          avatar_color: updates.avatar_color || userAvatarStyle?.backgroundColor || undefined,
+          avatar_url: updates.avatar_url || updates.avatar || profileData.avatar_url || profileData.avatar || undefined,
+        }),
+      });
+      if (res.status === 401 && onSignOut) {
+        onSignOut();
+        return;
+      }
+    } catch (_) {}
+
+    try {
+      await saveUserProfileToDB({
+        id: updates.id || profileData.id,
+        name: updates.name || profileData.name,
+        username: updates.username || profileData.username,
+        phone: updates.phone || profileData.phone,
+        email: updates.email !== undefined ? updates.email : profileData.email,
+        address: updates.address || profileData.address,
+        avatar_url: updates.avatar_url || updates.avatar || profileData.avatar_url || profileData.avatar || null,
+        avatar_color: updates.avatar_color || userAvatarStyle?.backgroundColor || null,
+      });
+    } catch (err) {
+      console.warn("[Profile] Supabase profile sync:", err);
+    }
+
     updateProfile(updates, msg);
+    window.dispatchEvent(new Event("paykudi_profile_updated"));
   };
 
   /* ── Shared render helpers ── */
+
+  const displayInitial = (() => {
+    if (user?.initial) return String(user.initial).toUpperCase();
+    const raw = (profileData.name || userName || user?.fullName || user?.name || "H").trim();
+    const parts = raw.split(/\s+/).filter(Boolean);
+    const first = parts[0] || "H";
+    const match = first.match(/[a-zA-Z]/) || raw.match(/[a-zA-Z]/);
+    return (match ? match[0] : "H").toUpperCase();
+  })();
+
+  const userAvatarStyle = getUserAvatarStyle(
+    user || {
+      id: profileData.id,
+      username: profileData.username || username,
+      full_name: profileData.name || userName,
+      whatsapp_number: profileData.phone || phoneNumber,
+      account_id: profileData.account_id || profileData.phone || phoneNumber,
+    }
+  );
 
   const renderAvatar = () => (
     <div className="desktop-profile-avatar-wrap">
       <div
         className="desktop-profile-avatar-circle"
-        style={{ cursor: "pointer" }}
+        style={{
+          cursor: "pointer",
+          backgroundColor: userAvatarStyle.backgroundColor,
+          background: userAvatarStyle.background,
+          color: "#ffffff",
+          border: "none",
+        }}
         onClick={() => handleEditClick("profile")}
         title="Click to edit profile"
       >
-        <span className="material-symbols-outlined desktop-profile-avatar-icon">
-          account_circle
-        </span>
+        {profileData.avatar_url || profileData.avatar ? (
+          <img
+            src={profileData.avatar_url || profileData.avatar}
+            alt={cleanDisplayName(profileData.name || userName)}
+            className="desktop-profile-avatar-img"
+          />
+        ) : (
+          <span className="desktop-profile-avatar-letter">{displayInitial}</span>
+        )}
       </div>
       <button
         id="profile-avatar-edit-btn"
@@ -204,12 +654,60 @@ export default function DesktopProfile({
     </div>
   );
 
+  const displayUsername = (() => {
+    const raw = (profileData.username || "").trim();
+    if (raw) {
+      return raw.startsWith("@") ? raw : `@${raw}`;
+    }
+    const rawName = (profileData.name || userName || "howard001").trim();
+    const clean = rawName.toLowerCase().replace(/[^a-z0-9]/g, "");
+    return `@${clean || "howard001"}`;
+  })();
+
+  const handleCopyUsername = (e) => {
+    if (e) e.stopPropagation();
+    try {
+      navigator.clipboard?.writeText(displayUsername);
+      setCopiedUsername(true);
+      showToast("Copied username: " + displayUsername);
+      setTimeout(() => setCopiedUsername(false), 2000);
+    } catch {
+      setCopiedUsername(true);
+      showToast("Copied username: " + displayUsername);
+      setTimeout(() => setCopiedUsername(false), 2000);
+    }
+  };
+
   const renderUserInfo = () => (
     <div className="desktop-profile-info">
-      <h1 className="desktop-profile-name">{profileData.name}</h1>
-      <div className="desktop-profile-phone-pill">
-        <WhatsAppIcon size={14} />
-        <span>{profileData.phone}</span>
+      <h1
+        className="desktop-profile-name"
+        onClick={handleCopyUsername}
+        title={copiedUsername ? "Copied!" : "Click to copy username"}
+        style={{ cursor: "pointer", userSelect: "none" }}
+      >
+        {displayUsername}
+      </h1>
+      <div
+        className="desktop-profile-id-pill"
+        onClick={handleCopyId}
+        title="Click to copy ID"
+        role="button"
+        tabIndex={0}
+      >
+        <span className="desktop-profile-id-label">ID:</span>
+        <span className="desktop-profile-id-number">{userAccountId}</span>
+        <button
+          type="button"
+          onClick={handleCopyId}
+          className="desktop-profile-id-copy-btn"
+          title={copiedId ? "Copied!" : "Copy PayKudi ID"}
+          aria-label="Copy PayKudi ID"
+        >
+          <span className="material-symbols-outlined desktop-profile-id-copy-icon">
+            {copiedId ? "check" : "content_copy"}
+          </span>
+        </button>
       </div>
     </div>
   );
@@ -224,6 +722,7 @@ export default function DesktopProfile({
     ariaLabel,
     onClick,
     readonly = false,
+    readonlyIcon,
     noBorder = false,
     selected = false,
     chevron = "chevron_right",
@@ -244,13 +743,26 @@ export default function DesktopProfile({
               {chevron}
             </span>
           )}
+          {readonly && readonlyIcon && (
+            <span
+              className="material-symbols-outlined desktop-profile-item-chevron readonly-lock-icon"
+              style={{
+                fontSize: "17px",
+                opacity: 0.5,
+                color: "var(--muted, #71717a)",
+              }}
+              aria-hidden="true"
+            >
+              {readonlyIcon}
+            </span>
+          )}
         </div>
       </>
     );
 
     if (readonly) {
       return (
-        <div id={id} className="desktop-profile-item readonly" aria-label={ariaLabel}>
+        <div id={id} className="desktop-profile-item readonly" aria-label={ariaLabel} title={titleTooltip}>
           {inner}
         </div>
       );
@@ -289,8 +801,8 @@ export default function DesktopProfile({
     ? "Verification approved. Enjoy Verified Seller escrow benefits."
     : "Complete verification to enjoy Verified Seller benefits.";
 
-  // BVN / NIN / Business step cards + submit CTA (used by accordion and right panel)
-  const renderSellerSteps = () => (
+  // BVN / NIN / Business step cards
+  const renderSellerCards = () => (
     <>
       {/* Card 1: BVN */}
       <div className="seller-sub-card">
@@ -374,85 +886,114 @@ export default function DesktopProfile({
           )}
         </button>
       </div>
+    </>
+  );
 
-      {/* Bottom CTA Submit Button */}
-      <button
-        id="seller-verify-submit-btn"
-        type="button"
-        className="seller-verify-submit-btn"
-        onClick={handleFinalSubmitVerification}
-      >
-        <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
-          verified
-        </span>
-        <span>Submit Seller Verification</span>
-      </button>
+  // Submit CTA Button
+  const renderSellerSubmitBtn = () => (
+    <button
+      id="seller-verify-submit-btn"
+      type="button"
+      className="seller-verify-submit-btn"
+      onClick={handleFinalSubmitVerification}
+    >
+      <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
+        verified
+      </span>
+      <span>Submit Seller Verification</span>
+    </button>
+  );
+
+  // Combination for accordion view
+  const renderSellerSteps = () => (
+    <>
+      {renderSellerCards()}
+      {renderSellerSubmitBtn()}
     </>
   );
 
   /* ── Personal Details rows ── */
-  const renderPersonalRows = () => (
-    <>
-      {renderRow({
-        id: "profile-row-name",
-        badgeClass: "user",
-        badgeContent: <span className="material-symbols-outlined">person</span>,
-        title: profileData.name,
-        subtitle: "Account Name",
-        ariaLabel: `Account Name: ${profileData.name}`,
-        readonly: true,
-      })}
-      {renderRow({
-        id: "profile-row-address",
-        badgeClass: "address",
-        badgeContent: <span className="material-symbols-outlined">location_on</span>,
-        title: profileData.address || "Add your address",
-        subtitle: "Address",
-        ariaLabel: `Address: ${profileData.address || "Add your address"}. Tap to edit.`,
-        onClick: () => handleEditClick("address"),
-        selected: isSplit && activeModal === "address",
-        titleTooltip: "Click to edit address",
-      })}
-      {renderRow({
-        id: "profile-row-phone",
-        badgeClass: "whatsapp",
-        badgeContent: <WhatsAppIcon size={16} />,
-        title: profileData.phone,
-        subtitle: "Phone Number",
-        ariaLabel: `Phone Number: ${profileData.phone}`,
-        readonly: true,
-      })}
-      {renderRow({
-        id: "profile-row-email",
-        badgeClass: "email",
-        badgeContent: <span className="material-symbols-outlined">mail</span>,
-        title: profileData.email || "Add your email",
-        subtitle: "Email Address",
-        ariaLabel: `Email Address: ${profileData.email || "Add your email"}. Tap to edit.`,
-        onClick: () => handleEditClick("email"),
-        noBorder: true,
-        selected: isSplit && activeModal === "email",
-        titleTooltip: "Click to edit email address",
-      })}
-    </>
-  );
+  const renderPersonalRows = () => {
+    const hasEmail = Boolean(profileData.email && profileData.email.trim());
+
+    return (
+      <>
+        {renderRow({
+          id: "profile-row-name",
+          badgeClass: "user",
+          badgeContent: <span className="material-symbols-outlined">person</span>,
+          title: profileData.name,
+          subtitle: "Account Name",
+          ariaLabel: `Account Name: ${profileData.name}`,
+          readonly: true,
+        })}
+        {renderRow({
+          id: "profile-row-address",
+          badgeClass: "address",
+          badgeContent: <span className="material-symbols-outlined">location_on</span>,
+          title: profileData.address || "Add your address",
+          subtitle: "Address",
+          ariaLabel: `Address: ${profileData.address || "Add your address"}. Tap to edit.`,
+          onClick: () => handleEditClick("address"),
+          selected: isSplit && activeModal === "address",
+          titleTooltip: "Click to edit address",
+        })}
+        {renderRow({
+          id: "profile-row-phone",
+          badgeClass: "whatsapp",
+          badgeContent: <WhatsAppIcon size={16} />,
+          title: userAccountId,
+          subtitle: "Phone Number",
+          ariaLabel: `Phone Number: ${userAccountId}`,
+          readonly: true,
+        })}
+        {hasEmail
+          ? renderRow({
+              id: "profile-row-email",
+              badgeClass: "email",
+              badgeContent: <span className="material-symbols-outlined">mail</span>,
+              title: profileData.email,
+              subtitle: "Email Address · Bound (Cannot be edited)",
+              ariaLabel: `Email Address: ${profileData.email}. Permanently bound to profile.`,
+              readonly: true,
+              readonlyIcon: "lock",
+              noBorder: true,
+              titleTooltip: "Email address is permanently bound to your profile and cannot be edited.",
+            })
+          : renderRow({
+              id: "profile-row-email",
+              badgeClass: "email",
+              badgeContent: <span className="material-symbols-outlined">mail</span>,
+              title: "Bind your email",
+              subtitle: "Email Address · Link to enable email login (One-time)",
+              ariaLabel: "Email Address: Bind your email. Tap to add.",
+              onClick: () => handleEditClick("email"),
+              noBorder: true,
+              selected: isSplit && activeModal === "email",
+              titleTooltip: "Click to bind email address to your profile",
+            })}
+      </>
+    );
+  };
 
   /* ── Services & Settings rows ── */
-  const renderPayoutRow = () =>
-    renderRow({
+  const renderPayoutRow = () => {
+    const isLinked = hasLinkedBankAccount && Boolean(activeBank) && Boolean(activeAccountNumber);
+    return renderRow({
       id: "profile-row-payout",
       badgeClass: "payout",
       badgeContent: <span className="material-symbols-outlined">account_balance</span>,
       title: "Payout Accounts",
-      subtitle:
-        profileData.bank && profileData.accountNumber
-          ? `${profileData.bank} · ${profileData.accountNumber}`
-          : "Add, change, or set primary bank accounts for payouts.",
+      subtitle: isLinked
+        ? `${activeBank} · ${activeAccountNumber}`
+        : "Add bank account for payouts",
       ariaLabel: "Payout Accounts: Tap to manage bank account.",
       onClick: () => handleEditClick("payout"),
       selected: isSplit && activeModal === "payout",
       titleTooltip: "Click to manage payout accounts",
     });
+  };
+
 
   const renderStatementsRow = () =>
     renderRow({
@@ -486,7 +1027,11 @@ export default function DesktopProfile({
      ══════════════════════════════════════════════════════════════ */
   if (isSplit) {
     const renderDetail = () => {
-      if (activeModal === "address" || activeModal === "email" || activeModal === "profile") {
+      if (
+        activeModal === "address" ||
+        activeModal === "email" ||
+        activeModal === "profile"
+      ) {
         return (
           <EditFieldModal
             key={activeModal}
@@ -509,9 +1054,15 @@ export default function DesktopProfile({
             currentData={profileData}
             dark={dark}
             onClose={closePanel}
-            onSave={(payoutUpdates) =>
-              updateProfile(payoutUpdates, "Payout bank account updated successfully")
-            }
+            onSave={(payoutUpdates) => {
+              updateProfile(payoutUpdates, "Payout bank account updated successfully");
+              const stored = getStoredPayoutAccounts();
+              const clean = stored.filter(
+                (a) => !isGenericBankAccount(a.bank, a.number || a.account_number || a.accountNumber, a.name || a.account_name || a.accountName)
+              );
+              setPayoutAccounts(clean);
+            }}
+
           />
         );
       }
@@ -554,7 +1105,10 @@ export default function DesktopProfile({
               </div>
               <div className="profile-modal-body desktop-profile-seller-panel">
                 <p className="desktop-profile-seller-panel-intro">{sellerSubtitle}</p>
-                <div className="desktop-profile-seller-panel-steps">{renderSellerSteps()}</div>
+                <div className="desktop-profile-seller-panel-steps">{renderSellerCards()}</div>
+              </div>
+              <div className="profile-modal-footer desktop-profile-seller-footer">
+                {renderSellerSubmitBtn()}
               </div>
             </div>
           </div>
@@ -586,15 +1140,154 @@ export default function DesktopProfile({
         );
       }
       return (
-        <div className="desktop-pr-empty-detail">
-          <div className="desktop-pr-empty-illustration">
-            <span className="material-symbols-outlined desktop-pr-empty-watermark">
-              manage_accounts
-            </span>
+        <div className="desktop-pr-empty-detail desktop-profile-empty-state">
+          <div className="pk-empty-selection-graphic" aria-hidden="true">
+            {/* Circular background disk behind the cards - top card extends outside it */}
+            <div className="pk-empty-circle-disk" />
+
+            <div className="pk-empty-circle-canvas">
+              {/* Animated normal cursor that moves from the top of the list down to the card */}
+              <div className="pk-empty-animated-cursor">
+                <NormalCursorIcon />
+              </div>
+
+              {/* Vertically scrolling card stream */}
+              <div className="pk-empty-cards-stack pk-empty-cards-scroller">
+                {/* Card 0 */}
+                <div className="pk-empty-card">
+                  <div className="pk-empty-route-marker">
+                    <span className="pk-empty-dot" />
+                    <span className="pk-empty-line" />
+                    <span className="pk-empty-dot" />
+                  </div>
+                  <div className="pk-empty-skeleton">
+                    <span className="pk-empty-skel-bar skel-short" />
+                    <span className="pk-empty-skel-bar skel-long" />
+                  </div>
+                </div>
+
+                {/* Card 1 (Target 1 - highlighted when cursor is at top) */}
+                <div
+                  className="pk-empty-card pk-empty-card-target-1"
+                  onClick={() => openModal("payout")}
+                  role="button"
+                  tabIndex={0}
+                  title="Select a profile option"
+                >
+                  <div className="pk-empty-route-marker">
+                    <span className="pk-empty-dot" />
+                    <span className="pk-empty-line" />
+                    <span className="pk-empty-dot" />
+                  </div>
+                  <div className="pk-empty-skeleton">
+                    <span className="pk-empty-skel-bar skel-short" />
+                    <span className="pk-empty-skel-bar skel-long" />
+                  </div>
+                </div>
+
+                {/* Card 2 (Target 2 - highlighted when cursor is on center) */}
+                <div
+                  className="pk-empty-card pk-empty-card-target-2"
+                  onClick={() => openModal("seller")}
+                  role="button"
+                  tabIndex={0}
+                  title="Select a profile option"
+                >
+                  <div className="pk-empty-route-marker">
+                    <span className="pk-empty-dot" />
+                    <span className="pk-empty-line" />
+                    <span className="pk-empty-dot" />
+                  </div>
+                  <div className="pk-empty-skeleton">
+                    <span className="pk-empty-skel-bar skel-short" />
+                    <span className="pk-empty-skel-bar skel-long" />
+                  </div>
+                </div>
+
+                {/* Card 3 */}
+                <div className="pk-empty-card">
+                  <div className="pk-empty-route-marker">
+                    <span className="pk-empty-dot" />
+                    <span className="pk-empty-line" />
+                    <span className="pk-empty-dot" />
+                  </div>
+                  <div className="pk-empty-skeleton">
+                    <span className="pk-empty-skel-bar skel-short" />
+                    <span className="pk-empty-skel-bar skel-long" />
+                  </div>
+                </div>
+
+                {/* Card 4 */}
+                <div className="pk-empty-card">
+                  <div className="pk-empty-route-marker">
+                    <span className="pk-empty-dot" />
+                    <span className="pk-empty-line" />
+                    <span className="pk-empty-dot" />
+                  </div>
+                  <div className="pk-empty-skeleton">
+                    <span className="pk-empty-skel-bar skel-short" />
+                    <span className="pk-empty-skel-bar skel-long" />
+                  </div>
+                </div>
+
+                {/* Card 5 */}
+                <div className="pk-empty-card">
+                  <div className="pk-empty-route-marker">
+                    <span className="pk-empty-dot" />
+                    <span className="pk-empty-line" />
+                    <span className="pk-empty-dot" />
+                  </div>
+                  <div className="pk-empty-skeleton">
+                    <span className="pk-empty-skel-bar skel-short" />
+                    <span className="pk-empty-skel-bar skel-long" />
+                  </div>
+                </div>
+
+                {/* Card 6 (Regular unselected card) */}
+                <div className="pk-empty-card">
+                  <div className="pk-empty-route-marker">
+                    <span className="pk-empty-dot" />
+                    <span className="pk-empty-line" />
+                    <span className="pk-empty-dot" />
+                  </div>
+                  <div className="pk-empty-skeleton">
+                    <span className="pk-empty-skel-bar skel-short" />
+                    <span className="pk-empty-skel-bar skel-long" />
+                  </div>
+                </div>
+
+                {/* Card 7 */}
+                <div className="pk-empty-card">
+                  <div className="pk-empty-route-marker">
+                    <span className="pk-empty-dot" />
+                    <span className="pk-empty-line" />
+                    <span className="pk-empty-dot" />
+                  </div>
+                  <div className="pk-empty-skeleton">
+                    <span className="pk-empty-skel-bar skel-short" />
+                    <span className="pk-empty-skel-bar skel-long" />
+                  </div>
+                </div>
+
+                {/* Card 8 */}
+                <div className="pk-empty-card">
+                  <div className="pk-empty-route-marker">
+                    <span className="pk-empty-dot" />
+                    <span className="pk-empty-line" />
+                    <span className="pk-empty-dot" />
+                  </div>
+                  <div className="pk-empty-skeleton">
+                    <span className="pk-empty-skel-bar skel-short" />
+                    <span className="pk-empty-skel-bar skel-long" />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <h3 className="desktop-pr-empty-title">Your PayKudi Profile</h3>
-          <p className="desktop-pr-empty-subtitle">
-            Select an item from the left list to view or update it.
+
+          <h3 className="desktop-profile-empty-title">No profile option selected</h3>
+          <p className="desktop-profile-empty-subtitle">
+            Please select an option to display details.
           </p>
         </div>
       );
@@ -755,7 +1448,13 @@ export default function DesktopProfile({
         onClose={() => setActiveModal(null)}
         onSave={(payoutUpdates) => {
           updateProfile(payoutUpdates, "Payout bank account updated successfully");
+          const stored = getStoredPayoutAccounts();
+          const clean = stored.filter(
+            (a) => !isGenericBankAccount(a.bank, a.number || a.account_number || a.accountNumber, a.name || a.account_name || a.accountName)
+          );
+          setPayoutAccounts(clean);
         }}
+
       />
 
       {/* 3. Seller Verification Modal */}

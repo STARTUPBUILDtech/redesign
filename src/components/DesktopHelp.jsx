@@ -55,6 +55,28 @@ function WhatsAppIcon() {
   );
 }
 
+function NormalCursorIcon() {
+  return (
+    <svg
+      width="20"
+      height="22"
+      viewBox="0 0 24 26"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="pk-empty-cursor"
+    >
+      <path
+        d="M3 2v19l5.3-4.8 3.5 8 3.2-1.4-3.5-7.9 6.5.1L3 2z"
+        fill="#FFFFFF"
+        stroke="#1F2937"
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 const SUPPORT_OPTIONS = [
   {
     id: "message",
@@ -106,15 +128,154 @@ export default function DesktopHelp({ room = {} }) {
       return <FaqSlideUpModal key="faq" inline isOpen onClose={closePanel} />;
     }
     return (
-      <div className="desktop-pr-empty-detail">
-        <div className="desktop-pr-empty-illustration">
-          <span className="material-symbols-outlined desktop-pr-empty-watermark">
-            support_agent
-          </span>
+      <div className="desktop-pr-empty-detail desktop-help-empty-state">
+        <div className="pk-empty-selection-graphic" aria-hidden="true">
+          {/* Circular background disk behind the cards - top card extends outside it */}
+          <div className="pk-empty-circle-disk" />
+
+          <div className="pk-empty-circle-canvas">
+            {/* Animated normal cursor that moves from the top of the list down to the card */}
+            <div className="pk-empty-animated-cursor">
+              <NormalCursorIcon />
+            </div>
+
+            {/* Vertically scrolling card stream */}
+            <div className="pk-empty-cards-stack pk-empty-cards-scroller">
+              {/* Card 0 */}
+              <div className="pk-empty-card">
+                <div className="pk-empty-route-marker">
+                  <span className="pk-empty-dot" />
+                  <span className="pk-empty-line" />
+                  <span className="pk-empty-dot" />
+                </div>
+                <div className="pk-empty-skeleton">
+                  <span className="pk-empty-skel-bar skel-short" />
+                  <span className="pk-empty-skel-bar skel-long" />
+                </div>
+              </div>
+
+              {/* Card 1 (Target 1 - highlighted when cursor is at top) */}
+              <div
+                className="pk-empty-card pk-empty-card-target-1"
+                onClick={() => setActivePanel("message")}
+                role="button"
+                tabIndex={0}
+                title="Select a support option"
+              >
+                <div className="pk-empty-route-marker">
+                  <span className="pk-empty-dot" />
+                  <span className="pk-empty-line" />
+                  <span className="pk-empty-dot" />
+                </div>
+                <div className="pk-empty-skeleton">
+                  <span className="pk-empty-skel-bar skel-short" />
+                  <span className="pk-empty-skel-bar skel-long" />
+                </div>
+              </div>
+
+              {/* Card 2 (Target 2 - highlighted when cursor is on center) */}
+              <div
+                className="pk-empty-card pk-empty-card-target-2"
+                onClick={() => setActivePanel("message")}
+                role="button"
+                tabIndex={0}
+                title="Select a support option"
+              >
+                <div className="pk-empty-route-marker">
+                  <span className="pk-empty-dot" />
+                  <span className="pk-empty-line" />
+                  <span className="pk-empty-dot" />
+                </div>
+                <div className="pk-empty-skeleton">
+                  <span className="pk-empty-skel-bar skel-short" />
+                  <span className="pk-empty-skel-bar skel-long" />
+                </div>
+              </div>
+
+              {/* Card 3 */}
+              <div className="pk-empty-card">
+                <div className="pk-empty-route-marker">
+                  <span className="pk-empty-dot" />
+                  <span className="pk-empty-line" />
+                  <span className="pk-empty-dot" />
+                </div>
+                <div className="pk-empty-skeleton">
+                  <span className="pk-empty-skel-bar skel-short" />
+                  <span className="pk-empty-skel-bar skel-long" />
+                </div>
+              </div>
+
+              {/* Card 4 */}
+              <div className="pk-empty-card">
+                <div className="pk-empty-route-marker">
+                  <span className="pk-empty-dot" />
+                  <span className="pk-empty-line" />
+                  <span className="pk-empty-dot" />
+                </div>
+                <div className="pk-empty-skeleton">
+                  <span className="pk-empty-skel-bar skel-short" />
+                  <span className="pk-empty-skel-bar skel-long" />
+                </div>
+              </div>
+
+              {/* Card 5 */}
+              <div className="pk-empty-card">
+                <div className="pk-empty-route-marker">
+                  <span className="pk-empty-dot" />
+                  <span className="pk-empty-line" />
+                  <span className="pk-empty-dot" />
+                </div>
+                <div className="pk-empty-skeleton">
+                  <span className="pk-empty-skel-bar skel-short" />
+                  <span className="pk-empty-skel-bar skel-long" />
+                </div>
+              </div>
+
+              {/* Card 6 (Regular unselected card) */}
+              <div className="pk-empty-card">
+                <div className="pk-empty-route-marker">
+                  <span className="pk-empty-dot" />
+                  <span className="pk-empty-line" />
+                  <span className="pk-empty-dot" />
+                </div>
+                <div className="pk-empty-skeleton">
+                  <span className="pk-empty-skel-bar skel-short" />
+                  <span className="pk-empty-skel-bar skel-long" />
+                </div>
+              </div>
+
+              {/* Card 7 */}
+              <div className="pk-empty-card">
+                <div className="pk-empty-route-marker">
+                  <span className="pk-empty-dot" />
+                  <span className="pk-empty-line" />
+                  <span className="pk-empty-dot" />
+                </div>
+                <div className="pk-empty-skeleton">
+                  <span className="pk-empty-skel-bar skel-short" />
+                  <span className="pk-empty-skel-bar skel-long" />
+                </div>
+              </div>
+
+              {/* Card 8 */}
+              <div className="pk-empty-card">
+                <div className="pk-empty-route-marker">
+                  <span className="pk-empty-dot" />
+                  <span className="pk-empty-line" />
+                  <span className="pk-empty-dot" />
+                </div>
+                <div className="pk-empty-skeleton">
+                  <span className="pk-empty-skel-bar skel-short" />
+                  <span className="pk-empty-skel-bar skel-long" />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <h3 className="desktop-pr-empty-title">PayKudi Help &amp; Support</h3>
-        <p className="desktop-pr-empty-subtitle" style={{ whiteSpace: "nowrap" }}>
-          Select a support option from the left list to get started.
+
+        <h3 className="desktop-help-empty-title">No support option selected</h3>
+        <p className="desktop-help-empty-subtitle">
+          Please select an option to display details.
         </p>
       </div>
     );

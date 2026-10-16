@@ -64,7 +64,7 @@ export default function ChatDrawer({
     propSellerName ||
     (role === "Seller" || room.role === "Selling"
       ? room.buyerName || room.counterparty || "Marcus Vance"
-      : room.sellerName || room.counterparty || "08032001585");
+      : room.sellerName || room.counterparty || "8032001585");
 
   const orderNumber =
     propOrderNumber || room.id || room.orderNumber || "ORD-603607";

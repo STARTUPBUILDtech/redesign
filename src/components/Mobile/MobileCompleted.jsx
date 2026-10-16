@@ -7,12 +7,14 @@ import ProtectionInfoModal from "../Shared/ProtectionInfoModal";
 import ChatDrawer from "../Shared/ChatDrawer";
 import OrderDetailsModal from "../Shared/OrderDetailsModal";
 import ReceiptIcon from "../Shared/ReceiptIcon";
+import { getRoomPerspective } from "../../utils/paymentRoomUtils";
 
 export default function MobileCompleted({
   room = {},
   onBack,
   role = "Buying",
   isPaymentRoomWhite,
+  currentUser,
 }) {
   const [copiedKey, setCopiedKey] = useState(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
@@ -78,9 +80,30 @@ export default function MobileCompleted({
   };
 
   const safeRoom = room || {};
+  const perspective = getRoomPerspective(safeRoom, currentUser);
+  const isSeller = role ? (role === "Seller" || role === "Selling") : !perspective.isBuying;
+
   const orderNumber = safeRoom.id || safeRoom.orderNumber || "ORD-192834";
   const orderAmount = safeRoom.amount || safeRoom.price || "₦145,000";
-  const sellerName = safeRoom.sellerName || safeRoom.counterparty || "Sneaker Plug";
+
+  const sellerName =
+    safeRoom.sellerName ||
+    safeRoom.seller ||
+    safeRoom.seller_name ||
+    (safeRoom.creatorRole === "Seller" ? safeRoom.creatorName : safeRoom.counterpartyName) ||
+    (!perspective.isBuying ? "You" : perspective.counterpartyName) ||
+    "Sneaker Plug";
+
+  const buyerName =
+    safeRoom.buyerName ||
+    safeRoom.buyer ||
+    safeRoom.buyer_name ||
+    (safeRoom.creatorRole === "Buyer" ? safeRoom.creatorName : safeRoom.counterpartyName) ||
+    (perspective.isBuying ? "You" : perspective.counterpartyName) ||
+    "Buyer";
+
+  const counterpartyLabel = isSeller ? "Buyer's Name" : "Seller's Name";
+  const counterpartyName = isSeller ? buyerName : sellerName;
   const youPaidAmount = safeRoom.youPaid || (orderAmount.startsWith("₦") ? orderAmount : `₦${orderAmount}`);
   const itemName = safeRoom.item || safeRoom.title || "Item Order";
 
@@ -269,21 +292,21 @@ export default function MobileCompleted({
             </button>
           </div>
 
-          {/* Field 3: Seller's Name */}
+          {/* Field 3: Counterparty Name */}
           <div className="ap-field-row" role="listitem">
             <div className="ap-field-left">
-              <span className="ap-field-label">Seller's Name</span>
-              <span className="ap-field-val">{sellerName}</span>
+              <span className="ap-field-label">{counterpartyLabel}</span>
+              <span className="ap-field-val">{counterpartyName}</span>
             </div>
             <button
               type="button"
-              className={`ap-copy-btn ${copiedKey === "Seller's Name" ? "copied" : ""}`}
-              onClick={() => handleCopy(sellerName, "Seller's Name")}
-              aria-label="Copy Seller's Name"
+              className={`ap-copy-btn ${copiedKey === counterpartyLabel ? "copied" : ""}`}
+              onClick={() => handleCopy(counterpartyName, counterpartyLabel)}
+              aria-label={`Copy ${counterpartyLabel}`}
               title="Copy"
             >
               <span className="material-symbols-outlined">
-                {copiedKey === "Seller's Name" ? "check" : "content_copy"}
+                {copiedKey === counterpartyLabel ? "check" : "content_copy"}
               </span>
             </button>
           </div>

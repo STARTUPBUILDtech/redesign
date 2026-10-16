@@ -13,6 +13,9 @@ import {
   FaqSlideUpModal,
 } from "./Shared/SupportSlideUpModals";
 import { PayoutAccountModal } from "./Shared/ProfileModals.jsx";
+import { getRoomPerspective } from "../utils/paymentRoomUtils";
+import { releaseEscrowServer } from "../utils/balanceUtils";
+import { agreeRoomTermsOnServer } from "../services/roomServerService";
 import "../styles/mobile-awaiting-payment.css";
 import "../styles/mobile-in-transit.css";
 import "../styles/mobile-confirm-delivery.css";
@@ -162,6 +165,15 @@ export default function DesktopPaymentRoomDetail({
       room.deliveryLocation = location;
       room.hasAgreedTerms = true;
     }
+    const targetRoomId = room?.order_number || room?.orderNumber || room?.id || orderNumber;
+    if (targetRoomId) {
+      agreeRoomTermsOnServer(targetRoomId, {
+        role: isSeller ? "Seller" : "Buyer",
+        state,
+        city,
+        location,
+      }).catch(() => {});
+    }
     showToast(`Terms agreed. Delivery to ${location || state}`);
   };
 
@@ -233,8 +245,16 @@ export default function DesktopPaymentRoomDetail({
   const [selectedBank, setSelectedBank] = useState(
     room.refundBank || (isPaymentReceived ? "Access Bank" : room.bank) || "Access Bank"
   );
+  const perspective = getRoomPerspective(room);
+  const isSeller = role ? (role === "Seller" || role === "Selling") : !perspective.isBuying;
+  const isBuying = !isSeller;
+
   const sellerName =
     room.sellerName ||
+    room.seller ||
+    room.seller_name ||
+    (room.creatorRole === "Seller" ? (room.creatorName || room.creator) : (room.counterpartyName || room.counterparty)) ||
+    (!perspective.isBuying ? "You" : perspective.counterpartyName) ||
     (isPaymentReceived
       ? "Amaka Obi"
       : isDisputeOngoing
@@ -243,39 +263,16 @@ export default function DesktopPaymentRoomDetail({
       ? "Sneaker Plug"
       : isDelivered
       ? "Emeka Tech Hub"
-      : (room.counterparty || "Emeka Tech Hub"));
+      : "Howard Ukah");
 
-  const buyerName = room.buyerName || (isDelivered ? "Amaka Obi" : "Tunde Adeleke");
-  const itemName =
-    room.item ||
-    room.title ||
-    (isDelivered
-      ? "Nike Air Max 2025"
-      : isCompleted
-      ? "Sneaker Plug High-Tops"
-      : isDisputeOngoing
-      ? "iPhone 15 Pro Max (1TB)"
-      : "Sony WH-1000XM5");
+  const buyerName =
+    room.buyerName ||
+    room.buyer ||
+    room.buyer_name ||
+    (room.creatorRole === "Buyer" ? (room.creatorName || room.creator) : (room.counterpartyName || room.counterparty)) ||
+    (perspective.isBuying ? "You" : perspective.counterpartyName) ||
+    (isDelivered ? "Amaka Obi" : "Buyer");
 
-  const [accountName, setAccountName] = useState(
-    room.accountName || (isPaymentReceived ? "Marcus Vance" : `PayKudi(${sellerName})`)
-  );
-  const [accountNumber, setAccountNumber] = useState(
-    room.accountNumber || (isPaymentReceived ? "0123456789" : "903370574")
-  );
-
-  const handleSavePayoutAccount = (updated) => {
-    if (updated) {
-      if (updated.bank) setSelectedBank(updated.bank);
-      if (updated.accountName) setAccountName(updated.accountName);
-      if (updated.accountNumber) setAccountNumber(updated.accountNumber);
-      setToastText(`Payout account updated to ${updated.bank}`);
-      setTimeout(() => setToastText(null), 3000);
-    }
-    setIsChangeBankOpen(false);
-  };
-
-  const isBuying = role === "Buyer" || role === "Buying";
   const counterpartyLabel = isBuying ? "Seller's Name" : "Buyer's Name";
   const counterpartyName = isBuying ? sellerName : buyerName;
 
@@ -417,11 +414,22 @@ export default function DesktopPaymentRoomDetail({
     }, 1200);
   };
 
-  const handleConfirmDelivery = () => {
-    setIsDeliveryConfirmed(true);
+  const handleConfirmDelivery = async () => {
     setIsConfirmModalOpen(false);
-    showToast("Delivery confirmed. Funds released.");
-    if (onDeliveryConfirmed) onDeliveryConfirmed();
+    const targetOrder = room.order_number || room.orderNumber || room.id || orderNumber;
+    const idemKey = "REL-" + targetOrder + "-" + Date.now();
+    try {
+      showToast("Releasing escrow funds...");
+      const res = await releaseEscrowServer({
+        orderNumber: targetOrder,
+        idempotencyKey: idemKey,
+      });
+      setIsDeliveryConfirmed(true);
+      showToast(res.message || "Delivery confirmed. Funds released.");
+      if (onDeliveryConfirmed) onDeliveryConfirmed(res);
+    } catch (err) {
+      showToast(err.message || "Failed to release escrow funds.");
+    }
   };
 
 
@@ -1512,6 +1520,8 @@ export default function DesktopPaymentRoomDetail({
         onAgree={handleAgreeTerms}
         room={room}
         sellerName={sellerName}
+        buyerName={buyerName}
+        role={isSeller ? "Seller" : "Buyer"}
       />
 
       <ReceiptModal

@@ -3,12 +3,16 @@ import "../../styles/mobile-awaiting-payment.css";
 import HelpDrawer from "../Shared/HelpDrawer";
 import ChatDrawer from "../Shared/ChatDrawer";
 import AgreeTermsModal from "../Shared/AgreeTermsModal";
+import { getRoomPerspective } from "../../utils/paymentRoomUtils";
+import { agreeRoomTermsOnServer } from "../../services/roomServerService";
 
 export default function MobileAwaitingPayment({
   room = {},
   onBack,
   onPaymentConfirmed,
   isPaymentRoomWhite,
+  role,
+  currentUser,
 }) {
   const roomId = room.id || room.orderNumber || "ORD-603607";
   const storageKey = `pk_agreed_terms_${roomId}`;
@@ -56,13 +60,35 @@ export default function MobileAwaitingPayment({
 
   // Order data matching reference image
   const safeRoom = room || {};
+  const perspective = getRoomPerspective(safeRoom, currentUser);
+  const isSeller = role ? (role === "Seller" || role === "Selling") : !perspective.isBuying;
+
   const orderNumber = safeRoom.id || safeRoom.orderNumber || "ORD-603607";
   const orderAmount = safeRoom.amount || safeRoom.price || "₦1,000,000";
   const youPayAmount = safeRoom.totalAmount || "₦1,015,300";
   const bankName = safeRoom.bank || "Guaranteed Trust Bank (GTBank)";
-  const accountName = safeRoom.accountName || "PayKudi(08032001585)";
+  const accountName = safeRoom.accountName || "PayKudi(8032001585)";
   const accountNumber = safeRoom.accountNumber || "903370574";
-  const sellerName = safeRoom.sellerName || "900000909099";
+
+  const sellerName =
+    safeRoom.sellerName ||
+    safeRoom.seller ||
+    safeRoom.seller_name ||
+    (safeRoom.creatorRole === "Seller" ? safeRoom.creatorName : safeRoom.counterpartyName) ||
+    (!perspective.isBuying ? "You" : perspective.counterpartyName) ||
+    "Howard Ukah";
+
+  const buyerName =
+    safeRoom.buyerName ||
+    safeRoom.buyer ||
+    safeRoom.buyer_name ||
+    (safeRoom.creatorRole === "Buyer" ? safeRoom.creatorName : safeRoom.counterpartyName) ||
+    (perspective.isBuying ? "You" : perspective.counterpartyName) ||
+    "Buyer";
+
+  const counterpartyLabel = isSeller ? "Buyer's Name" : "Seller's Name";
+  const counterpartyName = isSeller ? buyerName : sellerName;
+
   const itemName = safeRoom.item || safeRoom.title || "Iphone 18 Pro Max";
   const variantText = safeRoom.variant || "Color, Ram size, Storage";
 
@@ -129,6 +155,15 @@ export default function MobileAwaitingPayment({
       room.deliveryCity = city;
       room.deliveryLocation = location;
       room.hasAgreedTerms = true;
+    }
+    const targetRoomId = room?.order_number || room?.orderNumber || room?.id || roomId;
+    if (targetRoomId) {
+      agreeRoomTermsOnServer(targetRoomId, {
+        role: isSeller ? "Seller" : "Buyer",
+        state,
+        city,
+        location,
+      }).catch(() => {});
     }
     showToast(`Terms agreed. Delivery to ${location || state}`);
   };
@@ -367,21 +402,21 @@ export default function MobileAwaitingPayment({
             </button>
           </div>
 
-          {/* Field 6: Seller's Name */}
+          {/* Field 6: Counterparty Name (Seller's Name or Buyer's Name) */}
           <div className="ap-field-row" role="listitem">
             <div className="ap-field-left">
-              <span className="ap-field-label">Seller's Name</span>
-              <span className="ap-field-val">{sellerName}</span>
+              <span className="ap-field-label">{counterpartyLabel}</span>
+              <span className="ap-field-val">{counterpartyName}</span>
             </div>
             <button
               type="button"
-              className={`ap-copy-btn ${copiedKey === "Seller Name" ? "copied" : ""}`}
-              onClick={() => handleCopy(sellerName, "Seller Name")}
-              aria-label="Copy Seller Name"
+              className={`ap-copy-btn ${copiedKey === counterpartyLabel ? "copied" : ""}`}
+              onClick={() => handleCopy(counterpartyName, counterpartyLabel)}
+              aria-label={`Copy ${counterpartyLabel}`}
               title="Copy"
             >
               <span className="material-symbols-outlined">
-                {copiedKey === "Seller Name" ? "check" : "content_copy"}
+                {copiedKey === counterpartyLabel ? "check" : "content_copy"}
               </span>
             </button>
           </div>
@@ -539,14 +574,14 @@ export default function MobileAwaitingPayment({
                   </div>
                 </div>
 
-                {/* Term 3: Seller's Name */}
+                {/* Term 3: Counterparty Name */}
                 <div className="ap-sheet-term-item">
                   <div className="ap-sheet-term-icon seller">
                     <span className="material-symbols-outlined">person</span>
                   </div>
                   <div className="ap-sheet-term-content">
-                    <div className="ap-sheet-term-label">Seller's Name</div>
-                    <div className="ap-sheet-term-val">{sellerName}</div>
+                    <div className="ap-sheet-term-label">{counterpartyLabel}</div>
+                    <div className="ap-sheet-term-val">{counterpartyName}</div>
                   </div>
                 </div>
               </div>
@@ -605,8 +640,11 @@ export default function MobileAwaitingPayment({
         isOpen={isTermsModalOpen}
         onClose={handleCloseTermsModal}
         onAgree={handleAgreeTerms}
-        room={room}
+        room={safeRoom}
         sellerName={sellerName}
+        buyerName={buyerName}
+        role={isSeller ? "Seller" : "Buyer"}
+        currentUser={currentUser}
         isPaymentRoomWhite={isPaymentRoomWhite}
       />
 

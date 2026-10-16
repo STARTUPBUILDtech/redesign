@@ -29,7 +29,7 @@
 
 .pk-support-title {
   margin: 0;
-  font-size: clamp(20px, 5.2vw, 24px);
+  font-size: clamp(20px, 1.4vw, 24px);
   letter-spacing: -0.6px;
   line-height: 1.15;
   font-weight: 700;
@@ -243,8 +243,9 @@
 }
 
 .desktop-help-left-header .pk-support-title {
-  font-size: clamp(22px, 2vw, 28px);
-  letter-spacing: -0.8px;
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif;
+  font-size: clamp(20px, 1.4vw, 24px);
+  letter-spacing: -0.6px;
   line-height: 1.15;
   font-weight: 700;
   color: var(--ink);
@@ -405,11 +406,385 @@ body.dark .desktop-help-support-list .pk-support-item.selected .pk-support-chevr
 }
 
 /* ── Empty Detail State in Desktop Help ── */
-.desktop-help-right-pane .desktop-pr-empty-detail {
-  max-width: 560px;
+.desktop-help-right-pane .desktop-pr-empty-detail.desktop-help-empty-state {
+  max-width: 480px;
+  gap: 0;
 }
 
-.desktop-help-right-pane .desktop-pr-empty-subtitle {
-  white-space: nowrap;
+.pk-empty-selection-graphic {
+  position: relative;
+  width: 206px;
+  height: 232px;
+  margin-bottom: 22px;
+  user-select: none;
 }
+
+/* ── Circular Background Disk (sits behind cards, shifted down so top card extends outside) ── */
+.pk-empty-circle-disk {
+  position: absolute;
+  top: 26px;
+  left: 0;
+  width: 206px;
+  height: 206px;
+  border-radius: 50%;
+  background: #f4f5f7;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.035);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Canvas Viewport for Scrolling Cards & Cursor ──
+   Top is straight/open so the top card extends outside the circle.
+   Bottom has a 103px radius semicircle matching the exact circle curve so the down side stays inside! ── */
+.pk-empty-circle-canvas {
+  width: 206px;
+  height: 232px;
+  background: transparent !important;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  box-shadow: none !important;
+  border-radius: 14px 14px 103px 103px;
+  clip-path: inset(0 0 0 0 round 14px 14px 103px 103px);
+  -webkit-clip-path: inset(0 0 0 0 round 14px 14px 103px 103px);
+  mask-image: linear-gradient(to bottom, transparent 0%, black 8px, black 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 8px, black 100%);
+}
+
+/* ── Scrolling Cards Stream ── */
+.pk-empty-cards-scroller {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  position: absolute;
+  top: 6px; /* Card 1 starts at 6px, circle disk starts at 26px -> 20px OUTSIDE the circle! */
+  left: 0;
+  will-change: transform;
+  animation: pkCardsStreamScroll 5.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes pkCardsStreamScroll {
+  0%, 65% {
+    transform: translateY(0);
+  }
+  80% {
+    transform: translateY(-48px);
+  }
+  88%, 100% {
+    transform: translateY(-48px);
+  }
+}
+
+.pk-empty-card {
+  width: 154px;
+  height: 38px;
+  background: #ffffff;
+  border-radius: 9px;
+  box-shadow: 0 2px 7px rgba(0, 0, 0, 0.04);
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  gap: 10px;
+  position: relative;
+  box-sizing: border-box;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  flex-shrink: 0;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Card 1: Highlighted ONLY while the cursor is over it ── */
+.pk-empty-card-target-1 {
+  z-index: 2;
+  cursor: pointer;
+  animation: pkCard1Highlight 5.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes pkCard1Highlight {
+  0%, 14% {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.16), 0 4px 14px rgba(59, 130, 246, 0.1);
+  }
+  20%, 100% {
+    border-color: rgba(0, 0, 0, 0.04);
+    box-shadow: 0 2px 7px rgba(0, 0, 0, 0.04);
+  }
+}
+
+/* ── Card 2: Highlighted ONLY while the cursor is over it ── */
+.pk-empty-card-target-2 {
+  z-index: 2;
+  cursor: pointer;
+  animation: pkCard2Highlight 5.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes pkCard2Highlight {
+  0%, 18% {
+    border-color: rgba(0, 0, 0, 0.04);
+    box-shadow: 0 2px 7px rgba(0, 0, 0, 0.04);
+  }
+  24%, 28% {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.16), 0 4px 14px rgba(59, 130, 246, 0.1);
+  }
+  30%, 36% {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4.5px rgba(59, 130, 246, 0.32), 0 6px 18px rgba(59, 130, 246, 0.18);
+  }
+  37%, 78% {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.16), 0 4px 14px rgba(59, 130, 246, 0.1);
+  }
+  86%, 100% {
+    border-color: rgba(0, 0, 0, 0.04);
+    box-shadow: 0 2px 7px rgba(0, 0, 0, 0.04);
+  }
+}
+
+.pk-empty-card-target-1:hover,
+.pk-empty-card-target-2:hover {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 0 0 3.5px rgba(59, 130, 246, 0.22), 0 6px 18px rgba(59, 130, 246, 0.14) !important;
+}
+
+.pk-empty-route-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 8px;
+  flex-shrink: 0;
+}
+
+.pk-empty-dot {
+  width: 5.5px;
+  height: 5.5px;
+  border-radius: 50%;
+  background-color: #0f9f6e;
+}
+
+.pk-empty-line {
+  width: 1.5px;
+  height: 8.5px;
+  background-color: #0f9f6e;
+  margin: 1px 0;
+}
+
+.pk-empty-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.pk-empty-skel-bar {
+  display: block;
+  border-radius: 2px;
+}
+
+.pk-empty-skel-bar.skel-short {
+  width: 32px;
+  height: 3.5px;
+  background-color: #9ca3af;
+}
+
+.pk-empty-skel-bar.skel-long {
+  width: 65px;
+  height: 3.5px;
+  background-color: #e5e7eb;
+}
+
+/* ── Animated Normal Cursor traversing directly onto the highlighted card ── */
+.pk-empty-animated-cursor {
+  position: absolute;
+  right: 22px;
+  top: 68px;
+  z-index: 10;
+  pointer-events: none;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.16));
+  will-change: transform, top, opacity;
+  animation: pkCursorTraverse 5.6s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+}
+
+.pk-empty-cursor {
+  display: block;
+}
+
+@keyframes pkCursorTraverse {
+  0% {
+    top: 68px; /* Directly over Card 1 while Card 1 is highlighted */
+    opacity: 0;
+    transform: scale(0.9) translate(6px, -6px);
+  }
+  6% {
+    top: 68px;
+    opacity: 1;
+    transform: scale(1) translate(0, 0);
+  }
+  14% {
+    top: 68px; /* Rests on Card 1 */
+    opacity: 1;
+    transform: scale(1);
+  }
+  24% {
+    top: 116px; /* Smoothly moves directly down to Card 2 as Card 2 highlights */
+    opacity: 1;
+    transform: scale(1);
+  }
+  30% {
+    top: 116px;
+    transform: scale(0.85); /* Click tap down on Card 2 */
+  }
+  36% {
+    top: 116px;
+    transform: scale(1); /* Click release */
+  }
+  64% {
+    top: 116px; /* Stays resting on Card 2 */
+    opacity: 1;
+    transform: scale(1);
+  }
+  80% {
+    top: 68px; /* Moves up with Card 2 as stream scrolls -48px (116px - 48px = 68px) */
+    opacity: 0.8;
+    transform: scale(0.96);
+  }
+  90% {
+    top: 68px;
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    top: 68px;
+    opacity: 0;
+    transform: scale(0.9) translate(6px, -6px);
+  }
+}
+
+.desktop-help-empty-title {
+  font-family: 'Hanken Grotesk', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: clamp(20px, 1.45vw, 22px);
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.015em;
+  line-height: 1.3;
+}
+
+.desktop-help-empty-subtitle {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: clamp(13px, 0.9vw, 14.5px);
+  color: #6b7280;
+  line-height: 1.55;
+  margin: 0;
+  max-width: 340px;
+  text-align: center;
+  white-space: normal !important;
+}
+
+/* ── Dark Mode Adaptations ── */
+.app[data-appearance="dark"] .pk-empty-circle-disk,
+[data-appearance="dark"] .pk-empty-circle-disk,
+body.dark .pk-empty-circle-disk,
+.dark .pk-empty-circle-disk {
+  background: #171920;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+.app[data-appearance="dark"] .pk-empty-card,
+[data-appearance="dark"] .pk-empty-card,
+body.dark .pk-empty-card,
+.dark .pk-empty-card {
+  background: #20242e;
+  border-color: rgba(255, 255, 255, 0.07);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+}
+
+.app[data-appearance="dark"] .pk-empty-card-target-1,
+[data-appearance="dark"] .pk-empty-card-target-1,
+body.dark .pk-empty-card-target-1,
+.dark .pk-empty-card-target-1 {
+  animation-name: pkCard1HighlightDark;
+}
+
+.app[data-appearance="dark"] .pk-empty-card-target-2,
+[data-appearance="dark"] .pk-empty-card-target-2,
+body.dark .pk-empty-card-target-2,
+.dark .pk-empty-card-target-2 {
+  animation-name: pkCard2HighlightDark;
+}
+
+@keyframes pkCard1HighlightDark {
+  0%, 14% {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.22), 0 4px 16px rgba(0, 0, 0, 0.45);
+    background: #232936;
+  }
+  20%, 100% {
+    border-color: rgba(255, 255, 255, 0.07);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+    background: #20242e;
+  }
+}
+
+@keyframes pkCard2HighlightDark {
+  0%, 18% {
+    border-color: rgba(255, 255, 255, 0.07);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+    background: #20242e;
+  }
+  24%, 28% {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.22), 0 4px 16px rgba(0, 0, 0, 0.45);
+    background: #232936;
+  }
+  30%, 36% {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 4.5px rgba(96, 165, 250, 0.35), 0 6px 18px rgba(0, 0, 0, 0.5);
+    background: #232936;
+  }
+  37%, 78% {
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.22), 0 4px 16px rgba(0, 0, 0, 0.45);
+    background: #232936;
+  }
+  86%, 100% {
+    border-color: rgba(255, 255, 255, 0.07);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+    background: #20242e;
+  }
+}
+
+.app[data-appearance="dark"] .pk-empty-skel-bar.skel-short,
+[data-appearance="dark"] .pk-empty-skel-bar.skel-short,
+body.dark .pk-empty-skel-bar.skel-short,
+.dark .pk-empty-skel-bar.skel-short {
+  background-color: #64748b;
+}
+
+.app[data-appearance="dark"] .pk-empty-skel-bar.skel-long,
+[data-appearance="dark"] .pk-empty-skel-bar.skel-long,
+body.dark .pk-empty-skel-bar.skel-long,
+.dark .pk-empty-skel-bar.skel-long {
+  background-color: #334155;
+}
+
+.app[data-appearance="dark"] .desktop-help-empty-title,
+[data-appearance="dark"] .desktop-help-empty-title,
+body.dark .desktop-help-empty-title,
+.dark .desktop-help-empty-title {
+  color: #f9fafb;
+}
+
+.app[data-appearance="dark"] .desktop-help-empty-subtitle,
+[data-appearance="dark"] .desktop-help-empty-subtitle,
+body.dark .desktop-help-empty-subtitle,
+.dark .desktop-help-empty-subtitle {
+  color: #9ca3af;
+}
+
 

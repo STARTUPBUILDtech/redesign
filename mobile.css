@@ -43,6 +43,8 @@
     overscroll-behavior-y: contain;
     padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px));
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
   }
 
   .mobile-dashboard.no-nav-mode .mobile-content-scroll {
@@ -53,6 +55,9 @@
     display: flex;
     flex-direction: column;
     width: 100%;
+    flex: 1 0 auto;
+    min-height: 100%;
+    box-sizing: border-box;
   }
 
   /* ── Mobile Header Matching dashboard.html Layout ── */
@@ -251,6 +256,56 @@
   .mobile-activity-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: clamp(14px, 3.8vw, 18px) !important; }
   .mobile-activity h2 { margin: 0; font-size: clamp(15px, 3.8vw, 16.5px); font-weight: 700; letter-spacing: -0.3px; }
   .mobile-activity a { color: #078c5c; font-size: clamp(12px, 3vw, 13px); font-weight: 600; text-decoration: none; }
+
+  /* ── Center Mobile Home Empty State Between Recent Activity Row and Bottom Navbar ── */
+  .mobile-home-content .mobile-main-bottom {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  .mobile-home-content .mobile-activity {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+  }
+
+  .mobile-home-content .mobile-activity-head {
+    flex-shrink: 0;
+  }
+
+  .mobile-home-content .mobile-activity.has-empty-state .mobile-activity-head,
+  .mobile-home-content:has(.home-recent-empty-state) .mobile-activity-head {
+    margin-bottom: 0 !important;
+  }
+
+  .mobile-home-content .boxless-activity-list {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+  }
+
+  .mobile-home-content .boxless-activity-list.is-empty-list,
+  .mobile-home-content:has(.home-recent-empty-state) .boxless-activity-list {
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mobile-home-content .home-recent-empty-state {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: auto 0 !important;
+    padding: 0 16px !important;
+  }
+
   .mobile-transactions { overflow: hidden; border: 1px solid var(--line); border-radius: clamp(12px, 3.5vw, 16px); background: transparent; }
 
   .mobile-transaction {

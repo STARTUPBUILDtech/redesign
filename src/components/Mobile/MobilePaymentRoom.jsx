@@ -1,13 +1,17 @@
 import { useState, useMemo, useRef, useEffect } from "react";
-import { Search, SlidersHorizontal, X } from "lucide-react";
+import { Search, SlidersHorizontal, X, ArrowUpRight } from "lucide-react";
 import { Select, SelectContent, SelectItem } from "../ui/select";
 import { ALL_PAYMENT_ROOMS } from "../../data/paymentRooms.js";
 import { useDashboard } from "../../context/DashboardContext";
+import { getRoomPerspective, formatItemTitle } from "../../utils/paymentRoomUtils.js";
+import EmptyPaymentRoomGraphic from "../Shared/EmptyPaymentRoomGraphic.jsx";
 import "../../styles/mobile-payment-room.css";
 
 export default function MobilePaymentRoom({
   onSelectRoom,
+  onNewPayment,
   rooms,
+  currentUser,
   activeTab: propActiveTab,
   setActiveTab: propSetActiveTab,
   searchTerm: propSearchTerm,
@@ -20,14 +24,30 @@ export default function MobilePaymentRoom({
   setIsSearchExpanded: propSetIsSearchExpanded,
 }) {
   let contextRooms;
+  let dashContext;
   try {
-    const dash = useDashboard();
-    contextRooms = dash?.paymentRooms;
+    dashContext = useDashboard();
+    contextRooms = dashContext?.paymentRooms;
   } catch (e) {
     contextRooms = null;
   }
 
-  const roomsList = rooms || contextRooms || ALL_PAYMENT_ROOMS;
+  const roomsList = useMemo(() => {
+    const base = rooms || contextRooms || ALL_PAYMENT_ROOMS;
+    if (!Array.isArray(base)) return [];
+    const seen = new Set();
+    const result = [];
+    for (const r of base) {
+      const key = r.id || r.orderNumber || r.order_number;
+      if (key && !seen.has(key)) {
+        seen.add(key);
+        result.push(r);
+      } else if (!key) {
+        result.push(r);
+      }
+    }
+    return result;
+  }, [rooms, contextRooms]);
   const [internalActiveTab, setInternalActiveTab] = useState("ongoing");
   const [internalSearchTerm, setInternalSearchTerm] = useState("");
   const [internalSelectedRole, setInternalSelectedRole] = useState("all");
@@ -64,6 +84,8 @@ export default function MobilePaymentRoom({
 
   // Auto-collapse search on click outside if input is empty
   useEffect(() => {
+    if (!isSearchExpanded) return;
+
     function handleClickOutside(e) {
       if (filterRef.current && !filterRef.current.contains(e.target)) {
         setIsFilterOpen(false);
@@ -72,13 +94,22 @@ export default function MobilePaymentRoom({
         }
       }
     }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [searchTerm]);
+
+    const timer = setTimeout(() => {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("touchstart", handleClickOutside);
+    }, 120);
+
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [isSearchExpanded, searchTerm]);
 
   // Tab counts
   const ongoingRooms = useMemo(
-    () => roomsList.filter((r) => r.category === "ongoing"),
+    () => roomsList.filter((r) => r.category === "ongoing" || r.category === "pre_payment"),
     [roomsList]
   );
   const fulfilledRooms = useMemo(
@@ -90,9 +121,11 @@ export default function MobilePaymentRoom({
   const filteredRooms = useMemo(() => {
     const list = activeTab === "fulfilled" ? fulfilledRooms : ongoingRooms;
     return list.filter((room) => {
-      // Role filter
+      const perspective = getRoomPerspective(room, currentUser);
+
+      // Role filter (matches user's perspective: Selling vs Buying)
       if (selectedRole !== "all") {
-        if (room.role.toLowerCase() !== selectedRole.toLowerCase()) return false;
+        if (perspective.roleText.toLowerCase() !== selectedRole.toLowerCase()) return false;
       }
 
       // State / Status filter
@@ -103,13 +136,21 @@ export default function MobilePaymentRoom({
       // Search term filter
       if (searchTerm.trim()) {
         const q = searchTerm.toLowerCase().trim();
-        const matchTitle = room.title.toLowerCase().includes(q);
-        const matchId = room.id.toLowerCase().includes(q);
-        const matchPrice = room.price.toLowerCase().includes(q);
+        const matchTitle = (perspective.title || room.title || room.item || "").toLowerCase().includes(q);
+        const matchId = (
+          (room.id || "") + " " +
+          (room.orderNumber || "") + " " +
+          (room.order_number || "")
+        ).toLowerCase().includes(q);
+        const matchPrice = (room.price || room.amount || "").toLowerCase().includes(q);
         const matchCounterparty = (
+          perspective.counterpartyName ||
           room.counterparty ||
+          room.counterpartyName ||
           room.sellerName ||
           room.buyerName ||
+          room.creator ||
+          room.creatorName ||
           ""
         )
           .toLowerCase()
@@ -121,7 +162,7 @@ export default function MobilePaymentRoom({
 
       return true;
     });
-  }, [activeTab, searchTerm, selectedRole, selectedState, ongoingRooms, fulfilledRooms]);
+  }, [activeTab, searchTerm, selectedRole, selectedState, ongoingRooms, fulfilledRooms, currentUser]);
 
   const handleClearSearch = () => {
     setSearchTerm("");
@@ -132,6 +173,14 @@ export default function MobilePaymentRoom({
     setSearchTerm("");
     setIsSearchExpanded(false);
     setIsFilterOpen(false);
+  };
+
+  const handleNewPayment = () => {
+    if (onNewPayment) {
+      onNewPayment();
+    } else if (dashContext?.setActive) {
+      dashContext.setActive("New Payment");
+    }
   };
 
   return (
@@ -261,6 +310,7 @@ export default function MobilePaymentRoom({
                     >
                       <SelectContent className="ui-select">
                         <SelectItem value="all">All States</SelectItem>
+                        <SelectItem value="pending_invite">Invite Sent</SelectItem>
                         <SelectItem value="awaiting_payment">Awaiting Payment</SelectItem>
                         <SelectItem value="payment_received">Payment Received</SelectItem>
                         <SelectItem value="in_transit">In Transit</SelectItem>
@@ -308,17 +358,46 @@ export default function MobilePaymentRoom({
       <div className="mobile-pr-list">
         {filteredRooms.length === 0 ? (
           <div className="mobile-pr-empty">
-            <span className="material-symbols-outlined mobile-pr-empty-icon">payments</span>
-            <p className="mobile-pr-empty-text">
-              No {activeTab} payment rooms found
-              {searchTerm ? ` matching "${searchTerm}"` : ""}
-            </p>
+            <div className="mobile-pr-empty-graphic-wrap">
+              <EmptyPaymentRoomGraphic />
+            </div>
+            <h3 className="mobile-pr-empty-title">
+              {searchTerm
+                ? `No payment rooms matching "${searchTerm}"`
+                : activeTab === "fulfilled"
+                ? "No completed payment rooms"
+                : "No ongoing payment rooms"}
+            </h3>
+            <button
+              type="button"
+              className="mobile-pr-empty-cta-btn"
+              onClick={handleNewPayment}
+            >
+              <ArrowUpRight size={18} className="mobile-pr-empty-cta-arrow" />
+              <span>New Payment</span>
+            </button>
           </div>
         ) : (
           filteredRooms.map((room) => {
-            const isBuying = room.role === "Buying";
-            const counterpartyLabel = isBuying ? "Seller: " : "Buyer: ";
-            const counterpartyName = isBuying ? room.sellerName : room.buyerName;
+            const perspective = getRoomPerspective(room, currentUser);
+            const isBuying = perspective.isBuying;
+            const roleText = perspective.roleText;
+            const counterpartyLabel = perspective.counterpartyLabel;
+            const counterpartyName = perspective.counterpartyName;
+            const itemTitle = perspective.title;
+
+            const handleCardClick = () => {
+              if (onSelectRoom) {
+                onSelectRoom({
+                  ...room,
+                  role: roleText,
+                  title: itemTitle,
+                  item: itemTitle,
+                  sellerName: isBuying ? counterpartyName : (room.sellerName || "You"),
+                  buyerName: !isBuying ? counterpartyName : (room.buyerName || "You"),
+                });
+              }
+            };
 
             return (
               <div
@@ -326,11 +405,11 @@ export default function MobilePaymentRoom({
                 className="mobile-pr-card"
                 role="button"
                 tabIndex={0}
-                onClick={() => onSelectRoom && onSelectRoom(room)}
+                onClick={handleCardClick}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") {
                     e.preventDefault();
-                    onSelectRoom && onSelectRoom(room);
+                    handleCardClick();
                   }
                 }}
               >
@@ -339,14 +418,14 @@ export default function MobilePaymentRoom({
                   <span
                     className={`mobile-pr-role-tag ${isBuying ? "buying" : "selling"}`}
                   >
-                    {room.role}
+                    {roleText}
                   </span>
                   <span className="mobile-pr-room-id">{room.id}</span>
                 </div>
 
                 {/* Main Row: Title & Price */}
                 <div className="mobile-pr-card-main">
-                  <h4 className="mobile-pr-card-title">{room.title}</h4>
+                  <h4 className="mobile-pr-card-title">{itemTitle}</h4>
                   <span className="mobile-pr-card-price">{room.price}</span>
                 </div>
 

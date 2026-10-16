@@ -189,14 +189,26 @@
     padding: clamp(20px, 1.45vw, 32px) clamp(18px, 1.32vw, 30px);
   }
 
+  .activity-heading {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    margin-bottom: clamp(14px, 1.45vw, 24px) !important;
+    gap: 12px !important;
+  }
+
   .activity-heading h2 {
-    font-size: clamp(20px, 1.23vw, 27px);
+    margin: 0 !important;
+    font-size: clamp(20px, 1.23vw, 27px) !important;
   }
 
   .activity-heading a {
-    margin: 0;
-    font-size: clamp(11.5px, 0.9vw, 13px);
-    color: #078c5c;
+    margin: 0 !important;
+    font-size: clamp(11.5px, 0.9vw, 13px) !important;
+    color: #078c5c !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
   }
 
   .transactions {
@@ -232,16 +244,6 @@
     position: absolute !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
-  }
-  .activity-heading {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: clamp(18px, 1.45vw, 30px);
-  }
-  .activity-heading h2,
-  .activity-heading a {
-    margin: 0;
   }
 }
 

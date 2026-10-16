@@ -1,14 +1,14 @@
 import { useState, useMemo, useRef, useEffect } from "react";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Search, SlidersHorizontal, ArrowUpRight, X } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Select, SelectContent, SelectItem } from "./ui/select";
 import DesktopActivityDetail from "./DesktopActivityDetail";
 import ReceiptModal from "./Shared/ReceiptModal";
 import BankLogo from "./BankLogo.jsx";
+import EmptyActivityGraphic from "./Shared/EmptyActivityGraphic.jsx";
 import { ALL_TRANSACTIONS } from "../data/transactions.js";
+import { useDashboard } from "../context/DashboardContext.jsx";
 import "./desktop-activity.css";
-
-const INITIAL_TRANSACTIONS = ALL_TRANSACTIONS;
 
 function getActivityConfig(item) {
   const t = (item.typeKey || item.type || item.title || "").toLowerCase();
@@ -97,11 +97,24 @@ function ActivityRow({ item, isLast, onSelect }) {
   );
 }
 
-export default function DesktopActivity() {
+export default function DesktopActivity({ transactions: propTransactions, onWithdraw }) {
+  let contextTransactions = null;
+  let dash = null;
+  try {
+    dash = useDashboard();
+    contextTransactions = dash?.transactions;
+  } catch (e) {
+    contextTransactions = null;
+  }
+
+  const transactionsList = propTransactions !== undefined ? propTransactions : (contextTransactions || ALL_TRANSACTIONS);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedType, setSelectedType] = useState("all");
   const [selectedRange, setSelectedRange] = useState("all");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  const searchInputRef = useRef(null);
   const [contentFits, setContentFits] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const filterRef = useRef(null);
@@ -113,8 +126,37 @@ export default function DesktopActivity() {
 
   const activeFilterCount = (selectedType !== "all" ? 1 : 0) + (selectedRange !== "all" ? 1 : 0);
 
+  // Dynamic calculation of monthly stats from actual transactions
+  const stats = useMemo(() => {
+    let sent = 0;
+    let received = 0;
+    let payout = 0;
+    let refund = 0;
+
+    (transactionsList || []).forEach((tx) => {
+      const rawAmount = parseFloat(
+        String(tx.amount || "0").replace(/[^0-9.]/g, "")
+      ) || 0;
+      const type = (tx.typeKey || tx.type || tx.title || "").toLowerCase();
+      if (type.includes("received")) received += rawAmount;
+      else if (type.includes("sent")) sent += rawAmount;
+      else if (type.includes("payout") || type.includes("withdraw")) payout += rawAmount;
+      else if (type.includes("refund")) refund += rawAmount;
+    });
+
+    const formatNaira = (val) =>
+      "₦" + val.toLocaleString("en-NG", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    return {
+      sent: formatNaira(sent),
+      received: formatNaira(received),
+      payout: formatNaira(payout),
+      refund: formatNaira(refund),
+    };
+  }, [transactionsList]);
+
   const filteredTransactions = useMemo(() => {
-    return INITIAL_TRANSACTIONS.filter((item) => {
+    return (transactionsList || []).filter((item) => {
       // Filter by Type
       if (selectedType !== "all" && item.typeKey !== selectedType) {
         return false;
@@ -123,11 +165,11 @@ export default function DesktopActivity() {
       // Filter by Search Query
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase().trim();
-        const matchTitle = item.title.toLowerCase().includes(q);
+        const matchTitle = (item.title || "").toLowerCase().includes(q);
         const matchType = (item.type || "").toLowerCase().includes(q);
-        const matchAmount = item.amount.toLowerCase().includes(q);
-        const matchDate = item.time.toLowerCase().includes(q);
-        const matchId = item.id.toLowerCase().includes(q);
+        const matchAmount = (item.amount || "").toLowerCase().includes(q);
+        const matchDate = (item.time || "").toLowerCase().includes(q);
+        const matchId = (item.id || "").toLowerCase().includes(q);
         if (!matchTitle && !matchType && !matchAmount && !matchDate && !matchId) {
           return false;
         }
@@ -135,7 +177,7 @@ export default function DesktopActivity() {
 
       return true;
     });
-  }, [searchQuery, selectedType]);
+  }, [transactionsList, searchQuery, selectedType]);
 
   // Reset scroll to 0 on initial mount so cards start cleanly visible below the topbar
   useEffect(() => {
@@ -263,14 +305,20 @@ export default function DesktopActivity() {
     function handleClickOutside(event) {
       if (filterRef.current && !filterRef.current.contains(event.target)) {
         setIsFilterOpen(false);
+        if (!searchQuery.trim()) {
+          setIsSearchExpanded(false);
+        }
       }
     }
     function handleKeyDown(event) {
       if (event.key === "Escape") {
         setIsFilterOpen(false);
+        if (!searchQuery.trim()) {
+          setIsSearchExpanded(false);
+        }
       }
     }
-    if (isFilterOpen) {
+    if (isFilterOpen || isSearchExpanded) {
       document.addEventListener("mousedown", handleClickOutside);
       document.addEventListener("keydown", handleKeyDown);
     }
@@ -278,7 +326,7 @@ export default function DesktopActivity() {
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isFilterOpen]);
+  }, [isFilterOpen, isSearchExpanded, searchQuery]);
 
   return (
     <div className="desktop-activity-wrapper">
@@ -296,7 +344,7 @@ export default function DesktopActivity() {
                 </div>
               </CardHeader>
               <CardContent className="ui-card-content">
-                <p className="desktop-stat-val">₦248,000.00</p>
+                <p className="desktop-stat-val">{stats.sent}</p>
               </CardContent>
             </Card>
 
@@ -310,7 +358,7 @@ export default function DesktopActivity() {
                 </div>
               </CardHeader>
               <CardContent className="ui-card-content">
-                <p className="desktop-stat-val">₦312,500.00</p>
+                <p className="desktop-stat-val">{stats.received}</p>
               </CardContent>
             </Card>
 
@@ -324,7 +372,7 @@ export default function DesktopActivity() {
                 </div>
               </CardHeader>
               <CardContent className="ui-card-content">
-                <p className="desktop-stat-val">₦154,000.00</p>
+                <p className="desktop-stat-val">{stats.payout}</p>
               </CardContent>
             </Card>
 
@@ -339,104 +387,172 @@ export default function DesktopActivity() {
                 </div>
               </CardHeader>
               <CardContent className="ui-card-content">
-                <p className="desktop-stat-val">₦58,250.00</p>
+                <p className="desktop-stat-val">{stats.refund}</p>
               </CardContent>
             </Card>
           </div>
 
           {/* Toolbar with Activities Heading & Controls */}
           <div className="desktop-activity-toolbar" ref={toolbarRef}>
-            <h2 className="desktop-activities-heading">Activities</h2>
+            <div className="desktop-activity-toolbar-row">
+              <h2 className="desktop-activities-heading">Activities</h2>
 
-            <div className="desktop-activity-controls">
-              {/* Unified Search Bar with Filter Icon on Far Right */}
-              <div className="unified-search-container" ref={filterRef}>
-                <Search className="unified-search-icon" />
-                <input
-                  type="text"
-                  placeholder="Search by title, date, or amount"
-                  className="unified-search-input"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-
-                <div className="unified-search-divider" />
-
+              {!isSearchExpanded ? (
+                /* Collapsed Search Icon Trigger Button */
                 <button
                   type="button"
-                  className={`unified-filter-btn ${isFilterOpen ? "active" : ""} ${activeFilterCount > 0 ? "has-filters" : ""}`}
-                  onClick={() => setIsFilterOpen((prev) => !prev)}
-                  title="Filter activities"
-                  aria-label="Filter activities"
-                  aria-expanded={isFilterOpen}
+                  className={`desktop-activity-search-trigger-btn ${searchQuery || activeFilterCount > 0 ? "has-active-query" : ""}`}
+                  onClick={() => {
+                    setIsSearchExpanded(true);
+                    setTimeout(() => searchInputRef.current?.focus(), 60);
+                  }}
+                  aria-label="Open search and filter"
+                  title="Search and filter activities"
                 >
-                  <SlidersHorizontal className="unified-filter-icon" />
-                  {activeFilterCount > 0 && (
-                    <span className="unified-filter-badge">{activeFilterCount}</span>
+                  <Search size={18} />
+                  {(searchQuery || activeFilterCount > 0) && (
+                    <span className="desktop-activity-trigger-filter-dot" />
                   )}
                 </button>
+              ) : (
+                /* Expanded Search Bar with Input, Clear/Close and Filter */
+                <div className="desktop-activity-controls" ref={filterRef}>
+                  <div className="unified-search-container">
+                    <Search className="unified-search-icon" />
+                    <input
+                      ref={searchInputRef}
+                      type="text"
+                      placeholder="Search by title, date, or amount"
+                      className="unified-search-input"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                    />
 
-                {/* Filter Popover displaying the 2 dropdowns when tapped */}
-                {isFilterOpen && (
-                  <div className="unified-filter-popover" role="dialog" aria-label="Filter options">
-                    <div className="filter-popover-header">
-                      <span className="filter-popover-title">Filters</span>
+                    {searchQuery ? (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSearchQuery("");
+                          searchInputRef.current?.focus();
+                        }}
+                        className="desktop-activity-clear-btn"
+                        aria-label="Clear search"
+                        title="Clear text"
+                      >
+                        <X size={14} />
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsSearchExpanded(false);
+                          setIsFilterOpen(false);
+                        }}
+                        className="desktop-activity-clear-btn"
+                        aria-label="Close search"
+                        title="Close search"
+                      >
+                        <X size={15} />
+                      </button>
+                    )}
+
+                    <div className={`unified-search-divider ${isFilterOpen ? "active" : ""}`} />
+
+                    <button
+                      type="button"
+                      className={`unified-filter-btn ${isFilterOpen ? "active" : ""} ${activeFilterCount > 0 ? "has-filters" : ""}`}
+                      onClick={() => setIsFilterOpen((prev) => !prev)}
+                      title="Filter activities"
+                      aria-label="Filter activities"
+                      aria-expanded={isFilterOpen}
+                    >
+                      <SlidersHorizontal className="unified-filter-icon" />
                       {activeFilterCount > 0 && (
-                        <button
-                          type="button"
-                          className="filter-reset-btn"
-                          onClick={() => {
-                            setSelectedType("all");
-                            setSelectedRange("all");
-                          }}
-                        >
-                          Reset
-                        </button>
+                        <span className="unified-filter-badge">{activeFilterCount}</span>
                       )}
-                    </div>
+                    </button>
 
-                    <div className="filter-popover-body">
-                      <Select
-                        defaultValue="all"
-                        value={selectedType}
-                        onValueChange={setSelectedType}
-                        className="filter-popover-select"
-                        placeholder="Transaction type"
-                      >
-                        <SelectContent className="ui-select">
-                          <SelectItem value="received">Payment received</SelectItem>
-                          <SelectItem value="sent">Payment sent</SelectItem>
-                          <SelectItem value="payout">Payout sent</SelectItem>
-                          <SelectItem value="refund">Refund sent</SelectItem>
-                        </SelectContent>
-                      </Select>
+                    {/* Filter Popover displaying the 2 dropdowns when tapped */}
+                    {isFilterOpen && (
+                      <div className="unified-filter-popover" role="dialog" aria-label="Filter options">
+                        <div className="filter-popover-header">
+                          <span className="filter-popover-title">Filters</span>
+                          {activeFilterCount > 0 && (
+                            <button
+                              type="button"
+                              className="filter-reset-btn"
+                              onClick={() => {
+                                setSelectedType("all");
+                                setSelectedRange("all");
+                              }}
+                            >
+                              Reset
+                            </button>
+                          )}
+                        </div>
 
-                      <Select
-                        defaultValue="all"
-                        value={selectedRange}
-                        onValueChange={setSelectedRange}
-                        className="filter-popover-select"
-                        placeholder="Date range"
-                      >
-                        <SelectContent className="ui-select">
-                          <SelectItem value="today">Today</SelectItem>
-                          <SelectItem value="7">Last 7 days</SelectItem>
-                          <SelectItem value="30">Last 30 days</SelectItem>
-                          <SelectItem value="custom">Custom range</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                        <div className="filter-popover-body">
+                          <Select
+                            defaultValue="all"
+                            value={selectedType}
+                            onValueChange={setSelectedType}
+                            className="filter-popover-select"
+                            placeholder="Transaction type"
+                          >
+                            <SelectContent className="ui-select">
+                              <SelectItem value="received">Payment received</SelectItem>
+                              <SelectItem value="sent">Payment sent</SelectItem>
+                              <SelectItem value="payout">Payout sent</SelectItem>
+                              <SelectItem value="refund">Refund sent</SelectItem>
+                            </SelectContent>
+                          </Select>
+
+                          <Select
+                            defaultValue="all"
+                            value={selectedRange}
+                            onValueChange={setSelectedRange}
+                            className="filter-popover-select"
+                            placeholder="Date range"
+                          >
+                            <SelectContent className="ui-select">
+                              <SelectItem value="today">Today</SelectItem>
+                              <SelectItem value="7">Last 7 days</SelectItem>
+                              <SelectItem value="30">Last 30 days</SelectItem>
+                              <SelectItem value="custom">Custom range</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </div>
 
           {/* Boxless Activity List (matching Home page) */}
           <div className={`boxless-activity-list desktop-boxless-activity-list ${!contentFits ? "overflowing" : ""}`} ref={listRef}>
             {filteredTransactions.length === 0 ? (
-              <div className="desktop-empty-row">
-                No matching activity found. Try clearing your search or filter.
+              <div className="activity-empty-state">
+                <div className="activity-empty-graphic-wrap">
+                  <EmptyActivityGraphic />
+                </div>
+                <h3 className="activity-empty-title">No Transactions</h3>
+                <p className="activity-empty-subtitle">You haven’t completed any transactions.</p>
+                <button
+                  type="button"
+                  className="activity-empty-cta-btn"
+                  onClick={() => {
+                    if (onWithdraw) {
+                      onWithdraw();
+                    } else if (dash?.setActive) {
+                      dash.setActive("Withdraw");
+                    }
+                  }}
+                >
+                  <ArrowUpRight size={18} className="activity-empty-cta-arrow" />
+                  <span>Withdraw</span>
+                </button>
               </div>
             ) : (
               filteredTransactions.map((tx, idx) => (

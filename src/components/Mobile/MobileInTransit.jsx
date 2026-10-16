@@ -6,6 +6,7 @@ import HelpDrawer from "../Shared/HelpDrawer";
 import ChatDrawer from "../Shared/ChatDrawer";
 import ReceiptIcon from "../Shared/ReceiptIcon";
 import ReceiptModal from "../Shared/ReceiptModal";
+import { getRoomPerspective } from "../../utils/paymentRoomUtils";
 
 /* ── Proof-of-shipping real images ── */
 const PROOF_IMAGES = [
@@ -32,6 +33,7 @@ export default function MobileInTransit({
   onBack,
   role = "Buyer",
   isPaymentRoomWhite,
+  currentUser,
 }) {
   const [copiedKey, setCopiedKey] = useState(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
@@ -57,6 +59,9 @@ export default function MobileInTransit({
   }, [isChatOpen, isHelpOpen]);
 
   const safeRoom = room || {};
+  const perspective = getRoomPerspective(safeRoom, currentUser);
+  const isSeller = role ? (role === "Seller" || role === "Selling") : !perspective.isBuying;
+
   const orderNumber = safeRoom.id || safeRoom.orderNumber || "ORD-774120";
   const orderAmountRaw = safeRoom.amount || safeRoom.price || "₦385,000";
   const orderAmount = orderAmountRaw;
@@ -67,10 +72,25 @@ export default function MobileInTransit({
   const courierService = safeRoom.courier || "GIG Logistics";
   const trackingNumber = safeRoom.trackingNumber || "KMLMLMMO";
   const estimatedArrival = safeRoom.estimatedArrival || "12-10-2024";
-  const buyerName = safeRoom.buyerName || "Amaka Obi";
-  const sellerName = safeRoom.sellerName || "Gadget Haven";
-  const counterpartyName = (role === "Seller" || safeRoom.role === "Selling") ? buyerName : sellerName;
-  const counterpartyLabel = (role === "Seller" || safeRoom.role === "Selling") ? "Buyer's Name" : "Seller's Name";
+
+  const sellerName =
+    safeRoom.sellerName ||
+    safeRoom.seller ||
+    safeRoom.seller_name ||
+    (safeRoom.creatorRole === "Seller" ? safeRoom.creatorName : safeRoom.counterpartyName) ||
+    (!perspective.isBuying ? "You" : perspective.counterpartyName) ||
+    "Gadget Haven";
+
+  const buyerName =
+    safeRoom.buyerName ||
+    safeRoom.buyer ||
+    safeRoom.buyer_name ||
+    (safeRoom.creatorRole === "Buyer" ? safeRoom.creatorName : safeRoom.counterpartyName) ||
+    (perspective.isBuying ? "You" : perspective.counterpartyName) ||
+    "Amaka Obi";
+
+  const counterpartyName = isSeller ? buyerName : sellerName;
+  const counterpartyLabel = isSeller ? "Buyer's Name" : "Seller's Name";
   const itemName = safeRoom.item || safeRoom.title || "Sony WH-1000XM5 Headphones";
   const variantText = safeRoom.variant || "Midnight Silver, Noise Cancelling";
 

@@ -1,19 +1,47 @@
 import { useState, useMemo, useRef, useEffect } from "react";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Search, SlidersHorizontal, ArrowUpRight, X } from "lucide-react";
 import { Select, SelectContent, SelectItem } from "./ui/select";
 import { ALL_PAYMENT_ROOMS } from "../data/paymentRooms.js";
 import { useDashboard } from "../context/DashboardContext";
+import { getRoomPerspective, formatItemTitle } from "../utils/paymentRoomUtils.js";
 import MobileAwaitingPayment from "./Mobile/MobileAwaitingPayment.jsx";
 import MobilePaymentReceived from "./Mobile/MobilePaymentReceived.jsx";
 import MobileInTransit from "./Mobile/MobileInTransit.jsx";
 import MobileConfirmDelivery from "./Mobile/MobileConfirmDelivery.jsx";
 import MobileDisputeOngoing from "./Mobile/MobileDisputeOngoing.jsx";
 import MobileCompleted from "./Mobile/MobileCompleted.jsx";
+import MobilePaymentInvitation from "./Mobile/MobilePaymentInvitation.jsx";
+import { isUserCreatorOfRoom } from "../App.jsx";
+import EmptyPaymentRoomGraphic from "./Shared/EmptyPaymentRoomGraphic.jsx";
 import "../styles/desktop-payment-room.css";
+
+function NormalCursorIcon() {
+  return (
+    <svg
+      width="20"
+      height="22"
+      viewBox="0 0 24 26"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="pk-empty-cursor"
+    >
+      <path
+        d="M3 2v19l5.3-4.8 3.5 8 3.2-1.4-3.5-7.9 6.5.1L3 2z"
+        fill="#FFFFFF"
+        stroke="#1F2937"
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
 
 export default function DesktopPaymentRoom({
   role = "Buyer",
+  currentUser,
   onBackToHome,
+  onNewPayment,
   rooms,
   initialSelectedRoom,
   dark,
@@ -30,14 +58,30 @@ export default function DesktopPaymentRoom({
   onSelectRoom,
 }) {
   let contextRooms;
+  let dashContext;
   try {
-    const dash = useDashboard();
-    contextRooms = dash?.paymentRooms;
+    dashContext = useDashboard();
+    contextRooms = dashContext?.paymentRooms;
   } catch (e) {
     contextRooms = null;
   }
 
-  const roomsList = rooms || contextRooms || ALL_PAYMENT_ROOMS;
+  const roomsList = useMemo(() => {
+    const base = rooms || contextRooms || ALL_PAYMENT_ROOMS;
+    if (!Array.isArray(base)) return [];
+    const seen = new Set();
+    const result = [];
+    for (const r of base) {
+      const key = r.id || r.orderNumber || r.order_number;
+      if (key && !seen.has(key)) {
+        seen.add(key);
+        result.push(r);
+      } else if (!key) {
+        result.push(r);
+      }
+    }
+    return result;
+  }, [rooms, contextRooms]);
   const initialRoom = initialSelectedRoom
     ? (roomsList.find((r) => r.id === initialSelectedRoom.id) || initialSelectedRoom)
     : null;
@@ -138,7 +182,7 @@ export default function DesktopPaymentRoom({
 
   // Tab counts
   const ongoingRooms = useMemo(
-    () => roomsList.filter((r) => r.category === "ongoing"),
+    () => roomsList.filter((r) => r.category === "ongoing" || r.category === "pre_payment"),
     [roomsList]
   );
   const fulfilledRooms = useMemo(
@@ -150,9 +194,11 @@ export default function DesktopPaymentRoom({
   const filteredRooms = useMemo(() => {
     const list = activeTab === "fulfilled" ? fulfilledRooms : ongoingRooms;
     return list.filter((room) => {
-      // Role filter
+      const perspective = getRoomPerspective(room, currentUser);
+
+      // Role filter (matches user's perspective: Selling vs Buying)
       if (selectedRole !== "all") {
-        if (room.role.toLowerCase() !== selectedRole.toLowerCase()) return false;
+        if (perspective.roleText.toLowerCase() !== selectedRole.toLowerCase()) return false;
       }
 
       // State / Status filter
@@ -163,13 +209,21 @@ export default function DesktopPaymentRoom({
       // Search query filter
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase().trim();
-        const matchTitle = room.title.toLowerCase().includes(q);
-        const matchId = room.id.toLowerCase().includes(q);
-        const matchPrice = room.price.toLowerCase().includes(q);
+        const matchTitle = (perspective.title || room.title || room.item || "").toLowerCase().includes(q);
+        const matchId = (
+          (room.id || "") + " " +
+          (room.orderNumber || "") + " " +
+          (room.order_number || "")
+        ).toLowerCase().includes(q);
+        const matchPrice = (room.price || room.amount || "").toLowerCase().includes(q);
         const matchCounterparty = (
+          perspective.counterpartyName ||
           room.counterparty ||
+          room.counterpartyName ||
           room.sellerName ||
           room.buyerName ||
+          room.creator ||
+          room.creatorName ||
           ""
         )
           .toLowerCase()
@@ -181,7 +235,7 @@ export default function DesktopPaymentRoom({
 
       return true;
     });
-  }, [activeTab, searchQuery, selectedRole, selectedState, ongoingRooms, fulfilledRooms]);
+  }, [activeTab, searchQuery, selectedRole, selectedState, ongoingRooms, fulfilledRooms, currentUser]);
 
   // Active selected room: only selected when user explicitly chooses one or when initialSelectedRoom is provided
   const activeSelectedRoom = useMemo(() => {
@@ -193,19 +247,171 @@ export default function DesktopPaymentRoom({
     return null;
   }, [selectedRoom, filteredRooms]);
 
+  const handleStartSending = () => {
+    if (onNewPayment) {
+      onNewPayment();
+    } else if (dashContext?.setActive) {
+      dashContext.setActive("New Payment");
+    }
+  };
+
   // Render the matching mobile view component for the selected room
   const renderMobileDetail = (room) => {
     if (!room) {
       return (
-        <div className="desktop-pr-empty-detail">
-          <div className="desktop-pr-empty-illustration">
-            <span className="material-symbols-outlined desktop-pr-empty-watermark">
-              payments
-            </span>
+        <div className="desktop-pr-empty-detail desktop-profile-empty-state">
+          <div className="pk-empty-selection-graphic" aria-hidden="true">
+            {/* Circular background disk behind the cards - top card extends outside it */}
+            <div className="pk-empty-circle-disk" />
+
+            <div className="pk-empty-circle-canvas">
+              {/* Animated normal cursor that moves from the top of the list down to the card */}
+              <div className="pk-empty-animated-cursor">
+                <NormalCursorIcon />
+              </div>
+
+              {/* Vertically scrolling card stream */}
+              <div className="pk-empty-cards-stack pk-empty-cards-scroller">
+                {/* Card 0 */}
+                <div className="pk-empty-card">
+                  <div className="pk-empty-route-marker">
+                    <span className="pk-empty-dot" />
+                    <span className="pk-empty-line" />
+                    <span className="pk-empty-dot" />
+                  </div>
+                  <div className="pk-empty-skeleton">
+                    <span className="pk-empty-skel-bar skel-short" />
+                    <span className="pk-empty-skel-bar skel-long" />
+                  </div>
+                </div>
+
+                {/* Card 1 (Target 1 - highlighted when cursor is at top) */}
+                <div
+                  className="pk-empty-card pk-empty-card-target-1"
+                  onClick={() => {
+                    if (filteredRooms[0]) setSelectedRoom(filteredRooms[0]);
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  title="Select payment room"
+                >
+                  <div className="pk-empty-route-marker">
+                    <span className="pk-empty-dot" />
+                    <span className="pk-empty-line" />
+                    <span className="pk-empty-dot" />
+                  </div>
+                  <div className="pk-empty-skeleton">
+                    <span className="pk-empty-skel-bar skel-short" />
+                    <span className="pk-empty-skel-bar skel-long" />
+                  </div>
+                </div>
+
+                {/* Card 2 (Target 2 - highlighted when cursor is on center) */}
+                <div
+                  className="pk-empty-card pk-empty-card-target-2"
+                  onClick={() => {
+                    if (filteredRooms[1]) setSelectedRoom(filteredRooms[1]);
+                    else if (filteredRooms[0]) setSelectedRoom(filteredRooms[0]);
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  title="Select payment room"
+                >
+                  <div className="pk-empty-route-marker">
+                    <span className="pk-empty-dot" />
+                    <span className="pk-empty-line" />
+                    <span className="pk-empty-dot" />
+                  </div>
+                  <div className="pk-empty-skeleton">
+                    <span className="pk-empty-skel-bar skel-short" />
+                    <span className="pk-empty-skel-bar skel-long" />
+                  </div>
+                </div>
+
+                {/* Card 3 */}
+                <div className="pk-empty-card">
+                  <div className="pk-empty-route-marker">
+                    <span className="pk-empty-dot" />
+                    <span className="pk-empty-line" />
+                    <span className="pk-empty-dot" />
+                  </div>
+                  <div className="pk-empty-skeleton">
+                    <span className="pk-empty-skel-bar skel-short" />
+                    <span className="pk-empty-skel-bar skel-long" />
+                  </div>
+                </div>
+
+                {/* Card 4 */}
+                <div className="pk-empty-card">
+                  <div className="pk-empty-route-marker">
+                    <span className="pk-empty-dot" />
+                    <span className="pk-empty-line" />
+                    <span className="pk-empty-dot" />
+                  </div>
+                  <div className="pk-empty-skeleton">
+                    <span className="pk-empty-skel-bar skel-short" />
+                    <span className="pk-empty-skel-bar skel-long" />
+                  </div>
+                </div>
+
+                {/* Card 5 */}
+                <div className="pk-empty-card">
+                  <div className="pk-empty-route-marker">
+                    <span className="pk-empty-dot" />
+                    <span className="pk-empty-line" />
+                    <span className="pk-empty-dot" />
+                  </div>
+                  <div className="pk-empty-skeleton">
+                    <span className="pk-empty-skel-bar skel-short" />
+                    <span className="pk-empty-skel-bar skel-long" />
+                  </div>
+                </div>
+
+                {/* Card 6 */}
+                <div className="pk-empty-card">
+                  <div className="pk-empty-route-marker">
+                    <span className="pk-empty-dot" />
+                    <span className="pk-empty-line" />
+                    <span className="pk-empty-dot" />
+                  </div>
+                  <div className="pk-empty-skeleton">
+                    <span className="pk-empty-skel-bar skel-short" />
+                    <span className="pk-empty-skel-bar skel-long" />
+                  </div>
+                </div>
+
+                {/* Card 7 */}
+                <div className="pk-empty-card">
+                  <div className="pk-empty-route-marker">
+                    <span className="pk-empty-dot" />
+                    <span className="pk-empty-line" />
+                    <span className="pk-empty-dot" />
+                  </div>
+                  <div className="pk-empty-skeleton">
+                    <span className="pk-empty-skel-bar skel-short" />
+                    <span className="pk-empty-skel-bar skel-long" />
+                  </div>
+                </div>
+
+                {/* Card 8 */}
+                <div className="pk-empty-card">
+                  <div className="pk-empty-route-marker">
+                    <span className="pk-empty-dot" />
+                    <span className="pk-empty-line" />
+                    <span className="pk-empty-dot" />
+                  </div>
+                  <div className="pk-empty-skeleton">
+                    <span className="pk-empty-skel-bar skel-short" />
+                    <span className="pk-empty-skel-bar skel-long" />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <h3 className="desktop-pr-empty-title">PayKudi Payment Room</h3>
+
+          <h3 className="desktop-pr-empty-title">No payment room selected</h3>
           <p className="desktop-pr-empty-subtitle">
-            Select a payment room from the left list to view.
+            Please select a payment room to display details.
           </p>
         </div>
       );
@@ -215,11 +421,63 @@ export default function DesktopPaymentRoom({
     const status = room.status || "";
     const statusText = room.statusText || "";
 
+    if (status === "pending_invite" || status === "invite_sent" || statusText === "Invite Sent" || statusText === "Pending Invite") {
+      const isCreator = isUserCreatorOfRoom(room, currentUser);
+      if (isCreator) {
+        return (
+          <MobilePaymentInvitation
+            key={room.id}
+            room={room}
+            onProceed={async (proceedRoom) => {
+              const target = proceedRoom || room || {};
+              const updated = {
+                ...target,
+                status: "awaiting_payment",
+                statusText: "Awaiting Payment",
+                category: "ongoing",
+              };
+              setSelectedRoom(updated);
+              onSelectRoom?.(updated);
+              try {
+                if (dashContext?.addPaymentRoom) {
+                  await dashContext.addPaymentRoom(updated);
+                }
+              } catch (e) {}
+            }}
+            onShare={() => {}}
+          />
+        );
+      }
+
+      return (
+        <div className="desktop-pr-empty-state" style={{ padding: 48, textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+          <h3 className="desktop-pr-empty-title" style={{ fontSize: 22, fontWeight: 700, marginBottom: 8 }}>
+            Invitation Pending
+          </h3>
+          <p className="desktop-pr-empty-subtitle" style={{ maxWidth: 440, margin: "0 auto 20px", color: "var(--muted)", fontSize: 14 }}>
+            You have received an invitation from <strong>{room.creator || "the creator"}</strong> for <strong>{room.item || "this transaction"}</strong>.
+          </p>
+          <button
+            type="button"
+            className="desktop-np-primary-btn"
+            style={{ padding: "10px 24px", fontSize: 14, fontWeight: 600, cursor: "pointer" }}
+            onClick={() => {
+              window.dispatchEvent(new CustomEvent("paykudi_show_accept_invite", { detail: room }));
+            }}
+          >
+            Review & Accept Invite
+          </button>
+        </div>
+      );
+    }
+
     if (status === "awaiting_payment" || statusText === "Awaiting Payment") {
       return (
         <MobileAwaitingPayment
           key={room.id}
           room={room}
+          role={itemRole}
+          currentUser={currentUser}
           isPaymentRoomWhite={!dark}
           onBack={() => setSelectedRoom(null)}
           onPaymentConfirmed={() => {
@@ -239,6 +497,8 @@ export default function DesktopPaymentRoom({
         <MobilePaymentReceived
           key={room.id}
           room={room}
+          role={itemRole}
+          currentUser={currentUser}
           isPaymentRoomWhite={!dark}
           onBack={() => setSelectedRoom(null)}
         />
@@ -251,6 +511,7 @@ export default function DesktopPaymentRoom({
           key={room.id}
           room={room}
           role={itemRole}
+          currentUser={currentUser}
           isPaymentRoomWhite={!dark}
           onBack={() => setSelectedRoom(null)}
         />
@@ -263,6 +524,7 @@ export default function DesktopPaymentRoom({
           key={room.id}
           room={room}
           role={itemRole}
+          currentUser={currentUser}
           isPaymentRoomWhite={!dark}
           onBack={() => setSelectedRoom(null)}
           onDeliveryConfirmed={() => {
@@ -298,6 +560,7 @@ export default function DesktopPaymentRoom({
           key={room.id}
           room={room}
           role={itemRole}
+          currentUser={currentUser}
           isPaymentRoomWhite={!dark}
           onBack={() => setSelectedRoom(null)}
         />
@@ -310,6 +573,7 @@ export default function DesktopPaymentRoom({
           key={room.id}
           room={room}
           role={itemRole}
+          currentUser={currentUser}
           isPaymentRoomWhite={!dark}
           onBack={() => setSelectedRoom(null)}
         />
@@ -321,18 +585,22 @@ export default function DesktopPaymentRoom({
       <MobileAwaitingPayment
         key={room.id}
         room={room}
+        role={itemRole}
+        currentUser={currentUser}
         isPaymentRoomWhite={!dark}
         onBack={() => setSelectedRoom(null)}
       />
     );
   };
 
+  const hasRooms = filteredRooms.length > 0;
+
   return (
     <div className="desktop-payment-room-wrapper">
       <main id="payment-room" className="desktop-payment-room-main">
-        <div className="desktop-pr-split-layout">
-          {/* ── LEFT PANE: CARDS LIST & SEARCH (WhatsApp Web style) ── */}
-          <aside className="desktop-pr-left-pane" aria-label="Payment Rooms List">
+        <div className={`desktop-pr-split-layout ${!hasRooms ? "is-empty-single-pane" : ""}`}>
+          {/* ── LEFT PANE: CARDS LIST & SEARCH (Single pane when empty, 50% split when rooms exist) ── */}
+          <aside className={`desktop-pr-left-pane ${!hasRooms ? "is-empty-full" : ""}`} aria-label="Payment Rooms List">
             {/* Header: Tabs with Expandable / Collapsing Search Trigger (Mobile Style) */}
             <div className="desktop-pr-left-header">
               {!isSearchExpanded ? (
@@ -458,6 +726,7 @@ export default function DesktopPaymentRoom({
                           >
                             <SelectContent className="ui-select">
                               <SelectItem value="all">All States</SelectItem>
+                              <SelectItem value="pending_invite">Invite Sent</SelectItem>
                               <SelectItem value="awaiting_payment">Awaiting Payment</SelectItem>
                               <SelectItem value="payment_received">Payment Received</SelectItem>
                               <SelectItem value="in_transit">In Transit</SelectItem>
@@ -505,23 +774,47 @@ export default function DesktopPaymentRoom({
             <div className="desktop-pr-cards-list">
               {filteredRooms.length === 0 ? (
                 <div className="desktop-pr-empty">
-                  <span className="material-symbols-outlined desktop-pr-empty-icon">
-                    payments
-                  </span>
-                  <p className="desktop-pr-empty-text">
-                    No {activeTab} payment rooms found
-                    {searchQuery ? ` matching "${searchQuery}"` : ""}
-                  </p>
+                  <div className="pr-empty-graphic-wrap">
+                    <EmptyPaymentRoomGraphic />
+                  </div>
+                  <h3 className="desktop-pr-empty-title">
+                    {searchQuery
+                      ? `No payment rooms matching "${searchQuery}"`
+                      : activeTab === "fulfilled"
+                      ? "No completed payment rooms"
+                      : "No ongoing payment rooms"}
+                  </h3>
+                  <button
+                    type="button"
+                    className="desktop-pr-empty-cta-btn"
+                    onClick={handleStartSending}
+                  >
+                    <ArrowUpRight size={18} className="desktop-pr-empty-cta-arrow" />
+                    <span>New Payment</span>
+                  </button>
                 </div>
               ) : (
                 filteredRooms.map((room) => {
-                  const roleLower = String(room.role || "").toLowerCase();
-                  const isBuying = roleLower.includes("buy");
-                  const counterpartyLabel = isBuying ? "Seller's Name: " : "Buyer's Name: ";
-                  const counterpartyName = isBuying
-                    ? (room.sellerName || room.counterparty || "Seller")
-                    : (room.buyerName || room.counterparty || "Buyer");
+                  const perspective = getRoomPerspective(room, currentUser);
+                  const isBuying = perspective.isBuying;
+                  const roleText = perspective.roleText;
+                  const counterpartyLabel = perspective.counterpartyLabelLong || (isBuying ? "Seller's Name: " : "Buyer's Name: ");
+                  const counterpartyName = perspective.counterpartyName;
+                  const itemTitle = perspective.title;
                   const isSelected = activeSelectedRoom?.id === room.id;
+
+                  const handleSelectThisRoom = () => {
+                    const resolved = {
+                      ...room,
+                      role: roleText,
+                      title: itemTitle,
+                      item: itemTitle,
+                      sellerName: isBuying ? counterpartyName : (room.sellerName || "You"),
+                      buyerName: !isBuying ? counterpartyName : (room.buyerName || "You"),
+                    };
+                    setSelectedRoom(resolved);
+                    onSelectRoom?.(resolved);
+                  };
 
                   return (
                     <div
@@ -529,15 +822,11 @@ export default function DesktopPaymentRoom({
                       className={`desktop-pr-card ${isSelected ? "selected" : ""}`}
                       role="button"
                       tabIndex={0}
-                      onClick={() => {
-                        setSelectedRoom(room);
-                        onSelectRoom?.(room);
-                      }}
+                      onClick={handleSelectThisRoom}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" || e.key === " ") {
                           e.preventDefault();
-                          setSelectedRoom(room);
-                          onSelectRoom?.(room);
+                          handleSelectThisRoom();
                         }
                       }}
                     >
@@ -546,14 +835,14 @@ export default function DesktopPaymentRoom({
                         <span
                           className={`desktop-pr-role-tag ${isBuying ? "buying" : "selling"}`}
                         >
-                          {room.role}
+                          {roleText}
                         </span>
                         <span className="desktop-pr-room-id">{room.id}</span>
                       </div>
 
                       {/* Main Row: Title & Price */}
                       <div className="desktop-pr-card-main">
-                        <h4 className="desktop-pr-card-title">{room.title}</h4>
+                        <h4 className="desktop-pr-card-title">{itemTitle}</h4>
                         <span className="desktop-pr-card-price">{room.price}</span>
                       </div>
 
@@ -579,17 +868,19 @@ export default function DesktopPaymentRoom({
             </div>
           </aside>
 
-          {/* ── RIGHT PANE: DETAIL VIEW (Ashy white in light mode, Black in dark mode) ── */}
-          <section
-            className="desktop-pr-right-pane"
-            aria-label="Payment Room Detail View"
-          >
-            <div
-              className="desktop-pr-mobile-viewport"
+          {/* ── RIGHT PANE: DETAIL VIEW (Only divided when payment rooms exist) ── */}
+          {hasRooms && (
+            <section
+              className="desktop-pr-right-pane"
+              aria-label="Payment Room Detail View"
             >
-              {renderMobileDetail(activeSelectedRoom)}
-            </div>
-          </section>
+              <div
+                className="desktop-pr-mobile-viewport"
+              >
+                {renderMobileDetail(activeSelectedRoom)}
+              </div>
+            </section>
+          )}
         </div>
       </main>
     </div>

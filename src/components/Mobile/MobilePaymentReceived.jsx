@@ -6,13 +6,19 @@ import ChatDrawer from "../Shared/ChatDrawer";
 import ReceiptIcon from "../Shared/ReceiptIcon";
 import ReceiptModal from "../Shared/ReceiptModal";
 import { PayoutAccountModal } from "../Shared/ProfileModals.jsx";
+import { getRoomPerspective } from "../../utils/paymentRoomUtils";
 
 export default function MobilePaymentReceived({
   room = {},
   onBack,
   isPaymentRoomWhite,
+  role,
+  currentUser,
 }) {
   const safeRoom = room || {};
+  const perspective = getRoomPerspective(safeRoom, currentUser);
+  const isSeller = role ? (role === "Seller" || role === "Selling") : !perspective.isBuying;
+
   const [copiedKey, setCopiedKey] = useState(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [isArrowUp, setIsArrowUp] = useState(false);
@@ -40,8 +46,25 @@ export default function MobilePaymentReceived({
   const youPaidAmount = safeRoom.youPaid || "₦2,381,165";
   const [accountName, setAccountName] = useState(safeRoom.accountName || "Marcus Vance");
   const [accountNumber, setAccountNumber] = useState(safeRoom.accountNumber || "0123456789");
-  const sellerName = safeRoom.sellerName || "07012345678";
-  const buyerName = safeRoom.buyerName || "Marcus Vance";
+
+  const sellerName =
+    safeRoom.sellerName ||
+    safeRoom.seller ||
+    safeRoom.seller_name ||
+    (safeRoom.creatorRole === "Seller" ? safeRoom.creatorName : safeRoom.counterpartyName) ||
+    (!perspective.isBuying ? "You" : perspective.counterpartyName) ||
+    "07012345678";
+
+  const buyerName =
+    safeRoom.buyerName ||
+    safeRoom.buyer ||
+    safeRoom.buyer_name ||
+    (safeRoom.creatorRole === "Buyer" ? safeRoom.creatorName : safeRoom.counterpartyName) ||
+    (perspective.isBuying ? "You" : perspective.counterpartyName) ||
+    "Marcus Vance";
+
+  const counterpartyLabel = isSeller ? "Buyer's Name" : "Seller's Name";
+  const counterpartyName = isSeller ? buyerName : sellerName;
   const itemName = safeRoom.item || safeRoom.title || 'MacBook Pro M3 Max 16"';
   const variantText = safeRoom.variant || "Space Black, 36GB RAM, 1TB SSD";
 
@@ -336,21 +359,21 @@ export default function MobilePaymentReceived({
             </button>
           </div>
 
-          {/* Field 6: Seller's Name */}
+          {/* Field 6: Counterparty Name */}
           <div className="ap-field-row" role="listitem">
             <div className="ap-field-left">
-              <span className="ap-field-label">Seller's Name</span>
-              <span className="ap-field-val">{sellerName}</span>
+              <span className="ap-field-label">{counterpartyLabel}</span>
+              <span className="ap-field-val">{counterpartyName}</span>
             </div>
             <button
               type="button"
-              className={`ap-copy-btn ${copiedKey === "Seller Name" ? "copied" : ""}`}
-              onClick={() => handleCopy(sellerName, "Seller Name")}
-              aria-label="Copy Seller Name"
+              className={`ap-copy-btn ${copiedKey === counterpartyLabel ? "copied" : ""}`}
+              onClick={() => handleCopy(counterpartyName, counterpartyLabel)}
+              aria-label={`Copy ${counterpartyLabel}`}
               title="Copy"
             >
               <span className="material-symbols-outlined">
-                {copiedKey === "Seller Name" ? "check" : "content_copy"}
+                {copiedKey === counterpartyLabel ? "check" : "content_copy"}
               </span>
             </button>
           </div>

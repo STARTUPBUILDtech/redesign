@@ -8,6 +8,8 @@ import ProtectionInfoModal from "../Shared/ProtectionInfoModal";
 import ReportIssueModal from "../Shared/ReportIssueModal";
 import ChatDrawer from "../Shared/ChatDrawer";
 import ReceiptIcon from "../Shared/ReceiptIcon";
+import { getRoomPerspective } from "../../utils/paymentRoomUtils";
+import { releaseEscrowServer } from "../../utils/balanceUtils";
 
 /* ── Proof-of-shipping real images ── */
 const PROOF_IMAGES = [
@@ -36,6 +38,7 @@ export default function MobileConfirmDelivery({
   onNavigateToDispute,
   role = "Buying",
   isPaymentRoomWhite,
+  currentUser,
 }) {
   // 59m 57s countdown timer as shown in reference image (3597 seconds)
   const [seconds, setSeconds] = useState(3597);
@@ -83,19 +86,33 @@ export default function MobileConfirmDelivery({
 
   // Order data matching reference image
   const safeRoom = room || {};
+  const perspective = getRoomPerspective(safeRoom, currentUser);
+  const isSeller = role ? (role === "Seller" || role === "Selling") : !perspective.isBuying;
+
   const orderNumber = safeRoom.id || safeRoom.orderNumber || "ORD-662819";
   const orderAmount = safeRoom.amount || safeRoom.price || "₦50,000";
   const courierService = safeRoom.courier || "GIG Logistics";
   const trackingNumber = safeRoom.trackingNumber || "GIG2208471";
   const deliveryStatus = safeRoom.deliveryStatus || "Delivered Today";
-  const sellerName = safeRoom.sellerName || "Emeka Tech Hub";
-  const buyerName = safeRoom.buyerName || "Amaka Obi";
-  const itemName = safeRoom.item || safeRoom.title || "Nike Air Max 2025";
-  const variantText = safeRoom.variant || "Black / Volt, Size 43";
 
-  const isBuying = role === "Buying" || safeRoom.role === "Buying";
-  const counterpartyLabel = isBuying ? "Seller's Name" : "Buyer's Name";
-  const counterpartyName = isBuying ? sellerName : buyerName;
+  const sellerName =
+    safeRoom.sellerName ||
+    safeRoom.seller ||
+    safeRoom.seller_name ||
+    (safeRoom.creatorRole === "Seller" ? safeRoom.creatorName : safeRoom.counterpartyName) ||
+    (!perspective.isBuying ? "You" : perspective.counterpartyName) ||
+    "Emeka Tech Hub";
+
+  const buyerName =
+    safeRoom.buyerName ||
+    safeRoom.buyer ||
+    safeRoom.buyer_name ||
+    (safeRoom.creatorRole === "Buyer" ? safeRoom.creatorName : safeRoom.counterpartyName) ||
+    (perspective.isBuying ? "You" : perspective.counterpartyName) ||
+    "Amaka Obi";
+
+  const counterpartyLabel = isSeller ? "Buyer's Name" : "Seller's Name";
+  const counterpartyName = isSeller ? buyerName : sellerName;
 
   // Pricing calculations
   const rawNum =
@@ -171,10 +188,21 @@ export default function MobileConfirmDelivery({
     setIsShippingArrowUp(false);
   };
 
-  const handleConfirmAction = () => {
+  const handleConfirmAction = async () => {
     setIsConfirmModalOpen(false);
-    showToast("Delivery confirmed successfully! Escrow released.");
-    if (onDeliveryConfirmed) onDeliveryConfirmed();
+    const targetOrder = room.order_number || room.orderNumber || room.id || orderNumber;
+    const idemKey = "REL-" + targetOrder + "-" + Date.now();
+    try {
+      showToast("Releasing escrow funds...");
+      const res = await releaseEscrowServer({
+        orderNumber: targetOrder,
+        idempotencyKey: idemKey,
+      });
+      showToast(res.message || "Delivery confirmed successfully! Escrow released.");
+      if (onDeliveryConfirmed) onDeliveryConfirmed(res);
+    } catch (err) {
+      showToast(err.message || "Failed to release escrow funds.");
+    }
   };
 
   return (

@@ -8,6 +8,10 @@ export default defineConfig({
   server: {
     host: true, // Exposes server on local network (0.0.0.0) so you can open on phone
     port: 5173,
+    cors: true,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+    },
   },
   resolve: {
     alias: {
