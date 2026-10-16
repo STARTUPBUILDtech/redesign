@@ -76,11 +76,36 @@
   line-height: 16px !important;
 }
 
+.m-invite-subtitle-row {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  flex-wrap: wrap !important;
+  line-height: 1.5 !important;
+}
+
 .m-invite-red-timer {
   color: #ef4444 !important;
   font-weight: 700 !important;
-  font-variant-numeric: tabular-nums;
-  display: inline-block;
+  font-variant-numeric: tabular-nums !important;
+  display: inline-block !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+}
+
+[data-appearance="dark"] .m-invite-red-timer,
+.app[data-appearance="dark"] .m-invite-red-timer,
+body.dark .m-invite-red-timer {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  color: #ef4444 !important;
 }
 
 .text-lg {
@@ -323,8 +348,7 @@
   min-height: 30px !important;
   border-radius: 9999px !important;
   border: none !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 0 0 2px #d4dbe5 !important;
-  background-color: #e5ebf3 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -333,6 +357,33 @@
   box-sizing: border-box !important;
   cursor: default !important;
   user-select: none !important;
+}
+
+.m-invite-item-card .m-invite-profile-avatar.m-invite-creator-avatar {
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35) !important;
+}
+
+.m-invite-item-card .m-invite-profile-avatar.m-invite-cp-avatar {
+  color: #ffffff !important;
+  border: none !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35) !important;
+}
+
+.m-invite-avatar-letter {
+  font-family: 'Hanken Grotesk', 'Inter', -apple-system, sans-serif !important;
+  font-size: 13.5px !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  letter-spacing: -0.2px !important;
+  text-transform: uppercase !important;
+  user-select: none !important;
+  color: #ffffff !important;
+}
+
+.m-invite-avatar-letter.cp-letter {
+  color: #ffffff !important;
 }
 
 .m-invite-item-card .m-invite-profile-avatar .avatar-icon {
@@ -397,9 +448,8 @@
   opacity: 1 !important;
   align-items: center !important;
   justify-content: center !important;
-  background-color: #ffffff !important;
   border: none !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6), 0 0 0 1.5px rgba(255, 255, 255, 0.9) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25) !important;
   padding: 0 !important;
   box-sizing: border-box !important;
   flex-shrink: 0 !important;
@@ -443,8 +493,7 @@
   z-index: 1 !important;
   position: relative !important;
   border: none !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 0 0 2px #d4dbe5 !important;
-  background-color: #e5ebf3 !important; /* Default soft blue-gray background matching reference image */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25) !important;
   display: flex !important;
   align-items: flex-end !important;
   justify-content: center !important;
@@ -560,9 +609,8 @@
 [data-appearance="dark"] .m-invite-avatar-second,
 .app[data-appearance="dark"] .m-invite-avatar-second,
 .mobile-dashboard[data-appearance="dark"] .m-invite-avatar-second {
-  background-color: #121316 !important;
   border: none !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6), 0 0 0 1.5px rgba(255, 255, 255, 0.85) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6) !important;
 }
 
 [data-appearance="dark"] .m-invite-item-card .m-invite-profile-avatar .avatar-icon,
@@ -748,17 +796,26 @@ body[data-appearance="dark"] .m-invite-add-spec-btn:hover,
   color: #111215 !important;
 }
 
-/* Specifications List (Connected group with 0 gap) */
+/* Specifications List */
 .m-invite-specs-list {
   display: flex !important;
   flex-direction: column !important;
-  gap: 0 !important;
+  gap: 4px !important;
   width: 100% !important;
-  border: 1px solid color-mix(in srgb, var(--line) 80%, transparent) !important;
-  border-radius: 8px !important;
-  overflow: hidden !important;
-  background: color-mix(in srgb, var(--ink) 2.5%, transparent) !important;
-  padding: 8px 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  padding: 0 !important;
+}
+
+[data-appearance="dark"] .m-invite-specs-list,
+.app[data-appearance="dark"] .m-invite-specs-list,
+.mobile-dashboard[data-appearance="dark"] .m-invite-specs-list,
+.dark .m-invite-specs-list {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
 }
 
 .m-invite-spec-item {
@@ -1155,15 +1212,21 @@ body[data-appearance="dark"] .m-invite-add-spec-btn:hover,
 
 [data-appearance="dark"] .m-invite-specs-list,
 .app[data-appearance="dark"] .m-invite-specs-list,
-.mobile-dashboard[data-appearance="dark"] .m-invite-specs-list {
-  border-color: #2e2e33 !important;
+.mobile-dashboard[data-appearance="dark"] .m-invite-specs-list,
+.dark .m-invite-specs-list {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
 [data-appearance="dark"] .m-invite-spec-item,
 .app[data-appearance="dark"] .m-invite-spec-item,
-.mobile-dashboard[data-appearance="dark"] .m-invite-spec-item {
-  background: #222226 !important;
-  border-bottom: none !important;
+.mobile-dashboard[data-appearance="dark"] .m-invite-spec-item,
+.dark .m-invite-spec-item {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
 }
 
 [data-appearance="dark"] .m-invite-spec-label,
@@ -1686,6 +1749,54 @@ body[data-appearance="dark"] .m-invite-add-spec-btn:hover,
   color: #dc2626 !important;
 }
 
+/* Killed room action wrap and prompt */
+.m-invite-killed-action-wrap {
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 10px !important;
+  box-sizing: border-box !important;
+}
+
+.m-invite-killed-banner {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  padding: 10px 14px !important;
+  border-radius: 8px !important;
+  background: rgba(239, 68, 68, 0.08) !important;
+  border: 1px solid rgba(239, 68, 68, 0.25) !important;
+  color: #dc2626 !important;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  text-align: center !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+}
+
+[data-appearance="dark"] .m-invite-killed-banner,
+.app[data-appearance="dark"] .m-invite-killed-banner,
+.mobile-dashboard[data-appearance="dark"] .m-invite-killed-banner,
+.dark .m-invite-killed-banner {
+  background: rgba(239, 68, 68, 0.16) !important;
+  border-color: rgba(239, 68, 68, 0.35) !important;
+  color: #f87171 !important;
+}
+
+.m-invite-btn-proceed.is-killed-btn {
+  background-color: #00875a !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(0, 135, 90, 0.28) !important;
+  cursor: pointer !important;
+}
+
+.m-invite-btn-proceed.is-killed-btn:hover {
+  background-color: #00734c !important;
+  opacity: 0.95 !important;
+}
+
 /* ── Dark Mode Overrides ── */
 [data-appearance="dark"] .bg-card,
 .app[data-appearance="dark"] .bg-card,
@@ -1772,26 +1883,38 @@ body[data-appearance="dark"] .m-invite-add-spec-btn:hover,
   }
 }
 
-/* ── Counterparty Joined Toast Notification ── */
+/* ── Counterparty Joined / Room Toast Notification ── */
 .m-invite-toast {
   position: fixed !important;
-  top: 18px !important;
+  top: max(calc(env(safe-area-inset-top, 16px) + 54px), 68px) !important;
   left: 50% !important;
   transform: translateX(-50%) !important;
   width: min(calc(100% - 32px), 390px) !important;
-  padding: 10px 42px 10px 42px !important;
-  border-radius: 10px !important;
+  padding: 10px 14px !important;
+  border-radius: 12px !important;
   background-color: #18181b !important;
   color: #ffffff !important;
   border: 1px solid rgba(255, 255, 255, 0.15) !important;
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35) !important;
   display: flex !important;
   align-items: center !important;
-  justify-content: center !important;
-  z-index: 9999 !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+  z-index: 999999 !important;
   font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
   box-sizing: border-box !important;
   animation: m-invite-toast-slide-down 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+/* On Desktop: Show at the top of the screen (not in the middle) */
+@media (min-width: 701px) {
+  .m-invite-toast {
+    top: 24px !important;
+    width: auto !important;
+    min-width: 320px !important;
+    max-width: 480px !important;
+    z-index: 999999 !important;
+  }
 }
 
 [data-appearance="dark"] .m-invite-toast,
@@ -1806,10 +1929,9 @@ body[data-appearance="dark"] .m-invite-add-spec-btn:hover,
 .m-invite-toast-content {
   display: flex !important;
   align-items: center !important;
-  justify-content: center !important;
-  gap: 8px !important;
-  text-align: center !important;
-  margin: 0 auto !important;
+  gap: 10px !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
 }
 
 .m-invite-toast-icon-wrap {
@@ -1825,21 +1947,29 @@ body[data-appearance="dark"] .m-invite-add-spec-btn:hover,
   color: #22c55e !important;
 }
 
+.m-invite-toast-icon.is-warning {
+  color: #f59e0b !important;
+}
+
+.m-invite-toast-icon.is-error {
+  color: #ef4444 !important;
+}
+
 .m-invite-toast-message {
-  font-size: 13.5px !important;
+  font-size: 13px !important;
   font-weight: 500 !important;
   letter-spacing: -0.2px !important;
-  line-height: 1.35 !important;
+  line-height: 1.4 !important;
   color: inherit !important;
-  text-align: center !important;
-  white-space: nowrap !important;
+  text-align: left !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+  overflow: hidden !important;
 }
 
 .m-invite-toast-close {
-  position: absolute !important;
-  right: 10px !important;
-  top: 50% !important;
-  transform: translateY(-50%) !important;
+  position: static !important;
+  transform: none !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -1871,9 +2001,23 @@ body[data-appearance="dark"] .m-invite-add-spec-btn:hover,
   }
 }
 
-/* ── Loading / Spinner state for Proceed button ── */
+/* ── Disabled & Loading state for Proceed button ── */
+.m-invite-btn-proceed:disabled,
+[data-appearance="dark"] .m-invite-btn-proceed:disabled,
+.app[data-appearance="dark"] .m-invite-btn-proceed:disabled,
+.mobile-dashboard[data-appearance="dark"] .m-invite-btn-proceed:disabled {
+  opacity: 0.42 !important;
+  cursor: not-allowed !important;
+  pointer-events: auto !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
 .m-invite-btn-proceed.is-loading,
-.m-invite-btn-proceed:disabled {
+.m-invite-btn-proceed.is-loading:disabled,
+[data-appearance="dark"] .m-invite-btn-proceed.is-loading:disabled,
+.app[data-appearance="dark"] .m-invite-btn-proceed.is-loading:disabled,
+.mobile-dashboard[data-appearance="dark"] .m-invite-btn-proceed.is-loading:disabled {
   opacity: 0.82 !important;
   cursor: not-allowed !important;
   pointer-events: none !important;
@@ -1903,3 +2047,501 @@ body[data-appearance="dark"] .m-invite-add-spec-btn:hover,
   border-color: rgba(0, 0, 0, 0.2) !important;
   border-top-color: #111215 !important;
 }
+
+/* ── Real Counterparty Notification & Acceptance Banner ── */
+.m-invite-notify-banner {
+  margin: 14px 0 16px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--panel, #ffffff) 85%, #f0fdf4);
+  border: 1px solid #bbf7d0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.08);
+}
+
+[data-appearance="dark"] .m-invite-notify-banner,
+.app[data-appearance="dark"] .m-invite-notify-banner,
+.mobile-dashboard[data-appearance="dark"] .m-invite-notify-banner {
+  background: #0f241a;
+  border-color: rgba(52, 211, 153, 0.28);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.m-invite-notify-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.m-invite-notify-icon-pulse {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #dcfce7;
+  color: #16a34a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  animation: pulse 2s infinite;
+}
+
+[data-appearance="dark"] .m-invite-notify-icon-pulse,
+.app[data-appearance="dark"] .m-invite-notify-icon-pulse,
+.mobile-dashboard[data-appearance="dark"] .m-invite-notify-icon-pulse {
+  background: #14532d;
+  color: #4ade80;
+}
+
+.m-invite-notify-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.m-invite-notify-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink, #111827);
+  line-height: 1.3;
+}
+
+[data-appearance="dark"] .m-invite-notify-title,
+.app[data-appearance="dark"] .m-invite-notify-title,
+.mobile-dashboard[data-appearance="dark"] .m-invite-notify-title {
+  color: #f3f4f6;
+}
+
+.m-invite-notify-sub {
+  font-size: 11.5px;
+  color: var(--muted, #6b7280);
+}
+
+.m-invite-notify-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.m-invite-accept-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 9px;
+  background: #16a34a;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.m-invite-accept-btn:hover {
+  background: #15803d;
+}
+
+.m-invite-copy-btn {
+  padding: 8px 12px;
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--panel, #ffffff) 80%, transparent);
+  border: 1px solid var(--line, #d1d5db);
+  color: var(--ink, #111827);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s ease;
+}
+
+[data-appearance="dark"] .m-invite-copy-btn,
+.app[data-appearance="dark"] .m-invite-copy-btn,
+.mobile-dashboard[data-appearance="dark"] .m-invite-copy-btn {
+  background: #18191d;
+  border-color: #2e3036;
+  color: #e5e7eb;
+}
+
+.m-invite-joined-success-bar {
+  margin: 12px 0 14px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+  font-size: 12.5px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: fadeIn 0.2s ease;
+}
+
+[data-appearance="dark"] .m-invite-joined-success-bar,
+.app[data-appearance="dark"] .m-invite-joined-success-bar,
+.mobile-dashboard[data-appearance="dark"] .m-invite-joined-success-bar {
+  background: #064e3b;
+  border-color: #059669;
+  color: #a7f3d0;
+}
+
+/* ── Expired Payment Room & Resend Button ── */
+.m-invite-expired-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  color: #ef4444 !important;
+  font-weight: 700 !important;
+  font-size: 13px !important;
+}
+
+.m-invite-expired-pill {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 3px 10px !important;
+  border-radius: 9999px !important;
+  background-color: rgba(239, 68, 68, 0.12) !important;
+  color: #ef4444 !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  border: 1px solid rgba(239, 68, 68, 0.25) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+.m-invite-expired-banner {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  background-color: rgba(239, 68, 68, 0.08) !important;
+  border: 1px solid rgba(239, 68, 68, 0.25) !important;
+  border-radius: 12px !important;
+  padding: 12px 14px !important;
+  margin-top: 10px !important;
+  color: #ef4444 !important;
+}
+
+[data-appearance="dark"] .m-invite-expired-banner,
+.dark .m-invite-expired-banner {
+  background-color: rgba(239, 68, 68, 0.15) !important;
+  border-color: rgba(239, 68, 68, 0.4) !important;
+}
+
+.m-invite-expired-banner-left {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 10px !important;
+}
+
+.m-invite-expired-icon {
+  font-size: 20px !important;
+  color: #ef4444 !important;
+  flex-shrink: 0 !important;
+  margin-top: 2px !important;
+}
+
+.m-invite-expired-banner-left strong {
+  display: block !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: #ef4444 !important;
+  margin-bottom: 2px !important;
+}
+
+.m-invite-expired-banner-left p {
+  margin: 0 !important;
+  font-size: 12px !important;
+  color: #b91c1c !important;
+  line-height: 1.35 !important;
+}
+
+[data-appearance="dark"] .m-invite-expired-banner-left p,
+.dark .m-invite-expired-banner-left p {
+  color: #fca5a5 !important;
+}
+
+.m-invite-btn-resend {
+  width: 100% !important;
+  height: 50px !important;
+  padding: 0 14px !important;
+  border-radius: 8px !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif !important;
+  letter-spacing: -0.2px !important;
+  background-color: #ef4444 !important;
+  color: #ffffff !important;
+  border: none !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.3) !important;
+  transition: opacity 0.15s ease, transform 0.1s ease !important;
+}
+
+.m-invite-resend-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: rgba(0, 0, 0, 0.2) !important;
+  color: #ffffff !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  padding: 3px 8px !important;
+  border-radius: 12px !important;
+  margin-left: 2px !important;
+  flex-shrink: 0 !important;
+  line-height: 1 !important;
+}
+
+.m-invite-btn-resend:hover:not(:disabled) {
+  opacity: 0.9 !important;
+}
+
+.m-invite-btn-resend:active {
+  transform: scale(0.99) !important;
+}
+
+.m-invite-btn-resend:disabled {
+  opacity: 0.65 !important;
+  cursor: not-allowed !important;
+}
+
+/* ── Cancel Button in Payment Invitation Header ── */
+.m-invite-title-header-row {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+}
+
+.m-invite-cancel-header-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 34px !important;
+  height: 34px !important;
+  border-radius: 50% !important;
+  border: 1px solid var(--line, #e2e8f0) !important;
+  background: var(--panel, #ffffff) !important;
+  color: var(--ink, #0f172a) !important;
+  cursor: pointer !important;
+  transition: all 0.18s ease !important;
+  flex-shrink: 0 !important;
+  padding: 0 !important;
+}
+
+.m-invite-cancel-header-btn:hover {
+  background: rgba(239, 68, 68, 0.08) !important;
+  color: #ef4444 !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+  transform: scale(1.05) !important;
+}
+
+[data-appearance="dark"] .m-invite-cancel-header-btn,
+.app[data-appearance="dark"] .m-invite-cancel-header-btn {
+  background: #1e2025 !important;
+  border-color: #2e323b !important;
+  color: #f1f5f9 !important;
+}
+
+[data-appearance="dark"] .m-invite-cancel-header-btn:hover,
+.app[data-appearance="dark"] .m-invite-cancel-header-btn:hover {
+  background: rgba(239, 68, 68, 0.16) !important;
+  color: #ef4444 !important;
+  border-color: rgba(239, 68, 68, 0.35) !important;
+}
+
+/* ── Cancel Confirmation Modal ── */
+.m-invite-confirm-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background-color: rgba(0, 0, 0, 0.62) !important;
+  backdrop-filter: blur(5px) !important;
+  -webkit-backdrop-filter: blur(5px) !important;
+  z-index: 100005 !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  padding: 20px !important;
+  box-sizing: border-box !important;
+  animation: mInviteFadeIn 0.2s ease-out forwards !important;
+}
+
+.m-invite-confirm-modal {
+  background: var(--page, #ffffff) !important;
+  color: var(--ink, #0f172a) !important;
+  border: 1px solid var(--line, #e2e8f0) !important;
+  border-radius: 20px !important;
+  width: 100% !important;
+  max-width: 410px !important;
+  padding: 28px 24px 24px !important;
+  box-sizing: border-box !important;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.28) !important;
+  text-align: center !important;
+  animation: mInvitePopIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+[data-appearance="dark"] .m-invite-confirm-modal,
+.app[data-appearance="dark"] .m-invite-confirm-modal {
+  background: #16171b !important;
+  border-color: #272a31 !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6) !important;
+}
+
+.m-invite-confirm-icon-wrap {
+  display: flex !important;
+  justify-content: center !important;
+  margin-bottom: 16px !important;
+}
+
+.m-invite-confirm-danger-circle {
+  width: 52px !important;
+  height: 52px !important;
+  border-radius: 50% !important;
+  background: #fee2e2 !important;
+  color: #ef4444 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+[data-appearance="dark"] .m-invite-confirm-danger-circle,
+.app[data-appearance="dark"] .m-invite-confirm-danger-circle {
+  background: rgba(239, 68, 68, 0.16) !important;
+  color: #f87171 !important;
+}
+
+.m-invite-confirm-title {
+  font-size: 19px !important;
+  font-weight: 700 !important;
+  line-height: 1.3 !important;
+  margin: 0 0 10px 0 !important;
+  color: var(--ink, #0f172a) !important;
+  letter-spacing: -0.3px !important;
+  font-family: 'Hanken Grotesk', 'Inter', sans-serif !important;
+}
+
+.m-invite-confirm-body {
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  color: #64748b !important;
+  margin: 0 0 24px 0 !important;
+}
+
+[data-appearance="dark"] .m-invite-confirm-body,
+.app[data-appearance="dark"] .m-invite-confirm-body {
+  color: #94a3b8 !important;
+}
+
+.m-invite-confirm-actions {
+  display: flex !important;
+  gap: 12px !important;
+  width: 100% !important;
+}
+
+.m-invite-confirm-keep-btn {
+  flex: 1 !important;
+  padding: 12px 16px !important;
+  border-radius: 12px !important;
+  border: 1px solid #000000 !important;
+  background: #000000 !important;
+  color: #ffffff !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+.m-invite-confirm-keep-btn:hover:not(:disabled) {
+  background: #262626 !important;
+  border-color: #262626 !important;
+  color: #ffffff !important;
+  transform: translateY(-1px) !important;
+}
+
+[data-appearance="dark"] .m-invite-confirm-keep-btn,
+.app[data-appearance="dark"] .m-invite-confirm-keep-btn,
+.dark .m-invite-confirm-keep-btn,
+[data-theme="dark"] .m-invite-confirm-keep-btn {
+  background: #ffffff !important;
+  border: 1px solid #ffffff !important;
+  color: #000000 !important;
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.15) !important;
+}
+
+[data-appearance="dark"] .m-invite-confirm-keep-btn:hover:not(:disabled),
+.app[data-appearance="dark"] .m-invite-confirm-keep-btn:hover:not(:disabled),
+.dark .m-invite-confirm-keep-btn:hover:not(:disabled),
+[data-theme="dark"] .m-invite-confirm-keep-btn:hover:not(:disabled) {
+  background: #e2e8f0 !important;
+  border-color: #e2e8f0 !important;
+  color: #000000 !important;
+  transform: translateY(-1px) !important;
+}
+
+.m-invite-confirm-delete-btn {
+  flex: 1.3 !important;
+  padding: 12px 16px !important;
+  border-radius: 12px !important;
+  border: none !important;
+  background: #ef4444 !important;
+  color: #ffffff !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3) !important;
+  transition: all 0.15s ease !important;
+}
+
+.m-invite-confirm-delete-btn:hover:not(:disabled) {
+  background: #dc2626 !important;
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4) !important;
+  transform: translateY(-1px) !important;
+}
+
+.m-invite-confirm-delete-btn:disabled,
+.m-invite-confirm-keep-btn:disabled {
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+}
+
+@keyframes mInviteFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes mInvitePopIn {
+  from {
+    opacity: 0;
+    transform: scale(0.93) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+

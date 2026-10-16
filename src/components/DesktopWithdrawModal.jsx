@@ -1,44 +1,20 @@
 import { useState, useEffect, useRef } from "react";
-import { X, ChevronDown, Check, LoaderCircle, Wallet, ArrowDown } from "lucide-react";
+import { X, ChevronDown, Check, LoaderCircle, Wallet, ArrowDown, Plus } from "lucide-react";
 import BankLogo from "./BankLogo.jsx";
+import { PayoutAccountModal } from "./Shared/ProfileModals.jsx";
+import {
+  getPayoutAccountsFromDB,
+  getStoredPayoutAccounts,
+  savePayoutAccountToDB,
+} from "../services/payoutService.js";
 import "../styles/withdraw.css";
-
-const DEFAULT_ACCOUNTS = [
-  {
-    id: "acc-1",
-    bank: "KUDA",
-    bankCode: "kuda",
-    name: "Ukah-Columba Chinaza Howard",
-    number: "8032001585",
-  },
-  {
-    id: "acc-2",
-    bank: "ACCESS",
-    bankCode: "access",
-    name: "Ukah-Columba Chinaza Howard",
-    number: "0123456789",
-  },
-  {
-    id: "acc-3",
-    bank: "GTB",
-    bankCode: "gtbank",
-    name: "Chinaza Howard",
-    number: "0234567891",
-  },
-  {
-    id: "acc-4",
-    bank: "ZENITH",
-    bankCode: "zenith",
-    name: "Ukah-Columba Chinaza Howard",
-    number: "2201948291",
-  },
-];
 
 import {
   getStoredPocketBalanceKobo,
   saveStoredPocketBalanceKobo,
   koboToNaira,
   nairaToKobo,
+  requestServerWithdrawal,
 } from "../utils/balanceUtils.js";
 
 export default function DesktopWithdrawModal({
@@ -48,13 +24,63 @@ export default function DesktopWithdrawModal({
   dark,
 }) {
   const [amount, setAmount] = useState("");
-  const [selectedAccount, setSelectedAccount] = useState(DEFAULT_ACCOUNTS[0]);
+  const [accounts, setAccounts] = useState(() => getStoredPayoutAccounts());
+  const [selectedAccount, setSelectedAccount] = useState(() => {
+    const list = getStoredPayoutAccounts();
+    const def = list.find((a) => a.is_default || a.isDefault);
+    return def || list[0] || null;
+  });
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [hasAgreedTerms, setHasAgreedTerms] = useState(false);
   const [txRef, setTxRef] = useState("");
+
+  // Sync accounts from database and keep updated
+  useEffect(() => {
+    let isMounted = true;
+    const sync = async () => {
+      const fromDb = await getPayoutAccountsFromDB();
+      if (!isMounted) return;
+      setAccounts(fromDb);
+      setSelectedAccount((prev) => {
+        if (prev) {
+          const matched = fromDb.find(
+            (a) => (a.number || a.account_number) === (prev.number || prev.account_number)
+          );
+          if (matched) return matched;
+        }
+        const def = fromDb.find((a) => a.is_default || a.isDefault);
+        return def || fromDb[0] || null;
+      });
+    };
+    sync();
+
+    const handleUpdate = () => {
+      const stored = getStoredPayoutAccounts();
+      setAccounts(stored);
+      setSelectedAccount((prev) => {
+        if (prev) {
+          const matched = stored.find(
+            (a) => (a.number || a.account_number) === (prev.number || prev.account_number)
+          );
+          if (matched) return matched;
+        }
+        const def = stored.find((a) => a.is_default || a.isDefault);
+        return def || stored[0] || null;
+      });
+    };
+
+    window.addEventListener("paykudi_payout_accounts_updated", handleUpdate);
+    window.addEventListener("storage", handleUpdate);
+    return () => {
+      isMounted = false;
+      window.removeEventListener("paykudi_payout_accounts_updated", handleUpdate);
+      window.removeEventListener("storage", handleUpdate);
+    };
+  }, []);
 
   const inputRef = useRef(null);
   const dropdownRef = useRef(null);
@@ -114,39 +140,69 @@ export default function DesktopWithdrawModal({
 
   const totalPayout = numericAmount > fee ? numericAmount - fee : 0;
 
+  const handleAccountAdded = async (newAcc) => {
+    try {
+      const saved = await savePayoutAccountToDB(newAcc);
+      setSelectedAccount(saved);
+      setIsAddModalOpen(false);
+    } catch (err) {
+      console.error("Failed to save payout account:", err);
+      setIsAddModalOpen(false);
+    }
+  };
+
   const handleContinue = (e) => {
     e.preventDefault();
+    if (!selectedAccount || accounts.length === 0) {
+      setIsAddModalOpen(true);
+      return;
+    }
     if (isInvalid) {
       if (inputRef.current) inputRef.current.focus();
       return;
     }
+    if (!attemptKey) {
+      setAttemptKey("IDEM-" + Math.random().toString(36).substring(2, 12) + "-" + Date.now());
+    }
+    setPayoutError(null);
     setIsConfirmModalOpen(true);
   };
 
-  const handleFinalPayout = () => {
+  const [attemptKey, setAttemptKey] = useState(() => "IDEM-" + Math.random().toString(36).substring(2, 12) + "-" + Date.now());
+  const [payoutError, setPayoutError] = useState(null);
+
+  const handleFinalPayout = async () => {
     if (!hasAgreedTerms || isSubmitting) return;
 
     setIsSubmitting(true);
-    const ref = "PO-" + Math.floor(100000 + Math.random() * 900000);
-    setTxRef(ref);
+    setPayoutError(null);
 
-    setTimeout(() => {
+    const amountKobo = nairaToKobo(numericAmount);
+    try {
+      const result = await requestServerWithdrawal({
+        amountKobo,
+        accountId: selectedAccount?.id,
+        idempotencyKey: attemptKey,
+      });
+
+      const serverRef = result.tx_ref || ("PO-" + Math.floor(100000 + Math.random() * 900000));
+      setTxRef(serverRef);
       setIsSubmitting(false);
       setIsConfirmModalOpen(false);
       setIsSuccess(true);
-      const currentKobo = getStoredPocketBalanceKobo();
-      const deductKobo = nairaToKobo(numericAmount);
-      const nextKobo = Math.max(0, currentKobo - deductKobo);
-      saveStoredPocketBalanceKobo(nextKobo);
 
       if (onSuccess) {
         onSuccess({
           amount: numericAmount,
           account: selectedAccount,
-          ref,
+          ref: serverRef,
+          status: result.status,
         });
       }
-    }, 1000);
+    } catch (err) {
+      setIsSubmitting(false);
+      setPayoutError(err.message || "Withdrawal failed. Please check available balance.");
+    }
   };
 
   return (
@@ -190,7 +246,7 @@ export default function DesktopWithdrawModal({
                 <h3 className="payout-success-title">Payout Initiated!</h3>
                 <p className="payout-success-desc">
                   ₦{numericAmount.toLocaleString("en-US")} has been sent to your{" "}
-                  <strong>{selectedAccount.bank}</strong> account.
+                  <strong>{selectedAccount?.bank}</strong> account.
                 </p>
               </div>
 
@@ -202,13 +258,13 @@ export default function DesktopWithdrawModal({
                 <div className="payout-receipt-row">
                   <span className="payout-receipt-label">Beneficiary</span>
                   <span className="payout-receipt-value">
-                    {selectedAccount.name}
+                    {selectedAccount?.name || selectedAccount?.account_name}
                   </span>
                 </div>
                 <div className="payout-receipt-row">
                   <span className="payout-receipt-label">Account</span>
                   <span className="payout-receipt-value">
-                    {selectedAccount.number}
+                    {selectedAccount?.number || selectedAccount?.account_number}
                   </span>
                 </div>
                 <div className="payout-receipt-row">
@@ -258,78 +314,109 @@ export default function DesktopWithdrawModal({
                   </div>
                 </div>
 
-                {/* 2. Selected Payout Bank Account */}
-                <div className="payout-account-card-wrapper" ref={dropdownRef}>
-                  <div
-                    className="payout-account-card"
-                    onClick={() => setIsDropdownOpen((prev) => !prev)}
-                    role="button"
-                    tabIndex={0}
-                    aria-expanded={isDropdownOpen}
-                    aria-label="Change payout account"
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        setIsDropdownOpen((prev) => !prev);
-                      }
-                    }}
-                  >
-                    <div className="payout-account-card-left">
-                      <BankLogo bankCode={selectedAccount.bankCode} bankName={selectedAccount.bank} />
-                      <div className="payout-account-details">
-                        <p className="payout-account-name">
-                          {selectedAccount.name}
-                        </p>
-                        <p className="payout-account-number">
-                          {selectedAccount.bank} Bank · <span className="payout-account-num-val">{selectedAccount.number}</span>
-                        </p>
+                {/* 2. Selected Payout Bank Account OR Add Account Empty State */}
+                {!selectedAccount || accounts.length === 0 ? (
+                  <div className="payout-empty-account-card">
+                    <div className="payout-empty-account-left">
+                      <div className="payout-empty-details">
+                        <p className="payout-empty-name">No Payout Account Added</p>
+                        <p className="payout-empty-sub">Add a bank account to receive your payout</p>
                       </div>
                     </div>
-
-                    <button
-                      type="button"
-                      className={`payout-account-chevron-btn ${isDropdownOpen ? "is-open" : ""}`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setIsDropdownOpen(!isDropdownOpen);
-                      }}
-                      aria-label="Change payout account"
-                    >
-                      <ChevronDown size={18} strokeWidth={2.4} />
-                    </button>
                   </div>
+                ) : (
+                  <div className="payout-account-card-wrapper" ref={dropdownRef}>
+                    <div
+                      className="payout-account-card"
+                      onClick={() => setIsDropdownOpen((prev) => !prev)}
+                      role="button"
+                      tabIndex={0}
+                      aria-expanded={isDropdownOpen}
+                      aria-label="Change payout account"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          setIsDropdownOpen((prev) => !prev);
+                        }
+                      }}
+                    >
+                      <div className="payout-account-card-left">
+                        <BankLogo bankCode={selectedAccount.bankCode || selectedAccount.bank_code} bankName={selectedAccount.bank} />
+                        <div className="payout-account-details">
+                          <p className="payout-account-name">
+                            {selectedAccount.name || selectedAccount.account_name}
+                          </p>
+                          <p className="payout-account-number">
+                            {selectedAccount.bank} Bank · <span className="payout-account-num-val">{selectedAccount.number || selectedAccount.account_number}</span>
+                          </p>
+                        </div>
+                      </div>
 
-                  {isDropdownOpen && (
-                    <div className="payout-account-dropdown">
-                      {DEFAULT_ACCOUNTS.map((acc) => (
+                      <button
+                        type="button"
+                        className={`payout-account-chevron-btn ${isDropdownOpen ? "is-open" : ""}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsDropdownOpen(!isDropdownOpen);
+                        }}
+                        aria-label="Change payout account"
+                      >
+                        <ChevronDown size={18} strokeWidth={2.4} />
+                      </button>
+                    </div>
+
+                    {isDropdownOpen && (
+                      <div className="payout-account-dropdown">
+                        {accounts.map((acc) => {
+                          const accNum = acc.number || acc.account_number;
+                          const selNum = selectedAccount?.number || selectedAccount?.account_number;
+                          const isSel = (acc.id && acc.id === selectedAccount?.id) || accNum === selNum;
+                          return (
+                            <button
+                              key={acc.id || accNum}
+                              type="button"
+                              ref={(el) => {
+                                if (el && isSel) {
+                                  el.scrollIntoView({ block: "nearest" });
+                                }
+                              }}
+                              className={`payout-dropdown-item ${isSel ? "is-selected" : ""}`}
+                              onClick={() => {
+                                setSelectedAccount(acc);
+                                setIsDropdownOpen(false);
+                              }}
+                            >
+                              <BankLogo bankCode={acc.bankCode || acc.bank_code} bankName={acc.bank} />
+                              <div className="payout-dropdown-item-info">
+                                <span className="payout-dropdown-item-name">
+                                  {acc.name || acc.account_name}
+                                </span>
+                                <span className="payout-dropdown-item-sub">
+                                  {acc.bank} · <span className="payout-account-num-val">{accNum}</span>
+                                </span>
+                              </div>
+                            </button>
+                          );
+                        })}
+
+                        {/* Add Another Bank Account Button in Dropdown */}
                         <button
-                          key={acc.id}
                           type="button"
-                          ref={(el) => {
-                            if (el && acc.id === selectedAccount.id) {
-                              el.scrollIntoView({ block: "nearest" });
-                            }
-                          }}
-                          className={`payout-dropdown-item ${acc.id === selectedAccount.id ? "is-selected" : ""}`}
+                          className="payout-dropdown-add-item"
                           onClick={() => {
-                            setSelectedAccount(acc);
                             setIsDropdownOpen(false);
+                            setIsAddModalOpen(true);
                           }}
                         >
-                          <BankLogo bankCode={acc.bankCode} bankName={acc.bank} />
-                          <div className="payout-dropdown-item-info">
-                            <span className="payout-dropdown-item-name">
-                              {acc.name}
-                            </span>
-                            <span className="payout-dropdown-item-sub">
-                              {acc.bank} · <span className="payout-account-num-val">{acc.number}</span>
-                            </span>
+                          <div className="payout-dropdown-add-icon">
+                            <Plus size={15} strokeWidth={2.4} />
                           </div>
+                          <span>+ Add another bank account</span>
                         </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* 3. AMOUNT SECTION */}
@@ -382,6 +469,8 @@ export default function DesktopWithdrawModal({
                 >
                   {isSubmitting ? (
                     <LoaderCircle size={20} className="animate-spin" />
+                  ) : !selectedAccount || accounts.length === 0 ? (
+                    "+ Add Payout Account"
                   ) : (
                     "Continue to Payout"
                   )}
@@ -421,13 +510,13 @@ export default function DesktopWithdrawModal({
             </div>
 
             <div className="payout-sheet-dest-card">
-              <BankLogo bankCode={selectedAccount.bankCode} bankName={selectedAccount.bank} />
+              <BankLogo bankCode={selectedAccount?.bankCode || selectedAccount?.bank_code} bankName={selectedAccount?.bank} />
               <div className="payout-sheet-dest-info">
                 <span className="payout-sheet-dest-name">
-                  {selectedAccount.name}
+                  {selectedAccount?.name || selectedAccount?.account_name}
                 </span>
                 <span className="payout-sheet-dest-sub">
-                  {selectedAccount.bank} Bank · <span className="payout-account-num-val">{selectedAccount.number}</span>
+                  {selectedAccount?.bank} Bank · <span className="payout-account-num-val">{selectedAccount?.number || selectedAccount?.account_number}</span>
                 </span>
               </div>
             </div>
@@ -473,6 +562,13 @@ export default function DesktopWithdrawModal({
               </span>
             </label>
 
+            {/* ERROR DISPLAY */}
+            {payoutError && (
+              <div style={{ background: "rgba(239, 68, 68, 0.1)", border: "1px solid rgba(239, 68, 68, 0.3)", borderRadius: 8, padding: "10px 12px", color: "#dc2626", fontSize: 13, marginBottom: 8, textAlign: "center", lineHeight: 1.4 }}>
+                {payoutError}
+              </div>
+            )}
+
             {/* FINAL PAYOUT ACTION */}
             <div className="payout-sheet-action">
               <button
@@ -491,6 +587,14 @@ export default function DesktopWithdrawModal({
           </div>
         </div>
       )}
+
+      {/* ADD PAYOUT ACCOUNT MODAL */}
+      <PayoutAccountModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSave={handleAccountAdded}
+        dark={dark}
+      />
     </div>
   );
 }

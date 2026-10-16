@@ -375,12 +375,6 @@ textarea::placeholder,
   color: #ffffff !important;
 }
 
-/* When the menu is out in light mode: active trigger avatar circle turns white with black letter */
-.header-profile-trigger.active .header-avatar-circle-h,
-.header-profile-trigger:active .header-avatar-circle-h {
-  background-color: #ffffff !important;
-  color: #111215 !important;
-}
 
 /* ── Dark Mode Base (not white) ── */
 .app[data-appearance="dark"] .header-profile-trigger,
@@ -426,13 +420,13 @@ textarea::placeholder,
   color: #111215 !important;
 }
 
-/* Circle Avatar: Black in Light Mode, White in Dark Mode */
+/* Circle Avatar: Rich solid fill from procedural 10-million+ color system */
 .header-avatar-circle-h {
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background-color: #111215 !important;
   color: #ffffff !important;
+  border: none !important;
   font-family: 'Hanken Grotesk', 'Inter', -apple-system, sans-serif;
   font-size: 12.5px;
   font-weight: 700;
@@ -444,7 +438,8 @@ textarea::placeholder,
   line-height: 1;
   letter-spacing: -0.2px;
   text-transform: uppercase !important;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: transform 0.15s ease, opacity 0.15s ease;
 }
 
 .app[data-appearance="dark"] .header-avatar-circle-h,
@@ -452,8 +447,8 @@ textarea::placeholder,
 [data-appearance="dark"] .header-avatar-circle-h,
 .dark .header-avatar-circle-h,
 body.dark .header-avatar-circle-h {
-  background-color: #ffffff !important;
-  color: #111215 !important;
+  color: #ffffff !important;
+  border: none !important;
 }
 
 .app[data-appearance="dark"] .header-profile-trigger.active .header-avatar-circle-h,
@@ -461,8 +456,8 @@ body.dark .header-avatar-circle-h {
 [data-appearance="dark"] .header-profile-trigger.active .header-avatar-circle-h,
 .dark .header-profile-trigger.active .header-avatar-circle-h,
 body.dark .header-profile-trigger.active .header-avatar-circle-h {
-  background-color: #111215 !important;
   color: #ffffff !important;
+  border: none !important;
 }
 
 /* Chevron Icon */
@@ -542,8 +537,8 @@ html[data-appearance="dark"] .header-profile-dropdown {
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  background-color: #ffffff !important;
-  color: #111215 !important;
+  color: #ffffff !important;
+  border: none !important;
   font-family: 'Hanken Grotesk', 'Inter', -apple-system, sans-serif;
   font-size: 19px;
   font-weight: 700;
@@ -554,7 +549,8 @@ html[data-appearance="dark"] .header-profile-dropdown {
   line-height: 1;
   letter-spacing: -0.3px;
   text-transform: uppercase !important;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  transition: transform 0.15s ease;
 }
 
 [data-appearance="dark"] .header-dropdown-avatar,
@@ -562,8 +558,8 @@ html[data-appearance="dark"] .header-profile-dropdown {
 .mobile-dashboard[data-appearance="dark"] .header-dropdown-avatar,
 .dark .header-dropdown-avatar,
 body.dark .header-dropdown-avatar {
-  background-color: #ffffff !important;
-  color: #111215 !important;
+  color: #ffffff !important;
+  border: none !important;
 }
 
 .header-dropdown-user-info {
@@ -867,13 +863,38 @@ nav button.active #m-pr-nav-badge,
 .brand-logo-img.logo-light {
   height: 22px;
   max-height: 22px;
+  display: block;
 }
 
-/* Dark logo */
+/* Default: light logo visible, dark logo hidden */
 .brand-logo-img.logo-dark {
   height: 22px;
   max-height: 22px;
+  display: none;
   transform: none;
+}
+
+/* ── 1. Theme State: Dark Mode (white-text logo visible, dark-text logo hidden) ── */
+[data-appearance="dark"] .brand-logo-img.logo-light,
+.app[data-appearance="dark"] .brand-logo-img.logo-light,
+.mobile-dashboard[data-appearance="dark"] .brand-logo-img.logo-light,
+body[data-appearance="dark"] .brand-logo-img.logo-light,
+html[data-appearance="dark"] .brand-logo-img.logo-light,
+body.dark .brand-logo-img.logo-light,
+.brand.is-dark .brand-logo-img.logo-light,
+.mobile-brand.is-dark .brand-logo-img.logo-light {
+  display: none !important;
+}
+
+[data-appearance="dark"] .brand-logo-img.logo-dark,
+.app[data-appearance="dark"] .brand-logo-img.logo-dark,
+.mobile-dashboard[data-appearance="dark"] .brand-logo-img.logo-dark,
+body[data-appearance="dark"] .brand-logo-img.logo-dark,
+html[data-appearance="dark"] .brand-logo-img.logo-dark,
+body.dark .brand-logo-img.logo-dark,
+.brand.is-dark .brand-logo-img.logo-dark,
+.mobile-brand.is-dark .brand-logo-img.logo-dark {
+  display: block !important;
 }
 
 @media (max-width: 700px) {

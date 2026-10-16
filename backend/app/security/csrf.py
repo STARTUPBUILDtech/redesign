@@ -27,6 +27,19 @@ def verify_csrf_token(request: Request) -> bool:
     cookie_token = request.cookies.get(CSRF_COOKIE_NAME)
     header_token = request.headers.get(CSRF_HEADER_NAME)
 
+    # 1. Direct valid token match
+    if cookie_token and header_token and secrets.compare_digest(cookie_token, header_token):
+        return True
+
+    # 2. In development environment, header token or presence of auth credentials is valid
+    if getattr(settings, "ENVIRONMENT", "development") == "development":
+        if header_token:
+            return True
+        access_cookie = request.cookies.get("paykudi_access_token")
+        auth_header = request.headers.get("Authorization")
+        if access_cookie or auth_header:
+            return True
+
     if not cookie_token or not header_token:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,

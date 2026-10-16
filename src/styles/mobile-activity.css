@@ -682,9 +682,10 @@
 
 .activity-empty-graphic-wrap {
   position: relative;
-  width: 130px;
+  width: 100%;
+  max-width: 175px;
   height: auto;
-  margin: 0 auto 20px auto;
+  margin: 0 auto 18px auto;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -703,33 +704,20 @@
 .activity-empty-wallet-img {
   width: 100%;
   height: auto;
-  max-width: 130px;
+  max-width: 175px;
   object-fit: contain;
   display: block;
   user-select: none;
-  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.05));
+  filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.08));
   transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.activity-empty-wallet-dark {
-  display: none !important;
-}
-
-[data-appearance="dark"] .activity-empty-wallet-light,
-.app[data-appearance="dark"] .activity-empty-wallet-light,
-.mobile-dashboard[data-appearance="dark"] .activity-empty-wallet-light,
-body.dark .activity-empty-wallet-light,
-.dark .activity-empty-wallet-light {
-  display: none !important;
-}
-
-[data-appearance="dark"] .activity-empty-wallet-dark,
-.app[data-appearance="dark"] .activity-empty-wallet-dark,
-.mobile-dashboard[data-appearance="dark"] .activity-empty-wallet-dark,
-body.dark .activity-empty-wallet-dark,
-.dark .activity-empty-wallet-dark {
-  display: block !important;
-  filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.25)) drop-shadow(0 8px 20px rgba(0, 0, 0, 0.55));
+[data-appearance="dark"] .activity-empty-wallet-img,
+.app[data-appearance="dark"] .activity-empty-wallet-img,
+.mobile-dashboard[data-appearance="dark"] .activity-empty-wallet-img,
+body.dark .activity-empty-wallet-img,
+.dark .activity-empty-wallet-img {
+  filter: drop-shadow(0 6px 20px rgba(0, 0, 0, 0.55));
 }
 
 /* Vector Graphic Theming */

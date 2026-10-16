@@ -1,0 +1,441 @@
+/* ── PayKudi Pending Invite Modal (Clean, Minimalist & Mobile-Friendly with Fluid clamp) ── */
+
+.pk-accept-invite-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(12px, 3vw, 20px);
+  animation: pkFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+}
+
+@keyframes pkFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes pkScaleUp {
+  from { opacity: 0; transform: scale(0.96) translateY(6px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ── Main Modal Card (Fluid clamp width and padding for all screens) ── */
+.pk-accept-invite-modal {
+  width: 100%;
+  max-width: clamp(300px, 92vw, 450px);
+  background: #ffffff;
+  color: #111827;
+  border-radius: clamp(12px, 3vw, 16px);
+  padding: clamp(18px, 4.5vw, 28px) clamp(16px, 4vw, 26px) clamp(16px, 4vw, 22px) clamp(16px, 4vw, 26px);
+  box-shadow: 0 16px 42px -10px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  animation: pkScaleUp 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+[data-appearance="dark"] .pk-accept-invite-modal,
+.dark .pk-accept-invite-modal,
+.app[data-appearance="dark"] .pk-accept-invite-modal,
+.mobile-dashboard[data-appearance="dark"] .pk-accept-invite-modal {
+  background: #18191d;
+  color: #f9fafb;
+  box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.pk-invite-card-inner {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* ── Waiting for Counterparty to Join View ── */
+.pk-invite-waiting-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: clamp(14px, 3.5vw, 22px) clamp(6px, 1.5vw, 12px);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.pk-invite-waiting-loader-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: clamp(8px, 2vw, 14px);
+}
+
+.pk-invite-waiting-title {
+  font-size: clamp(17px, 4.3vw, 20px);
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.3px;
+  margin: 0 0 clamp(6px, 1.5vw, 10px) 0;
+  line-height: 1.3;
+}
+
+[data-appearance="dark"] .pk-invite-waiting-title,
+.dark .pk-invite-waiting-title,
+.app[data-appearance="dark"] .pk-invite-waiting-title {
+  color: #ffffff;
+}
+
+.pk-invite-waiting-subtitle {
+  font-size: clamp(13px, 3.2vw, 14.5px);
+  color: #6b7280;
+  font-weight: 500;
+  margin: 0;
+  line-height: 1.45;
+}
+
+[data-appearance="dark"] .pk-invite-waiting-subtitle,
+.dark .pk-invite-waiting-subtitle,
+.app[data-appearance="dark"] .pk-invite-waiting-subtitle {
+  color: #9ca3af;
+}
+
+/* ── Top Left Header: Date & "Pending invite" ── */
+.pk-invite-header-row {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  gap: 2px;
+}
+
+.pk-invite-date-label {
+  font-size: 11px;
+  color: #6b7280;
+  font-weight: 500;
+  letter-spacing: -0.1px;
+}
+
+[data-appearance="dark"] .pk-invite-date-label,
+.dark .pk-invite-date-label,
+.app[data-appearance="dark"] .pk-invite-date-label {
+  color: #9ca3af;
+}
+
+.pk-invite-heading {
+  font-size: 15px;
+  font-weight: 600;
+  color: #111827;
+  letter-spacing: -0.2px;
+  margin: 0;
+  line-height: 1.25;
+}
+
+[data-appearance="dark"] .pk-invite-heading,
+.dark .pk-invite-heading,
+.app[data-appearance="dark"] .pk-invite-heading {
+  color: #ffffff;
+}
+
+/* ── Center Avatar Circle ── */
+.pk-invite-avatar-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: clamp(14px, 3.5vw, 20px) 0 clamp(10px, 2.5vw, 14px) 0;
+}
+
+.pk-invite-avatar-circle {
+  width: clamp(48px, 12vw, 62px);
+  height: clamp(48px, 12vw, 62px);
+  border-radius: 50%;
+  background: #2563eb;
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  font-size: clamp(20px, 5.2vw, 26px);
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+  user-select: none;
+}
+
+.pk-invite-avatar-img {
+  width: clamp(48px, 12vw, 62px);
+  height: clamp(48px, 12vw, 62px);
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* ── Main Centered Content ── */
+.pk-invite-main-content {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.pk-invite-lead-text {
+  font-size: clamp(14px, 3.6vw, 16.5px);
+  color: #1f2937;
+  font-weight: 500;
+  letter-spacing: -0.2px;
+  margin: 0;
+  line-height: 1.38;
+}
+
+[data-appearance="dark"] .pk-invite-lead-text,
+.dark .pk-invite-lead-text,
+.app[data-appearance="dark"] .pk-invite-lead-text {
+  color: #e5e7eb;
+}
+
+.pk-invite-lead-text strong {
+  font-weight: 700;
+  color: #111827;
+}
+
+[data-appearance="dark"] .pk-invite-lead-text strong,
+.dark .pk-invite-lead-text strong,
+.app[data-appearance="dark"] .pk-invite-lead-text strong {
+  color: #ffffff;
+}
+
+.pk-invite-room-term {
+  white-space: nowrap;
+  display: inline-block;
+}
+
+.pk-invite-project-title {
+  font-size: clamp(16.5px, 4.3vw, 19.5px);
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: -0.3px;
+  margin: clamp(3px, 1vw, 5px) 0 0 0;
+  line-height: 1.3;
+}
+
+[data-appearance="dark"] .pk-invite-project-title,
+.dark .pk-invite-project-title,
+.app[data-appearance="dark"] .pk-invite-project-title {
+  color: #ffffff;
+}
+
+/* ── Avatars of Users Involved in Payment Room ── */
+.pk-invite-badges-row {
+  margin: clamp(12px, 3vw, 16px) 0 clamp(14px, 3.5vw, 18px) 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(5px, 1.2vw, 7px);
+}
+
+.pk-invite-avatar-stack {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pk-stack-avatar {
+  width: clamp(24px, 6vw, 28px);
+  height: clamp(24px, 6vw, 28px);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: clamp(10px, 2.5vw, 11px);
+  font-weight: 700;
+  color: #ffffff;
+  margin-left: clamp(-5px, -1.2vw, -7px);
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  user-select: none;
+  object-fit: cover;
+}
+
+[data-appearance="dark"] .pk-stack-avatar,
+.dark .pk-stack-avatar,
+.app[data-appearance="dark"] .pk-stack-avatar {
+  border-color: #18191d;
+}
+
+.pk-stack-avatar:first-child {
+  margin-left: 0;
+}
+
+.pk-stack-avatar.creator {
+  background: #2563eb;
+}
+
+.pk-stack-avatar.counterparty {
+  background: #7c3aed;
+}
+
+.pk-invite-accepted-meta {
+  font-size: clamp(11.5px, 2.7vw, 12.5px);
+  color: #4b5563;
+  font-weight: 500;
+}
+
+[data-appearance="dark"] .pk-invite-accepted-meta,
+.dark .pk-invite-accepted-meta,
+.app[data-appearance="dark"] .pk-invite-accepted-meta {
+  color: #9ca3af;
+}
+
+.pk-invite-accepted-meta strong {
+  color: #111827;
+  font-weight: 700;
+}
+
+[data-appearance="dark"] .pk-invite-accepted-meta strong,
+.dark .pk-invite-accepted-meta strong,
+.app[data-appearance="dark"] .pk-invite-accepted-meta strong {
+  color: #f3f4f6;
+}
+
+/* ── Bottom Footer Section: Divider, Centered Expiry, and Side-by-Side Action Buttons ── */
+.pk-invite-footer-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: clamp(12px, 3vw, 16px);
+  margin-top: clamp(8px, 2vw, 12px);
+  border-top: 1px solid #f3f4f6;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+[data-appearance="dark"] .pk-invite-footer-section,
+.dark .pk-invite-footer-section,
+.app[data-appearance="dark"] .pk-invite-footer-section {
+  border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+.pk-invite-expiry-note {
+  font-size: clamp(13px, 3.2vw, 15px);
+  color: #6b7280;
+  font-weight: 450;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  margin-bottom: clamp(10px, 2.8vw, 14px);
+  width: 100%;
+}
+
+[data-appearance="dark"] .pk-invite-expiry-note,
+.dark .pk-invite-expiry-note,
+.app[data-appearance="dark"] .pk-invite-expiry-note {
+  color: #9ca3af;
+}
+
+.pk-invite-timer-countdown {
+  color: #ef4444;
+  font-weight: 700;
+}
+
+[data-appearance="dark"] .pk-invite-timer-countdown,
+.dark .pk-invite-timer-countdown,
+.app[data-appearance="dark"] .pk-invite-timer-countdown {
+  color: #f87171;
+}
+
+.pk-invite-expired-label {
+  color: #ef4444 !important;
+  font-weight: 600;
+}
+
+.pk-invite-btn-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(8px, 2.4vw, 12px);
+  width: 100%;
+}
+
+/* Decline button */
+.pk-invite-decline-btn {
+  flex: 1;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  color: #374151;
+  border-radius: clamp(6px, 1.8vw, 8px);
+  padding: clamp(8px, 2.2vw, 10px) clamp(10px, 2.5vw, 16px);
+  font-size: clamp(12.5px, 2.9vw, 14px);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+  white-space: nowrap;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+[data-appearance="dark"] .pk-invite-decline-btn,
+.dark .pk-invite-decline-btn,
+.app[data-appearance="dark"] .pk-invite-decline-btn {
+  background: #22242a;
+  border-color: rgba(255, 255, 255, 0.14);
+  color: #e5e7eb;
+}
+
+.pk-invite-decline-btn:hover:not(:disabled) {
+  background: #f9fafb;
+  border-color: #9ca3af;
+  color: #111827;
+}
+
+[data-appearance="dark"] .pk-invite-decline-btn:hover:not(:disabled) {
+  background: #2b2e36;
+  border-color: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+}
+
+.pk-invite-decline-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Accept button */
+.pk-invite-accept-btn {
+  flex: 1;
+  background: #00875a;
+  border: none;
+  color: #ffffff;
+  border-radius: clamp(6px, 1.8vw, 8px);
+  padding: clamp(8px, 2.2vw, 10px) clamp(10px, 2.5vw, 16px);
+  font-size: clamp(12.5px, 2.9vw, 14px);
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  font-family: inherit;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.pk-invite-accept-btn:hover:not(:disabled) {
+  background: #00734c;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 135, 90, 0.28);
+}
+
+.pk-invite-accept-btn:active:not(:disabled) {
+  transform: scale(0.99);
+}
+
+.pk-invite-accept-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}

@@ -51,11 +51,26 @@ body.modal-open-desktop .topbar,
 body.pk-modal-up .topbar,
 body.modal-open .topbar,
 .topbar.modal-active-topbar,
+body:has(.atm-backdrop) .topbar,
+body:has(.atm-backdrop) .mobile-header,
 body:has(.pk-slideup-backdrop) .mobile-header,
-body.pk-modal-up .mobile-header {
+body:has(.invite-modal-backdrop) .mobile-header,
+body:has([class*="-backdrop"]) .mobile-header,
+body:has([role="dialog"]) .mobile-header,
+body.pk-modal-up .mobile-header,
+body.modal-open .mobile-header,
+body.modal-open-desktop .mobile-header {
   z-index: 100001 !important;
   pointer-events: auto !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
+
 
 body:has([role="dialog"]) .topbar nav,
 body:has([aria-modal="true"]) .topbar nav,
@@ -136,6 +151,7 @@ body:has([role="dialog"]) .topbar .header-theme-btn,
 body:has([aria-modal="true"]) .topbar .header-theme-btn,
 body:has(.cd-issue-backdrop) .topbar .header-theme-btn,
 body:has(.ap-bottom-sheet-backdrop) .topbar .header-theme-btn,
+body:has(.desktop-np-modal-overlay) .topbar .header-theme-btn,
 body.modal-open-desktop .topbar .header-theme-btn,
 .topbar.modal-active-topbar .header-theme-btn {
   display: flex !important;
@@ -143,6 +159,19 @@ body.modal-open-desktop .topbar .header-theme-btn,
   opacity: 1 !important;
   pointer-events: auto !important;
   cursor: pointer !important;
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  color: #18181b !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+}
+
+.app[data-appearance="dark"] .topbar.modal-active-topbar .header-theme-btn,
+body.dark.modal-open-desktop .topbar .header-theme-btn,
+body.modal-open-desktop.dark .topbar .header-theme-btn {
+  background-color: #212328 !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
 }
 
 

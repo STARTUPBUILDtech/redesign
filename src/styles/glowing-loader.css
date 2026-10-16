@@ -1,0 +1,132 @@
+/* ── Clean PayKudi Logo & Centered Loading State for Section Switching ── */
+
+.pk-logo-loader-wrap,
+.pk-glowing-loader-wrap {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  animation: pkLoaderFadeIn 0.16s ease-out;
+  user-select: none;
+}
+
+.pk-logo-loader-wrap.desktop,
+.pk-glowing-loader-wrap.desktop {
+  min-height: calc(100vh - clamp(140px, 12vw, 200px));
+  height: 100%;
+  padding: 40px 20px;
+}
+
+.pk-logo-loader-wrap.mobile,
+.pk-glowing-loader-wrap.mobile {
+  min-height: calc(100vh - 180px);
+  height: 100%;
+  padding: 32px 16px;
+}
+
+.pk-logo-loader-wrap.inline,
+.pk-glowing-loader-wrap.inline,
+.pk-logo-loader-wrap.modal,
+.pk-glowing-loader-wrap.modal {
+  min-height: auto;
+  height: auto;
+  padding: 12px 0;
+}
+
+.pk-logo-loader-inner,
+.pk-glowing-loader-inner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+}
+
+/* ── Clear, un-glowing PayKudi Logo at Center ── */
+.pk-logo-loader-img,
+.pk-glowing-logo-img {
+  position: relative;
+  z-index: 1;
+  height: 32px;
+  max-height: 32px;
+  width: auto;
+  object-fit: contain;
+  filter: none !important;
+  animation: none !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.pk-logo-loader-wrap.mobile .pk-logo-loader-img,
+.pk-glowing-loader-wrap.mobile .pk-glowing-logo-img {
+  height: 28px;
+  max-height: 28px;
+}
+
+/* Light logo visible by default, dark logo hidden */
+.pk-logo-loader-img.pk-logo-dark {
+  display: none !important;
+}
+.pk-logo-loader-img.pk-logo-light {
+  display: block !important;
+}
+
+/* Dark mode: dark logo visible, light logo hidden */
+.pk-logo-loader-wrap.dark .pk-logo-loader-img.pk-logo-dark,
+[data-appearance="dark"] .pk-logo-loader-img.pk-logo-dark,
+.dark .pk-logo-loader-img.pk-logo-dark,
+body.dark .pk-logo-loader-img.pk-logo-dark {
+  display: block !important;
+}
+.pk-logo-loader-wrap.dark .pk-logo-loader-img.pk-logo-light,
+[data-appearance="dark"] .pk-logo-loader-img.pk-logo-light,
+.dark .pk-logo-loader-img.pk-logo-light,
+body.dark .pk-logo-loader-img.pk-logo-light {
+  display: none !important;
+}
+
+/* Remove glow aura completely */
+.pk-glowing-aura {
+  display: none !important;
+}
+
+/* ── Clean Loading Spinner State ── */
+.pk-logo-loader-spinner {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2.5px solid rgba(0, 0, 0, 0.1);
+  border-top-color: #10b981;
+  animation: pkSpinnerRotate 0.75s linear infinite;
+  box-sizing: border-box;
+}
+
+[data-appearance="dark"] .pk-logo-loader-spinner,
+.app[data-appearance="dark"] .pk-logo-loader-spinner,
+.mobile-dashboard[data-appearance="dark"] .pk-logo-loader-spinner,
+.pk-logo-loader-wrap.dark .pk-logo-loader-spinner,
+.pk-glowing-loader-wrap.dark .pk-logo-loader-spinner,
+.dark .pk-logo-loader-spinner {
+  border-color: rgba(255, 255, 255, 0.15);
+  border-top-color: #10b981;
+}
+
+@keyframes pkSpinnerRotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pkLoaderFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

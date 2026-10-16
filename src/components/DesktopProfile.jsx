@@ -17,6 +17,10 @@ import {
 import {
   DEFAULT_POCKET_BALANCE_KOBO,
 } from "../utils/balanceUtils.js";
+import { saveUserProfileToDB } from "../services/supabaseService.js";
+import { getStoredPayoutAccounts, getPayoutAccountsFromDB } from "../services/payoutService.js";
+import { getUserAvatarStyle } from "../utils/avatarUtils.js";
+import { ensureCsrfToken } from "../services/authService.js";
 
 function NormalCursorIcon() {
   return (
@@ -47,7 +51,9 @@ function NormalCursorIcon() {
  *     (mirrors Desktop Payment Room and Desktop Help & Support)
  */
 export default function DesktopProfile({
+  user,
   userName = "Amaka",
+  username = "",
   phoneNumber = "+234 803 200 1585",
   onEditProfile,
   onSignOut = () => {},
@@ -58,11 +64,25 @@ export default function DesktopProfile({
   const appearance = useModalAppearance(dark);
 
   const isPhoneStr = (v) => typeof v === "string" && (v.startsWith("+") || /^\d[\d\s-]{6,}$/.test(v));
+  const formatSentenceCase = (str) => {
+    if (!str || typeof str !== "string") return "";
+    return str
+      .trim()
+      .split(/\s+/)
+      .map((w) => {
+        if (w.includes("-")) {
+          return w.split("-").map((p) => p.charAt(0).toUpperCase() + p.slice(1).toLowerCase()).join("-");
+        }
+        return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+      })
+      .join(" ");
+  };
   const cleanDisplayName = (val) => {
-    if (!val || isPhoneStr(val) || val === "Amaka") {
-      return (userName && !isPhoneStr(userName) && userName !== "Amaka") ? userName : "Howard Ukah-Columba";
+    let resolved = val;
+    if (!resolved || isPhoneStr(resolved) || resolved === "Amaka") {
+      resolved = (userName && !isPhoneStr(userName) && userName !== "Amaka") ? userName : "Howard Ukah-Columba";
     }
-    return val;
+    return formatSentenceCase(resolved);
   };
 
   const isGenericBankAccount = (bank, accountNumber, accountName) => {
@@ -72,16 +92,19 @@ export default function DesktopProfile({
       "0234567891",
       "0123456789",
       "2001948291",
+      "8032001585",
+      "8032007872",
     ];
     const num = String(accountNumber || "").trim();
     const name = String(accountName || "").toLowerCase();
     const b = String(bank || "").toLowerCase();
     if (!num || !bank) return true;
     if (genericNumbers.includes(num)) return true;
-    if (name.includes("amaka")) return true;
-    if (b.includes("kuda") && num === "2001948291") return true;
+    if (name.includes("amaka") || name.includes("chinaza")) return true;
+    if (b.includes("kuda") && (num === "2001948291" || num === "8032001585" || num === "8032007872")) return true;
     return false;
   };
+
 
   // Initialize state with stored details or fallbacks
   const [profileData, setProfileData] = useState(() => {
@@ -101,6 +124,7 @@ export default function DesktopProfile({
         return {
           id: parsed.id || "",
           name: cleanDisplayName(parsed.name),
+          username: parsed.username || username || (parsed.name ? parsed.name.toLowerCase().replace(/[^a-z0-9]/g, "") : "howard001"),
           address: parsed.address || "",
           phone: parsed.phone || (phoneNumber !== "No phone number" ? phoneNumber : "+234 803 200 1585"),
           email: parsed.email || "",
@@ -118,6 +142,7 @@ export default function DesktopProfile({
     return {
       id: "",
       name: cleanDisplayName(userName),
+      username: username || "howard001",
       address: "",
       phone: phoneNumber !== "No phone number" ? phoneNumber : "+234 803 200 1585",
       email: "",
@@ -154,6 +179,7 @@ export default function DesktopProfile({
   const [toastMessage, setToastMessage] = useState("");
   const [isToastVisible, setIsToastVisible] = useState(false);
   const [copiedId, setCopiedId] = useState(false);
+  const [copiedUsername, setCopiedUsername] = useState(false);
 
   // Clean WhatsApp number to serve as clean PayKudi ID without leading zero
   const cleanId = (val) => {
@@ -183,6 +209,90 @@ export default function DesktopProfile({
     }
   };
 
+  // Reactive payout accounts state & linkage check
+  const [payoutAccounts, setPayoutAccounts] = useState(() => {
+    try {
+      const stored = getStoredPayoutAccounts();
+      return stored.filter(
+        (a) => !isGenericBankAccount(a.bank, a.number || a.account_number || a.accountNumber, a.name || a.account_name || a.accountName)
+      );
+    } catch {
+      return [];
+    }
+  });
+
+  const validLinkedAccounts = Array.isArray(payoutAccounts)
+    ? payoutAccounts.filter(
+        (a) =>
+          a &&
+          a.bank &&
+          (a.number || a.account_number || a.accountNumber) &&
+          !isGenericBankAccount(a.bank, a.number || a.account_number || a.accountNumber, a.name || a.account_name || a.accountName)
+      )
+    : [];
+
+  const hasLinkedBankAccount = validLinkedAccounts.length > 0;
+  const activePayoutAccount = hasLinkedBankAccount
+    ? validLinkedAccounts.find((a) => a.is_default || a.isDefault) || validLinkedAccounts[0]
+    : null;
+  const activeBank = activePayoutAccount ? (activePayoutAccount.bank || "") : "";
+  const activeAccountNumber = activePayoutAccount ? (activePayoutAccount.number || activePayoutAccount.account_number || activePayoutAccount.accountNumber || "") : "";
+
+  // Synchronize payout accounts from storage, service, and backend database
+  useEffect(() => {
+    let isMounted = true;
+    const syncAccounts = () => {
+      try {
+        const stored = getStoredPayoutAccounts();
+        const clean = stored.filter(
+          (a) => !isGenericBankAccount(a.bank, a.number || a.account_number || a.accountNumber, a.name || a.account_name || a.accountName)
+        );
+        if (isMounted) setPayoutAccounts(clean);
+      } catch (_) {}
+    };
+
+    window.addEventListener("paykudi_payout_accounts_updated", syncAccounts);
+    window.addEventListener("storage", syncAccounts);
+    syncAccounts();
+
+    getPayoutAccountsFromDB().then((fromDb) => {
+      if (isMounted && Array.isArray(fromDb)) {
+        const cleanDb = fromDb.filter(
+          (a) => !isGenericBankAccount(a.bank, a.number || a.account_number || a.accountNumber, a.name || a.account_name || a.accountName)
+        );
+        setPayoutAccounts(cleanDb);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+      window.removeEventListener("paykudi_payout_accounts_updated", syncAccounts);
+      window.removeEventListener("storage", syncAccounts);
+    };
+  }, []);
+
+  // Airtight guarantee: if no linked bank account exists, completely clear any lingering bank data
+  useEffect(() => {
+    if (!hasLinkedBankAccount) {
+      setProfileData((prev) => {
+        if (!prev.bank && !prev.accountNumber) return prev;
+        return { ...prev, bank: "", accountNumber: "" };
+      });
+      try {
+        const raw = localStorage.getItem("paykudi_user_profile");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed.bank || parsed.accountNumber) {
+            localStorage.setItem(
+              "paykudi_user_profile",
+              JSON.stringify({ ...parsed, bank: "", accountNumber: "" })
+            );
+          }
+        }
+      } catch (_) {}
+    }
+  }, [hasLinkedBankAccount]);
+
   // Immediate purge of any lingering generic bank accounts on mount
   useEffect(() => {
     try {
@@ -208,7 +318,7 @@ export default function DesktopProfile({
         const parsedAccs = JSON.parse(savedAccs);
         if (Array.isArray(parsedAccs)) {
           const cleanAccs = parsedAccs.filter(
-            (a) => !isGenericBankAccount(a.bank, a.accountNumber, a.accountName)
+            (a) => !isGenericBankAccount(a.bank, a.accountNumber || a.number || a.account_number, a.accountName || a.name || a.account_name)
           );
           if (cleanAccs.length !== parsedAccs.length) {
             localStorage.setItem("paykudi_payout_accounts", JSON.stringify(cleanAccs));
@@ -217,6 +327,7 @@ export default function DesktopProfile({
       }
     } catch (_) {}
   }, []);
+
 
   // Sync profile if updated elsewhere
   useEffect(() => {
@@ -230,8 +341,9 @@ export default function DesktopProfile({
             ...prev,
             id: parsed.id || prev.id || "",
             name: cleanDisplayName(parsed.name) || prev.name,
+            username: parsed.username || prev.username,
             phone: parsed.phone ? cleanId(parsed.phone) : prev.phone,
-            email: parsed.email || prev.email,
+            email: parsed.email !== undefined ? (parsed.email || "") : prev.email,
             address: parsed.address || prev.address,
             bank: isGeneric ? "" : (parsed.bank ?? prev.bank),
             accountNumber: isGeneric ? "" : (parsed.accountNumber ?? prev.accountNumber),
@@ -247,6 +359,37 @@ export default function DesktopProfile({
       window.removeEventListener("paykudi_profile_updated", syncProfile);
       window.removeEventListener("storage", syncProfile);
     };
+  }, []);
+
+  // Fetch verified profile directly from database on mount
+  useEffect(() => {
+    let isMounted = true;
+    const loadFromDB = async () => {
+      try {
+        const res = await fetch("http://localhost:8000/auth/profile", { credentials: "include" });
+        if (res.ok && isMounted) {
+          const u = await res.json();
+          if (u) {
+            setProfileData((prev) => {
+              const next = {
+                ...prev,
+                id: u.id || prev.id,
+                email: u.email || "",
+                username: u.username || prev.username,
+                name: (u.full_name && !isPhoneStr(u.full_name)) ? cleanDisplayName(u.full_name) : prev.name,
+              };
+              try {
+                localStorage.setItem("paykudi_user_profile", JSON.stringify(next));
+                window.dispatchEvent(new Event("paykudi_profile_updated"));
+              } catch {}
+              return next;
+            });
+          }
+        }
+      } catch (_) {}
+    };
+    loadFromDB();
+    return () => { isMounted = false; };
   }, []);
 
   useEffect(() => {
@@ -274,6 +417,14 @@ export default function DesktopProfile({
   };
 
   const handleEditClick = (field) => {
+    if (field === "username") {
+      handleCopyUsername();
+      return;
+    }
+    if (field === "email" && profileData.email && profileData.email.trim()) {
+      showToast("Email address has already been set and cannot be edited.");
+      return;
+    }
     setActiveSellerStep(null);
     setActiveModal(field);
   };
@@ -318,55 +469,121 @@ export default function DesktopProfile({
 
   const handleFieldSave = async (updates) => {
     let msg = "Details updated successfully";
-    if (updates.email) {
-      msg = "Email address bound to account successfully";
-      try {
-        let csrfCookie = document.cookie
-          .split("; ")
-          .find((row) => row.startsWith("paykudi_csrf_token="))
-          ?.split("=")[1];
+    const hasExistingEmail = Boolean(profileData.email && profileData.email.trim());
 
-        if (!csrfCookie) {
-          try {
-            await fetch("http://localhost:8000/auth/csrf", { credentials: "include" });
-            csrfCookie = document.cookie
-              .split("; ")
-              .find((row) => row.startsWith("paykudi_csrf_token="))
-              ?.split("=")[1];
-          } catch (_) {}
-        }
+    if (updates.name) {
+      updates.name = cleanDisplayName(updates.name);
+    }
 
-        const res = await fetch("http://localhost:8000/auth/bind-email", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            ...(csrfCookie ? { "x-csrf-token": csrfCookie } : {}),
-          },
-          credentials: "include",
-          body: JSON.stringify({
-            email: updates.email,
-            user_id: profileData.id || undefined,
-            phone: profileData.phone || undefined,
-          }),
-        });
+    if (updates.email && updates.email.trim()) {
+      const newEmail = updates.email.trim();
 
-        if (res.ok) {
-          const data = await res.json();
-          if (data.user?.id) {
-            updates.id = data.user.id;
-          }
-          msg = "Email bound successfully! You can now log in using this email.";
-        } else {
-          const errData = await res.json().catch(() => ({}));
-          if (errData.detail) {
-            msg = errData.detail;
-          }
-        }
-      } catch (err) {
-        console.warn("[Profile] Backend bind-email error:", err);
+      // If user already had an email, prevent editing or changing it
+      if (hasExistingEmail && newEmail.toLowerCase() !== profileData.email.trim().toLowerCase()) {
+        showToast("Email address has already been set and cannot be edited.");
+        return;
       }
+
+      // If user did not have an email, bind and persist to backend DB
+      if (!hasExistingEmail) {
+        msg = "Email address saved to database successfully!";
+        try {
+          let csrfToken = document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("paykudi_csrf_token="))
+            ?.split("=")[1];
+
+          if (!csrfToken) {
+            try {
+              const csrfRes = await fetch("http://localhost:8000/auth/csrf", { credentials: "include" });
+              const csrfData = await csrfRes.json().catch(() => ({}));
+              csrfToken = csrfData.csrf_token || document.cookie
+                .split("; ")
+                .find((row) => row.startsWith("paykudi_csrf_token="))
+                ?.split("=")[1];
+            } catch (_) {}
+          }
+
+          const res = await fetch("http://localhost:8000/auth/bind-email", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              ...(csrfToken ? { "x-csrf-token": csrfToken } : {}),
+            },
+            credentials: "include",
+            body: JSON.stringify({
+              email: newEmail,
+              user_id: profileData.id || undefined,
+              phone: profileData.phone || undefined,
+              password: updates.password || undefined,
+              otp: updates.otp || undefined,
+            }),
+          });
+
+          if (res.ok) {
+            const data = await res.json();
+            if (data.user?.id) {
+              updates.id = data.user.id;
+            }
+            if (data.user?.email) {
+              updates.email = data.user.email;
+            }
+            msg = "Email address saved to database! It is now permanently bound to your profile.";
+          } else {
+            const errData = await res.json().catch(() => ({}));
+            if (errData.detail) {
+              msg = errData.detail;
+            }
+          }
+        } catch (err) {
+          console.warn("[Profile] Backend bind-email error:", err);
+        }
+      }
+    } else if (hasExistingEmail) {
+      // Ensure existing bound email is preserved
+      updates.email = profileData.email;
     } else if (updates.address) {
       msg = "Address updated successfully";
+    } else if (updates.username) {
+      msg = "Username updated successfully";
+    }
+
+    // Sync to backend DB
+    try {
+      const csrf = await ensureCsrfToken();
+      const res = await fetch("http://localhost:8000/auth/profile", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(csrf ? { "x-csrf-token": csrf } : {}),
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          full_name: updates.name || profileData.name || undefined,
+          username: updates.username || profileData.username || undefined,
+          avatar_color: updates.avatar_color || userAvatarStyle?.backgroundColor || undefined,
+          avatar_url: updates.avatar_url || updates.avatar || profileData.avatar_url || profileData.avatar || undefined,
+        }),
+      });
+      if (res.status === 401 && onSignOut) {
+        onSignOut();
+        return;
+      }
+    } catch (_) {}
+
+    try {
+      await saveUserProfileToDB({
+        id: updates.id || profileData.id,
+        name: updates.name || profileData.name,
+        username: updates.username || profileData.username,
+        phone: updates.phone || profileData.phone,
+        email: updates.email !== undefined ? updates.email : profileData.email,
+        address: updates.address || profileData.address,
+        avatar_url: updates.avatar_url || updates.avatar || profileData.avatar_url || profileData.avatar || null,
+        avatar_color: updates.avatar_color || userAvatarStyle?.backgroundColor || null,
+      });
+    } catch (err) {
+      console.warn("[Profile] Supabase profile sync:", err);
     }
 
     updateProfile(updates, msg);
@@ -375,17 +592,48 @@ export default function DesktopProfile({
 
   /* ── Shared render helpers ── */
 
+  const displayInitial = (() => {
+    if (user?.initial) return String(user.initial).toUpperCase();
+    const raw = (profileData.name || userName || user?.fullName || user?.name || "H").trim();
+    const parts = raw.split(/\s+/).filter(Boolean);
+    const first = parts[0] || "H";
+    const match = first.match(/[a-zA-Z]/) || raw.match(/[a-zA-Z]/);
+    return (match ? match[0] : "H").toUpperCase();
+  })();
+
+  const userAvatarStyle = getUserAvatarStyle(
+    user || {
+      id: profileData.id,
+      username: profileData.username || username,
+      full_name: profileData.name || userName,
+      whatsapp_number: profileData.phone || phoneNumber,
+      account_id: profileData.account_id || profileData.phone || phoneNumber,
+    }
+  );
+
   const renderAvatar = () => (
     <div className="desktop-profile-avatar-wrap">
       <div
         className="desktop-profile-avatar-circle"
-        style={{ cursor: "pointer" }}
+        style={{
+          cursor: "pointer",
+          backgroundColor: userAvatarStyle.backgroundColor,
+          background: userAvatarStyle.background,
+          color: "#ffffff",
+          border: "none",
+        }}
         onClick={() => handleEditClick("profile")}
         title="Click to edit profile"
       >
-        <span className="material-symbols-outlined desktop-profile-avatar-icon">
-          account_circle
-        </span>
+        {profileData.avatar_url || profileData.avatar ? (
+          <img
+            src={profileData.avatar_url || profileData.avatar}
+            alt={cleanDisplayName(profileData.name || userName)}
+            className="desktop-profile-avatar-img"
+          />
+        ) : (
+          <span className="desktop-profile-avatar-letter">{displayInitial}</span>
+        )}
       </div>
       <button
         id="profile-avatar-edit-btn"
@@ -406,9 +654,40 @@ export default function DesktopProfile({
     </div>
   );
 
+  const displayUsername = (() => {
+    const raw = (profileData.username || "").trim();
+    if (raw) {
+      return raw.startsWith("@") ? raw : `@${raw}`;
+    }
+    const rawName = (profileData.name || userName || "howard001").trim();
+    const clean = rawName.toLowerCase().replace(/[^a-z0-9]/g, "");
+    return `@${clean || "howard001"}`;
+  })();
+
+  const handleCopyUsername = (e) => {
+    if (e) e.stopPropagation();
+    try {
+      navigator.clipboard?.writeText(displayUsername);
+      setCopiedUsername(true);
+      showToast("Copied username: " + displayUsername);
+      setTimeout(() => setCopiedUsername(false), 2000);
+    } catch {
+      setCopiedUsername(true);
+      showToast("Copied username: " + displayUsername);
+      setTimeout(() => setCopiedUsername(false), 2000);
+    }
+  };
+
   const renderUserInfo = () => (
     <div className="desktop-profile-info">
-      <h1 className="desktop-profile-name">{profileData.name}</h1>
+      <h1
+        className="desktop-profile-name"
+        onClick={handleCopyUsername}
+        title={copiedUsername ? "Copied!" : "Click to copy username"}
+        style={{ cursor: "pointer", userSelect: "none" }}
+      >
+        {displayUsername}
+      </h1>
       <div
         className="desktop-profile-id-pill"
         onClick={handleCopyId}
@@ -443,6 +722,7 @@ export default function DesktopProfile({
     ariaLabel,
     onClick,
     readonly = false,
+    readonlyIcon,
     noBorder = false,
     selected = false,
     chevron = "chevron_right",
@@ -463,13 +743,26 @@ export default function DesktopProfile({
               {chevron}
             </span>
           )}
+          {readonly && readonlyIcon && (
+            <span
+              className="material-symbols-outlined desktop-profile-item-chevron readonly-lock-icon"
+              style={{
+                fontSize: "17px",
+                opacity: 0.5,
+                color: "var(--muted, #71717a)",
+              }}
+              aria-hidden="true"
+            >
+              {readonlyIcon}
+            </span>
+          )}
         </div>
       </>
     );
 
     if (readonly) {
       return (
-        <div id={id} className="desktop-profile-item readonly" aria-label={ariaLabel}>
+        <div id={id} className="desktop-profile-item readonly" aria-label={ariaLabel} title={titleTooltip}>
           {inner}
         </div>
       );
@@ -508,8 +801,8 @@ export default function DesktopProfile({
     ? "Verification approved. Enjoy Verified Seller escrow benefits."
     : "Complete verification to enjoy Verified Seller benefits.";
 
-  // BVN / NIN / Business step cards + submit CTA (used by accordion and right panel)
-  const renderSellerSteps = () => (
+  // BVN / NIN / Business step cards
+  const renderSellerCards = () => (
     <>
       {/* Card 1: BVN */}
       <div className="seller-sub-card">
@@ -593,87 +886,114 @@ export default function DesktopProfile({
           )}
         </button>
       </div>
+    </>
+  );
 
-      {/* Bottom CTA Submit Button */}
-      <button
-        id="seller-verify-submit-btn"
-        type="button"
-        className="seller-verify-submit-btn"
-        onClick={handleFinalSubmitVerification}
-      >
-        <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
-          verified
-        </span>
-        <span>Submit Seller Verification</span>
-      </button>
+  // Submit CTA Button
+  const renderSellerSubmitBtn = () => (
+    <button
+      id="seller-verify-submit-btn"
+      type="button"
+      className="seller-verify-submit-btn"
+      onClick={handleFinalSubmitVerification}
+    >
+      <span className="material-symbols-outlined" style={{ fontSize: 20 }}>
+        verified
+      </span>
+      <span>Submit Seller Verification</span>
+    </button>
+  );
+
+  // Combination for accordion view
+  const renderSellerSteps = () => (
+    <>
+      {renderSellerCards()}
+      {renderSellerSubmitBtn()}
     </>
   );
 
   /* ── Personal Details rows ── */
-  const renderPersonalRows = () => (
-    <>
-      {renderRow({
-        id: "profile-row-name",
-        badgeClass: "user",
-        badgeContent: <span className="material-symbols-outlined">person</span>,
-        title: profileData.name,
-        subtitle: "Account Name",
-        ariaLabel: `Account Name: ${profileData.name}`,
-        readonly: true,
-      })}
-      {renderRow({
-        id: "profile-row-address",
-        badgeClass: "address",
-        badgeContent: <span className="material-symbols-outlined">location_on</span>,
-        title: profileData.address || "Add your address",
-        subtitle: "Address",
-        ariaLabel: `Address: ${profileData.address || "Add your address"}. Tap to edit.`,
-        onClick: () => handleEditClick("address"),
-        selected: isSplit && activeModal === "address",
-        titleTooltip: "Click to edit address",
-      })}
-      {renderRow({
-        id: "profile-row-phone",
-        badgeClass: "whatsapp",
-        badgeContent: <WhatsAppIcon size={16} />,
-        title: userAccountId,
-        subtitle: "Phone Number",
-        ariaLabel: `Phone Number: ${userAccountId}`,
-        readonly: true,
-      })}
-      {renderRow({
-        id: "profile-row-email",
-        badgeClass: "email",
-        badgeContent: <span className="material-symbols-outlined">mail</span>,
-        title: profileData.email || "Bind your email",
-        subtitle: profileData.email
-          ? "Email Address · Bound (Login enabled)"
-          : "Email Address · Link to enable email login",
-        ariaLabel: `Email Address: ${profileData.email || "Bind your email"}. Tap to edit.`,
-        onClick: () => handleEditClick("email"),
-        noBorder: true,
-        selected: isSplit && activeModal === "email",
-        titleTooltip: "Click to bind or edit email address",
-      })}
-    </>
-  );
+  const renderPersonalRows = () => {
+    const hasEmail = Boolean(profileData.email && profileData.email.trim());
+
+    return (
+      <>
+        {renderRow({
+          id: "profile-row-name",
+          badgeClass: "user",
+          badgeContent: <span className="material-symbols-outlined">person</span>,
+          title: profileData.name,
+          subtitle: "Account Name",
+          ariaLabel: `Account Name: ${profileData.name}`,
+          readonly: true,
+        })}
+        {renderRow({
+          id: "profile-row-address",
+          badgeClass: "address",
+          badgeContent: <span className="material-symbols-outlined">location_on</span>,
+          title: profileData.address || "Add your address",
+          subtitle: "Address",
+          ariaLabel: `Address: ${profileData.address || "Add your address"}. Tap to edit.`,
+          onClick: () => handleEditClick("address"),
+          selected: isSplit && activeModal === "address",
+          titleTooltip: "Click to edit address",
+        })}
+        {renderRow({
+          id: "profile-row-phone",
+          badgeClass: "whatsapp",
+          badgeContent: <WhatsAppIcon size={16} />,
+          title: userAccountId,
+          subtitle: "Phone Number",
+          ariaLabel: `Phone Number: ${userAccountId}`,
+          readonly: true,
+        })}
+        {hasEmail
+          ? renderRow({
+              id: "profile-row-email",
+              badgeClass: "email",
+              badgeContent: <span className="material-symbols-outlined">mail</span>,
+              title: profileData.email,
+              subtitle: "Email Address · Bound (Cannot be edited)",
+              ariaLabel: `Email Address: ${profileData.email}. Permanently bound to profile.`,
+              readonly: true,
+              readonlyIcon: "lock",
+              noBorder: true,
+              titleTooltip: "Email address is permanently bound to your profile and cannot be edited.",
+            })
+          : renderRow({
+              id: "profile-row-email",
+              badgeClass: "email",
+              badgeContent: <span className="material-symbols-outlined">mail</span>,
+              title: "Bind your email",
+              subtitle: "Email Address · Link to enable email login (One-time)",
+              ariaLabel: "Email Address: Bind your email. Tap to add.",
+              onClick: () => handleEditClick("email"),
+              noBorder: true,
+              selected: isSplit && activeModal === "email",
+              titleTooltip: "Click to bind email address to your profile",
+            })}
+      </>
+    );
+  };
 
   /* ── Services & Settings rows ── */
-  const renderPayoutRow = () =>
-    renderRow({
+  const renderPayoutRow = () => {
+    const isLinked = hasLinkedBankAccount && Boolean(activeBank) && Boolean(activeAccountNumber);
+    return renderRow({
       id: "profile-row-payout",
       badgeClass: "payout",
       badgeContent: <span className="material-symbols-outlined">account_balance</span>,
       title: "Payout Accounts",
-      subtitle:
-        profileData.bank && profileData.accountNumber
-          ? `${profileData.bank} · ${profileData.accountNumber}`
-          : "Add bank account for payouts",
+      subtitle: isLinked
+        ? `${activeBank} · ${activeAccountNumber}`
+        : "Add bank account for payouts",
       ariaLabel: "Payout Accounts: Tap to manage bank account.",
       onClick: () => handleEditClick("payout"),
       selected: isSplit && activeModal === "payout",
       titleTooltip: "Click to manage payout accounts",
     });
+  };
+
 
   const renderStatementsRow = () =>
     renderRow({
@@ -707,7 +1027,11 @@ export default function DesktopProfile({
      ══════════════════════════════════════════════════════════════ */
   if (isSplit) {
     const renderDetail = () => {
-      if (activeModal === "address" || activeModal === "email" || activeModal === "profile") {
+      if (
+        activeModal === "address" ||
+        activeModal === "email" ||
+        activeModal === "profile"
+      ) {
         return (
           <EditFieldModal
             key={activeModal}
@@ -730,9 +1054,15 @@ export default function DesktopProfile({
             currentData={profileData}
             dark={dark}
             onClose={closePanel}
-            onSave={(payoutUpdates) =>
-              updateProfile(payoutUpdates, "Payout bank account updated successfully")
-            }
+            onSave={(payoutUpdates) => {
+              updateProfile(payoutUpdates, "Payout bank account updated successfully");
+              const stored = getStoredPayoutAccounts();
+              const clean = stored.filter(
+                (a) => !isGenericBankAccount(a.bank, a.number || a.account_number || a.accountNumber, a.name || a.account_name || a.accountName)
+              );
+              setPayoutAccounts(clean);
+            }}
+
           />
         );
       }
@@ -775,7 +1105,10 @@ export default function DesktopProfile({
               </div>
               <div className="profile-modal-body desktop-profile-seller-panel">
                 <p className="desktop-profile-seller-panel-intro">{sellerSubtitle}</p>
-                <div className="desktop-profile-seller-panel-steps">{renderSellerSteps()}</div>
+                <div className="desktop-profile-seller-panel-steps">{renderSellerCards()}</div>
+              </div>
+              <div className="profile-modal-footer desktop-profile-seller-footer">
+                {renderSellerSubmitBtn()}
               </div>
             </div>
           </div>
@@ -1115,7 +1448,13 @@ export default function DesktopProfile({
         onClose={() => setActiveModal(null)}
         onSave={(payoutUpdates) => {
           updateProfile(payoutUpdates, "Payout bank account updated successfully");
+          const stored = getStoredPayoutAccounts();
+          const clean = stored.filter(
+            (a) => !isGenericBankAccount(a.bank, a.number || a.account_number || a.accountNumber, a.name || a.account_name || a.accountName)
+          );
+          setPayoutAccounts(clean);
         }}
+
       />
 
       {/* 3. Seller Verification Modal */}

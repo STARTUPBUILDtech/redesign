@@ -23,6 +23,17 @@
   animation: atmFadeIn 0.22s ease-out forwards;
 }
 
+/* ── Seamless Header Over Backdrop ── */
+body:has(.atm-backdrop) .mobile-header,
+body:has(.atm-backdrop) .topbar {
+  z-index: 100001 !important;
+  pointer-events: auto !important;
+  border: none !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+
+
 @keyframes atmFadeIn {
   from { opacity: 0; }
   to { opacity: 1; }

@@ -161,25 +161,54 @@ export function EditFieldModal({
 
   const [formData, setFormData] = useState({
     name: currentData?.name || "",
+    username: currentData?.username || "",
     email: currentData?.email || "",
+    password: "",
     phone: extractLocalPhone(currentData?.phone || ""),
     address: currentData?.address || "",
   });
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const inputRef = useRef(null);
+
+  // OTP Email Verification States
+  const [emailStep, setEmailStep] = useState("input"); // 'input' | 'otp'
+  const [emailOtp, setEmailOtp] = useState(["", "", "", "", "", ""]);
+  const [generatedOtp, setGeneratedOtp] = useState("123456");
+  const [resendTimer, setResendTimer] = useState(0);
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+  const otpRefs = useRef([]);
 
   useEffect(() => {
     if (isOpen) {
       setFormData({
         name: currentData?.name || "",
+        username: currentData?.username || "",
         email: currentData?.email || "",
+        password: "",
         phone: extractLocalPhone(currentData?.phone || ""),
         address: currentData?.address || "",
       });
       setError("");
+      setShowPassword(false);
+      setEmailStep("input");
+      setEmailOtp(["", "", "", "", "", ""]);
+      setResendTimer(0);
+      setIsSendingOtp(false);
+      setIsVerifyingOtp(false);
       // Intentionally do not auto-focus input so keyboard is not prompted on mobile until user taps
     }
   }, [isOpen, currentData, fieldType]);
+
+  // Countdown timer for OTP resend
+  useEffect(() => {
+    if (emailStep !== "otp" || resendTimer <= 0) return;
+    const interval = setInterval(() => {
+      setResendTimer((prev) => Math.max(0, prev - 1));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [emailStep, resendTimer]);
 
   const handlePhoneChange = (e) => {
     let val = e.target.value;
@@ -200,21 +229,162 @@ export function EditFieldModal({
 
   if (!isOpen) return null;
 
+  const handleSendEmailOtp = async (e) => {
+    if (e) e.preventDefault();
+    setError("");
+
+    if (currentData?.email && currentData.email.trim()) {
+      setError("Email address has already been set and cannot be edited.");
+      return;
+    }
+
+    const emailVal = formData.email.trim().toLowerCase();
+    if (!emailVal) {
+      setError("Please enter an email address.");
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
+      setError("Please enter a valid email address (e.g. name@example.com).");
+      return;
+    }
+
+    setIsSendingOtp(true);
+    let demoCode = "123456";
+    try {
+      const res = await fetch("http://localhost:8000/auth/send-email-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: emailVal }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.demo_otp) {
+          demoCode = String(data.demo_otp);
+        }
+      }
+    } catch (_) {
+      // offline/mock fallback
+    } finally {
+      setIsSendingOtp(false);
+    }
+
+    setGeneratedOtp(demoCode);
+    setEmailStep("otp");
+    setEmailOtp(["", "", "", "", "", ""]);
+    setResendTimer(30);
+    setTimeout(() => {
+      if (otpRefs.current[0]) {
+        otpRefs.current[0].focus();
+      }
+    }, 100);
+  };
+
+  const handleOtpDigitChange = (index, value) => {
+    const digitsOnly = value.replace(/\D/g, "");
+    if (!digitsOnly) {
+      const nextOtp = [...emailOtp];
+      nextOtp[index] = "";
+      setEmailOtp(nextOtp);
+      return;
+    }
+
+    if (digitsOnly.length > 1) {
+      const nextOtp = [...emailOtp];
+      for (let i = 0; i < digitsOnly.length && index + i < 6; i++) {
+        nextOtp[index + i] = digitsOnly[i];
+      }
+      setEmailOtp(nextOtp);
+      const nextIdx = Math.min(index + digitsOnly.length, 5);
+      if (otpRefs.current[nextIdx]) {
+        otpRefs.current[nextIdx].focus();
+      }
+      return;
+    }
+
+    const nextOtp = [...emailOtp];
+    nextOtp[index] = digitsOnly[0];
+    setEmailOtp(nextOtp);
+    if (index < 5 && otpRefs.current[index + 1]) {
+      otpRefs.current[index + 1].focus();
+    }
+  };
+
+  const handleOtpKeyDown = (index, e) => {
+    if (e.key === "Backspace" && !emailOtp[index] && index > 0) {
+      if (otpRefs.current[index - 1]) {
+        otpRefs.current[index - 1].focus();
+      }
+    }
+  };
+
+  const handleOtpPaste = (e) => {
+    e.preventDefault();
+    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+    if (!pasted) return;
+    const nextOtp = [...emailOtp];
+    for (let i = 0; i < pasted.length; i++) {
+      nextOtp[i] = pasted[i];
+    }
+    setEmailOtp(nextOtp);
+    const targetIdx = Math.min(pasted.length, 5);
+    if (otpRefs.current[targetIdx]) {
+      otpRefs.current[targetIdx].focus();
+    }
+  };
+
+  const handleVerifyEmailOtp = async (e) => {
+    if (e) e.preventDefault();
+    setError("");
+
+    const code = emailOtp.join("");
+    if (code.length !== 6) {
+      setError("Please enter the complete 6-digit verification code.");
+      return;
+    }
+
+    if (code !== generatedOtp && code !== "123456") {
+      setError("Incorrect verification code. Please check your code or enter 123456.");
+      return;
+    }
+
+    setIsVerifyingOtp(true);
+    try {
+      await onSave({
+        email: formData.email.trim(),
+        otp: code,
+      });
+      onClose();
+    } finally {
+      setIsVerifyingOtp(false);
+    }
+  };
+
   const handleSubmit = (e) => {
     if (e) e.preventDefault();
     setError("");
 
     if (fieldType === "email") {
-      const emailVal = formData.email.trim();
-      if (!emailVal) {
-        setError("Please enter an email address.");
+      if (currentData?.email && currentData.email.trim()) {
+        setError("Email address has already been set and cannot be edited.");
         return;
       }
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
-        setError("Please enter a valid email address (e.g. name@example.com).");
+      if (emailStep === "input") {
+        handleSendEmailOtp(e);
+      } else {
+        handleVerifyEmailOtp(e);
+      }
+      return;
+    } else if (fieldType === "username") {
+      const cleanU = (formData.username || "").trim().replace(/^@/, "");
+      if (!cleanU) {
+        setError("Please enter a username.");
         return;
       }
-      onSave({ email: emailVal });
+      if (cleanU.length < 3) {
+        setError("Username must be at least 3 characters.");
+        return;
+      }
+      onSave({ username: cleanU });
     } else if (fieldType === "name") {
       const nameVal = formData.name.trim();
       if (!nameVal) {
@@ -244,9 +414,17 @@ export function EditFieldModal({
       }
       const rawDigits = formData.phone.trim();
       const fullPhone = rawDigits ? `+234 ${rawDigits.replace(/^\+?234\s*/, "").replace(/^0/, "")}` : "";
+      
+      // If email was already bound, keep original email so it cannot be edited
+      let effectiveEmail = currentData?.email ? currentData.email.trim() : formData.email.trim();
+      if (!currentData?.email && effectiveEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(effectiveEmail)) {
+        setError("Please enter a valid email address (e.g. name@example.com).");
+        return;
+      }
+
       onSave({
         name: formData.name.trim(),
-        email: formData.email.trim(),
+        email: effectiveEmail,
         phone: fullPhone,
         address: formData.address.trim(),
       });
@@ -258,8 +436,12 @@ export function EditFieldModal({
     switch (fieldType) {
       case "email":
         return {
-          title: formData.email ? "Edit Bound Email Address" : "Bind Email Address",
-          icon: "mail",
+          title: currentData?.email
+            ? "Email Address (Locked)"
+            : emailStep === "otp"
+            ? "Verify Email Address"
+            : "Bind Email Address",
+          icon: currentData?.email ? "lock" : emailStep === "otp" ? "mark_email_read" : "mail",
           badgeClass: "email",
           badgeBg: isDark ? "rgba(168, 85, 247, 0.22)" : "#eedffe",
           badgeColor: isDark ? "#c084fc" : "#7e22ce",
@@ -279,6 +461,14 @@ export function EditFieldModal({
           badgeClass: "whatsapp",
           badgeBg: isDark ? "rgba(34, 197, 94, 0.22)" : "#dcf2e4",
           badgeColor: isDark ? "#4ade80" : "#1b7347",
+        };
+      case "username":
+        return {
+          title: "Edit Username",
+          icon: "alternate_email",
+          badgeClass: "user",
+          badgeBg: isDark ? "rgba(59, 130, 246, 0.22)" : "#dde7f2",
+          badgeColor: isDark ? "#60a5fa" : "#234872",
         };
       case "name":
         return {
@@ -352,27 +542,284 @@ export function EditFieldModal({
 
             {fieldType === "email" && (
               <div className="profile-form-group">
-                <label className="profile-form-label" htmlFor="profile-email-input">
-                  <span>Email Address</span>
+                {currentData?.email ? (
+                  <>
+                    <div
+                      style={{
+                        background: isDark ? "rgba(168, 85, 247, 0.12)" : "rgba(126, 34, 206, 0.08)",
+                        border: `1px solid ${isDark ? "rgba(168, 85, 247, 0.3)" : "rgba(126, 34, 206, 0.2)"}`,
+                        borderRadius: "10px",
+                        padding: "12px 14px",
+                        marginBottom: "16px",
+                        display: "flex",
+                        alignItems: "flex-start",
+                        gap: "10px",
+                      }}
+                    >
+                      <span
+                        className="material-symbols-outlined"
+                        style={{ color: isDark ? "#c084fc" : "#7e22ce", fontSize: "20px", marginTop: "1px", flexShrink: 0 }}
+                      >
+                        lock
+                      </span>
+                      <div style={{ fontSize: "13px", lineHeight: "1.45" }}>
+                        <strong style={{ display: "block", color: isDark ? "#e9d5ff" : "#581c87", marginBottom: "2px" }}>
+                          Email Address Permanently Bound
+                        </strong>
+                        <span style={{ color: "var(--muted, #71717a)" }}>
+                          This email address is saved to your profile database record and cannot be edited or modified.
+                        </span>
+                      </div>
+                    </div>
+
+                    <label className="profile-form-label" htmlFor="profile-email-input">
+                      <span>Email Address</span>
+                      <span style={{ fontSize: "11px", color: "var(--muted, #71717a)", marginLeft: "auto", display: "inline-flex", alignItems: "center", gap: "3px" }}>
+                        <span className="material-symbols-outlined" style={{ fontSize: "13px" }}>lock</span>
+                        Read-only
+                      </span>
+                    </label>
+                    <div className="profile-input-wrap has-icon is-disabled">
+                      <span className="profile-input-icon">
+                        <span className="material-symbols-outlined">lock</span>
+                      </span>
+                      <input
+                        ref={inputRef}
+                        id="profile-email-input"
+                        type="email"
+                        className="profile-input-field"
+                        value={formData.email}
+                        readOnly
+                        disabled
+                        style={{ opacity: 0.75, cursor: "not-allowed", backgroundColor: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.03)" }}
+                      />
+                    </div>
+                  </>
+                ) : emailStep === "input" ? (
+                  <>
+                    <div
+                      style={{
+                        background: isDark ? "rgba(59, 130, 246, 0.1)" : "rgba(37, 99, 235, 0.06)",
+                        border: `1px solid ${isDark ? "rgba(59, 130, 246, 0.25)" : "rgba(37, 99, 235, 0.18)"}`,
+                        borderRadius: "10px",
+                        padding: "11px 13px",
+                        marginBottom: "16px",
+                        display: "flex",
+                        alignItems: "flex-start",
+                        gap: "9px",
+                      }}
+                    >
+                      <span
+                        className="material-symbols-outlined"
+                        style={{ color: "#2563eb", fontSize: "19px", marginTop: "1px", flexShrink: 0 }}
+                      >
+                        info
+                      </span>
+                      <div style={{ fontSize: "12.5px", lineHeight: "1.4" }}>
+                        <strong style={{ display: "block", color: isDark ? "#93c5fd" : "#1e40af", marginBottom: "2px" }}>
+                          One-Time Email Binding
+                        </strong>
+                        <span style={{ color: "var(--muted, #71717a)" }}>
+                          Once saved to your profile, this email address is permanently bound and cannot be edited.
+                        </span>
+                      </div>
+                    </div>
+
+                    <label
+                      className="profile-form-label"
+                      htmlFor="profile-email-input"
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                        flexWrap: "wrap",
+                        marginBottom: "6px",
+                      }}
+                    >
+                      <span>Email Address</span>
+                      <span
+                        className="profile-email-otp-hint"
+                        style={{
+                          fontSize: "clamp(9px, 2.5vw, 12px)",
+                          fontWeight: 500,
+                          color: isDark ? "#f87171" : "#dc2626",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          lineHeight: "1.3",
+                        }}
+                      >
+                        * A 6-digit OTP code will be sent to verify this email address.
+                      </span>
+                    </label>
+                    <div className="profile-input-wrap has-icon">
+                      <span className="profile-input-icon">
+                        <span className="material-symbols-outlined">mail</span>
+                      </span>
+                      <input
+                        ref={inputRef}
+                        id="profile-email-input"
+                        type="email"
+                        className="profile-input-field"
+                        placeholder="e.g. amaka.obi@example.com"
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        autoComplete="email"
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div
+                      style={{
+                        background: isDark ? "rgba(59, 130, 246, 0.1)" : "rgba(37, 99, 235, 0.06)",
+                        border: `1px solid ${isDark ? "rgba(59, 130, 246, 0.25)" : "rgba(37, 99, 235, 0.18)"}`,
+                        borderRadius: "10px",
+                        padding: "12px 14px",
+                        marginBottom: "16px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        gap: "10px",
+                      }}
+                    >
+                      <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0 }}>
+                        <span
+                          className="material-symbols-outlined"
+                          style={{ color: "#2563eb", fontSize: "20px", flexShrink: 0 }}
+                        >
+                          mark_email_read
+                        </span>
+                        <div style={{ fontSize: "12.5px", lineHeight: "1.35", minWidth: 0, overflow: "hidden" }}>
+                          <div style={{ color: "var(--muted, #71717a)", fontSize: "11px" }}>Verification code sent to</div>
+                          <strong
+                            style={{
+                              color: isDark ? "#93c5fd" : "#1e40af",
+                              display: "block",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
+                            }}
+                          >
+                            {formData.email}
+                          </strong>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEmailStep("input");
+                          setError("");
+                        }}
+                        style={{
+                          background: "none",
+                          border: "none",
+                          color: "#2563eb",
+                          fontSize: "12px",
+                          fontWeight: 600,
+                          cursor: "pointer",
+                          padding: "4px 8px",
+                          flexShrink: 0,
+                        }}
+                      >
+                        Change
+                      </button>
+                    </div>
+
+                    <label className="profile-form-label" style={{ textAlign: "center", display: "block" }}>
+                      Enter 6-Digit Verification Code
+                    </label>
+
+                    <div className="profile-otp-row">
+                      {emailOtp.map((digit, idx) => (
+                        <input
+                          key={idx}
+                          ref={(el) => (otpRefs.current[idx] = el)}
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          maxLength={1}
+                          className="profile-otp-digit"
+                          value={digit}
+                          onChange={(e) => handleOtpDigitChange(idx, e.target.value)}
+                          onKeyDown={(e) => handleOtpKeyDown(idx, e)}
+                          onPaste={idx === 0 ? handleOtpPaste : undefined}
+                          autoFocus={idx === 0}
+                          aria-label={`Digit ${idx + 1}`}
+                        />
+                      ))}
+                    </div>
+
+                    <div style={{ textAlign: "center", marginTop: "10px" }}>
+                      {resendTimer > 0 ? (
+                        <span style={{ fontSize: "12px", color: "var(--muted, #71717a)" }}>
+                          Resend code in <strong style={{ color: isDark ? "#e2e8f0" : "#1e293b" }}>{resendTimer}s</strong>
+                        </span>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={handleSendEmailOtp}
+                          disabled={isSendingOtp}
+                          style={{
+                            background: "none",
+                            border: "none",
+                            color: "#2563eb",
+                            fontSize: "12px",
+                            fontWeight: 600,
+                            cursor: "pointer",
+                            textDecoration: "underline",
+                          }}
+                        >
+                          {isSendingOtp ? "Resending code..." : "Resend verification code"}
+                        </button>
+                      )}
+                    </div>
+
+                    <div
+                      style={{
+                        marginTop: "14px",
+                        fontSize: "11.5px",
+                        color: "var(--muted, #71717a)",
+                        textAlign: "center",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "4px",
+                      }}
+                    >
+                      <span className="material-symbols-outlined" style={{ fontSize: "14px", color: "#10b981" }}>
+                        info
+                      </span>
+                      <span>
+                        Demo verification code: <strong style={{ color: isDark ? "#a7f3d0" : "#065f46" }}>123456</strong>
+                      </span>
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+
+            {fieldType === "username" && (
+              <div className="profile-form-group">
+                <label className="profile-form-label" htmlFor="profile-username-input">
+                  <span>Username</span>
                 </label>
                 <div className="profile-input-wrap has-icon">
                   <span className="profile-input-icon">
-                    <span className="material-symbols-outlined">mail</span>
+                    <span className="material-symbols-outlined">alternate_email</span>
                   </span>
                   <input
                     ref={inputRef}
-                    id="profile-email-input"
-                    type="email"
+                    id="profile-username-input"
+                    type="text"
                     className="profile-input-field"
-                    placeholder="e.g. amaka.obi@example.com"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    autoComplete="email"
+                    placeholder="e.g. howard001"
+                    value={formData.username || ""}
+                    onChange={(e) => setFormData({ ...formData, username: e.target.value.replace(/[^a-zA-Z0-9_]/g, "").toLowerCase() })}
+                    autoComplete="username"
                   />
                 </div>
-                <div style={{ marginTop: "7px", fontSize: "12px", color: "var(--muted, #71717a)", display: "flex", alignItems: "center", gap: "6px" }}>
-                  <span className="material-symbols-outlined" style={{ fontSize: "14px", color: "#10b981" }}>verified</span>
-                  <span>Binding an email allows you to sign in with your email & password.</span>
+                <div style={{ marginTop: "6px", fontSize: "12px", color: "var(--muted, #71717a)" }}>
+                  Your unique PayKudi @tag for transfers and trades.
                 </div>
               </div>
             )}
@@ -476,12 +923,20 @@ export function EditFieldModal({
                 </div>
 
                 <div className="profile-form-group">
-                  <label className="profile-form-label" htmlFor="profile-all-email">
-                    Email Address
+                  <label className="profile-form-label" htmlFor="profile-all-email" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span>Email Address</span>
+                    {currentData?.email ? (
+                      <span style={{ fontSize: "11px", color: "var(--muted, #71717a)", display: "inline-flex", alignItems: "center", gap: "3px" }}>
+                        <span className="material-symbols-outlined" style={{ fontSize: "13px" }}>lock</span>
+                        Cannot be edited
+                      </span>
+                    ) : (
+                      <span style={{ fontSize: "11px", color: "var(--muted, #71717a)" }}>(Add once)</span>
+                    )}
                   </label>
-                  <div className="profile-input-wrap has-icon">
+                  <div className={`profile-input-wrap has-icon ${currentData?.email ? "is-disabled" : ""}`}>
                     <span className="profile-input-icon">
-                      <span className="material-symbols-outlined">mail</span>
+                      <span className="material-symbols-outlined">{currentData?.email ? "lock" : "mail"}</span>
                     </span>
                     <input
                       id="profile-all-email"
@@ -489,9 +944,21 @@ export function EditFieldModal({
                       className="profile-input-field"
                       placeholder="e.g. amaka@example.com"
                       value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      onChange={(e) => !currentData?.email && setFormData({ ...formData, email: e.target.value })}
+                      disabled={Boolean(currentData?.email)}
+                      readOnly={Boolean(currentData?.email)}
+                      style={currentData?.email ? { opacity: 0.75, cursor: "not-allowed", backgroundColor: isDark ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.03)" } : {}}
                     />
                   </div>
+                  {currentData?.email ? (
+                    <span style={{ fontSize: "11.5px", color: "var(--muted, #71717a)", marginTop: "4px", display: "block" }}>
+                      Email address is permanently bound to your account and database record.
+                    </span>
+                  ) : (
+                    <span style={{ fontSize: "11.5px", color: "var(--muted, #71717a)", marginTop: "4px", display: "block" }}>
+                      Note: Once saved to your profile, this email cannot be edited.
+                    </span>
+                  )}
                 </div>
 
                 <div className="profile-form-group">
@@ -548,13 +1015,31 @@ export function EditFieldModal({
             <button
               type="button"
               className="profile-btn profile-btn-secondary"
-              onClick={onClose}
+              onClick={fieldType === "email" && emailStep === "otp" ? () => { setEmailStep("input"); setError(""); } : onClose}
             >
-              Cancel
+              {fieldType === "email" && currentData?.email
+                ? "Close"
+                : fieldType === "email" && emailStep === "otp"
+                ? "Back"
+                : "Cancel"}
             </button>
-            <button type="submit" className="profile-btn profile-btn-primary">
-              Save Changes
-            </button>
+            {!(fieldType === "email" && currentData?.email) && (
+              <button
+                type="submit"
+                className="profile-btn profile-btn-primary"
+                disabled={fieldType === "email" && (emailStep === "input" ? isSendingOtp : isVerifyingOtp)}
+              >
+                {fieldType === "email"
+                  ? emailStep === "input"
+                    ? isSendingOtp
+                      ? "Sending Code..."
+                      : "Send Verification Code"
+                    : isVerifyingOtp
+                    ? "Verifying..."
+                    : "Verify & Bind Email"
+                  : "Save Changes"}
+              </button>
+            )}
           </div>
         </form>
     </ModalShell>
@@ -585,13 +1070,25 @@ export function PayoutAccountModal({ isOpen, onClose, currentData, onSave, dark,
   // Helper to detect generic/dummy accounts
   const isGenericAccount = (acc) => {
     if (!acc) return true;
-    const name = String(acc.accountName || "").toLowerCase();
-    const num = String(acc.accountNumber || "");
-    const genericNums = ["1234567653", "2345678900", "0234567891", "0123456789", "2001948291"];
-    return name.includes("amaka") || genericNums.includes(num);
+    const name = String(acc.accountName || acc.name || acc.account_name || "").toLowerCase();
+    const num = String(acc.accountNumber || acc.number || acc.account_number || "").trim();
+    const b = String(acc.bank || acc.bankName || acc.bank_code || "").toLowerCase();
+    const genericNums = [
+      "1234567653",
+      "2345678900",
+      "0234567891",
+      "0123456789",
+      "2001948291",
+      "8032001585",
+      "8032007872",
+    ];
+    if (name.includes("amaka") || name.includes("chinaza")) return true;
+    if (genericNums.includes(num)) return true;
+    if (b.includes("kuda") && (num === "2001948291" || num === "8032001585" || num === "8032007872")) return true;
+    return false;
   };
 
-  // Initial accounts seed helper
+  // Initial accounts seed helper - strictly real saved accounts only
   const getInitialAccounts = () => {
     try {
       const saved = localStorage.getItem("paykudi_payout_accounts");
@@ -607,29 +1104,9 @@ export function PayoutAccountModal({ isOpen, onClose, currentData, onSave, dark,
       }
     } catch (e) {}
 
-    // Check if currentData has a real, non-generic bank account
-    if (
-      currentData?.bank &&
-      currentData?.accountNumber &&
-      !isGenericAccount({
-        accountName: currentData.accountName || currentData.name,
-        accountNumber: currentData.accountNumber,
-      })
-    ) {
-      return [
-        {
-          id: "payout-acc-" + Date.now(),
-          bank: currentData.bank,
-          bankCode: currentData.bankCode || "kuda",
-          accountNumber: currentData.accountNumber,
-          accountName: currentData.accountName || currentData.name || "",
-          isDefault: true,
-        },
-      ];
-    }
-
     return [];
   };
+
 
   const [accounts, setAccounts] = useState(getInitialAccounts);
   const [selectedDefaultId, setSelectedDefaultId] = useState(() => {

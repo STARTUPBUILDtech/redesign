@@ -7,6 +7,7 @@ import "../default.css";
 import "../Screen-1.screen.css";
 import "../responsive.css";
 import "../mobile.css";
+import "./styles/loading-skeleton.css";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>

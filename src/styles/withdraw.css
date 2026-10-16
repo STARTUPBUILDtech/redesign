@@ -899,6 +899,70 @@ body.dark .payout-dropdown-item:hover,
   color: rgba(255, 255, 255, 0.72) !important;
 }
 
+/* ── Empty State Card When No Payout Account Linked (Inverted: Black in Light mode, White in Dark mode) ── */
+.payout-empty-account-card {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  background-color: #171717 !important;
+  color: #ffffff !important;
+  border: 1px solid #262626 !important;
+  border-radius: 8px;
+  padding: 12px 14px;
+  min-height: 52px;
+  box-sizing: border-box;
+  user-select: none;
+  cursor: default !important;
+}
+
+.payout-empty-account-card .payout-empty-name {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  line-height: 1.25;
+}
+
+.payout-empty-account-card .payout-empty-sub {
+  margin: 0;
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.7) !important;
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.7) !important;
+  line-height: 1.2;
+}
+
+/* ── Dark Mode: Tile is White with Dark text ── */
+[data-appearance="dark"] .payout-empty-account-card,
+.desktop-withdraw-modal-container[data-appearance="dark"] .payout-empty-account-card,
+.mobile-withdraw-view[data-appearance="dark"] .payout-empty-account-card,
+.app[data-appearance="dark"] .payout-empty-account-card,
+.mobile-dashboard[data-appearance="dark"] .payout-empty-account-card,
+body.dark .payout-empty-account-card,
+body[data-appearance="dark"] .payout-empty-account-card {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid #ffffff !important;
+  cursor: default !important;
+}
+
+[data-appearance="dark"] .payout-empty-account-card .payout-empty-name,
+.desktop-withdraw-modal-container[data-appearance="dark"] .payout-empty-account-card .payout-empty-name,
+.mobile-withdraw-view[data-appearance="dark"] .payout-empty-account-card .payout-empty-name,
+body.dark .payout-empty-account-card .payout-empty-name {
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a !important;
+}
+
+[data-appearance="dark"] .payout-empty-account-card .payout-empty-sub,
+.desktop-withdraw-modal-container[data-appearance="dark"] .payout-empty-account-card .payout-empty-sub,
+.mobile-withdraw-view[data-appearance="dark"] .payout-empty-account-card .payout-empty-sub,
+body.dark .payout-empty-account-card .payout-empty-sub {
+  color: #64748b !important;
+  -webkit-text-fill-color: #64748b !important;
+}
+
 .payout-dropdown-item.is-selected .payout-account-num-val {
   color: #ffffff !important;
 }

@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from "react";
 import paykudiLogo from "../../assets/paykudi-logo.png";
-import logoDarkMode from "../../assets/logodarkmode.png";
 import image1 from "../../assets/image-1.png";
 import image2 from "../../assets/image-2.png";
 import image3 from "../../assets/image-3.png";
@@ -8,6 +7,7 @@ import image4 from "../../assets/image-4.png";
 import image5 from "../../assets/image-5.png";
 import "../../styles/login.css";
 import { saveUserProfileToDB } from "../../services/supabaseService";
+import { getUserAvatarStyle } from "../../utils/avatarUtils";
 
 const SLIDES = [
   {
@@ -15,30 +15,35 @@ const SLIDES = [
     image: image1,
     title: "Buy it. We've got your back.",
     subtitle: "Pay on PayKudi and your money stays safe until your order arrives.",
+    objectPosition: "center 16%",
   },
   {
     id: 2,
     image: image2,
     title: "Strangers can trade safely now.",
     subtitle: "Buy or sell with anyone. Both sides stay protected.",
+    objectPosition: "center 18%",
   },
   {
     id: 3,
     image: image3,
     title: "Love it? Then they get paid.",
     subtitle: "Check your order first. Pay the seller only when you're happy.",
+    objectPosition: "center 8%",
   },
   {
     id: 4,
     image: image4,
     title: "Your money waits till it arrives.",
     subtitle: "We hold your payment while your order is on the way.",
+    objectPosition: "center 18%",
   },
   {
     id: 5,
     image: image5,
     title: "Pay without the worry.",
     subtitle: 'No more "send first" stress. Pay only when it\'s right.',
+    objectPosition: "center 22%",
   },
 ];
 
@@ -106,6 +111,28 @@ function PaykudiQRCode() {
   );
 }
 
+function generateSuggestedUsername(fullName) {
+  if (!fullName) return "";
+  const words = fullName
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, "")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  let base = "";
+  if (words.length >= 2) {
+    base = `${words[0]}${words[1]}`.substring(0, 12);
+  } else if (words.length === 1) {
+    base = words[0].substring(0, 12);
+  } else {
+    base = "user";
+  }
+
+  const setOfNumbers = Math.floor(100 + Math.random() * 900);
+  return `${base}${setOfNumbers}`;
+}
+
 export default function LoginPage({ dark, onLogin }) {
   // Slideshow State
   const [activeSlide, setActiveSlide] = useState(0);
@@ -114,7 +141,7 @@ export default function LoginPage({ dark, onLogin }) {
 
   // View:
   // "menu" | "email" | "email-pass" | "whatsapp" | "whatsapp-pass"
-  // "signup-phone" | "signup-otp" | "signup-password" | "signup-name" | "signup-extra"
+  // "signup-phone" | "signup-otp" | "signup-password" | "signup-name" | "signup-username" | "signup-extra"
   const [view, setView] = useState("menu");
 
   // Sign in state
@@ -131,6 +158,12 @@ export default function LoginPage({ dark, onLogin }) {
   const [signupName, setSignupName] = useState("");
   const [signupEmail, setSignupEmail] = useState("");
   const [signupUsername, setSignupUsername] = useState("");
+
+  // Reset password state
+  const [resetIdentifier, setResetIdentifier] = useState("");
+  const [resetNewPassword, setResetNewPassword] = useState("");
+  const [resetSuccessMsg, setResetSuccessMsg] = useState("");
+  const [resetShowPass, setResetShowPass] = useState(false);
 
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -201,6 +234,82 @@ export default function LoginPage({ dark, onLogin }) {
     submitLogin();
   };
 
+  /* ── Reset Password Flow ── */
+  const handleOpenForgot = () => {
+    setErrors({});
+    setResetIdentifier(email || phone || "");
+    setResetNewPassword("");
+    setResetSuccessMsg("");
+    setView("reset-pass");
+  };
+
+  const handleResetPasswordSubmit = async (e) => {
+    e.preventDefault();
+    if (loading) return;
+    const targetIdent = (resetIdentifier || email || phone).trim();
+    if (!targetIdent) {
+      setErrors({ resetIdentifier: "Please enter your email or WhatsApp number" });
+      return;
+    }
+    if (!resetNewPassword || resetNewPassword.length < 6) {
+      setErrors({ resetNewPassword: "Password must be at least 6 characters" });
+      return;
+    }
+    setLoading(true);
+    setErrors({});
+    try {
+      let csrfCookie = document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("paykudi_csrf_token="))
+        ?.split("=")[1];
+
+      if (!csrfCookie) {
+        try {
+          await fetch("http://localhost:8000/auth/csrf", { credentials: "include" });
+          csrfCookie = document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("paykudi_csrf_token="))
+            ?.split("=")[1];
+        } catch (_) {}
+      }
+
+      const res = await fetch("http://localhost:8000/auth/reset-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(csrfCookie ? { "x-csrf-token": csrfCookie } : {}),
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          identifier: targetIdent,
+          new_password: resetNewPassword,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        setErrors({ resetNewPassword: data.detail || "Unable to reset password" });
+        setLoading(false);
+        return;
+      }
+
+      setLoading(false);
+      setPassword(resetNewPassword);
+      if (targetIdent.includes("@")) {
+        setEmail(targetIdent);
+        setView("email-pass");
+      } else {
+        setPhone(targetIdent);
+        setView("whatsapp-pass");
+      }
+      setResetSuccessMsg("Password updated successfully! Please click Sign in.");
+    } catch (err) {
+      setLoading(false);
+      setErrors({ resetNewPassword: "Server is unreachable at the moment" });
+    }
+  };
+
+
   /* ── Sign In with WhatsApp ── */
   const handleWhatsAppStep1 = (e) => {
     e.preventDefault();
@@ -235,7 +344,7 @@ export default function LoginPage({ dark, onLogin }) {
   /* ── Sign Up Flow (WhatsApp First -> OTP -> Password -> Name -> Optional Details) ── */
   
   // Step 1: WhatsApp phone input
-  const handleSignupPhoneSubmit = (e) => {
+  const handleSignupPhoneSubmit = async (e) => {
     e.preventDefault();
     if (submittingStep) return;
     const clean = signupPhone.replace(/\D/g, "");
@@ -249,10 +358,28 @@ export default function LoginPage({ dark, onLogin }) {
     }
     setErrors({});
     setSubmittingStep("signup-phone");
+
+    try {
+      // Check if phone number already exists BEFORE proceeding to OTP request
+      const res = await fetch(`http://localhost:8000/auth/check-phone?phone=${encodeURIComponent(signupPhone.trim())}`, {
+        credentials: "include",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.exists) {
+          setSubmittingStep(null);
+          setErrors({ signupPhone: data.message || "An account with this phone number already exists." });
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn("[Auth] Phone check offline/error:", err);
+    }
+
     setTimeout(() => {
       setSubmittingStep(null);
       setView("signup-otp");
-    }, 1500);
+    }, 1000);
   };
 
   // Step 2: OTP input handlers & Auto-Verify
@@ -350,12 +477,55 @@ export default function LoginPage({ dark, onLogin }) {
       setErrors({ signupName: "Full name is required" });
       return;
     }
+    const suggested = generateSuggestedUsername(signupName.trim());
+    if (!signupUsername || !signupUsername.trim()) {
+      setSignupUsername(suggested);
+    }
     setErrors({});
     setSubmittingStep("signup-name");
     setTimeout(() => {
       setSubmittingStep(null);
-      setView("signup-extra");
+      setView("signup-username");
     }, 1500);
+  };
+
+  // Step 5: Username selection
+  const handleSignupUsernameSubmit = async (e) => {
+    e.preventDefault();
+    if (submittingStep) return;
+    const clean = signupUsername.trim().replace(/^@/, "").toLowerCase();
+    if (!clean) {
+      setErrors({ signupUsername: "Username cannot be empty" });
+      return;
+    }
+    if (clean.length < 3) {
+      setErrors({ signupUsername: "Username must be at least 3 characters" });
+      return;
+    }
+    setErrors({});
+    setSubmittingStep("signup-username");
+
+    try {
+      // 1. Fast O(1) check against Server RAM Cache and DB
+      const res = await fetch(`http://localhost:8000/auth/check-username?username=${encodeURIComponent(clean)}`, {
+        credentials: "include",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (!data.available) {
+          setSubmittingStep(null);
+          setErrors({ signupUsername: data.message || `Username '@${clean}' already exists. Please choose a different username.` });
+          return;
+        }
+      }
+    } catch (err) {
+      console.warn("[Auth] Username check offline/error:", err);
+    }
+
+    setTimeout(() => {
+      setSubmittingStep(null);
+      setView("signup-extra");
+    }, 400);
   };
 
   const handleFinishSignup = async () => {
@@ -366,6 +536,7 @@ export default function LoginPage({ dark, onLogin }) {
     const cleanUsername = signupUsername.trim().replace(/^@/, "");
 
     let userId = null;
+    let serverAvatarColor = null;
 
     try {
       // 1. Fetch CSRF token cookie if not present
@@ -384,6 +555,12 @@ export default function LoginPage({ dark, onLogin }) {
         } catch (_) {}
       }
 
+      const precalcAvatarColor = getUserAvatarStyle({
+        username: cleanUsername,
+        name: fullName,
+        phone: phoneNum,
+      }).backgroundColor;
+
       // 2. Call backend /auth/register (saves directly to DB first, then caches to server RAM)
       const res = await fetch("http://localhost:8000/auth/register", {
         method: "POST",
@@ -398,12 +575,40 @@ export default function LoginPage({ dark, onLogin }) {
           email: emailAddr || undefined,
           full_name: fullName,
           username: cleanUsername || undefined,
+          avatar_color: precalcAvatarColor,
         }),
       });
 
       if (res.ok) {
         const data = await res.json();
         userId = data.user_id || data.user?.id;
+        if (data.user?.avatar_color) {
+          serverAvatarColor = data.user.avatar_color;
+        }
+      } else {
+        const errorData = await res.json().catch(() => ({}));
+        const detail = errorData.detail || "";
+        const lowerDetail = detail.toLowerCase();
+        setLoading(false);
+
+        if (lowerDetail.includes("phone")) {
+          setErrors({ signupPhone: detail });
+          setView("signup-phone");
+          return;
+        }
+        if (lowerDetail.includes("username")) {
+          setErrors({ signupUsername: detail });
+          setView("signup-username");
+          return;
+        }
+        if (lowerDetail.includes("email")) {
+          setErrors({ signupEmail: detail });
+          setView("signup-extra");
+          return;
+        }
+        setErrors({ signupUsername: detail || "An account with this information already exists." });
+        setView("signup-username");
+        return;
       }
     } catch (err) {
       console.warn("[Auth] Backend registration offline/error:", err);
@@ -426,12 +631,22 @@ export default function LoginPage({ dark, onLogin }) {
       }
     } catch {}
 
+    const avatarColor =
+      serverAvatarColor ||
+      precalcAvatarColor ||
+      getUserAvatarStyle({
+        username: cleanUsername,
+        name: fullName,
+        phone: phoneNum,
+      }).backgroundColor;
+
     const userData = {
       id: validId,
       name: fullName,
       phone: phoneNum,
       email: emailAddr,
       username: cleanUsername,
+      avatar_color: avatarColor,
       pocket_balance_kobo: existingKobo,
     };
 
@@ -498,39 +713,9 @@ export default function LoginPage({ dark, onLogin }) {
       const data = await res.json();
 
       if (!res.ok) {
-        // Fallback for bound email accounts & demo: if user bound this email in their profile, log into their account
-        try {
-          const stored = JSON.parse(localStorage.getItem("paykudi_user_profile") || "{}");
-          const cleanIdent = identifier.toLowerCase().trim();
-          const storedEmail = (stored.email || "").toLowerCase().trim();
-          const isBoundUser = storedEmail && storedEmail === cleanIdent;
-          const isEmailLogin = view.includes("email") || cleanIdent.includes("@");
-
-          if (
-            isBoundUser ||
-            (isEmailLogin && password.length >= 6)
-          ) {
-            setLoading(false);
-            const userEmail = isBoundUser ? (stored.email || cleanIdent) : cleanIdent;
-            const fallbackName = userEmail.includes("@")
-              ? userEmail.split("@")[0].replace(/[._-]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
-              : "Howard Ukah-Columba";
-            onLogin?.({
-              id: isBoundUser && stored.id ? stored.id : (stored.id || "demo-user"),
-              name: isBoundUser && stored.name ? stored.name : (stored.name || fallbackName),
-              email: userEmail,
-              phone: isBoundUser && stored.phone ? stored.phone : (stored.phone || "8032007872"),
-              pocket_balance_kobo: stored.pocket_balance_kobo || 0,
-            });
-            return;
-          }
-        } catch (_) {}
-
-        // KEEP TYPED IDENTIFIER (email or phone preserved in state)
-        // CLEAR ONLY PASSWORD
         setPassword("");
         setErrors({
-          password: data.detail || "No account found with these details",
+          password: data.detail || "Invalid credentials or account not found",
         });
         setLoading(false);
         return;
@@ -567,7 +752,13 @@ export default function LoginPage({ dark, onLogin }) {
 
       const resolvedPhone = data.user?.whatsapp_number || (isBoundUser && stored.phone ? stored.phone : (phone || stored.phone || "8032007872"));
       const resolvedId = data.user?.id || (isBoundUser && stored.id ? stored.id : (stored.id || data.user_id));
-      const resolvedEmail = data.user?.email || (isBoundUser && stored.email ? stored.email : email);
+      const resolvedEmail = data.user?.email || (isBoundUser && stored.email ? stored.email : (view.includes("email") ? email : ""));
+
+      const avatarColor = stored.avatar_color || data.user?.avatar_color || getUserAvatarStyle({
+        username: data.user?.username || (resolvedName ? resolvedName.toLowerCase().replace(/[^a-z0-9]/g, "") : "user"),
+        name: resolvedName,
+        phone: resolvedPhone,
+      }).backgroundColor;
 
       onLogin?.({
         id: resolvedId,
@@ -575,51 +766,20 @@ export default function LoginPage({ dark, onLogin }) {
         email: resolvedEmail,
         phone: resolvedPhone,
         user: data.user,
+        avatar_color: avatarColor,
         pocket_balance_kobo: existingKobo,
       });
     } catch (err) {
-      // Local fallback for offline/demo: if user bound this email in profile, log into their account
-      try {
-        const stored = JSON.parse(localStorage.getItem("paykudi_user_profile") || "{}");
-        const cleanIdent = identifier.toLowerCase().trim();
-        const storedEmail = (stored.email || "").toLowerCase().trim();
-        const storedPhone = (stored.phone || "").replace(/\D/g, "");
-        const identPhone = identifier.replace(/\D/g, "");
-        const isBoundUser = storedEmail && storedEmail === cleanIdent;
-        const isEmailLogin = view.includes("email") || cleanIdent.includes("@");
-
-        if (
-          isBoundUser ||
-          (storedPhone && identPhone && storedPhone.endsWith(identPhone.slice(-10))) ||
-          (isEmailLogin && password.length >= 6)
-        ) {
-          setLoading(false);
-          const userEmail = isBoundUser ? (stored.email || cleanIdent) : cleanIdent;
-          const fallbackName = userEmail.includes("@")
-            ? userEmail.split("@")[0].replace(/[._-]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())
-            : "Howard Ukah-Columba";
-          onLogin?.({
-            id: isBoundUser && stored.id ? stored.id : (stored.id || "demo-user"),
-            name: isBoundUser && stored.name ? stored.name : (stored.name || fallbackName),
-            email: userEmail,
-            phone: isBoundUser && stored.phone ? stored.phone : (stored.phone || "8032007872"),
-            pocket_balance_kobo: stored.pocket_balance_kobo || 0,
-          });
-          return;
-        }
-      } catch (_) {}
-
-      // Network/dev fallback: preserve typed identifier, clear only password, show error
       setPassword("");
       setErrors({
-        password: "No account found with these details",
+        password: "Server is unreachable at the moment",
       });
       setLoading(false);
     }
   };
 
   return (
-    <div className={`kuda-login-layout ${dark ? "theme-dark" : "theme-light"}`}>
+    <div className="kuda-login-layout theme-light">
       {/* ══════════════════════════════════════════════════════════════
           LEFT PANEL: Ambient Gradient + Parakeet-style Card
          ══════════════════════════════════════════════════════════════ */}
@@ -627,7 +787,7 @@ export default function LoginPage({ dark, onLogin }) {
         {/* Brand Logo in Top-Left Corner */}
         <div className="pk-auth-top-left-logo">
           <img
-            src={dark ? logoDarkMode : paykudiLogo}
+            src={paykudiLogo}
             alt="PayKudi"
             className="pk-auth-logo"
           />
@@ -739,6 +899,11 @@ export default function LoginPage({ dark, onLogin }) {
                   <h1 className="pk-step-title">Enter your password</h1>
 
                   <form onSubmit={handleEmailStep2} noValidate>
+                    {resetSuccessMsg && (
+                      <div style={{ padding: "8px 12px", background: "#ecfdf5", border: "1px solid #a7f3d0", color: "#065f46", borderRadius: "8px", fontSize: "12px", marginBottom: "14px", textAlign: "center" }}>
+                        {resetSuccessMsg}
+                      </div>
+                    )}
                     <div className="pk-step-input-wrap">
                       <div className="pk-input-box" style={{ borderRadius: "8px", height: "48px" }}>
                         <input
@@ -773,7 +938,7 @@ export default function LoginPage({ dark, onLogin }) {
                     </div>
 
                     <div className="pk-forgot-row" style={{ marginBottom: "14px" }}>
-                      <a href="#reset" className="pk-forgot-link" onClick={(e) => e.preventDefault()}>
+                      <a href="#reset" className="pk-forgot-link" onClick={(e) => { e.preventDefault(); handleOpenForgot(); }}>
                         Forgot your password?
                       </a>
                     </div>
@@ -896,6 +1061,12 @@ export default function LoginPage({ dark, onLogin }) {
                       {errors.password && <span className="pk-error-text">{errors.password}</span>}
                     </div>
 
+                    <div className="pk-forgot-row" style={{ marginBottom: "14px" }}>
+                      <a href="#reset" className="pk-forgot-link" onClick={(e) => { e.preventDefault(); handleOpenForgot(); }}>
+                        Forgot your password?
+                      </a>
+                    </div>
+
                     <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
                       <button
                         type="submit"
@@ -917,6 +1088,83 @@ export default function LoginPage({ dark, onLogin }) {
                   </form>
                 </>
               )}
+
+              {/* ══════════════════════════════════════════════════════════════
+                  VIEW: Reset Password
+                 ══════════════════════════════════════════════════════════════ */}
+              {view === "reset-pass" && (
+                <>
+                  <h1 className="pk-step-title">Reset your password</h1>
+                  <p style={{ fontSize: "13px", color: "var(--pk-text-secondary, #4b5563)", textAlign: "center", margin: "-8px 0 18px" }}>
+                    Enter your email or phone and set a new password.
+                  </p>
+
+                  <form onSubmit={handleResetPasswordSubmit} noValidate>
+                    <div className="pk-step-input-wrap">
+                      <input
+                        type="text"
+                        className="pk-step-input"
+                        placeholder="Email address or WhatsApp phone"
+                        value={resetIdentifier}
+                        onChange={(e) => {
+                          setResetIdentifier(e.target.value);
+                          if (errors.resetIdentifier) setErrors((p) => ({ ...p, resetIdentifier: "" }));
+                        }}
+                        autoFocus
+                      />
+                      {errors.resetIdentifier && <span className="pk-error-text">{errors.resetIdentifier}</span>}
+                    </div>
+
+                    <div className="pk-step-input-wrap" style={{ marginTop: "12px" }}>
+                      <div className="pk-input-box" style={{ borderRadius: "8px", height: "48px" }}>
+                        <input
+                          type={resetShowPass ? "text" : "password"}
+                          className="pk-input-field pk-password-input"
+                          placeholder="New password (min 6 characters)"
+                          value={resetNewPassword}
+                          onChange={(e) => {
+                            setResetNewPassword(e.target.value);
+                            if (errors.resetNewPassword) setErrors((p) => ({ ...p, resetNewPassword: "" }));
+                          }}
+                          autoComplete="new-password"
+                        />
+                        <button
+                          type="button"
+                          className="pk-pass-toggle"
+                          onClick={() => setResetShowPass(!resetShowPass)}
+                          tabIndex={-1}
+                          aria-label={resetShowPass ? "Hide password" : "Show password"}
+                        >
+                          <span className="material-symbols-outlined" style={{ fontSize: "19px" }}>
+                            {resetShowPass ? "visibility_off" : "visibility"}
+                          </span>
+                        </button>
+                      </div>
+                      {errors.resetNewPassword && <span className="pk-error-text">{errors.resetNewPassword}</span>}
+                    </div>
+
+                    <div style={{ display: "flex", justifyContent: "center", width: "100%", marginTop: "14px" }}>
+                      <button
+                        type="submit"
+                        className={`pk-step-button ${resetNewPassword ? "active" : ""} ${loading ? "is-loading" : ""}`}
+                        disabled={loading}
+                      >
+                        <span className="pk-btn-text">Save New Password</span>
+                        <span className="pk-btn-spinner" aria-hidden="true" />
+                      </button>
+                    </div>
+
+                    <button
+                      type="button"
+                      className="pk-step-back-link"
+                      onClick={() => setView(resetIdentifier.includes("@") ? "email-pass" : "menu")}
+                    >
+                      Back to login
+                    </button>
+                  </form>
+                </>
+              )}
+
 
               {/* ══════════════════════════════════════════════════════════════
                   CREATE ACCOUNT FLOW:
@@ -1157,7 +1405,104 @@ export default function LoginPage({ dark, onLogin }) {
                 </>
               )}
 
-              {/* ── Sign Up Step 5: Other Details (Can Be Skipped) ── */}
+              {/* ── Sign Up Step 5: Choose Username ── */}
+              {view === "signup-username" && (
+                <>
+                  <h1 className="pk-step-title">Choose your username</h1>
+                  <p className="pk-step-subtitle">This will be your PayKudi @tag for transfers and trades</p>
+
+                  <form onSubmit={handleSignupUsernameSubmit} noValidate>
+                    <div className="pk-step-input-wrap">
+                      <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+                        <span
+                          style={{
+                            position: "absolute",
+                            left: "16px",
+                            fontWeight: 600,
+                            fontSize: "17px",
+                            color: "var(--muted, #71717a)",
+                            pointerEvents: "none",
+                          }}
+                        >
+                          @
+                        </span>
+                        <input
+                          type="text"
+                          className="pk-step-input"
+                          style={{ paddingLeft: "36px" }}
+                          placeholder="username"
+                          value={signupUsername.replace(/^@/, "")}
+                          onChange={(e) => {
+                            const clean = e.target.value.replace(/[^a-zA-Z0-9_]/g, "").toLowerCase();
+                            setSignupUsername(clean);
+                            if (errors.signupUsername) setErrors((p) => ({ ...p, signupUsername: "" }));
+                          }}
+                          autoComplete="username"
+                          autoFocus
+                        />
+                      </div>
+                      {errors.signupUsername && (
+                        <span className="pk-error-text">{errors.signupUsername}</span>
+                      )}
+
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          marginTop: "8px",
+                          fontSize: "12px",
+                          color: "var(--muted, #71717a)",
+                        }}
+                      >
+                        <span>Suggested from your name</span>
+                        <button
+                          type="button"
+                          onClick={() => setSignupUsername(generateSuggestedUsername(signupName))}
+                          style={{
+                            background: "none",
+                            border: "none",
+                            color: "var(--primary, #008751)",
+                            cursor: "pointer",
+                            fontWeight: 600,
+                            fontSize: "12px",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "4px",
+                            padding: "0",
+                          }}
+                        >
+                          <span className="material-symbols-outlined" style={{ fontSize: "14px" }}>
+                            refresh
+                          </span>
+                          Suggest another
+                        </button>
+                      </div>
+                    </div>
+
+                    <div style={{ display: "flex", justifyContent: "center", width: "100%", marginTop: "16px" }}>
+                      <button
+                        type="submit"
+                        className={`pk-step-button ${signupUsername.trim() ? "active" : ""} ${submittingStep === "signup-username" ? "is-loading" : ""}`}
+                        disabled={submittingStep === "signup-username" || !signupUsername.trim()}
+                      >
+                        <span className="pk-btn-text">Continue</span>
+                        <span className="pk-btn-spinner" aria-hidden="true" />
+                      </button>
+                    </div>
+
+                    <button
+                      type="button"
+                      className="pk-step-back-link"
+                      onClick={() => setView("signup-name")}
+                    >
+                      Back
+                    </button>
+                  </form>
+                </>
+              )}
+
+              {/* ── Sign Up Step 6: Additional Details (Can Be Skipped) ── */}
               {view === "signup-extra" && (
                 <>
                   <h1 className="pk-step-title">Additional details</h1>
@@ -1179,15 +1524,30 @@ export default function LoginPage({ dark, onLogin }) {
 
                     <div className="pk-step-input-wrap" style={{ marginBottom: "20px" }}>
                       <label className="pk-input-label" style={{ marginBottom: "2px" }}>
-                        Username <span style={{ opacity: 0.6, fontWeight: 400 }}>(Optional)</span>
+                        Username
                       </label>
-                      <input
-                        type="text"
-                        className="pk-step-input"
-                        placeholder="@username"
-                        value={signupUsername}
-                        onChange={(e) => setSignupUsername(e.target.value)}
-                      />
+                      <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+                        <span
+                          style={{
+                            position: "absolute",
+                            left: "16px",
+                            fontWeight: 600,
+                            fontSize: "17px",
+                            color: "var(--muted, #71717a)",
+                            pointerEvents: "none",
+                          }}
+                        >
+                          @
+                        </span>
+                        <input
+                          type="text"
+                          className="pk-step-input"
+                          style={{ paddingLeft: "36px" }}
+                          placeholder="username"
+                          value={signupUsername.replace(/^@/, "")}
+                          onChange={(e) => setSignupUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g, "").toLowerCase())}
+                        />
+                      </div>
                     </div>
 
                     <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
@@ -1250,7 +1610,8 @@ export default function LoginPage({ dark, onLogin }) {
               <img
                 src={slide.image}
                 alt={slide.title}
-                className="kuda-slide-image"
+                className={`kuda-slide-image kuda-slide-image-${slide.id}`}
+                style={slide.objectPosition ? { objectPosition: slide.objectPosition } : undefined}
               />
               <div className="kuda-slide-overlay" />
             </div>

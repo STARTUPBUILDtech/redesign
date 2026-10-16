@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import "../../styles/agree-terms-modal.css";
+import { getRoomPerspective } from "../../utils/paymentRoomUtils";
 
 export const NIGERIAN_STATES = [
   "Abia",
@@ -48,6 +49,9 @@ export default function AgreeTermsModal({
   onAgree,
   room = {},
   sellerName: propSellerName,
+  buyerName: propBuyerName,
+  role,
+  currentUser,
   appearance: propAppearance,
   isPaymentRoomWhite,
 }) {
@@ -109,13 +113,49 @@ export default function AgreeTermsModal({
     }
   }, [isPickerOpen]);
 
+  // Sync body modal state
+  useEffect(() => {
+    if (isOpen && typeof document !== "undefined") {
+      document.body.classList.add("modal-open-desktop", "pk-modal-up");
+    }
+    return () => {
+      if (typeof document !== "undefined") {
+        document.body.classList.remove("modal-open-desktop", "pk-modal-up");
+      }
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
-  const sellerName =
+  const perspective = getRoomPerspective(safeRoom, currentUser);
+  const isViewerSeller = role
+    ? role === "Seller" || role === "Selling"
+    : !perspective.isBuying;
+
+  const resolvedSellerName =
+    (propSellerName && propSellerName !== "Seller" && propSellerName !== "Buyer" ? propSellerName : null) ||
+    (safeRoom.sellerName && safeRoom.sellerName !== "Seller" ? safeRoom.sellerName : null) ||
+    (safeRoom.seller && safeRoom.seller !== "Seller" ? safeRoom.seller : null) ||
+    (safeRoom.seller_name && safeRoom.seller_name !== "Seller" ? safeRoom.seller_name : null) ||
+    (safeRoom.creatorRole === "Seller" ? (safeRoom.creatorName || safeRoom.creator) : (safeRoom.counterpartyName || safeRoom.counterparty)) ||
+    (!perspective.isBuying ? "You" : perspective.counterpartyName) ||
     propSellerName ||
     safeRoom.sellerName ||
-    safeRoom.counterparty ||
-    "900000909099";
+    "Howard Ukah";
+
+  const resolvedBuyerName =
+    (propBuyerName && propBuyerName !== "Buyer" && propBuyerName !== "Seller" ? propBuyerName : null) ||
+    (safeRoom.buyerName && safeRoom.buyerName !== "Buyer" ? safeRoom.buyerName : null) ||
+    (safeRoom.buyer && safeRoom.buyer !== "Buyer" ? safeRoom.buyer : null) ||
+    (safeRoom.buyer_name && safeRoom.buyer_name !== "Buyer" ? safeRoom.buyer_name : null) ||
+    (safeRoom.creatorRole === "Buyer" ? (safeRoom.creatorName || safeRoom.creator) : (safeRoom.counterpartyName || safeRoom.counterparty)) ||
+    (perspective.isBuying ? "You" : perspective.counterpartyName) ||
+    propBuyerName ||
+    safeRoom.buyerName ||
+    "Buyer";
+
+  const counterpartyLabel = isViewerSeller ? "Buyer's Name" : "Seller's Name";
+  const counterpartyValue = isViewerSeller ? resolvedBuyerName : resolvedSellerName;
 
   const filteredStates = NIGERIAN_STATES.filter((st) =>
     st.toLowerCase().includes(stateSearch.toLowerCase().trim())
@@ -338,14 +378,14 @@ export default function AgreeTermsModal({
               </div>
             </div>
 
-            {/* Seller's Name */}
+            {/* Seller / Buyer Name based on viewer role */}
             <div className="atm-info-row">
               <div className="atm-info-icon-wrap seller">
                 <span className="material-symbols-outlined">person</span>
               </div>
               <div className="atm-info-texts">
-                <span className="atm-info-label">Seller's Name</span>
-                <span className="atm-info-val">{sellerName}</span>
+                <span className="atm-info-label">{counterpartyLabel}</span>
+                <span className="atm-info-val">{counterpartyValue}</span>
               </div>
             </div>
           </div>
@@ -441,6 +481,8 @@ export default function AgreeTermsModal({
           >
             {isLoading ? (
               <span className="atm-btn-spinner" aria-hidden="true" />
+            ) : isViewerSeller ? (
+              "Agree & Continue to Payment Room"
             ) : (
               "Agree & Continue to Payment"
             )}

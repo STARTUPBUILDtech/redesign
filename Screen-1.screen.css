@@ -17,11 +17,19 @@
   body:has(.pk-slideup-backdrop) .topbar,
   body:has([class*="-backdrop"]) .topbar,
   body.modal-open-desktop .topbar,
+  body.modal-open-desktop .topbar,
   body.pk-modal-up .topbar,
   body.modal-open .topbar,
   .topbar.modal-active-topbar {
     z-index: 100001 !important;
     pointer-events: auto !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
   }
 
   body:has([role="dialog"]) .topbar nav,
@@ -36,6 +44,7 @@
   body:has(.payout-sheet-backdrop) .topbar nav,
   body:has(.new-payment-modal-backdrop) .topbar nav,
   body:has(.pk-slideup-backdrop) .topbar nav,
+  body:has(.desktop-np-modal-overlay) .topbar nav,
   body:has([class*="-backdrop"]) .topbar nav,
   body.modal-open-desktop .topbar nav,
   body.pk-modal-up .topbar nav,
@@ -54,23 +63,24 @@
   body:has([class*="-backdrop"]) .topbar .header-avatar-circle,
   body.modal-open-desktop .topbar .header-avatar-circle,
   body.modal-open .topbar .header-avatar-circle,
-  body:has([role="dialog"]) .topbar .header-avatar-circle,
-  body:has([aria-modal="true"]) .topbar .header-avatar-circle,
-  body:has(.cd-issue-backdrop) .topbar .header-avatar-circle,
-  body:has(.ap-bottom-sheet-backdrop) .topbar .header-avatar-circle,
-  body:has(.desktop-prd-modal-backdrop) .topbar .header-avatar-circle,
-  body:has(.desktop-prd-chat-modal-backdrop) .topbar .header-avatar-circle,
-  body:has(.desktop-prd-call-modal-backdrop) .topbar .header-avatar-circle,
-  body:has(.pk-receipt-backdrop) .topbar .header-avatar-circle,
-  body:has(.ap-order-help-backdrop) .topbar .header-avatar-circle,
-  body:has(.payout-sheet-backdrop) .topbar .header-avatar-circle,
-  body:has(.new-payment-modal-backdrop) .topbar .header-avatar-circle,
-  body:has(.pk-slideup-backdrop) .topbar .header-avatar-circle,
-  body:has([class*="-backdrop"]) .topbar .header-avatar-circle,
-  body.modal-open-desktop .topbar .header-avatar-circle,
-  body.pk-modal-up .topbar .header-avatar-circle,
-  body.modal-open .topbar .header-avatar-circle,
-  .topbar.modal-active-topbar .header-avatar-circle {
+  body:has([role="dialog"]) .topbar .header-profile-container,
+  body:has([aria-modal="true"]) .topbar .header-profile-container,
+  body:has(.cd-issue-backdrop) .topbar .header-profile-container,
+  body:has(.ap-bottom-sheet-backdrop) .topbar .header-profile-container,
+  body:has(.desktop-prd-modal-backdrop) .topbar .header-profile-container,
+  body:has(.desktop-prd-chat-modal-backdrop) .topbar .header-profile-container,
+  body:has(.desktop-prd-call-modal-backdrop) .topbar .header-profile-container,
+  body:has(.pk-receipt-backdrop) .topbar .header-profile-container,
+  body:has(.ap-order-help-backdrop) .topbar .header-profile-container,
+  body:has(.payout-sheet-backdrop) .topbar .header-profile-container,
+  body:has(.new-payment-modal-backdrop) .topbar .header-profile-container,
+  body:has(.pk-slideup-backdrop) .topbar .header-profile-container,
+  body:has(.desktop-np-modal-overlay) .topbar .header-profile-container,
+  body:has([class*="-backdrop"]) .topbar .header-profile-container,
+  body.modal-open-desktop .topbar .header-profile-container,
+  body.pk-modal-up .topbar .header-profile-container,
+  body.modal-open .topbar .header-profile-container,
+  .topbar.modal-active-topbar .header-profile-container {
     display: none !important;
     visibility: hidden !important;
     pointer-events: none !important;
@@ -81,6 +91,7 @@
   body:has([aria-modal="true"]) .topbar .brand,
   body:has(.cd-issue-backdrop) .topbar .brand,
   body:has(.ap-bottom-sheet-backdrop) .topbar .brand,
+  body:has(.desktop-np-modal-overlay) .topbar .brand,
   body.modal-open-desktop .topbar .brand,
   .topbar.modal-active-topbar .brand {
     display: flex !important;
@@ -93,6 +104,7 @@
   body:has([aria-modal="true"]) .topbar .header-theme-btn,
   body:has(.cd-issue-backdrop) .topbar .header-theme-btn,
   body:has(.ap-bottom-sheet-backdrop) .topbar .header-theme-btn,
+  body:has(.desktop-np-modal-overlay) .topbar .header-theme-btn,
   body.modal-open-desktop .topbar .header-theme-btn,
   .topbar.modal-active-topbar .header-theme-btn {
     display: flex !important;
@@ -100,6 +112,19 @@
     opacity: 1 !important;
     pointer-events: auto !important;
     cursor: pointer !important;
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    color: #18181b !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+  }
+
+  .app[data-appearance="dark"] .topbar.modal-active-topbar .header-theme-btn,
+  body.dark.modal-open-desktop .topbar .header-theme-btn,
+  body.modal-open-desktop.dark .topbar .header-theme-btn {
+    background-color: #212328 !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
   }
 }
 

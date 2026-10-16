@@ -206,7 +206,10 @@ class RateLimiter:
         if ip in ("127.0.0.1", "::1", "localhost") and settings.ENVIRONMENT == "development":
             return False, 0
         block_key = f"block:ip:{ip}"
-        ttl = self.r.ttl(block_key)
+        try:
+            ttl = self.r.ttl(block_key)
+        except Exception:
+            ttl = _fallback_redis.ttl(block_key)
         if ttl and ttl > 0:
             return True, ttl
         return False, 0
@@ -214,6 +217,7 @@ class RateLimiter:
     def check_ip_rate_limit(self, ip: str) -> Tuple[bool, int, int]:
         """
         Sliding / fixed window limit: max 10 attempts per 15 minutes.
+        Fails closed into strict in-memory limit if Redis is down.
         Returns: (allowed: bool, remaining: int, retry_after: int)
         """
         # In development, exempt local loopback from blocking the developer
@@ -224,17 +228,26 @@ class RateLimiter:
         window_seconds = settings.IP_RATE_LIMIT_WINDOW_MINUTES * 60
         max_attempts = settings.MAX_LOGIN_ATTEMPTS_PER_IP
 
-        pipe = self.r.pipeline()
-        pipe.incr(key)
-        pipe.ttl(key)
-        results = pipe.execute()
+        try:
+            pipe = self.r.pipeline()
+            pipe.incr(key)
+            pipe.ttl(key)
+            results = pipe.execute()
+            active_r = self.r
+        except Exception:
+            # FAIL-CLOSED: Redis is down, seamlessly fail closed into strict in-memory limit
+            pipe = _fallback_redis.pipeline()
+            pipe.incr(key)
+            pipe.ttl(key)
+            results = pipe.execute()
+            active_r = _fallback_redis
 
         count = results[0]
         ttl = results[1]
 
         # If key was newly created (ttl == -1), set expiry
         if ttl == -1 or ttl is None:
-            self.r.expire(key, window_seconds)
+            active_r.expire(key, window_seconds)
             ttl = window_seconds
 
         if count > max_attempts:
@@ -242,12 +255,45 @@ class RateLimiter:
 
         return True, max(0, max_attempts - count), 0
 
+    def check_endpoint_rate_limit(self, key: str, max_requests: int = 30, window_seconds: int = 60) -> Tuple[bool, int]:
+        """
+        Sliding / fixed window limit for specific endpoints (e.g. search, verify-counterparty).
+        Returns: (allowed: bool, retry_after: int)
+        """
+        try:
+            pipe = self.r.pipeline()
+            pipe.incr(key)
+            pipe.ttl(key)
+            results = pipe.execute()
+            active_r = self.r
+        except Exception:
+            pipe = _fallback_redis.pipeline()
+            pipe.incr(key)
+            pipe.ttl(key)
+            results = pipe.execute()
+            active_r = _fallback_redis
+
+        count = results[0]
+        ttl = results[1]
+
+        if ttl == -1 or ttl is None:
+            active_r.expire(key, window_seconds)
+            ttl = window_seconds
+
+        if count > max_requests:
+            return False, ttl if ttl > 0 else window_seconds
+
+        return True, 0
+
     def is_turnstile_required(self, ip: str) -> bool:
         """Returns True if this IP has >= 3 failed logins."""
         if ip in ("127.0.0.1", "::1", "localhost") and settings.ENVIRONMENT == "development":
             return False
         fail_key = f"rl:ip:{ip}:failed_count"
-        count = self.r.get(fail_key)
+        try:
+            count = self.r.get(fail_key)
+        except Exception:
+            count = _fallback_redis.get(fail_key)
         if count and int(count) >= settings.TURNSTILE_REQUIRED_AFTER_FAILED_ATTEMPTS:
             return True
         return False
@@ -265,13 +311,25 @@ class RateLimiter:
         stuff_key = f"rl:ip:{ip}:failed_accounts"
         window_seconds = settings.IP_RATE_LIMIT_WINDOW_MINUTES * 60
 
-        pipe = self.r.pipeline()
-        pipe.incr(fail_key)
-        pipe.expire(fail_key, window_seconds)
-        pipe.sadd(stuff_key, identifier)
-        pipe.expire(stuff_key, 3600)  # 1 hour window for stuffing detection
-        pipe.scard(stuff_key)
-        results = pipe.execute()
+        try:
+            pipe = self.r.pipeline()
+            pipe.incr(fail_key)
+            pipe.expire(fail_key, window_seconds)
+            pipe.sadd(stuff_key, identifier)
+            pipe.expire(stuff_key, 3600)  # 1 hour window for stuffing detection
+            pipe.scard(stuff_key)
+            results = pipe.execute()
+            active_r = self.r
+        except Exception:
+            # Fail closed into in-memory store
+            pipe = _fallback_redis.pipeline()
+            pipe.incr(fail_key)
+            pipe.expire(fail_key, window_seconds)
+            pipe.sadd(stuff_key, identifier)
+            pipe.expire(stuff_key, 3600)
+            pipe.scard(stuff_key)
+            results = pipe.execute()
+            active_r = _fallback_redis
 
         ip_failed_count = results[0]
         distinct_accounts_count = results[4]
@@ -283,10 +341,11 @@ class RateLimiter:
             # Auto-block IP for 24 hours
             block_key = f"block:ip:{ip}"
             block_seconds = settings.CREDENTIAL_STUFFING_BLOCK_HOURS * 3600
-            self.r.set(block_key, "credential_stuffing_autoblock", ex=block_seconds)
+            active_r.set(block_key, "credential_stuffing_autoblock", ex=block_seconds)
             ip_newly_blocked = True
 
         return turnstile_required, ip_newly_blocked
+
 
     def reset_ip_failed_count(self, ip: str):
         """Reset failed attempt counters upon successful login."""

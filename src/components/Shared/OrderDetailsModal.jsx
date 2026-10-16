@@ -1,4 +1,5 @@
 import "../../styles/mobile-awaiting-payment.css";
+import { getRoomPerspective } from "../../utils/paymentRoomUtils";
 
 export default function OrderDetailsModal({
   isOpen,
@@ -6,6 +7,8 @@ export default function OrderDetailsModal({
   isLifting = false,
   onAnimationEnd = () => {},
   room = {},
+  role,
+  currentUser,
 }) {
   if (!isOpen) return null;
 
@@ -22,11 +25,32 @@ export default function OrderDetailsModal({
     return hasNaira ? `₦${res}` : res;
   };
 
+  const perspective = getRoomPerspective(room, currentUser);
+  const isSeller = role ? (role === "Seller" || role === "Selling") : !perspective.isBuying;
+
   const orderNumber = room.id || room.orderNumber || "ORD-302914";
   const orderAmount = formatNaira(room.amount || room.price || "₦2,450,000");
   const itemName = room.item || room.title || 'MacBook Pro M3 Max 16"';
   const variantText = room.variant || "Space Black, 36GB RAM, 1TB SSD";
-  const sellerName = room.sellerName || room.counterparty || "Amaka Obi";
+
+  const sellerName =
+    room.sellerName ||
+    room.seller ||
+    room.seller_name ||
+    (room.creatorRole === "Seller" ? room.creatorName : room.counterpartyName) ||
+    (!perspective.isBuying ? "You" : perspective.counterpartyName) ||
+    "Amaka Obi";
+
+  const buyerName =
+    room.buyerName ||
+    room.buyer ||
+    room.buyer_name ||
+    (room.creatorRole === "Buyer" ? room.creatorName : room.counterpartyName) ||
+    (perspective.isBuying ? "You" : perspective.counterpartyName) ||
+    "Buyer";
+
+  const counterpartyLabel = isSeller ? "Buyer's Name" : "Seller's Name";
+  const counterpartyName = isSeller ? buyerName : sellerName;
   const youPaidAmount = room.youPaid || "₦2,381,165";
   const txFee = room.txFee || "₦35,185";
   const convenienceFee = room.convenienceFee || "₦300";
@@ -144,14 +168,14 @@ export default function OrderDetailsModal({
                 </div>
               </div>
 
-              {/* Term 3: Seller's Name */}
+              {/* Term 3: Counterparty Name */}
               <div className="ap-sheet-term-item">
                 <div className="ap-sheet-term-icon seller">
                   <span className="material-symbols-outlined">person</span>
                 </div>
                 <div className="ap-sheet-term-content">
-                  <div className="ap-sheet-term-label">Seller's Name</div>
-                  <div className="ap-sheet-term-val">{sellerName}</div>
+                  <div className="ap-sheet-term-label">{counterpartyLabel}</div>
+                  <div className="ap-sheet-term-val">{counterpartyName}</div>
                 </div>
               </div>
             </div>
